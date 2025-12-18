@@ -1,13 +1,13 @@
-
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام إعداد التقارير - أداء الواجبات الوظيفية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas2image@1.0.5/canvas2image.min.js"></script>
     <style>
         :root {
             --primary-color: #2c5aa0;
@@ -21,6 +21,7 @@
             --success-color: #28a745;
             --warning-color: #ffc107;
             --danger-color: #dc3545;
+            --info-color: #17a2b8;
             --shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
             --shadow-lg: 0 5px 25px rgba(0, 0, 0, 0.1);
             --radius: 10px;
@@ -291,17 +292,17 @@
             left: 15px;
             background: rgba(220, 53, 69, 0.9);
             color: white;
-            border: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            transition: var(--transition);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                    border: none;
+                    width: 35px;
+                    height: 35px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 16px;
+                    transition: var(--transition);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .preview-remove:hover {
@@ -372,6 +373,14 @@
 
         .btn-success:hover {
             background-color: #218838;
+        }
+
+        .btn-info {
+            background-color: var(--info-color);
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
         }
 
         .btn-outline {
@@ -839,6 +848,240 @@
         .validation-error i {
             font-size: 16px;
         }
+
+        /* تنسيقات الطباعة */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            .print-container, .print-container * {
+                visibility: visible;
+            }
+            
+            .print-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                background: white;
+                padding: 20mm;
+                direction: rtl;
+                font-family: 'Cairo', 'Traditional Arabic', 'Segoe UI', sans-serif;
+                font-size: 12pt;
+                line-height: 1.6;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            @page {
+                size: A4;
+                margin: 20mm;
+            }
+            
+            .print-header {
+                text-align: center;
+                margin-bottom: 30px;
+                border-bottom: 3px solid #2c5aa0;
+                padding-bottom: 20px;
+            }
+            
+            .print-title {
+                color: #2c5aa0;
+                font-size: 24pt;
+                margin-bottom: 15px;
+                font-weight: bold;
+            }
+            
+            .print-subtitle {
+                color: #666;
+                font-size: 16pt;
+                margin-bottom: 10px;
+            }
+            
+            .print-info {
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 8px;
+                margin: 20px 0;
+                border-right: 4px solid #2c5aa0;
+            }
+            
+            .print-section {
+                margin: 25px 0;
+                page-break-inside: avoid;
+            }
+            
+            .print-section-title {
+                color: #2c5aa0;
+                font-size: 20pt;
+                margin-bottom: 15px;
+                border-right: 4px solid #2c5aa0;
+                padding-right: 15px;
+                font-weight: bold;
+            }
+            
+            .print-content {
+                font-size: 14pt;
+                line-height: 1.8;
+                text-align: justify;
+            }
+            
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 15px 0;
+                font-size: 12pt;
+            }
+            
+            .print-table th {
+                background-color: #2c5aa0;
+                color: white;
+                padding: 10px;
+                text-align: right;
+                font-weight: bold;
+                border: 1px solid #1e3d6f;
+            }
+            
+            .print-table td {
+                padding: 8px 10px;
+                border: 1px solid #ddd;
+                text-align: right;
+            }
+            
+            .print-table tr:nth-child(even) {
+                background-color: #f8f9fa;
+            }
+            
+            .print-list {
+                padding-right: 20px;
+                margin: 15px 0;
+            }
+            
+            .print-list-item {
+                margin-bottom: 8px;
+                padding-right: 10px;
+                position: relative;
+            }
+            
+            .print-list-item::before {
+                content: "•";
+                color: #2c5aa0;
+                font-size: 18pt;
+                position: absolute;
+                right: -15px;
+            }
+            
+            .print-images {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin: 20px 0;
+                justify-content: center;
+            }
+            
+            .print-image {
+                width: 45%;
+                max-width: 300px;
+                border: 1px solid #ddd;
+                padding: 5px;
+                page-break-inside: avoid;
+                margin-bottom: 15px;
+            }
+            
+            .print-image img {
+                width: 100%;
+                height: 180px;
+                object-fit: cover;
+                display: block;
+            }
+            
+            .print-image-caption {
+                text-align: center;
+                font-size: 10pt;
+                color: #666;
+                padding: 5px;
+                background: #f8f9fa;
+            }
+            
+            .print-signatures {
+                display: flex;
+                justify-content: space-around;
+                margin-top: 60px;
+                padding-top: 30px;
+                border-top: 2px solid #2c5aa0;
+                flex-wrap: wrap;
+                page-break-inside: avoid;
+            }
+            
+            .print-signature {
+                text-align: center;
+                min-width: 200px;
+                margin-bottom: 20px;
+            }
+            
+            .print-signature-name {
+                font-size: 14pt;
+                font-weight: bold;
+                margin: 15px 0;
+            }
+            
+            .print-signature-line {
+                width: 150px;
+                height: 1px;
+                background: #333;
+                margin: 20px auto;
+                border-top: 2px dashed #333;
+            }
+            
+            .print-footer {
+                text-align: center;
+                margin-top: 40px;
+                padding-top: 20px;
+                border-top: 1px dashed #ddd;
+                color: #666;
+                font-size: 10pt;
+            }
+            
+            .page-break {
+                page-break-before: always;
+            }
+            
+            /* تجنب قطع الجداول بين الصفحات */
+            table, tr, td, th {
+                page-break-inside: avoid;
+            }
+            
+            /* تجنب قطع العناوين في نهاية الصفحة */
+            .print-section-title {
+                page-break-after: avoid;
+            }
+            
+            /* تجنب وضع عنصر واحد فقط في نهاية الصفحة */
+            ul, ol {
+                page-break-inside: avoid;
+            }
+            
+            /* تجنب قطع الصور */
+            .print-image {
+                page-break-inside: avoid;
+                page-break-before: auto;
+            }
+            
+            /* تحسين التباعد للطباعة */
+            .print-container p {
+                margin-bottom: 10px;
+            }
+            
+            /* إخفاء الروابط في الطباعة */
+            a {
+                color: #000 !important;
+                text-decoration: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1089,6 +1332,9 @@
                     <button class="btn btn-outline" id="previewReport">
                         <i class="fas fa-eye"></i> معاينة التقرير
                     </button>
+                    <button class="btn btn-info" id="printReport">
+                        <i class="fas fa-print"></i> طباعة التقرير
+                    </button>
                     <button class="btn btn-success" id="submitReport">
                         <i class="fas fa-check-circle"></i> إنشاء التقرير النهائي
                     </button>
@@ -1107,20 +1353,20 @@
             </div>
             <div class="export-modal-body">
                 <p style="text-align: center; margin-bottom: 20px; color: var(--gray-color); font-size: 16px; line-height: 1.6;">
-                    اختر الطريقة المناسبة لتصدير التقرير النهائي
+                    اختر الصيغة المناسبة لتصدير التقرير النهائي. ستظهر رسالة تأكيد عند اكتمال التصدير.
                 </p>
                 
                 <div class="export-options">
-                    <div class="export-option" data-format="html">
-                        <i class="fas fa-file-code"></i>
-                        <div class="export-option-title">تصدير كصفحة HTML</div>
-                        <div class="export-option-desc">نسخة ويب تفاعلية مع تنسيق احترافي متكامل</div>
+                    <div class="export-option" data-format="word">
+                        <i class="fas fa-file-word"></i>
+                        <div class="export-option-title">Microsoft Word</div>
+                        <div class="export-option-desc">نسق احترافي قابلة للتعديل والطباعة مع تنسيق متقدم</div>
                     </div>
                     
-                    <div class="export-option" data-format="pdf">
-                        <i class="fas fa-file-pdf"></i>
-                        <div class="export-option-title">طباعة إلى PDF</div>
-                        <div class="export-option-desc">تحويل التقرير إلى صورة PDF للطباعة</div>
+                    <div class="export-option" data-format="html">
+                        <i class="fas fa-file-code"></i>
+                        <div class="export-option-title">الصفحة كاملة</div>
+                        <div class="export-option-desc">نسخة ويب تفاعلية مع تنسيق احترافي متكامل</div>
                     </div>
                 </div>
                 
@@ -1145,6 +1391,7 @@
             const scrollToTopBtn = document.getElementById('scrollToTop');
             const saveDraftBtn = document.getElementById('saveDraft');
             const previewReportBtn = document.getElementById('previewReport');
+            const printReportBtn = document.getElementById('printReport');
             const submitReportBtn = document.getElementById('submitReport');
             const exportModal = document.getElementById('exportModal');
             const closeExportModal = document.getElementById('closeExportModal');
@@ -1200,6 +1447,7 @@
                 
                 saveDraftBtn.addEventListener('click', saveAsDraft);
                 previewReportBtn.addEventListener('click', previewReport);
+                printReportBtn.addEventListener('click', printReport);
                 submitReportBtn.addEventListener('click', submitReport);
                 
                 document.querySelectorAll('.form-input, .form-textarea, .form-select').forEach(input => {
@@ -1391,8 +1639,26 @@
                 currentReportData.reportNumber = generateReportNumber();
                 
                 const previewWindow = window.open('', '_blank');
-                previewWindow.document.write(generateProfessionalPreviewHTML(currentReportData));
+                previewWindow.document.write(generatePreviewHTML(currentReportData));
                 previewWindow.document.close();
+            }
+            
+            function printReport() {
+                if (!validateForm()) {
+                    showError('يرجى ملء جميع الحقول المطلوبة قبل الطباعة');
+                    return;
+                }
+                
+                currentReportData = collectReportData();
+                currentReportData.reportNumber = generateReportNumber();
+                
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(generatePrintHTML(currentReportData));
+                printWindow.document.close();
+                
+                setTimeout(() => {
+                    printWindow.print();
+                }, 500);
             }
             
             function submitReport() {
@@ -1416,21 +1682,741 @@
                 }
                 
                 exportModal.style.display = 'none';
+                showLoading(`جاري تحضير التقرير بصيغة ${format === 'word' ? 'Word' : 'HTML'}...`);
                 
-                if (format === 'html') {
-                    showLoading('جاري تحضير التقرير بصيغة HTML...');
-                    await exportToHTML();
-                } else if (format === 'pdf') {
-                    showLoading('جاري تحويل التقرير إلى PDF...');
-                    await exportToPDF();
+                try {
+                    switch(format) {
+                        case 'word':
+                            await exportToWord();
+                            break;
+                        case 'html':
+                            exportToHTML();
+                            break;
+                    }
+                    
+                    currentReportData.exportedAt = new Date().toLocaleString('ar-SA');
+                    currentReportData.exportFormat = format;
+                    localStorage.setItem('lastReport', JSON.stringify(currentReportData));
+                    
+                    hideLoading();
+                    showExportSuccess(format);
+                    
+                } catch (error) {
+                    hideLoading();
+                    showError(`حدث خطأ أثناء التصدير: ${error.message}`);
+                }
+            }
+            
+            // دالة مساعدة لتحويل base64 إلى Blob
+            function base64ToBlob(base64, mimeType) {
+                const byteCharacters = atob(base64.split(',')[1]);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                return new Blob([byteArray], { type: mimeType });
+            }
+            
+            // إصلاح مشكلة PageNumberFormat
+            function getPageNumberFormat() {
+                // إذا كانت الخاصية موجودة نستخدمها، وإلا نستخدم القيمة الرقمية
+                const docx = window.docx;
+                if (docx && docx.PageNumberFormat && docx.PageNumberFormat.DECIMAL) {
+                    return docx.PageNumberFormat.DECIMAL;
+                }
+                // القيمة الافتراضية للترقيم العشري
+                return 0; // 0 = DECIMAL في معظم إصدارات docx
+            }
+            
+            async function exportToWord() {
+                const docx = window.docx;
+                const { AlignmentType, BorderStyle, WidthType } = docx;
+                
+                const children = [];
+                
+                // إضافة الهيدر الرئيسي
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "الإدارة العامة للتعليم",
+                                bold: true,
+                                size: 32,
+                                font: "Traditional Arabic",
+                                color: "2c5aa0"
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 200 }
+                    }),
+                    
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: `بمنطقة ${currentReportData.region}`,
+                                bold: true,
+                                size: 28,
+                                font: "Traditional Arabic",
+                                color: "2c5aa0"
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 400 }
+                    }),
+                    
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: currentReportData.title,
+                                bold: true,
+                                size: 36,
+                                font: "Traditional Arabic",
+                                color: "000000"
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        border: {
+                            bottom: {
+                                color: "2c5aa0",
+                                size: 6,
+                                space: 1,
+                                style: BorderStyle.SINGLE
+                            }
+                        },
+                        spacing: { after: 600 }
+                    }),
+                    
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: `رقم التقرير: ${currentReportData.reportNumber}`,
+                                size: 22,
+                                font: "Traditional Arabic"
+                            })
+                        ],
+                        alignment: AlignmentType.RIGHT,
+                        spacing: { after: 200 }
+                    }),
+                    
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: `تاريخ البرنامج: ${currentReportData.programDate}`,
+                                size: 22,
+                                font: "Traditional Arabic"
+                            })
+                        ],
+                        alignment: AlignmentType.RIGHT,
+                        spacing: { after: 600 }
+                    })
+                );
+                
+                // إضافة عنوان البيانات الأساسية
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "البيانات الأساسية",
+                                bold: true,
+                                size: 28,
+                                font: "Traditional Arabic",
+                                color: "2c5aa0"
+                            })
+                        ],
+                        alignment: AlignmentType.RIGHT,
+                        spacing: { before: 400, after: 300 }
+                    })
+                );
+                
+                // جدول البيانات الأساسية (مكون من عمودين)
+                const tableRows = [
+                    new docx.TableRow({
+                        children: [
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: "المدرسة",
+                                        bold: true,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })],
+                                shading: { fill: "f0f4f8" },
+                                width: { size: 40, type: WidthType.PERCENTAGE }
+                            }),
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: currentReportData.school,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })],
+                                width: { size: 60, type: WidthType.PERCENTAGE }
+                            })
+                        ]
+                    }),
+                    new docx.TableRow({
+                        children: [
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: "مدير المدرسة",
+                                        bold: true,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })],
+                                shading: { fill: "f0f4f8" }
+                            }),
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: currentReportData.principal,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })]
+                            })
+                        ]
+                    }),
+                    new docx.TableRow({
+                        children: [
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: "معد التقرير",
+                                        bold: true,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })],
+                                shading: { fill: "f0f4f8" }
+                            }),
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: currentReportData.reporter,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })]
+                            })
+                        ]
+                    }),
+                    new docx.TableRow({
+                        children: [
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: "مكان التنفيذ",
+                                        bold: true,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })],
+                                shading: { fill: "f0f4f8" }
+                            }),
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: currentReportData.location,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })]
+                            })
+                        ]
+                    }),
+                    new docx.TableRow({
+                        children: [
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: "المستهدفون",
+                                        bold: true,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })],
+                                shading: { fill: "f0f4f8" }
+                            }),
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: currentReportData.target,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })]
+                            })
+                        ]
+                    }),
+                    new docx.TableRow({
+                        children: [
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: "عدد المستفيدين",
+                                        bold: true,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })],
+                                shading: { fill: "f0f4f8" }
+                            }),
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: currentReportData.beneficiaries,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })]
+                            })
+                        ]
+                    }),
+                    new docx.TableRow({
+                        children: [
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: "تابع للمناهج",
+                                        bold: true,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })],
+                                shading: { fill: "f0f4f8" }
+                            }),
+                            new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun({
+                                        text: currentReportData.curriculumRelated,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })],
+                                    alignment: AlignmentType.RIGHT
+                                })]
+                            })
+                        ]
+                    })
+                ];
+                
+                children.push(
+                    new docx.Table({
+                        rows: tableRows,
+                        width: { size: 100, type: WidthType.PERCENTAGE },
+                        columnWidths: [4000, 6000],
+                        borders: {
+                            top: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                            bottom: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                            left: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                            right: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                            insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                            insideVertical: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" }
+                        }
+                    })
+                );
+                
+                // إضافة وصف النشاط
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "وصف مختصر لما تم تنفيذه",
+                                bold: true,
+                                size: 28,
+                                font: "Traditional Arabic",
+                                color: "2c5aa0"
+                            })
+                        ],
+                        alignment: AlignmentType.RIGHT,
+                        spacing: { before: 600, after: 300 }
+                    }),
+                    
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: currentReportData.description,
+                                size: 24,
+                                font: "Traditional Arabic"
+                            })
+                        ],
+                        alignment: AlignmentType.RIGHT,
+                        spacing: { after: 400 }
+                    })
+                );
+                
+                // إضافة إجراءات التنفيذ
+                if (currentReportData.procedures && currentReportData.procedures.length > 0) {
+                    children.push(
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "إجراءات التنفيذ",
+                                    bold: true,
+                                    size: 28,
+                                    font: "Traditional Arabic",
+                                    color: "2c5aa0"
+                                })
+                            ],
+                            alignment: AlignmentType.RIGHT,
+                            spacing: { before: 400, after: 300 }
+                        })
+                    );
+                    
+                    currentReportData.procedures.forEach((procedure, index) => {
+                        children.push(
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: `${index + 1}. ${procedure}`,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })
+                                ],
+                                alignment: AlignmentType.RIGHT,
+                                spacing: { after: 150 }
+                            })
+                        );
+                    });
                 }
                 
-                currentReportData.exportedAt = new Date().toLocaleString('ar-SA');
-                currentReportData.exportFormat = format;
-                localStorage.setItem('lastReport', JSON.stringify(currentReportData));
+                // إضافة النتائج
+                if (currentReportData.results && currentReportData.results.length > 0) {
+                    children.push(
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "النتائج",
+                                    bold: true,
+                                    size: 28,
+                                    font: "Traditional Arabic",
+                                    color: "2c5aa0"
+                                })
+                            ],
+                            alignment: AlignmentType.RIGHT,
+                            spacing: { before: 600, after: 300 }
+                        })
+                    );
+                    
+                    currentReportData.results.forEach((result, index) => {
+                        children.push(
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: `${index + 1}. ${result}`,
+                                        size: 24,
+                                        font: "Traditional Arabic"
+                                    })
+                                ],
+                                alignment: AlignmentType.RIGHT,
+                                spacing: { after: 150 }
+                            })
+                        );
+                    });
+                }
                 
-                hideLoading();
-                showExportSuccess(format);
+                // إضافة التوصيات
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "التوصيات",
+                                bold: true,
+                                size: 28,
+                                font: "Traditional Arabic",
+                                color: "2c5aa0"
+                            })
+                        ],
+                        alignment: AlignmentType.RIGHT,
+                        spacing: { before: 600, after: 300 }
+                    }),
+                    
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: currentReportData.recommendations,
+                                size: 24,
+                                font: "Traditional Arabic"
+                            })
+                        ],
+                        alignment: AlignmentType.RIGHT,
+                        spacing: { after: 600 }
+                    })
+                );
+                
+                // إضافة الصور إذا وجدت
+                if (uploadedImages.length > 0) {
+                    children.push(
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "صور توثيقية",
+                                    bold: true,
+                                    size: 28,
+                                    font: "Traditional Arabic",
+                                    color: "2c5aa0"
+                                })
+                            ],
+                            alignment: AlignmentType.RIGHT,
+                            spacing: { before: 600, after: 300 }
+                        }),
+                        
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "الصور التالية توثق عملية التنفيذ:",
+                                    size: 24,
+                                    font: "Traditional Arabic"
+                                })
+                            ],
+                            alignment: AlignmentType.RIGHT,
+                            spacing: { after: 300 }
+                        })
+                    );
+                    
+                    // إضافة الصور (أول 4 صور)
+                    const imagesToAdd = uploadedImages.slice(0, 4);
+                    
+                    for (let i = 0; i < imagesToAdd.length; i++) {
+                        const imgData = imagesToAdd[i];
+                        
+                        try {
+                            // تحويل base64 إلى Blob ثم إلى Uint8Array
+                            const base64Data = imgData.data.split(',')[1];
+                            const binaryString = atob(base64Data);
+                            const bytes = new Uint8Array(binaryString.length);
+                            for (let j = 0; j < binaryString.length; j++) {
+                                bytes[j] = binaryString.charCodeAt(j);
+                            }
+                            
+                            children.push(
+                                new docx.Paragraph({
+                                    children: [
+                                        new docx.ImageRun({
+                                            data: bytes,
+                                            transformation: {
+                                                width: 400,
+                                                height: 300
+                                            }
+                                        })
+                                    ],
+                                    alignment: AlignmentType.CENTER,
+                                    spacing: { before: 200, after: 100 }
+                                }),
+                                
+                                new docx.Paragraph({
+                                    children: [
+                                        new docx.TextRun({
+                                            text: `صورة ${i + 1}: ${imgData.name}`,
+                                            size: 20,
+                                            font: "Traditional Arabic",
+                                            italics: true,
+                                            color: "666666"
+                                        })
+                                    ],
+                                    alignment: AlignmentType.CENTER,
+                                    spacing: { after: 300 }
+                                })
+                            );
+                        } catch (error) {
+                            console.error('Error adding image:', error);
+                            // إذا فشل تحميل الصورة، نضيف نص بديل
+                            children.push(
+                                new docx.Paragraph({
+                                    children: [
+                                        new docx.TextRun({
+                                            text: `[صورة ${i + 1}: ${imgData.name} - تعذر تحميل الصورة]`,
+                                            size: 20,
+                                            font: "Traditional Arabic",
+                                            color: "FF0000",
+                                            italics: true
+                                        })
+                                    ],
+                                    alignment: AlignmentType.CENTER,
+                                    spacing: { after: 150 }
+                                })
+                            );
+                        }
+                    }
+                }
+                
+                // إضافة التوقيعات
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "التوقيعات",
+                                bold: true,
+                                size: 28,
+                                font: "Traditional Arabic",
+                                color: "2c5aa0"
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { before: 800, after: 400 }
+                    }),
+                    
+                    new docx.Table({
+                        rows: [
+                            new docx.TableRow({
+                                children: [
+                                    new docx.TableCell({
+                                        children: [
+                                            new docx.Paragraph({
+                                                children: [
+                                                    new docx.TextRun({
+                                                        text: "مدير المدرسة",
+                                                        bold: true,
+                                                        size: 24,
+                                                        font: "Traditional Arabic"
+                                                    })
+                                                ],
+                                                alignment: AlignmentType.CENTER
+                                            }),
+                                            new docx.Paragraph({
+                                                children: [
+                                                    new docx.TextRun({
+                                                        text: currentReportData.principal,
+                                                        size: 22,
+                                                        font: "Traditional Arabic"
+                                                    })
+                                                ],
+                                                alignment: AlignmentType.CENTER
+                                            }),
+                                            new docx.Paragraph({
+                                                children: [
+                                                    new docx.TextRun({
+                                                        text: "________________________",
+                                                        size: 24,
+                                                        font: "Traditional Arabic"
+                                                    })
+                                                ],
+                                                alignment: AlignmentType.CENTER
+                                            }),
+                                            new docx.Paragraph({
+                                                children: [
+                                                    new docx.TextRun({
+                                                        text: "التوقيع",
+                                                        size: 20,
+                                                        font: "Traditional Arabic",
+                                                        color: "666666"
+                                                    })
+                                                ],
+                                                alignment: AlignmentType.CENTER
+                                            })
+                                        ],
+                                        margins: { top: 200, bottom: 200 }
+                                    }),
+                                    new docx.TableCell({
+                                        children: [
+                                            new docx.Paragraph({
+                                                children: [
+                                                    new docx.TextRun({
+                                                        text: "معد التقرير",
+                                                        bold: true,
+                                                        size: 24,
+                                                        font: "Traditional Arabic"
+                                                    })
+                                                ],
+                                                alignment: AlignmentType.CENTER
+                                            }),
+                                            new docx.Paragraph({
+                                                children: [
+                                                    new docx.TextRun({
+                                                        text: currentReportData.reporter,
+                                                        size: 22,
+                                                        font: "Traditional Arabic"
+                                                    })
+                                                ],
+                                                alignment: AlignmentType.CENTER
+                                            }),
+                                            new docx.Paragraph({
+                                                children: [
+                                                    new docx.TextRun({
+                                                        text: "________________________",
+                                                        size: 24,
+                                                        font: "Traditional Arabic"
+                                                    })
+                                                ],
+                                                alignment: AlignmentType.CENTER
+                                            }),
+                                            new docx.Paragraph({
+                                                children: [
+                                                    new docx.TextRun({
+                                                        text: "التوقيع",
+                                                        size: 20,
+                                                        font: "Traditional Arabic",
+                                                        color: "666666"
+                                                    })
+                                                ],
+                                                alignment: AlignmentType.CENTER
+                                            })
+                                        ],
+                                        margins: { top: 200, bottom: 200 }
+                                    })
+                                ]
+                            })
+                        ],
+                        width: { size: 100, type: WidthType.PERCENTAGE }
+                    })
+                );
+                
+                // إضافة تذييل الصفحة
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: `تم إنشاء هذا التقرير بواسطة نظام إعداد التقارير الإلكتروني - ${new Date().toLocaleDateString('ar-SA')}`,
+                                size: 18,
+                                font: "Traditional Arabic",
+                                color: "666666",
+                                italics: true
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { before: 800 }
+                    })
+                );
+                
+                // إنشاء الوثيقة مع الهوامش المطلوبة (2.5 سم)
+                const doc = new docx.Document({
+                    creator: "نظام إعداد التقارير",
+                    title: currentReportData.title,
+                    description: "تقرير تنفيذ استراتيجية",
+                    sections: [{
+                        properties: {
+                            page: {
+                                margin: {
+                                    top: 1417,    // 2.5 سم = 1417 twips
+                                    right: 1417,
+                                    bottom: 1417,
+                                    left: 1417
+                                }
+                            }
+                        },
+                        children: children
+                    }]
+                });
+                
+                const buffer = await docx.Packer.toBlob(doc);
+                saveAs(buffer, `تقرير_${currentReportData.reportNumber}.docx`);
             }
             
             function exportToHTML() {
@@ -1439,50 +2425,376 @@
                 saveAs(blob, `تقرير_${currentReportData.reportNumber}.html`);
             }
             
-            async function exportToPDF() {
-                try {
-                    // إنشاء محتوى HTML للتقرير
-                    const htmlContent = generateProfessionalPreviewHTML(currentReportData);
-                    
-                    // إنشاء نافذة مؤقتة لتحويل HTML إلى صورة
-                    const tempWindow = window.open('', '_blank');
-                    tempWindow.document.write(htmlContent);
-                    tempWindow.document.close();
-                    
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    
-                    // استخدام html2canvas لالتقاط الصفحة كصورة
-                    const canvas = await html2canvas(tempWindow.document.body, {
-                        scale: 2,
-                        useCORS: true,
-                        logging: false,
-                        allowTaint: true,
-                        backgroundColor: '#ffffff'
-                    });
-                    
-                    // تحويل Canvas إلى صورة
-                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                    
-                    // إنشاء PDF من الصورة
-                    const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF({
-                        orientation: 'portrait',
-                        unit: 'mm',
-                        format: 'a4'
-                    });
-                    
-                    const imgWidth = 210; // عرض A4 بالملم
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    
-                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-                    pdf.save(`تقرير_${currentReportData.reportNumber}.pdf`);
-                    
-                    tempWindow.close();
-                    
-                } catch (error) {
-                    console.error('Error exporting to PDF:', error);
-                    showError('حدث خطأ أثناء تحويل التقرير إلى PDF. يرجى المحاولة مرة أخرى.');
+            function generatePrintHTML(reportData) {
+                const currentDate = new Date().toLocaleDateString('ar-SA', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                let imagesHTML = '';
+                if (uploadedImages.length > 0) {
+                    imagesHTML = `
+                    <div class="print-section">
+                        <h3 class="print-section-title">الصور المرفقة</h3>
+                        <div class="print-images">
+                            ${uploadedImages.map((img, idx) => `
+                            <div class="print-image">
+                                <img src="${img.data}" alt="صورة ${idx + 1}">
+                                <div class="print-image-caption">صورة ${idx + 1}: ${img.name}</div>
+                            </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
                 }
+                
+                return `<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${reportData.title} - طباعة</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Cairo', 'Traditional Arabic', 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #000;
+            direction: rtl;
+            padding: 20mm;
+            background: white;
+        }
+        
+        .print-container {
+            width: 100%;
+            max-width: 210mm;
+            margin: 0 auto;
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            .print-container, .print-container * {
+                visibility: visible;
+            }
+            
+            .print-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                padding: 20mm;
+            }
+            
+            @page {
+                size: A4;
+                margin: 20mm;
+            }
+        }
+        
+        .print-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #2c5aa0;
+            padding-bottom: 20px;
+        }
+        
+        .print-title {
+            color: #2c5aa0;
+            font-size: 24pt;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .print-subtitle {
+            color: #666;
+            font-size: 16pt;
+            margin-bottom: 10px;
+        }
+        
+        .print-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-right: 4px solid #2c5aa0;
+        }
+        
+        .print-section {
+            margin: 25px 0;
+            page-break-inside: avoid;
+        }
+        
+        .print-section-title {
+            color: #2c5aa0;
+            font-size: 20pt;
+            margin-bottom: 15px;
+            border-right: 4px solid #2c5aa0;
+            padding-right: 15px;
+            font-weight: bold;
+        }
+        
+        .print-content {
+            font-size: 14pt;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 12pt;
+        }
+        
+        .print-table th {
+            background-color: #2c5aa0;
+            color: white;
+            padding: 10px;
+            text-align: right;
+            font-weight: bold;
+            border: 1px solid #1e3d6f;
+        }
+        
+        .print-table td {
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            text-align: right;
+        }
+        
+        .print-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .print-list {
+            padding-right: 20px;
+            margin: 15px 0;
+        }
+        
+        .print-list-item {
+            margin-bottom: 8px;
+            padding-right: 10px;
+            position: relative;
+        }
+        
+        .print-list-item::before {
+            content: "•";
+            color: #2c5aa0;
+            font-size: 18pt;
+            position: absolute;
+            right: -15px;
+        }
+        
+        .print-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .print-image {
+            width: 45%;
+            max-width: 300px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            page-break-inside: avoid;
+            margin-bottom: 15px;
+        }
+        
+        .print-image img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .print-image-caption {
+            text-align: center;
+            font-size: 10pt;
+            color: #666;
+            padding: 5px;
+            background: #f8f9fa;
+        }
+        
+        .print-signatures {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #2c5aa0;
+            flex-wrap: wrap;
+            page-break-inside: avoid;
+        }
+        
+        .print-signature {
+            text-align: center;
+            min-width: 200px;
+            margin-bottom: 20px;
+        }
+        
+        .print-signature-name {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        .print-signature-line {
+            width: 150px;
+            height: 1px;
+            background: #333;
+            margin: 20px auto;
+            border-top: 2px dashed #333;
+        }
+        
+        .print-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px dashed #ddd;
+            color: #666;
+            font-size: 10pt;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        /* تجنب قطع الجداول بين الصفحات */
+        table, tr, td, th {
+            page-break-inside: avoid;
+        }
+        
+        /* تجنب قطع العناوين في نهاية الصفحة */
+        .print-section-title {
+            page-break-after: avoid;
+        }
+        
+        /* تجنب وضع عنصر واحد فقط في نهاية الصفحة */
+        ul, ol {
+            page-break-inside: avoid;
+        }
+        
+        /* تجنب قطع الصور */
+        .print-image {
+            page-break-inside: avoid;
+            page-break-before: auto;
+        }
+        
+        /* تحسين التباعد للطباعة */
+        .print-container p {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="print-container">
+        <div class="print-header">
+            <h1 class="print-title">${reportData.title}</h1>
+            <div class="print-subtitle">الإدارة العامة للتعليم بمنطقة ${reportData.region}</div>
+            <div class="print-info">
+                <strong>رقم التقرير:</strong> ${reportData.reportNumber} | 
+                <strong>تاريخ البرنامج:</strong> ${reportData.programDate}
+            </div>
+        </div>
+        
+        <div class="print-section">
+            <h3 class="print-section-title">البيانات الأساسية</h3>
+            <table class="print-table">
+                <tr>
+                    <th>المدرسة</th>
+                    <td>${reportData.school}</td>
+                </tr>
+                <tr>
+                    <th>مدير المدرسة</th>
+                    <td>${reportData.principal}</td>
+                </tr>
+                <tr>
+                    <th>معد التقرير</th>
+                    <td>${reportData.reporter}</td>
+                </tr>
+                <tr>
+                    <th>مكان التنفيذ</th>
+                    <td>${reportData.location}</td>
+                </tr>
+                <tr>
+                    <th>المستهدفون</th>
+                    <td>${reportData.target}</td>
+                </tr>
+                <tr>
+                    <th>عدد المستفيدين</th>
+                    <td>${reportData.beneficiaries}</td>
+                </tr>
+                <tr>
+                    <th>تابع للمناهج</th>
+                    <td>${reportData.curriculumRelated}</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="print-section">
+            <h3 class="print-section-title">وصف مختصر لما تم تنفيذه</h3>
+            <div class="print-content">
+                ${reportData.description.split('\n').map(p => `<p>${p}</p>`).join('')}
+            </div>
+        </div>
+        
+        ${reportData.procedures && reportData.procedures.length > 0 ? `
+        <div class="print-section">
+            <h3 class="print-section-title">إجراءات التنفيذ</h3>
+            <div class="print-list">
+                ${reportData.procedures.map((procedure, index) => `
+                <div class="print-list-item">${procedure}</div>
+                `).join('')}
+            </div>
+        </div>` : ''}
+        
+        ${reportData.results && reportData.results.length > 0 ? `
+        <div class="print-section">
+            <h3 class="print-section-title">النتائج</h3>
+            <div class="print-list">
+                ${reportData.results.map((result, index) => `
+                <div class="print-list-item">${result}</div>
+                `).join('')}
+            </div>
+        </div>` : ''}
+        
+        <div class="print-section">
+            <h3 class="print-section-title">التوصيات</h3>
+            <div class="print-content">
+                ${reportData.recommendations.split('\n').map(p => `<p>${p}</p>`).join('')}
+            </div>
+        </div>
+        
+        ${imagesHTML}
+        
+        <div class="print-signatures">
+            <div class="print-signature">
+                <div class="print-signature-name">${reportData.principal}</div>
+                <div class="print-signature-line"></div>
+                <div>مدير المدرسة</div>
+            </div>
+            <div class="print-signature">
+                <div class="print-signature-name">${reportData.reporter}</div>
+                <div class="print-signature-line"></div>
+                <div>معد التقرير</div>
+            </div>
+        </div>
+        
+        <div class="print-footer">
+            <p>تم إنشاء هذا التقرير بواسطة نظام إعداد التقارير الإلكتروني</p>
+            <p>${currentDate}</p>
+        </div>
+    </div>
+</body>
+</html>`;
             }
             
             function collectReportData() {
@@ -1515,708 +2827,192 @@
     <title>${reportData.title}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap');
         
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.8; 
-            color: #333;
-            background: #f8fafc;
-            min-height: 100vh; 
-            padding: 0; 
-            direction: rtl;
+            line-height: 1.8; color: #333;
+            background: linear-gradient(135deg, #f8fafc 0%, #e8f0fe 100%);
+            min-height: 100vh; padding: 40px 20px; direction: rtl;
         }
         
-        /* تصميم رأس التقرير */
-        .report-header {
-            background: linear-gradient(135deg, #2c5aa0 0%, #1e3d6f 100%);
-            color: white;
-            padding: 40px 0;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            position: relative;
-            overflow: hidden;
+        .report-container {
+            max-width: 1000px; margin: 0 auto; background: white; padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15); border-radius: 20px;
+            position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.3);
         }
         
-        .report-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 300px;
-            height: 300px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' fill-opacity='0.05' d='M0,0 L100,0 L100,100 Z'/%3E%3C/svg%3E");
-            background-size: cover;
+        .report-container::before {
+            content: ''; position: absolute; top: 0; right: 0; width: 100%; height: 8px;
+            background: linear-gradient(90deg, #2c5aa0 0%, #4a7bc8 100%);
         }
         
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 30px;
-            position: relative;
-            z-index: 1;
+        .header { text-align: center; margin-bottom: 60px; position: relative; padding-bottom: 30px; }
+        .header::after {
+            content: ''; position: absolute; bottom: 0; right: 50%; transform: translateX(50%);
+            width: 200px; height: 4px; background: linear-gradient(90deg, #2c5aa0 0%, #4a7bc8 100%); border-radius: 2px;
         }
         
-        .report-header h1 {
-            font-size: 42px;
-            margin-bottom: 15px;
-            font-weight: 800;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
+        h1 { color: #2c5aa0; font-size: 36px; margin-bottom: 20px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .subtitle { color: #666; font-size: 22px; font-weight: 600; margin-bottom: 10px; }
         
-        .report-header .subtitle {
-            font-size: 26px;
-            font-weight: 300;
-            opacity: 0.9;
-            margin-bottom: 25px;
-        }
-        
-        .report-meta {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-            margin-top: 30px;
-        }
-        
-        .meta-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .meta-item:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-        }
-        
-        .meta-item i {
-            font-size: 20px;
-            color: #4a7bc8;
-        }
-        
-        /* تصميم محتوى التقرير */
-        .report-content {
-            max-width: 1200px;
-            margin: 50px auto;
-            padding: 0 30px;
-        }
-        
-        .content-section {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 40px;
-            box-shadow: 0 6px 25px rgba(0,0,0,0.08);
-            border: 1px solid #e8f0fe;
-            position: relative;
-            overflow: hidden;
+        .report-info { display: flex; justify-content: center; gap: 40px; margin-top: 30px; flex-wrap: wrap; }
+        .info-item {
+            background: #f0f7ff; padding: 15px 25px; border-radius: 12px; font-size: 18px;
+            display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             transition: transform 0.3s ease;
         }
+        .info-item:hover { transform: translateY(-5px); }
+        .info-item i { color: #2c5aa0; font-size: 20px; }
         
-        .content-section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+        .section {
+            margin-bottom: 50px; padding: 30px; background: #f8fafc; border-radius: 15px;
+            border-right: 5px solid #2c5aa0; box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            position: relative; overflow: hidden;
         }
-        
-        .content-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 8px;
-            height: 100%;
-            background: linear-gradient(180deg, #2c5aa0 0%, #4a7bc8 100%);
+        .section::before {
+            content: ''; position: absolute; top: 0; right: 0; width: 100px; height: 100px;
+            background: linear-gradient(135deg, rgba(44, 90, 160, 0.05) 0%, transparent 100%); border-radius: 0 0 0 100%;
         }
         
         .section-title {
-            color: #2c5aa0;
-            font-size: 32px;
-            margin-bottom: 30px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #f0f4f8;
+            color: #2c5aa0; font-size: 28px; margin-bottom: 25px; font-weight: 700;
+            display: flex; align-items: center; gap: 15px;
         }
-        
         .section-title i {
-            background: rgba(44, 90, 160, 0.1);
-            padding: 15px;
-            border-radius: 12px;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
+            background: rgba(44, 90, 160, 0.1); padding: 12px; border-radius: 10px;
+            width: 55px; height: 55px; display: flex; align-items: center; justify-content: center;
         }
         
-        /* تصميم بطاقات المعلومات */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-        
+        .basic-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px; }
         .info-card {
-            background: #f8fafc;
-            padding: 30px;
-            border-radius: 15px;
-            border: 2px solid #e8f0fe;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e8f0fe; transition: transform 0.3s ease;
         }
-        
-        .info-card:hover {
-            background: white;
-            border-color: #2c5aa0;
-            transform: translateX(-10px);
-            box-shadow: 0 8px 25px rgba(44, 90, 160, 0.1);
-        }
-        
-        .info-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #2c5aa0 0%, #4a7bc8 100%);
-            transform: translateY(-100%);
-            transition: transform 0.3s ease;
-        }
-        
-        .info-card:hover::before {
-            transform: translateY(0);
-        }
+        .info-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
         
         .info-label {
-            color: #2c5aa0;
-            font-weight: 600;
-            font-size: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            color: #2c5aa0; font-weight: 600; font-size: 18px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 10px;
         }
+        .info-value { color: #333; font-size: 20px; font-weight: 500; padding-right: 10px; }
         
-        .info-value {
-            color: #333;
-            font-size: 22px;
-            font-weight: 500;
-            line-height: 1.6;
-            padding-right: 10px;
+        .content-box {
+            background: white; padding: 30px; border-radius: 12px; margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e8f0fe;
         }
+        .content-box p { font-size: 20px; line-height: 1.8; color: #444; text-align: justify; }
         
-        /* تصميم النصوص */
-        .text-content {
-            background: #f8fafc;
-            padding: 35px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            border-right: 5px solid #2c5aa0;
-        }
-        
-        .text-content p {
-            font-size: 20px;
-            line-height: 1.9;
-            color: #444;
-            text-align: justify;
-            margin-bottom: 20px;
-        }
-        
-        /* تصميم القوائم */
-        .list-container {
-            margin: 30px 0;
-        }
-        
+        .list-container { padding-right: 20px; }
         .list-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-            margin-bottom: 25px;
-            padding: 25px;
-            background: #f8fafc;
-            border-radius: 15px;
-            border-right: 5px solid #2c5aa0;
-            transition: all 0.3s ease;
+            display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; padding: 15px;
+            background: white; border-radius: 10px; border-right: 4px solid #2c5aa0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05); transition: transform 0.3s ease;
         }
-        
-        .list-item:hover {
-            background: white;
-            transform: translateX(-10px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-        }
+        .list-item:hover { transform: translateX(-10px); }
         
         .list-number {
-            background: #2c5aa0;
-            color: white;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 20px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 10px rgba(44, 90, 160, 0.3);
+            background: #2c5aa0; color: white; width: 35px; height: 35px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;
         }
+        .list-text { font-size: 18px; color: #444; flex: 1; }
         
-        .list-text {
-            font-size: 20px;
-            color: #444;
-            flex: 1;
-            line-height: 1.8;
-        }
-        
-        /* تصميم معرض الصور */
-        .image-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-        
-        .image-card {
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
-            position: relative;
-            background: white;
-        }
-        
-        .image-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-        }
-        
-        .image-card img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.5s ease;
-        }
-        
-        .image-card:hover img {
-            transform: scale(1.05);
-        }
-        
-        .image-caption {
-            background: linear-gradient(90deg, #2c5aa0 0%, #4a7bc8 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: 500;
-        }
-        
-        /* تصميم التوقيعات */
-        .signatures-section {
-            background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);
-            border-radius: 25px;
-            padding: 50px;
-            margin-top: 60px;
-            border: 2px solid #e8f0fe;
-        }
+        .image-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
+        .image-card { border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: transform 0.3s ease; position: relative; }
+        .image-card:hover { transform: translateY(-10px) scale(1.02); }
+        .image-card img { width: 100%; height: 250px; object-fit: cover; display: block; }
+        .image-caption { background: rgba(44, 90, 160, 0.9); color: white; padding: 15px; text-align: center; font-size: 16px; }
         
         .signatures {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 40px;
-            margin-top: 40px;
+            display: flex; justify-content: space-around; margin-top: 80px; padding-top: 40px;
+            border-top: 3px solid #2c5aa0; flex-wrap: wrap; gap: 40px;
         }
-        
         .signature-box {
-            text-align: center;
-            width: 350px;
-            padding: 40px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            position: relative;
-            transition: all 0.3s ease;
+            text-align: center; width: 300px; padding: 30px; background: #f8fafc;
+            border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); position: relative; transition: transform 0.3s ease;
         }
+        .signature-box:hover { transform: translateY(-10px); }
+        .signature-title { color: #2c5aa0; font-size: 24px; font-weight: 700; margin-bottom: 15px; }
+        .signature-name { font-size: 22px; color: #333; margin-bottom: 30px; font-weight: 600; }
+        .signature-line { width: 200px; height: 3px; background: #333; margin: 30px auto 15px; border-radius: 2px; }
+        .signature-label { color: #666; font-size: 18px; font-style: italic; }
         
-        .signature-box:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        }
-        
-        .signature-title {
-            color: #2c5aa0;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-        
-        .signature-name {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 40px;
-            font-weight: 600;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .signature-line {
-            width: 250px;
-            height: 2px;
-            background: #666;
-            margin: 40px auto 20px;
-            border-radius: 1px;
-        }
-        
-        .signature-label {
-            color: #666;
-            font-size: 20px;
-            font-style: italic;
-            margin-top: 10px;
-        }
-        
-        /* تصميم التذييل */
-        .report-footer {
-            background: linear-gradient(135deg, #2c5aa0 0%, #1e3d6f 100%);
-            color: white;
-            padding: 40px 0;
-            text-align: center;
-            margin-top: 80px;
-        }
-        
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 30px;
-        }
-        
-        .footer-text {
-            font-size: 18px;
-            margin-bottom: 15px;
-            opacity: 0.9;
-        }
-        
-        .footer-date {
-            font-size: 16px;
-            opacity: 0.8;
-            font-style: italic;
-        }
-        
-        /* تصميم للطباعة */
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-                margin: 0;
-            }
-            
-            .report-header {
-                background: #2c5aa0 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            
-            .content-section {
-                box-shadow: none;
-                border: 1px solid #ddd;
-                page-break-inside: avoid;
-            }
-            
-            .image-gallery {
-                page-break-inside: avoid;
-            }
-            
-            .signatures-section {
-                page-break-inside: avoid;
-            }
-            
-            .report-footer {
-                background: #2c5aa0 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-        }
-        
-        /* تصميم متجاوب */
-        @media (max-width: 992px) {
-            .report-header h1 {
-                font-size: 36px;
-            }
-            
-            .report-header .subtitle {
-                font-size: 22px;
-            }
-            
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .image-gallery {
-                grid-template-columns: 1fr;
-            }
-            
-            .signature-box {
-                width: 100%;
-                max-width: 400px;
-            }
+        .footer {
+            text-align: center; margin-top: 60px; padding-top: 30px; border-top: 2px dashed #ddd;
+            color: #888; font-size: 16px;
         }
         
         @media (max-width: 768px) {
-            .header-content,
-            .report-content,
-            .footer-content {
-                padding: 0 20px;
-            }
-            
-            .report-header h1 {
-                font-size: 30px;
-            }
-            
-            .report-header .subtitle {
-                font-size: 20px;
-            }
-            
-            .content-section {
-                padding: 30px 20px;
-            }
-            
-            .section-title {
-                font-size: 28px;
-            }
-            
-            .meta-item {
-                padding: 12px 20px;
-                font-size: 16px;
-            }
-            
-            .info-card,
-            .text-content {
-                padding: 25px;
-            }
-            
-            .signatures-section {
-                padding: 30px;
-            }
-            
-            .signature-box {
-                padding: 30px;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .report-header {
-                padding: 30px 0;
-            }
-            
-            .report-header h1 {
-                font-size: 24px;
-            }
-            
-            .report-header .subtitle {
-                font-size: 18px;
-            }
-            
-            .section-title {
-                font-size: 24px;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .section-title i {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-            }
-            
-            .meta-item {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .signatures {
-                gap: 20px;
-            }
+            .report-container { padding: 30px 20px; }
+            h1 { font-size: 28px; } .subtitle { font-size: 18px; }
+            .section-title { font-size: 24px; }
+            .basic-info-grid { grid-template-columns: 1fr; }
+            .signatures { flex-direction: column; align-items: center; }
+            .signature-box { width: 100%; max-width: 300px; }
+            .info-item { padding: 12px 20px; font-size: 16px; }
         }
     </style>
 </head>
 <body>
-    <!-- رأس التقرير -->
-    <header class="report-header">
-        <div class="header-content">
+    <div class="report-container">
+        <div class="header">
             <h1>${reportData.title}</h1>
             <div class="subtitle">الإدارة العامة للتعليم بمنطقة ${reportData.region}</div>
             
-            <div class="report-meta">
-                <div class="meta-item">
-                    <i class="fas fa-hashtag"></i>
-                    <span>رقم التقرير: ${reportData.reportNumber}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-calendar"></i>
-                    <span>تاريخ البرنامج: ${reportData.programDate}</span>
-                </div>
+            <div class="report-info">
+                <div class="info-item"><i class="fas fa-hashtag"></i><span>رقم التقرير: ${reportData.reportNumber}</span></div>
+                <div class="info-item"><i class="fas fa-calendar"></i><span>تاريخ البرنامج: ${reportData.programDate}</span></div>
             </div>
         </div>
-    </header>
-    
-    <!-- المحتوى الرئيسي -->
-    <main class="report-content">
-        <!-- البيانات الأساسية -->
-        <section class="content-section">
-            <h2 class="section-title">
-                <i class="fas fa-database"></i>
-                البيانات الأساسية
-            </h2>
-            
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-label">
-                        <i class="fas fa-school"></i>
-                        المدرسة
-                    </div>
-                    <div class="info-value">${reportData.school}</div>
-                </div>
-                
-                <div class="info-card">
-                    <div class="info-label">
-                        <i class="fas fa-user-tie"></i>
-                        مدير المدرسة
-                    </div>
-                    <div class="info-value">${reportData.principal}</div>
-                </div>
-                
-                <div class="info-card">
-                    <div class="info-label">
-                        <i class="fas fa-user-edit"></i>
-                        معد التقرير
-                    </div>
-                    <div class="info-value">${reportData.reporter}</div>
-                </div>
-                
-                <div class="info-card">
-                    <div class="info-label">
-                        <i class="fas fa-map-marker"></i>
-                        مكان التنفيذ
-                    </div>
-                    <div class="info-value">${reportData.location}</div>
-                </div>
-                
-                <div class="info-card">
-                    <div class="info-label">
-                        <i class="fas fa-users"></i>
-                        المستهدفون
-                    </div>
-                    <div class="info-value">${reportData.target}</div>
-                </div>
-                
-                <div class="info-card">
-                    <div class="info-label">
-                        <i class="fas fa-user-check"></i>
-                        عدد المستفيدين
-                    </div>
-                    <div class="info-value">${reportData.beneficiaries}</div>
-                </div>
-                
-                <div class="info-card">
-                    <div class="info-label">
-                        <i class="fas fa-book"></i>
-                        تابع للمناهج
-                    </div>
-                    <div class="info-value">${reportData.curriculumRelated}</div>
-                </div>
-            </div>
-        </section>
         
-        <!-- وصف النشاط -->
-        <section class="content-section">
-            <h2 class="section-title">
-                <i class="fas fa-clipboard-list"></i>
-                وصف مختصر لما تم تنفيذه
-            </h2>
-            
-            <div class="text-content">
-                <p>${reportData.description}</p>
+        <div class="section">
+            <h3 class="section-title"><i class="fas fa-database"></i>البيانات الأساسية</h3>
+            <div class="basic-info-grid">
+                <div class="info-card"><div class="info-label"><i class="fas fa-school"></i>المدرسة</div><div class="info-value">${reportData.school}</div></div>
+                <div class="info-card"><div class="info-label"><i class="fas fa-user-tie"></i>مدير المدرسة</div><div class="info-value">${reportData.principal}</div></div>
+                <div class="info-card"><div class="info-label"><i class="fas fa-user-edit"></i>معد التقرير</div><div class="info-value">${reportData.reporter}</div></div>
+                <div class="info-card"><div class="info-label"><i class="fas fa-map-marker"></i>مكان التنفيذ</div><div class="info-value">${reportData.location}</div></div>
+                <div class="info-card"><div class="info-label"><i class="fas fa-users"></i>المستهدفون</div><div class="info-value">${reportData.target}</div></div>
+                <div class="info-card"><div class="info-label"><i class="fas fa-user-check"></i>عدد المستفيدين</div><div class="info-value">${reportData.beneficiaries}</div></div>
+                <div class="info-card"><div class="info-label"><i class="fas fa-book"></i>تابع للمناهج</div><div class="info-value">${reportData.curriculumRelated}</div></div>
             </div>
-        </section>
+        </div>
         
-        <!-- إجراءات التنفيذ -->
+        <div class="section">
+            <h3 class="section-title"><i class="fas fa-clipboard-list"></i>وصف مختصر لما تم تنفيذه</h3>
+            <div class="content-box"><p>${reportData.description}</p></div>
+        </div>
+        
         ${reportData.procedures && reportData.procedures.length > 0 ? `
-        <section class="content-section">
-            <h2 class="section-title">
-                <i class="fas fa-tasks"></i>
-                إجراءات التنفيذ
-            </h2>
-            
+        <div class="section">
+            <h3 class="section-title"><i class="fas fa-tasks"></i>إجراءات التنفيذ</h3>
             <div class="list-container">
                 ${reportData.procedures.map((procedure, index) => `
-                <div class="list-item">
-                    <div class="list-number">${index + 1}</div>
-                    <div class="list-text">${procedure}</div>
-                </div>
+                <div class="list-item"><div class="list-number">${index + 1}</div><div class="list-text">${procedure}</div></div>
                 `).join('')}
             </div>
-        </section>` : ''}
+        </div>` : ''}
         
-        <!-- النتائج -->
         ${reportData.results && reportData.results.length > 0 ? `
-        <section class="content-section">
-            <h2 class="section-title">
-                <i class="fas fa-chart-line"></i>
-                النتائج
-            </h2>
-            
+        <div class="section">
+            <h3 class="section-title"><i class="fas fa-chart-line"></i>النتائج</h3>
             <div class="list-container">
                 ${reportData.results.map((result, index) => `
-                <div class="list-item">
-                    <div class="list-number">${index + 1}</div>
-                    <div class="list-text">${result}</div>
-                </div>
+                <div class="list-item"><div class="list-number">${index + 1}</div><div class="list-text">${result}</div></div>
                 `).join('')}
             </div>
-        </section>` : ''}
+        </div>` : ''}
         
-        <!-- التوصيات -->
-        <section class="content-section">
-            <h2 class="section-title">
-                <i class="fas fa-lightbulb"></i>
-                التوصيات
-            </h2>
-            
-            <div class="text-content">
-                <p>${reportData.recommendations}</p>
-            </div>
-        </section>
+        <div class="section">
+            <h3 class="section-title"><i class="fas fa-lightbulb"></i>التوصيات</h3>
+            <div class="content-box"><p>${reportData.recommendations}</p></div>
+        </div>
         
-        <!-- الصور المرفقة -->
         ${reportData.images && reportData.images.length > 0 ? `
-        <section class="content-section">
-            <h2 class="section-title">
-                <i class="fas fa-images"></i>
-                الصور المرفقة
-            </h2>
-            
+        <div class="section">
+            <h3 class="section-title"><i class="fas fa-images"></i>الصور المرفقة</h3>
             <div class="image-gallery">
                 ${reportData.images.map((img, idx) => `
                 <div class="image-card">
@@ -2224,51 +3020,136 @@
                     <div class="image-caption">صورة ${idx + 1}: ${img.name}</div>
                 </div>`).join('')}
             </div>
-        </section>` : ''}
+        </div>` : ''}
         
-        <!-- التوقيعات -->
-        <section class="signatures-section">
-            <h2 class="section-title">
-                <i class="fas fa-signature"></i>
-                التوقيعات
-            </h2>
-            
-            <div class="signatures">
-                <div class="signature-box">
-                    <div class="signature-title">مدير المدرسة</div>
-                    <div class="signature-name">${reportData.principal}</div>
-                    <div class="signature-line"></div>
-                    <div class="signature-label">التوقيع</div>
-                </div>
-                
-                <div class="signature-box">
-                    <div class="signature-title">معد التقرير</div>
-                    <div class="signature-name">${reportData.reporter}</div>
-                    <div class="signature-line"></div>
-                    <div class="signature-label">التوقيع</div>
-                </div>
+        <div class="signatures">
+            <div class="signature-box">
+                <div class="signature-title">مدير المدرسة</div>
+                <div class="signature-name">${reportData.principal}</div>
+                <div class="signature-line"></div>
+                <div class="signature-label">التوقيع</div>
             </div>
-        </section>
-    </main>
-    
-    <!-- تذييل التقرير -->
-    <footer class="report-footer">
-        <div class="footer-content">
-            <div class="footer-text">
-                تم إنشاء هذا التقرير بواسطة نظام إعداد التقارير الإلكتروني
-            </div>
-            <div class="footer-date">
-                ${new Date().toLocaleDateString('ar-SA', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })}
+            <div class="signature-box">
+                <div class="signature-title">معد التقرير</div>
+                <div class="signature-name">${reportData.reporter}</div>
+                <div class="signature-line"></div>
+                <div class="signature-label">التوقيع</div>
             </div>
         </div>
-    </footer>
+        
+        <div class="footer">
+            <p>تم إنشاء هذا التقرير بواسطة نظام إعداد التقارير الإلكتروني</p>
+            <p>${new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        </div>
+    </div>
+</body>
+</html>`;
+            }
+            
+            function generatePreviewHTML(reportData) {
+                return `<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معاينة: ${reportData.title}</title>
+    <style>
+        body { font-family: 'Cairo', sans-serif; direction: rtl; padding: 20px; background: #f5f5f5; }
+        .report { background: white; padding: 40px; max-width: 1000px; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); border-radius: 10px; }
+        .header { text-align: center; border-bottom: 3px solid #2c5aa0; padding-bottom: 20px; margin-bottom: 30px; }
+        h1 { color: #2c5aa0; margin-bottom: 10px; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 20px 0; }
+        .info-item { background: #f8f9fa; padding: 15px; border-radius: 8px; border-right: 4px solid #2c5aa0; }
+        .info-label { color: #2c5aa0; font-weight: bold; }
+        .section { margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+        .section h3 { color: #2c5aa0; border-bottom: 2px solid #2c5aa0; padding-bottom: 10px; margin-bottom: 15px; }
+        .images { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
+        .image { width: 200px; border: 1px solid #ddd; padding: 5px; background: white; }
+        .image img { width: 100%; height: 150px; object-fit: cover; }
+        .image-caption { text-align: center; font-size: 12px; color: #666; padding: 5px; }
+        .signatures { display: flex; justify-content: space-around; margin-top: 50px; padding-top: 30px; border-top: 2px solid #2c5aa0; }
+        .signature { text-align: center; }
+        @media print { body { padding: 0; } .report { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="report">
+        <div class="header">
+            <h1>${reportData.title}</h1>
+            <div>الإدارة العامة للتعليم بمنطقة ${reportData.region}</div>
+            <div style="margin-top: 15px; color: #666;">
+                <strong>رقم التقرير:</strong> ${reportData.reportNumber} | 
+                <strong>تاريخ البرنامج:</strong> ${reportData.programDate}
+            </div>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-item"><span class="info-label">المدرسة:</span><br>${reportData.school}</div>
+            <div class="info-item"><span class="info-label">مدير المدرسة:</span><br>${reportData.principal}</div>
+            <div class="info-item"><span class="info-label">معد التقرير:</span><br>${reportData.reporter}</div>
+            <div class="info-item"><span class="info-label">مكان التنفيذ:</span><br>${reportData.location}</div>
+            <div class="info-item"><span class="info-label">المستهدفون:</span><br>${reportData.target}</div>
+            <div class="info-item"><span class="info-label">عدد المستفيدين:</span><br>${reportData.beneficiaries}</div>
+            <div class="info-item"><span class="info-label">تابع للمناهج:</span><br>${reportData.curriculumRelated}</div>
+        </div>
+        
+        <div class="section">
+            <h3>وصف مختصر لما تم تنفيذه</h3>
+            <p>${reportData.description}</p>
+        </div>
+        
+        ${reportData.procedures && reportData.procedures.length > 0 ? `
+        <div class="section">
+            <h3>إجراءات التنفيذ</h3>
+            <ol>${reportData.procedures.map(p => `<li>${p}</li>`).join('')}</ol>
+        </div>` : ''}
+        
+        ${reportData.results && reportData.results.length > 0 ? `
+        <div class="section">
+            <h3>النتائج</h3>
+            <ul>${reportData.results.map(r => `<li>${r}</li>`).join('')}</ul>
+        </div>` : ''}
+        
+        <div class="section">
+            <h3>التوصيات</h3>
+            <p>${reportData.recommendations}</p>
+        </div>
+        
+        ${uploadedImages.length > 0 ? `
+        <div class="section">
+            <h3>الصور المرفقة</h3>
+            <div class="images">
+                ${uploadedImages.map((img, idx) => `
+                <div class="image">
+                    <img src="${img.data}" alt="صورة ${idx + 1}">
+                    <div class="image-caption">صورة ${idx + 1}</div>
+                </div>`).join('')}
+            </div>
+        </div>` : ''}
+        
+        <div class="signatures">
+            <div class="signature">
+                <div style="font-weight: bold; margin-bottom: 10px;">مدير المدرسة</div>
+                <div>${reportData.principal}</div>
+                <div style="margin-top: 20px; border-top: 1px solid #000; width: 150px; margin: 20px auto 0; padding-top: 5px;">التوقيع</div>
+            </div>
+            <div class="signature">
+                <div style="font-weight: bold; margin-bottom: 10px;">معد التقرير</div>
+                <div>${reportData.reporter}</div>
+                <div style="margin-top: 20px; border-top: 1px solid #000; width: 150px; margin: 20px auto 0; padding-top: 5px;">التوقيع</div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 50px; color: #666; font-size: 14px; border-top: 1px dashed #ddd; padding-top: 20px;">
+            تم إنشاء هذا التقرير بواسطة نظام إعداد التقارير الإلكتروني - ${new Date().toLocaleDateString('ar-SA')}
+        </div>
+    </div>
+    
+    <script>
+        window.onload = function() {
+            window.print();
+        };
+    <\/script>
 </body>
 </html>`;
             }
@@ -2319,7 +3200,7 @@
             
             function showExportSuccess(format) {
                 successTitle.textContent = 'تم إنشاء التقرير بنجاح!';
-                successDetails.textContent = `تم تصدير التقرير بصيغة ${format === 'html' ? 'HTML' : 'PDF'}.\nرقم التقرير: ${currentReportData.reportNumber}`;
+                successDetails.textContent = `تم تصدير التقرير بصيغة ${format === 'word' ? 'Microsoft Word' : 'HTML'}.\nرقم التقرير: ${currentReportData.reportNumber}`;
                 successMessage.classList.add('active');
                 
                 setTimeout(() => {
