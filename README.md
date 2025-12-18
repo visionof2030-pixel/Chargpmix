@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +6,8 @@
     <title>نظام إعداد التقارير - أداء الواجبات الوظيفية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --primary-color: #2c5aa0;
@@ -437,6 +439,189 @@
             z-index: 1;
         }
 
+        .export-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .export-modal-content {
+            background-color: white;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.4s ease;
+            overflow: hidden;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .export-modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .export-modal-title {
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .export-modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .export-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .export-modal-body {
+            padding: 40px;
+        }
+
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .export-option {
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .export-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            transform: translateY(-100%);
+            transition: var(--transition);
+        }
+
+        .export-option:hover::before {
+            transform: translateY(0);
+        }
+
+        .export-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .export-option i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .export-option:hover i {
+            transform: scale(1.1);
+        }
+
+        .export-option-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--dark-color);
+            transition: var(--transition);
+        }
+
+        .export-option:hover .export-option-title {
+            color: var(--primary-color);
+        }
+
+        .export-option-desc {
+            font-size: 15px;
+            color: var(--gray-color);
+            line-height: 1.6;
+        }
+
+        .export-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(44, 90, 160, 0.3);
+            transition: var(--transition);
+            z-index: 100;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .scroll-indicator.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-indicator:hover {
+            background: var(--primary-dark);
+            transform: translateY(-5px) scale(1.05);
+        }
+
         .success-message {
             position: fixed;
             top: 50%;
@@ -546,6 +731,10 @@
             .report-form-container {
                 padding: 30px;
             }
+            
+            .export-options {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -604,6 +793,11 @@
                 font-size: 15px;
             }
             
+            .export-modal-content {
+                width: 95%;
+                margin: 10px;
+            }
+            
             .success-message {
                 padding: 30px 20px;
             }
@@ -618,7 +812,7 @@
             border-radius: 10px;
         }
 
-        ::webkit-scrollbar-thumb {
+        ::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
             border-radius: 10px;
             border: 3px solid #f1f1f1;
@@ -869,7 +1063,7 @@
                         <i class="fas fa-cloud-upload-alt"></i>
                     </div>
                     <div class="upload-text">انقر لرفع الصور أو اسحبها إلى هنا</div>
-                    <div class="upload-hint">الحجم الأقصى: 5MB لكل صورة | الصيغ المدعومة: JPG, PNG, GIF | الحد الأقصى: صورتان</div>
+                    <div class="upload-hint">الحجم الأقصى: 5MB لكل صورة | الصيغ المدعومة: JPG, PNG, GIF | الحد الأقصى: 4 صور</div>
                     <input type="file" id="imageUpload" accept="image/*" multiple style="display: none;">
                 </div>
                 
@@ -896,7 +1090,43 @@
                         <i class="fas fa-eye"></i> معاينة التقرير
                     </button>
                     <button class="btn btn-success" id="submitReport">
-                        <i class="fas fa-check-circle"></i> تصدير التقرير HTML
+                        <i class="fas fa-check-circle"></i> إنشاء التقرير النهائي
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="export-modal" id="exportModal">
+        <div class="export-modal-content">
+            <div class="export-modal-header">
+                <div class="export-modal-title">
+                    <i class="fas fa-download"></i> تصدير التقرير النهائي
+                </div>
+                <button class="export-modal-close" id="closeExportModal">&times;</button>
+            </div>
+            <div class="export-modal-body">
+                <p style="text-align: center; margin-bottom: 20px; color: var(--gray-color); font-size: 16px; line-height: 1.6;">
+                    اختر الطريقة المناسبة لتصدير التقرير النهائي
+                </p>
+                
+                <div class="export-options">
+                    <div class="export-option" data-format="html">
+                        <i class="fas fa-file-code"></i>
+                        <div class="export-option-title">تصدير كصفحة HTML</div>
+                        <div class="export-option-desc">نسخة ويب تفاعلية مع تنسيق احترافي متكامل</div>
+                    </div>
+                    
+                    <div class="export-option" data-format="pdf">
+                        <i class="fas fa-file-pdf"></i>
+                        <div class="export-option-title">طباعة إلى PDF</div>
+                        <div class="export-option-desc">تحويل التقرير إلى صورة PDF للطباعة</div>
+                    </div>
+                </div>
+                
+                <div class="export-actions">
+                    <button class="btn btn-outline" id="cancelExport">
+                        <i class="fas fa-times"></i> إلغاء
                     </button>
                 </div>
             </div>
@@ -916,6 +1146,10 @@
             const saveDraftBtn = document.getElementById('saveDraft');
             const previewReportBtn = document.getElementById('previewReport');
             const submitReportBtn = document.getElementById('submitReport');
+            const exportModal = document.getElementById('exportModal');
+            const closeExportModal = document.getElementById('closeExportModal');
+            const cancelExport = document.getElementById('cancelExport');
+            const exportOptions = document.querySelectorAll('.export-option');
             const loadingOverlay = document.getElementById('loadingOverlay');
             const loadingText = document.getElementById('loadingText');
             const successMessage = document.getElementById('successMessage');
@@ -966,7 +1200,7 @@
                 
                 saveDraftBtn.addEventListener('click', saveAsDraft);
                 previewReportBtn.addEventListener('click', previewReport);
-                submitReportBtn.addEventListener('click', exportToHTML);
+                submitReportBtn.addEventListener('click', submitReport);
                 
                 document.querySelectorAll('.form-input, .form-textarea, .form-select').forEach(input => {
                     input.addEventListener('blur', function() {
@@ -980,6 +1214,27 @@
                             if (errorDiv) errorDiv.style.display = 'none';
                         }
                     });
+                });
+                
+                closeExportModal.addEventListener('click', function() {
+                    exportModal.style.display = 'none';
+                });
+                
+                cancelExport.addEventListener('click', function() {
+                    exportModal.style.display = 'none';
+                });
+                
+                exportOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        const format = this.dataset.format;
+                        exportReport(format);
+                    });
+                });
+                
+                window.addEventListener('click', function(event) {
+                    if (event.target === exportModal) {
+                        exportModal.style.display = 'none';
+                    }
                 });
                 
                 closeSuccessMessage.addEventListener('click', function() {
@@ -1136,11 +1391,11 @@
                 currentReportData.reportNumber = generateReportNumber();
                 
                 const previewWindow = window.open('', '_blank');
-                previewWindow.document.write(generateFullSiteHTML(currentReportData));
+                previewWindow.document.write(generateProfessionalPreviewHTML(currentReportData));
                 previewWindow.document.close();
             }
             
-            function exportToHTML() {
+            function submitReport() {
                 if (!validateForm()) {
                     showError('يرجى ملء جميع الحقول المطلوبة قبل الإنشاء');
                     return;
@@ -1151,22 +1406,82 @@
                 currentReportData.submissionDate = new Date().toLocaleDateString('ar-SA');
                 currentReportData.reportNumber = generateReportNumber();
                 
-                showLoading('جاري إنشاء التقرير بصيغة HTML...');
+                exportModal.style.display = 'flex';
+            }
+            
+            async function exportReport(format) {
+                if (!currentReportData) {
+                    showError('لا توجد بيانات للتقرير');
+                    return;
+                }
                 
+                exportModal.style.display = 'none';
+                
+                if (format === 'html') {
+                    showLoading('جاري تحضير التقرير بصيغة HTML...');
+                    await exportToHTML();
+                } else if (format === 'pdf') {
+                    showLoading('جاري تحويل التقرير إلى PDF...');
+                    await exportToPDF();
+                }
+                
+                currentReportData.exportedAt = new Date().toLocaleString('ar-SA');
+                currentReportData.exportFormat = format;
+                localStorage.setItem('lastReport', JSON.stringify(currentReportData));
+                
+                hideLoading();
+                showExportSuccess(format);
+            }
+            
+            function exportToHTML() {
+                const htmlContent = generateProfessionalPreviewHTML(currentReportData);
+                const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                saveAs(blob, `تقرير_${currentReportData.reportNumber}.html`);
+            }
+            
+            async function exportToPDF() {
                 try {
-                    const htmlContent = generateFullSiteHTML(currentReportData);
-                    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-                    saveAs(blob, `تقرير_${currentReportData.reportNumber}.html`);
+                    // إنشاء محتوى HTML للتقرير
+                    const htmlContent = generateProfessionalPreviewHTML(currentReportData);
                     
-                    currentReportData.exportedAt = new Date().toLocaleString('ar-SA');
-                    localStorage.setItem('lastReport', JSON.stringify(currentReportData));
+                    // إنشاء نافذة مؤقتة لتحويل HTML إلى صورة
+                    const tempWindow = window.open('', '_blank');
+                    tempWindow.document.write(htmlContent);
+                    tempWindow.document.close();
                     
-                    hideLoading();
-                    showExportSuccess();
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // استخدام html2canvas لالتقاط الصفحة كصورة
+                    const canvas = await html2canvas(tempWindow.document.body, {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff'
+                    });
+                    
+                    // تحويل Canvas إلى صورة
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    
+                    // إنشاء PDF من الصورة
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+                    
+                    const imgWidth = 210; // عرض A4 بالملم
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                    pdf.save(`تقرير_${currentReportData.reportNumber}.pdf`);
+                    
+                    tempWindow.close();
                     
                 } catch (error) {
-                    hideLoading();
-                    showError(`حدث خطأ أثناء التصدير: ${error.message}`);
+                    console.error('Error exporting to PDF:', error);
+                    showError('حدث خطأ أثناء تحويل التقرير إلى PDF. يرجى المحاولة مرة أخرى.');
                 }
             }
             
@@ -1191,207 +1506,155 @@
                 };
             }
             
-            function generateFullSiteHTML(reportData) {
+            function generateProfessionalPreviewHTML(reportData) {
                 return `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${reportData.title} - الإدارة العامة للتعليم بمنطقة ${reportData.region}</title>
+    <title>${reportData.title}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #2c5aa0;
-            --primary-dark: #1e3d6f;
-            --primary-light: #4a7bc8;
-            --secondary-color: #f0f4f8;
-            --light-color: #ffffff;
-            --dark-color: #333333;
-            --gray-color: #666666;
-            --border-color: #e0e0e0;
-            --success-color: #28a745;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            --radius: 8px;
-            --transition: all 0.3s ease;
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        
         body {
             font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.8;
-            color: var(--dark-color);
-            background-color: #f8fafc;
+            line-height: 1.8; 
+            color: #333;
+            background: #f8fafc;
+            min-height: 100vh; 
+            padding: 0; 
             direction: rtl;
         }
-
-        .site-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        
+        /* تصميم رأس التقرير */
+        .report-header {
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3d6f 100%);
             color: white;
-            padding: 25px 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            padding: 40px 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
         }
-
-        .container {
+        
+        .report-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' fill-opacity='0.05' d='M0,0 L100,0 L100,100 Z'/%3E%3C/svg%3E");
+            background-size: cover;
+        }
+        
+        .header-content {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 30px;
+            position: relative;
+            z-index: 1;
         }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        
+        .report-header h1 {
+            font-size: 42px;
             margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .logo {
-            width: 70px;
-            height: 70px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .logo i {
-            font-size: 32px;
-            color: var(--primary-color);
-        }
-
-        .site-title h1 {
-            font-size: 28px;
-            margin-bottom: 5px;
             font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-
-        .site-title p {
-            font-size: 16px;
-            opacity: 0.9;
+        
+        .report-header .subtitle {
+            font-size: 26px;
             font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 25px;
         }
-
+        
         .report-meta {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: rgba(255,255,255,0.1);
-            padding: 15px 20px;
-            border-radius: var(--radius);
-            backdrop-filter: blur(10px);
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 16px;
-        }
-
-        .meta-item i {
-            color: #ffd700;
-        }
-
-        .main-nav {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: var(--radius);
-            padding: 15px;
-            margin-top: 10px;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 30px;
             justify-content: center;
+            gap: 40px;
             flex-wrap: wrap;
+            margin-top: 30px;
         }
-
-        .nav-menu a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
+        
+        .meta-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            border-radius: 50px;
             font-size: 18px;
-            padding: 10px 20px;
-            border-radius: var(--radius);
-            transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
         }
-
-        .nav-menu a:hover {
+        
+        .meta-item:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
         }
-
-        .hero-section {
-            background: linear-gradient(rgba(44, 90, 160, 0.9), rgba(30, 61, 111, 0.9)),
-                        url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            padding: 100px 0;
-            text-align: center;
-            color: white;
-            margin-bottom: 60px;
+        
+        .meta-item i {
+            font-size: 20px;
+            color: #4a7bc8;
         }
-
-        .hero-content h2 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        
+        /* تصميم محتوى التقرير */
+        .report-content {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 30px;
         }
-
-        .hero-content p {
-            font-size: 22px;
-            max-width: 800px;
-            margin: 0 auto 30px;
-            opacity: 0.95;
-        }
-
-        .report-section {
+        
+        .content-section {
             background: white;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 50px;
+            border-radius: 20px;
+            padding: 40px;
             margin-bottom: 40px;
-            border: 1px solid var(--border-color);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+            border: 1px solid #e8f0fe;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
         }
-
-        .section-header {
-            color: var(--primary-color);
-            border-right: 5px solid var(--primary-color);
-            padding-right: 20px;
-            margin-bottom: 40px;
+        
+        .content-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+        }
+        
+        .content-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(180deg, #2c5aa0 0%, #4a7bc8 100%);
+        }
+        
+        .section-title {
+            color: #2c5aa0;
             font-size: 32px;
+            margin-bottom: 30px;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 15px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #f0f4f8;
         }
-
-        .section-header i {
-            font-size: 28px;
+        
+        .section-title i {
             background: rgba(44, 90, 160, 0.1);
             padding: 15px;
             border-radius: 12px;
@@ -1400,96 +1663,113 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 24px;
         }
-
+        
+        /* تصميم بطاقات المعلومات */
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
             margin-bottom: 40px;
         }
-
+        
         .info-card {
-            background: var(--secondary-color);
-            border-radius: var(--radius);
+            background: #f8fafc;
             padding: 30px;
-            border-left: 5px solid var(--primary-color);
-            transition: var(--transition);
+            border-radius: 15px;
+            border: 2px solid #e8f0fe;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-
+        
         .info-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow);
+            background: white;
+            border-color: #2c5aa0;
+            transform: translateX(-10px);
+            box-shadow: 0 8px 25px rgba(44, 90, 160, 0.1);
         }
-
-        .info-card h4 {
-            color: var(--primary-color);
+        
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2c5aa0 0%, #4a7bc8 100%);
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .info-card:hover::before {
+            transform: translateY(0);
+        }
+        
+        .info-label {
+            color: #2c5aa0;
+            font-weight: 600;
             font-size: 20px;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
-
-        .info-card p {
-            font-size: 18px;
-            color: var(--dark-color);
+        
+        .info-value {
+            color: #333;
+            font-size: 22px;
+            font-weight: 500;
             line-height: 1.6;
+            padding-right: 10px;
         }
-
-        .content-card {
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 40px;
+        
+        /* تصميم النصوص */
+        .text-content {
+            background: #f8fafc;
+            padding: 35px;
+            border-radius: 15px;
             margin-bottom: 30px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            border-right: 5px solid #2c5aa0;
         }
-
-        .content-card h3 {
-            color: var(--primary-color);
-            font-size: 24px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .content-card p {
-            font-size: 18px;
-            line-height: 1.8;
-            color: var(--dark-color);
+        
+        .text-content p {
+            font-size: 20px;
+            line-height: 1.9;
+            color: #444;
             text-align: justify;
             margin-bottom: 20px;
         }
-
+        
+        /* تصميم القوائم */
         .list-container {
-            padding-right: 20px;
+            margin: 30px 0;
         }
-
+        
         .list-item {
             display: flex;
             align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: var(--secondary-color);
-            border-radius: var(--radius);
-            border-right: 4px solid var(--primary-color);
-            transition: var(--transition);
+            gap: 20px;
+            margin-bottom: 25px;
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 15px;
+            border-right: 5px solid #2c5aa0;
+            transition: all 0.3s ease;
         }
-
+        
         .list-item:hover {
-            transform: translateX(-10px);
             background: white;
-            box-shadow: var(--shadow);
+            transform: translateX(-10px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
         }
-
+        
         .list-number {
-            background: var(--primary-color);
+            background: #2c5aa0;
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -1497,320 +1777,398 @@
             font-weight: bold;
             font-size: 20px;
             flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(44, 90, 160, 0.3);
         }
-
+        
         .list-text {
-            font-size: 18px;
-            color: var(--dark-color);
+            font-size: 20px;
+            color: #444;
             flex: 1;
+            line-height: 1.8;
         }
-
-        .gallery-section {
-            margin: 60px 0;
-        }
-
-        .gallery-grid {
+        
+        /* تصميم معرض الصور */
+        .image-gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 30px;
-            margin-top: 30px;
+            margin-top: 40px;
         }
-
-        .gallery-item {
-            border-radius: var(--radius);
+        
+        .image-card {
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
             position: relative;
+            background: white;
         }
-
-        .gallery-item:hover {
+        
+        .image-card:hover {
             transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
         }
-
-        .gallery-item img {
+        
+        .image-card img {
             width: 100%;
-            height: 250px;
+            height: 300px;
             object-fit: cover;
             display: block;
+            transition: transform 0.5s ease;
         }
-
-        .gallery-caption {
-            background: var(--primary-color);
+        
+        .image-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .image-caption {
+            background: linear-gradient(90deg, #2c5aa0 0%, #4a7bc8 100%);
             color: white;
             padding: 20px;
             text-align: center;
             font-size: 18px;
+            font-weight: 500;
         }
-
+        
+        /* تصميم التوقيعات */
         .signatures-section {
             background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);
-            border-radius: var(--radius);
-            padding: 60px;
-            margin: 60px 0;
-            text-align: center;
+            border-radius: 25px;
+            padding: 50px;
+            margin-top: 60px;
+            border: 2px solid #e8f0fe;
         }
-
-        .signatures-grid {
+        
+        .signatures {
             display: flex;
             justify-content: space-around;
+            flex-wrap: wrap;
             gap: 40px;
             margin-top: 40px;
-            flex-wrap: wrap;
         }
-
+        
         .signature-box {
-            background: white;
+            text-align: center;
+            width: 350px;
             padding: 40px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            width: 300px;
-            transition: var(--transition);
-            border-top: 5px solid var(--primary-color);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            transition: all 0.3s ease;
         }
-
+        
         .signature-box:hover {
             transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
         }
-
+        
         .signature-title {
-            color: var(--primary-color);
-            font-size: 24px;
+            color: #2c5aa0;
+            font-size: 28px;
             font-weight: 700;
             margin-bottom: 20px;
         }
-
+        
         .signature-name {
-            font-size: 22px;
-            color: var(--dark-color);
-            margin-bottom: 30px;
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 40px;
             font-weight: 600;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
+        
         .signature-line {
-            width: 200px;
+            width: 250px;
             height: 2px;
-            background: var(--dark-color);
-            margin: 30px auto 15px;
+            background: #666;
+            margin: 40px auto 20px;
+            border-radius: 1px;
         }
-
+        
         .signature-label {
-            color: var(--gray-color);
-            font-size: 18px;
+            color: #666;
+            font-size: 20px;
             font-style: italic;
+            margin-top: 10px;
         }
-
-        .site-footer {
-            background: var(--primary-dark);
+        
+        /* تصميم التذييل */
+        .report-footer {
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3d6f 100%);
             color: white;
-            padding: 60px 0 30px;
+            padding: 40px 0;
+            text-align: center;
             margin-top: 80px;
         }
-
+        
         .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
         }
-
-        .footer-section h3 {
-            font-size: 24px;
-            margin-bottom: 25px;
-            color: #ffd700;
-        }
-
-        .footer-section p {
-            font-size: 16px;
-            line-height: 1.8;
+        
+        .footer-text {
+            font-size: 18px;
+            margin-bottom: 15px;
             opacity: 0.9;
         }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+        
+        .footer-date {
             font-size: 16px;
             opacity: 0.8;
+            font-style: italic;
         }
-
+        
+        /* تصميم للطباعة */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .report-header {
+                background: #2c5aa0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .content-section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+            
+            .image-gallery {
+                page-break-inside: avoid;
+            }
+            
+            .signatures-section {
+                page-break-inside: avoid;
+            }
+            
+            .report-footer {
+                background: #2c5aa0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+        
+        /* تصميم متجاوب */
         @media (max-width: 992px) {
-            .header-top {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .nav-menu {
-                gap: 15px;
-            }
-            
-            .hero-content h2 {
+            .report-header h1 {
                 font-size: 36px;
             }
             
-            .report-section {
-                padding: 30px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .hero-section {
-                padding: 60px 0;
-            }
-            
-            .hero-content h2 {
-                font-size: 28px;
-            }
-            
-            .hero-content p {
-                font-size: 18px;
-            }
-            
-            .section-header {
-                font-size: 24px;
+            .report-header .subtitle {
+                font-size: 22px;
             }
             
             .info-grid {
                 grid-template-columns: 1fr;
             }
             
-            .signatures-grid {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .gallery-grid {
+            .image-gallery {
                 grid-template-columns: 1fr;
             }
+            
+            .signature-box {
+                width: 100%;
+                max-width: 400px;
+            }
         }
-
-        .print-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            background: var(--success-color);
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-            transition: var(--transition);
-            z-index: 100;
+        
+        @media (max-width: 768px) {
+            .header-content,
+            .report-content,
+            .footer-content {
+                padding: 0 20px;
+            }
+            
+            .report-header h1 {
+                font-size: 30px;
+            }
+            
+            .report-header .subtitle {
+                font-size: 20px;
+            }
+            
+            .content-section {
+                padding: 30px 20px;
+            }
+            
+            .section-title {
+                font-size: 28px;
+            }
+            
+            .meta-item {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+            
+            .info-card,
+            .text-content {
+                padding: 25px;
+            }
+            
+            .signatures-section {
+                padding: 30px;
+            }
+            
+            .signature-box {
+                padding: 30px;
+            }
         }
-
-        .print-btn:hover {
-            background: #218838;
-            transform: translateY(-3px);
+        
+        @media (max-width: 576px) {
+            .report-header {
+                padding: 30px 0;
+            }
+            
+            .report-header h1 {
+                font-size: 24px;
+            }
+            
+            .report-header .subtitle {
+                font-size: 18px;
+            }
+            
+            .section-title {
+                font-size: 24px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .section-title i {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .meta-item {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .signatures {
+                gap: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <header class="site-header">
-        <div class="container">
-            <div class="header-top">
-                <div class="logo-section">
-                    <div class="logo">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <div class="site-title">
-                        <h1>${reportData.title}</h1>
-                        <p>الإدارة العامة للتعليم بمنطقة ${reportData.region}</p>
-                    </div>
+    <!-- رأس التقرير -->
+    <header class="report-header">
+        <div class="header-content">
+            <h1>${reportData.title}</h1>
+            <div class="subtitle">الإدارة العامة للتعليم بمنطقة ${reportData.region}</div>
+            
+            <div class="report-meta">
+                <div class="meta-item">
+                    <i class="fas fa-hashtag"></i>
+                    <span>رقم التقرير: ${reportData.reportNumber}</span>
                 </div>
-                <div class="report-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-hashtag"></i>
-                        <span>رقم التقرير: ${reportData.reportNumber}</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-calendar"></i>
-                        <span>تاريخ البرنامج: ${reportData.programDate}</span>
-                    </div>
+                <div class="meta-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>تاريخ البرنامج: ${reportData.programDate}</span>
                 </div>
             </div>
-            <nav class="main-nav">
-                <ul class="nav-menu">
-                    <li><a href="#basic-info"><i class="fas fa-info-circle"></i> البيانات الأساسية</a></li>
-                    <li><a href="#description"><i class="fas fa-clipboard-list"></i> وصف النشاط</a></li>
-                    <li><a href="#procedures"><i class="fas fa-tasks"></i> إجراءات التنفيذ</a></li>
-                    <li><a href="#results"><i class="fas fa-chart-line"></i> النتائج</a></li>
-                    <li><a href="#recommendations"><i class="fas fa-lightbulb"></i> التوصيات</a></li>
-                    ${reportData.images && reportData.images.length > 0 ? '<li><a href="#gallery"><i class="fas fa-images"></i> الصور المرفقة</a></li>' : ''}
-                </ul>
-            </nav>
         </div>
     </header>
-
-    <section class="hero-section">
-        <div class="container">
-            <div class="hero-content">
-                <h2>${reportData.title}</h2>
-                <p>تقرير مفصل عن أنشطة وأداء الواجبات الوظيفية حسب المعايير المعتمدة</p>
-                <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 40px;">
-                    <div style="background: rgba(255,255,255,0.2); padding: 15px 30px; border-radius: var(--radius); backdrop-filter: blur(10px);">
-                        <div style="font-size: 18px; margin-bottom: 5px;">المدرسة</div>
-                        <div style="font-size: 24px; font-weight: bold;">${reportData.school}</div>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.2); padding: 15px 30px; border-radius: var(--radius); backdrop-filter: blur(10px);">
-                        <div style="font-size: 18px; margin-bottom: 5px;">معد التقرير</div>
-                        <div style="font-size: 24px; font-weight: bold;">${reportData.reporter}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <main class="container">
-        <section id="basic-info" class="report-section">
-            <h2 class="section-header"><i class="fas fa-database"></i>البيانات الأساسية</h2>
+    
+    <!-- المحتوى الرئيسي -->
+    <main class="report-content">
+        <!-- البيانات الأساسية -->
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-database"></i>
+                البيانات الأساسية
+            </h2>
+            
             <div class="info-grid">
                 <div class="info-card">
-                    <h4><i class="fas fa-school"></i>المدرسة</h4>
-                    <p>${reportData.school}</p>
+                    <div class="info-label">
+                        <i class="fas fa-school"></i>
+                        المدرسة
+                    </div>
+                    <div class="info-value">${reportData.school}</div>
                 </div>
+                
                 <div class="info-card">
-                    <h4><i class="fas fa-user-tie"></i>مدير المدرسة</h4>
-                    <p>${reportData.principal}</p>
+                    <div class="info-label">
+                        <i class="fas fa-user-tie"></i>
+                        مدير المدرسة
+                    </div>
+                    <div class="info-value">${reportData.principal}</div>
                 </div>
+                
                 <div class="info-card">
-                    <h4><i class="fas fa-user-edit"></i>معد التقرير</h4>
-                    <p>${reportData.reporter}</p>
+                    <div class="info-label">
+                        <i class="fas fa-user-edit"></i>
+                        معد التقرير
+                    </div>
+                    <div class="info-value">${reportData.reporter}</div>
                 </div>
+                
                 <div class="info-card">
-                    <h4><i class="fas fa-map-marker"></i>مكان التنفيذ</h4>
-                    <p>${reportData.location}</p>
+                    <div class="info-label">
+                        <i class="fas fa-map-marker"></i>
+                        مكان التنفيذ
+                    </div>
+                    <div class="info-value">${reportData.location}</div>
                 </div>
+                
                 <div class="info-card">
-                    <h4><i class="fas fa-users"></i>المستهدفون</h4>
-                    <p>${reportData.target}</p>
+                    <div class="info-label">
+                        <i class="fas fa-users"></i>
+                        المستهدفون
+                    </div>
+                    <div class="info-value">${reportData.target}</div>
                 </div>
+                
                 <div class="info-card">
-                    <h4><i class="fas fa-user-check"></i>عدد المستفيدين</h4>
-                    <p>${reportData.beneficiaries}</p>
+                    <div class="info-label">
+                        <i class="fas fa-user-check"></i>
+                        عدد المستفيدين
+                    </div>
+                    <div class="info-value">${reportData.beneficiaries}</div>
                 </div>
+                
                 <div class="info-card">
-                    <h4><i class="fas fa-book"></i>تابع للمناهج</h4>
-                    <p>${reportData.curriculumRelated}</p>
+                    <div class="info-label">
+                        <i class="fas fa-book"></i>
+                        تابع للمناهج
+                    </div>
+                    <div class="info-value">${reportData.curriculumRelated}</div>
                 </div>
             </div>
         </section>
-
-        <section id="description" class="report-section">
-            <h2 class="section-header"><i class="fas fa-clipboard-list"></i>وصف مختصر لما تم تنفيذه</h2>
-            <div class="content-card">
+        
+        <!-- وصف النشاط -->
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-clipboard-list"></i>
+                وصف مختصر لما تم تنفيذه
+            </h2>
+            
+            <div class="text-content">
                 <p>${reportData.description}</p>
             </div>
         </section>
-
+        
+        <!-- إجراءات التنفيذ -->
         ${reportData.procedures && reportData.procedures.length > 0 ? `
-        <section id="procedures" class="report-section">
-            <h2 class="section-header"><i class="fas fa-tasks"></i>إجراءات التنفيذ</h2>
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-tasks"></i>
+                إجراءات التنفيذ
+            </h2>
+            
             <div class="list-container">
                 ${reportData.procedures.map((procedure, index) => `
                 <div class="list-item">
@@ -1820,10 +2178,15 @@
                 `).join('')}
             </div>
         </section>` : ''}
-
+        
+        <!-- النتائج -->
         ${reportData.results && reportData.results.length > 0 ? `
-        <section id="results" class="report-section">
-            <h2 class="section-header"><i class="fas fa-chart-line"></i>النتائج</h2>
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                النتائج
+            </h2>
+            
             <div class="list-container">
                 ${reportData.results.map((result, index) => `
                 <div class="list-item">
@@ -1833,35 +2196,51 @@
                 `).join('')}
             </div>
         </section>` : ''}
-
-        <section id="recommendations" class="report-section">
-            <h2 class="section-header"><i class="fas fa-lightbulb"></i>التوصيات</h2>
-            <div class="content-card">
+        
+        <!-- التوصيات -->
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-lightbulb"></i>
+                التوصيات
+            </h2>
+            
+            <div class="text-content">
                 <p>${reportData.recommendations}</p>
             </div>
         </section>
-
+        
+        <!-- الصور المرفقة -->
         ${reportData.images && reportData.images.length > 0 ? `
-        <section id="gallery" class="report-section gallery-section">
-            <h2 class="section-header"><i class="fas fa-images"></i>الصور المرفقة</h2>
-            <div class="gallery-grid">
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-images"></i>
+                الصور المرفقة
+            </h2>
+            
+            <div class="image-gallery">
                 ${reportData.images.map((img, idx) => `
-                <div class="gallery-item">
+                <div class="image-card">
                     <img src="${img.data}" alt="صورة ${idx + 1}">
-                    <div class="gallery-caption">صورة ${idx + 1}: ${img.name}</div>
+                    <div class="image-caption">صورة ${idx + 1}: ${img.name}</div>
                 </div>`).join('')}
             </div>
         </section>` : ''}
-
+        
+        <!-- التوقيعات -->
         <section class="signatures-section">
-            <h2 class="section-header"><i class="fas fa-signature"></i>التوقيعات</h2>
-            <div class="signatures-grid">
+            <h2 class="section-title">
+                <i class="fas fa-signature"></i>
+                التوقيعات
+            </h2>
+            
+            <div class="signatures">
                 <div class="signature-box">
                     <div class="signature-title">مدير المدرسة</div>
                     <div class="signature-name">${reportData.principal}</div>
                     <div class="signature-line"></div>
                     <div class="signature-label">التوقيع</div>
                 </div>
+                
                 <div class="signature-box">
                     <div class="signature-title">معد التقرير</div>
                     <div class="signature-name">${reportData.reporter}</div>
@@ -1871,78 +2250,25 @@
             </div>
         </section>
     </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>نظام إعداد التقارير</h3>
-                    <p>نظام إلكتروني متكامل لإعداد وتوثيق التقارير الوظيفية وفق المعايير المعتمدة في وزارة التعليم.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>معلومات التقرير</h3>
-                    <p>رقم التقرير: ${reportData.reportNumber}</p>
-                    <p>تاريخ الإنشاء: ${new Date().toLocaleDateString('ar-SA')}</p>
-                    <p>الإصدار: 1.0</p>
-                </div>
-                <div class="footer-section">
-                    <h3>اتصل بنا</h3>
-                    <p>الإدارة العامة للتعليم بمنطقة ${reportData.region}</p>
-                    <p>البريد الإلكتروني: info@edu.sa</p>
-                    <p>الهاتف: 0111234567</p>
-                </div>
+    
+    <!-- تذييل التقرير -->
+    <footer class="report-footer">
+        <div class="footer-content">
+            <div class="footer-text">
+                تم إنشاء هذا التقرير بواسطة نظام إعداد التقارير الإلكتروني
             </div>
-            <div class="footer-bottom">
-                <p>جميع الحقوق محفوظة © ${new Date().getFullYear()} - نظام إعداد التقارير الإلكتروني</p>
+            <div class="footer-date">
+                ${new Date().toLocaleDateString('ar-SA', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}
             </div>
         </div>
     </footer>
-
-    <button class="print-btn" onclick="window.print()">
-        <i class="fas fa-print"></i> طباعة التقرير
-    </button>
-
-    <script>
-        // تنفيذ التنقل السلس
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                if(targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if(targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 100,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-
-        // إضافة تأثيرات للعناصر عند التمرير
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // مراقبة العناصر لإضافة تأثيرات
-        document.querySelectorAll('.info-card, .list-item, .gallery-item, .signature-box').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            observer.observe(el);
-        });
-    </script>
 </body>
 </html>`;
             }
@@ -1991,9 +2317,9 @@
                 alert(`✅ ${message}`);
             }
             
-            function showExportSuccess() {
+            function showExportSuccess(format) {
                 successTitle.textContent = 'تم إنشاء التقرير بنجاح!';
-                successDetails.textContent = `تم تصدير التقرير بصيغة HTML.\nرقم التقرير: ${currentReportData.reportNumber}`;
+                successDetails.textContent = `تم تصدير التقرير بصيغة ${format === 'html' ? 'HTML' : 'PDF'}.\nرقم التقرير: ${currentReportData.reportNumber}`;
                 successMessage.classList.add('active');
                 
                 setTimeout(() => {
@@ -2007,6 +2333,7 @@
             setupEventListeners();
             loadInitialData();
             
+            // الحفظ التلقائي كل 30 ثانية
             setInterval(() => {
                 if (validateForm()) {
                     const reportData = collectReportData();
