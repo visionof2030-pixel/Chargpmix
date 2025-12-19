@@ -1,3192 +1,1099 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إعداد التقارير التربوية - إدارة تعليم منطقة مكة المكرمة</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --primary-dark: #1a252f;
-            --primary-light: #3498db;
-            --secondary-color: #ecf0f1;
-            --accent-color: #e74c3c;
-            --light-color: #f9f9f9;
-            --dark-color: #2c3e50;
-            --gray-color: #7f8c8d;
-            --border-color: #bdc3c7;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --danger-color: #c0392b;
-            --info-color: #2980b9;
-            --shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 5px 25px rgba(0, 0, 0, 0.1);
-            --radius: 8px;
-            --transition: all 0.3s ease;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            color: var(--dark-color);
-            line-height: 1.8;
-            min-height: 100vh;
-            padding: 0;
-            direction: rtl;
-        }
-
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
-
-        .header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 25px 20px;
-            text-align: center;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            box-shadow: var(--shadow-lg);
-            border-bottom: 4px solid var(--accent-color);
-        }
-
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            font-weight: 800;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .header-subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-            font-weight: 400;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .main-container {
-            margin-top: 130px;
-            padding: 0 20px 40px;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .report-form-container {
-            background-color: white;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            padding: 40px;
-            margin-bottom: 30px;
-            border: 1px solid rgba(255,255,255,0.2);
-            position: relative;
-            overflow: hidden;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .report-form-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
-        }
-
-        .section-header {
-            color: var(--primary-color);
-            border-right: 4px solid var(--accent-color);
-            padding-right: 20px;
-            margin: 40px 0 25px;
-            font-size: 24px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            position: relative;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .section-header i {
-            font-size: 22px;
-            background: rgba(44, 62, 80, 0.1);
-            padding: 12px;
-            border-radius: 8px;
-            width: 55px;
-            height: 55px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .section-subtitle {
-            color: var(--gray-color);
-            font-size: 16px;
-            margin-bottom: 30px;
-            padding-right: 25px;
-            line-height: 1.7;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .form-group {
-            margin-bottom: 30px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 12px;
-            font-weight: 600;
-            color: var(--dark-color);
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .form-label i {
-            color: var(--primary-color);
-            font-size: 18px;
-        }
-
-        .form-label.required::after {
-            content: " *";
-            color: var(--danger-color);
-            font-weight: bold;
-        }
-
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius);
-            font-size: 16px;
-            font-family: 'Cairo', sans-serif;
-            transition: var(--transition);
-            background-color: white;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.15);
-        }
-
-        .form-textarea {
-            min-height: 140px;
-            resize: vertical;
-            line-height: 1.8;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .form-example {
-            font-size: 14px;
-            color: var(--gray-color);
-            margin-top: 8px;
-            font-style: italic;
-            padding-right: 5px;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .upload-section {
-            margin-top: 40px;
-            border-top: 2px dashed var(--border-color);
-            padding-top: 40px;
-        }
-
-        .upload-area {
-            border: 3px dashed var(--border-color);
-            border-radius: var(--radius);
-            padding: 50px 30px;
-            text-align: center;
-            background-color: var(--light-color);
-            cursor: pointer;
-            transition: var(--transition);
-            margin-bottom: 25px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .upload-area:hover {
-            border-color: var(--primary-color);
-            background-color: rgba(44, 62, 80, 0.02);
-            transform: translateY(-2px);
-        }
-
-        .upload-area.dragover {
-            border-color: var(--primary-color);
-            background-color: rgba(44, 62, 80, 0.05);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(44, 62, 80, 0.2); }
-            70% { box-shadow: 0 0 0 15px rgba(44, 62, 80, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(44, 62, 80, 0); }
-        }
-
-        .upload-icon {
-            font-size: 56px;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            opacity: 0.8;
-        }
-
-        .upload-text {
-            font-size: 18px;
-            color: var(--dark-color);
-            margin-bottom: 12px;
-            font-weight: 500;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .upload-hint {
-            font-size: 15px;
-            color: var(--gray-color);
-            max-width: 500px;
-            margin: 0 auto;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .image-preview {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .preview-item {
-            position: relative;
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
-        }
-
-        .preview-item:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .preview-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
-            transition: var(--transition);
-        }
-
-        .preview-item:hover .preview-img {
-            transform: scale(1.05);
-        }
-
-        .preview-remove {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(192, 57, 43, 0.9);
-            color: white;
-            border: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            transition: var(--transition);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .preview-remove:hover {
-            background: var(--danger-color);
-            transform: scale(1.1);
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 16px 32px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: var(--transition);
-            text-decoration: none;
-            min-height: 55px;
-            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
-            position: relative;
-            overflow: hidden;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            transform: translate(50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:hover::after {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 18px rgba(44, 62, 80, 0.3);
-        }
-
-        .btn:active {
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background-color: #7f8c8d;
-        }
-
-        .btn-secondary:hover {
-            background-color: #6c757d;
-        }
-
-        .btn-success {
-            background-color: var(--success-color);
-        }
-
-        .btn-success:hover {
-            background-color: #219653;
-        }
-
-        .btn-info {
-            background-color: var(--info-color);
-        }
-
-        .btn-info:hover {
-            background-color: #1a6ea0;
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            box-shadow: none;
-        }
-
-        .btn-outline:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-block {
-            width: 100%;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 60px;
-            padding-top: 40px;
-            border-top: 2px solid var(--border-color);
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .instruction-box {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-right: 4px solid var(--accent-color);
-            padding: 25px;
-            border-radius: var(--radius);
-            margin-bottom: 40px;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .instruction-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23e74c3c' fill-opacity='0.05' d='M0,0 L100,0 L100,100 Z'/%3E%3C/svg%3E");
-            background-size: cover;
-        }
-
-        .instruction-box h3 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 22px;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .instruction-box p {
-            color: var(--dark-color);
-            font-size: 16px;
-            line-height: 1.8;
-            position: relative;
-            z-index: 1;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .export-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .export-modal-content {
-            background-color: white;
-            border-radius: var(--radius);
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            animation: modalSlideIn 0.4s ease;
-            overflow: hidden;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        @keyframes modalSlideIn {
-            from { opacity: 0; transform: translateY(-30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .export-modal-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .export-modal-title {
-            font-size: 22px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .export-modal-close {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-
-        .export-modal-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
-
-        .export-modal-body {
-            padding: 40px;
-        }
-
-        .export-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin: 30px 0;
-        }
-
-        .export-option {
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 30px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .export-option::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
-            transform: translateY(-100%);
-            transition: var(--transition);
-        }
-
-        .export-option:hover::before {
-            transform: translateY(0);
-        }
-
-        .export-option:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .export-option i {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            transition: var(--transition);
-        }
-
-        .export-option:hover i {
-            transform: scale(1.1);
-        }
-
-        .export-option-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: var(--dark-color);
-            transition: var(--transition);
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .export-option:hover .export-option-title {
-            color: var(--primary-color);
-        }
-
-        .export-option-desc {
-            font-size: 15px;
-            color: var(--gray-color);
-            line-height: 1.6;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .export-actions {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 40px;
-        }
-
-        .scroll-indicator {
-            position: fixed;
-            bottom: 40px;
-            left: 40px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-            color: white;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(44, 62, 80, 0.3);
-            transition: var(--transition);
-            z-index: 100;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .scroll-indicator.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .scroll-indicator:hover {
-            background: var(--primary-dark);
-            transform: translateY(-5px) scale(1.05);
-        }
-
-        .success-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.9);
-            background: white;
-            padding: 40px;
-            border-radius: var(--radius);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            text-align: center;
-            z-index: 3000;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-            max-width: 500px;
-            width: 90%;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .success-message.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        .success-icon {
-            font-size: 70px;
-            color: var(--success-color);
-            margin-bottom: 25px;
-            animation: bounce 1s ease;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-20px);}
-            60% {transform: translateY(-10px);}
-        }
-
-        .success-title {
-            font-size: 26px;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            font-weight: 700;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .success-details {
-            color: var(--gray-color);
-            font-size: 16px;
-            margin-bottom: 25px;
-            line-height: 1.8;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(5px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 4000;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .loading-overlay.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid var(--border-color);
-            border-top: 5px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            font-size: 18px;
-            color: var(--primary-color);
-            font-weight: 600;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .auto-fill-section {
-            background: #f8f9fa;
-            border-radius: var(--radius);
-            padding: 20px;
-            margin: 20px 0;
-            border-right: 4px solid var(--info-color);
-        }
-
-        .auto-fill-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .auto-fill-title {
-            color: var(--info-color);
-            font-weight: 600;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 14px;
-            min-height: 40px;
-        }
-
-        .text-with-actions {
-            position: relative;
-        }
-
-        .text-actions {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            display: flex;
-            gap: 8px;
-            z-index: 10;
-        }
-
-        .text-action-btn {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 6px 12px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .text-action-btn:hover {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        @media (max-width: 992px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 24px;
-            }
-            
-            .main-container {
-                padding: 0 15px 30px;
-                margin-top: 120px;
-            }
-            
-            .report-form-container {
-                padding: 30px;
-            }
-            
-            .export-options {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 20px 15px;
-            }
-            
-            .header h1 {
-                font-size: 20px;
-            }
-            
-            .section-header {
-                font-size: 20px;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .action-buttons .btn {
-                width: 100%;
-            }
-            
-            .scroll-indicator {
-                bottom: 20px;
-                left: 20px;
-                width: 50px;
-                height: 50px;
-            }
-            
-            .text-actions {
-                position: relative;
-                top: 0;
-                left: 0;
-                margin-bottom: 10px;
-                justify-content: flex-end;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .header h1 {
-                font-size: 18px;
-            }
-            
-            .header-subtitle {
-                font-size: 14px;
-            }
-            
-            .main-container {
-                padding: 0 10px 20px;
-                margin-top: 110px;
-            }
-            
-            .report-form-container {
-                padding: 20px;
-            }
-            
-            .section-header {
-                font-size: 18px;
-            }
-            
-            .form-input, .form-select, .form-textarea {
-                padding: 14px;
-                font-size: 15px;
-            }
-            
-            .export-modal-content {
-                width: 95%;
-                margin: 10px;
-            }
-            
-            .success-message {
-                padding: 30px 20px;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-
-        .form-input.invalid, .form-select.invalid, .form-textarea.invalid {
-            border-color: var(--danger-color);
-            background-color: rgba(192, 57, 43, 0.05);
-        }
-
-        .validation-error {
-            color: var(--danger-color);
-            font-size: 14px;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .validation-error i {
-            font-size: 16px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة إعداد التقارير</title>
+
+<style>
+/* ===== الخط ===== */
+@font-face {
+  font-family: 'KufamLocal';
+  src: url('static/Kufam-Regular.ttf') format('truetype');
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'KufamLocal';
+  src: url('static/Kufam-Bold.ttf') format('truetype');
+  font-weight: 700;
+}
+
+/* ===== عام ===== */
+body {
+  font-family: 'KufamLocal', sans-serif;
+  background: linear-gradient(135deg, #f2f7f6 0%, #e8eff0 100%);
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+/* ===== الأداة ===== */
+.tool {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(10, 59, 64, 0.08);
+  border: 1px solid #e0e6e5;
+}
+
+.tool-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #0a3b40;
+}
+
+.tool-header h1 {
+  color: #0a3b40;
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.tool-header p {
+  color: #4f6f68;
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+/* ===== حقول الإدخال ===== */
+.input-group {
+  margin-bottom: 25px;
+  position: relative;
+}
+
+.tool label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: #1b5e52;
+  font-size: 15px;
+}
+
+.tool input,
+.tool textarea,
+.tool select {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #cfd8dc;
+  border-radius: 12px;
+  font-family: 'KufamLocal', sans-serif;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  background: #f9fbfb;
+}
+
+.tool input:focus,
+.tool textarea:focus,
+.tool select:focus {
+  outline: none;
+  border-color: #0a3b40;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(10, 59, 64, 0.1);
+}
+
+.tool textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.tool select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230a3b40' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 15px center;
+  padding-right: 15px;
+}
+
+/* ===== نص افتراضي ===== */
+.default-text-note {
+  font-size: 13px;
+  color: #4f6f68;
+  margin-top: 5px;
+  font-style: italic;
+  padding-right: 5px;
+}
+
+.clear-default-btn {
+  position: absolute;
+  left: 10px;
+  top: 38px;
+  background: #f0f4f3;
+  border: 1px solid #cfd8dc;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #4f6f68;
+  transition: all 0.3s ease;
+}
+
+.clear-default-btn:hover {
+  background: #e8eff0;
+  color: #0a3b40;
+  border-color: #0a3b40;
+}
+
+/* ===== معاينة الصور ===== */
+.preview-container {
+  margin-top: 10px;
+}
+
+.preview-container h4 {
+  margin: 15px 0 10px;
+  color: #1b5e52;
+  font-size: 14px;
+}
+
+.preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.preview img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #e0e6e5;
+  transition: transform 0.3s ease;
+}
+
+.preview img:hover {
+  transform: scale(1.03);
+  border-color: #0a3b40;
+}
+
+/* ===== الأزرار ===== */
+.button-container {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+button {
+  flex: 1;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'KufamLocal', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+#printBtn {
+  background: linear-gradient(135deg, #0a3b40 0%, #1b5e52 100%);
+  color: white;
+}
+
+#printBtn:hover {
+  background: linear-gradient(135deg, #083136 0%, #164d44 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(10, 59, 64, 0.2);
+}
+
+#resetBtn {
+  background: #f0f4f3;
+  color: #4f6f68;
+  border: 2px solid #cfd8dc;
+}
+
+#resetBtn:hover {
+  background: #e8eff0;
+  border-color: #8fbfb3;
+}
+
+.load-defaults-btn {
+  background: #1b5e52;
+  color: white;
+  margin-top: 10px;
+  padding: 10px 15px;
+  font-size: 14px;
+  width: auto;
+  flex: none;
+}
+
+.load-defaults-btn:hover {
+  background: #164d44;
+}
+
+/* ===== قالب التقرير ===== */
+.report { display: none; }
+
+/* =================== الطباعة =================== */
+@page {
+  size: A4;
+  margin: 14mm;
+}
+
+@media print {
+  body {
+    background: white;
+    padding: 0;
+  }
+  
+  .tool { display: none; }
+  .report { display: block; }
+
+  .page {
+    page-break-after: always;
+    padding-bottom: 20mm;
+    position: relative;
+    min-height: 297mm;
+  }
+  
+  .page:last-child { page-break-after: auto; }
+
+  /* ===== الهيدر ===== */
+  .header-full {
+    background: linear-gradient(135deg, #0a3b40 0%, #1b5e52 100%);
+    color: white;
+    border-radius: 18px;
+    padding: 22px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .header-full img {
+    width: 110px;
+    margin-bottom: 12px;
+  }
+
+  .header-full h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .header-full h2 {
+    margin: 8px 0 0;
+    font-size: 15px;
+    font-weight: 400;
+    opacity: 0.9;
+  }
+
+  .school-name {
+    background: #0a3b40;
+    color: white;
+    width: fit-content;
+    margin: 15px auto 20px;
+    padding: 10px 35px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  /* ===== معلومات التقرير في جميع الصفحات ===== */
+  .report-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+    background: #f9fbfb;
+    padding: 15px;
+    border-radius: 14px;
+    border: 2px solid #cfd8dc;
+    font-size: 14px;
+  }
+
+  .report-info-item {
+    text-align: center;
+  }
+
+  .report-info-label {
+    display: block;
+    background: #0a3b40;
+    color: white;
+    border-radius: 10px;
+    padding: 6px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .report-info-value {
+    padding: 4px;
+    min-height: 20px;
+  }
+
+  /* ===== محتوى الصفحة الأولى ===== */
+  .page:first-child .grid-desc {
+    display: grid;
+    grid-template-columns: 1fr 90px 1fr;
+    gap: 15px;
+    margin-top: 20px;
+    height: 360px; /* ارتفاع محدد لضمان بقاء المحتوى في الصفحة الأولى */
+  }
+
+  .page:first-child .desc-box {
+    border: 2px solid #cfd8dc;
+    border-radius: 16px;
+    padding: 18px;
+    background: #f9fbfb;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow: hidden; /* منع تجاوز النص */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page:first-child .desc-content {
+    flex: 1;
+    overflow: hidden;
+    max-height: 300px;
+  }
+
+  .page:nth-child(2) .desc-box {
+    border: 2px solid #cfd8dc;
+    border-radius: 16px;
+    padding: 18px;
+    background: #f9fbfb;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 400px;
+  }
+
+  .page:first-child .desc-box strong {
+    display: block;
+    color: #0a3b40;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border-bottom: 1px dashed #cfd8dc;
+    padding-bottom: 8px;
+  }
+
+  .page:first-child .desc-box p {
+    margin: 8px 0;
+    white-space: pre-line;
+  }
+
+  /* ===== المربع النصفي المعدل ===== */
+  .vertical {
+    background: #eef3f1;
+    border-radius: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    align-items: center;
+    padding: 15px 8px;
+    font-weight: 600;
+    height: 100%;
+  }
+
+  .vertical .right {
+    writing-mode: vertical-rl;
+    font-size: 13px;
+    color: #1b5e52;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .vertical .left {
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    font-size: 13px;
+    color: #4f6f68;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .vertical .divider {
+    width: 1px;
+    height: 85%;
+    background: #8fbfb3;
+    margin: auto;
+  }
+
+  /* ===== الصور والتوقيعات ===== */
+  .images-page {
+    margin-top: 20px;
+  }
+  
+  .images-page h3 {
+    text-align: center;
+    color: #0a3b40;
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #cfd8dc;
+  }
+
+  .images {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+    margin-bottom: 50px;
+  }
+
+  .images img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid #b0bec5;
+  }
+  
+  /* ===== التوقيعات ===== */
+  .signatures {
+    position: absolute;
+    bottom: 60px;
+    left: 14mm;
+    right: 14mm;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #cfd8dc;
+    margin-top: 20px;
+  }
+  
+  .signature-box {
+    text-align: center;
+    padding: 15px;
+  }
+  
+  .signature-label {
+    font-weight: 700;
+    color: #0a3b40;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  
+  .signature-name {
+    margin-bottom: 40px;
+    font-size: 15px;
+    min-height: 25px;
+  }
+  
+  .signature-line {
+    border-top: 1px solid #333;
+    width: 80%;
+    margin: 0 auto;
+    position: relative;
+    padding-top: 25px;
+    color: #666;
+    font-size: 13px;
+  }
+  
+  /* ===== فوتر الصفحة ===== */
+  .page-footer {
+    position: absolute;
+    bottom: 10mm;
+    left: 14mm;
+    right: 14mm;
+    text-align: center;
+    color: #666;
+    font-size: 12px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+  }
+}
+</style>
 </head>
+
 <body>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
-        <div class="loading-text" id="loadingText">جاري معالجة البيانات...</div>
+
+<!-- ========= الأداة ========= -->
+<div class="tool">
+  <div class="tool-header">
+    <h1>🖋️ أداة إعداد التقارير المدرسية</h1>
+    <p>اختر نوع التقرير لتحميل النصوص الافتراضية، ثم عدل كما تشاء</p>
+  </div>
+
+  <div class="input-group">
+    <label>🏫 اسم المدرسة</label>
+    <input type="text" id="schoolInput" placeholder="أدخل اسم المدرسة">
+  </div>
+
+  <div class="input-group">
+    <label>👨‍🏫 اسم المعلم/ة</label>
+    <input type="text" id="teacherInput" placeholder="اسم المعلم/ة المعد للتقرير">
+  </div>
+
+  <div class="input-group">
+    <label>👨‍💼 اسم مدير المدرسة</label>
+    <input type="text" id="managerInput" placeholder="اسم مدير المدرسة">
+  </div>
+
+  <div class="input-group">
+    <label>📄 عنوان التقرير</label>
+    <select id="reportType">
+      <option value="">اختر نوع التقرير</option>
+      <option value="تقرير تنفيذ استراتيجية">تقرير تنفيذ استراتيجية</option>
+      <option value="تقرير تنفيذ أنشطة داخل الفصل">تقرير تنفيذ أنشطة داخل الفصل</option>
+      <option value="تقرير نشاط إثرائي">تقرير نشاط إثرائي</option>
+      <option value="تقرير خطة علاجية">تقرير خطة علاجية</option>
+      <option value="تقرير تكريم المتميزين">تقرير تكريم المتميزين</option>
+    </select>
+    <div class="default-text-note">سيتم تحميل نصوص افتراضية عند الاختيار</div>
+  </div>
+
+  <button class="load-defaults-btn" onclick="loadDefaultTexts()">📥 تحميل النصوص الافتراضية للتقريـر المختار</button>
+
+  <div class="input-group">
+    <label>📅 تاريخ التنفيذ</label>
+    <input type="text" id="dateInput" placeholder="يوم / شهر / سنة">
+  </div>
+
+  <div class="input-group">
+    <label>👥 المستهدفون</label>
+    <input type="text" id="targetInput" placeholder="الفئة المستهدفة">
+  </div>
+
+  <div class="input-group">
+    <label>🔢 عدد المستفيدين</label>
+    <input type="text" id="countInput" placeholder="عدد المشاركين">
+  </div>
+
+  <div class="input-group">
+    <label>📝 الوصف المختصر</label>
+    <button class="clear-default-btn" onclick="clearField('desc1Input')">مسح</button>
+    <textarea id="desc1Input" placeholder="وصف مختصر للنشاط أو البرنامج" rows="6"></textarea>
+    <div class="default-text-note">يمكنك حذف هذا النص والكتابة بما يناسبك (سيتم قص النص إذا تجاوز المساحة)</div>
+  </div>
+
+  <div class="input-group">
+    <label>⚙️ إجراءات التنفيذ</label>
+    <button class="clear-default-btn" onclick="clearField('desc2Input')">مسح</button>
+    <textarea id="desc2Input" placeholder="الخطوات والإجراءات التنفيذية" rows="6"></textarea>
+    <div class="default-text-note">يمكنك حذف هذا النص والكتابة بما يناسبك (سيتم قص النص إذا تجاوز المساحة)</div>
+  </div>
+
+  <div class="input-group">
+    <label>📊 النتائج</label>
+    <button class="clear-default-btn" onclick="clearField('desc3Input')">مسح</button>
+    <textarea id="desc3Input" placeholder="النتائج المتحققة من التنفيذ"></textarea>
+    <div class="default-text-note">يمكنك حذف هذا النص والكتابة بما يناسبك</div>
+  </div>
+
+  <div class="input-group">
+    <label>💡 التوصيات</label>
+    <button class="clear-default-btn" onclick="clearField('desc4Input')">مسح</button>
+    <textarea id="desc4Input" placeholder="التوصيات والمقترحات"></textarea>
+    <div class="default-text-note">يمكنك حذف هذا النص والكتابة بما يناسبك</div>
+  </div>
+
+  <div class="input-group">
+    <label>🖼️ إرفاق الصور (اختياري)</label>
+    <input type="file" id="imageInput" multiple accept="image/*">
+    <div class="preview-container">
+      <h4>معاينة الصور المرفوعة:</h4>
+      <div class="preview" id="preview"></div>
+    </div>
+  </div>
+
+  <div class="button-container">
+    <button id="resetBtn" onclick="resetForm()">🔄 مسح النموذج</button>
+    <button id="printBtn" onclick="generateReport()">📥 تصدير PDF</button>
+  </div>
+</div>
+
+<!-- ========= التقرير ========= -->
+<div class="report">
+
+<!-- الصفحة الأولى -->
+<div class="page">
+  <div class="header-full">
+    <img src="https://i.ibb.co/2037zjqy/IMG-2102.jpg" alt="شعار الوزارة">
+    <h1>الإدارة العامة للتعليم</h1>
+    <h2>وزارة التعليم</h2>
+  </div>
+
+  <div class="school-name" id="school"></div>
+
+  <!-- معلومات التقرير - الصفحة الأولى -->
+  <div class="report-info-grid" id="reportInfo1">
+    <div class="report-info-item">
+      <span class="report-info-label">عنوان التقرير</span>
+      <div class="report-info-value" id="title1"></div>
+    </div>
+    <div class="report-info-item">
+      <span class="report-info-label">تاريخ التنفيذ</span>
+      <div class="report-info-value" id="date1"></div>
+    </div>
+    <div class="report-info-item">
+      <span class="report-info-label">المستهدفون</span>
+      <div class="report-info-value" id="target1"></div>
+    </div>
+    <div class="report-info-item">
+      <span class="report-info-label">عدد المستفيدين</span>
+      <div class="report-info-value" id="count1"></div>
+    </div>
+  </div>
+
+  <div class="grid-desc">
+    <div class="desc-box">
+      <strong>وصف مختصر</strong>
+      <div class="desc-content">
+        <p id="desc1"></p>
+      </div>
     </div>
 
-    <div class="success-message" id="successMessage">
-        <div class="success-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <h3 class="success-title" id="successTitle">تم إنشاء التقرير بنجاح!</h3>
-        <p class="success-details" id="successDetails">جاري تحميل الملف...</p>
-        <button class="btn btn-success" id="closeSuccessMessage">
-            <i class="fas fa-check"></i> موافق
-        </button>
+    <div class="vertical">
+      <div class="right">وصف مختصر</div>
+      <div class="divider"></div>
+      <div class="left">إجراءات التنفيذ</div>
     </div>
 
-    <div class="header">
-        <h1>نظام إعداد التقارير التربوية</h1>
-        <div class="header-subtitle">إدارة تعليم منطقة مكة المكرمة</div>
+    <div class="desc-box">
+      <strong>إجراءات التنفيذ</strong>
+      <div class="desc-content">
+        <p id="desc2"></p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="page-footer">صفحة 1 من 3</div>
+</div>
+
+<!-- الصفحة الثانية -->
+<div class="page">
+  <div class="header-full">
+    <img src="https://i.ibb.co/2037zjqy/IMG-2102.jpg" alt="شعار الوزارة">
+    <h1>الإدارة العامة للتعليم</h1>
+    <h2>وزارة التعليم</h2>
+  </div>
+
+  <div class="school-name" id="school2"></div>
+
+  <!-- معلومات التقرير - الصفحة الثانية -->
+  <div class="report-info-grid" id="reportInfo2">
+    <div class="report-info-item">
+      <span class="report-info-label">عنوان التقرير</span>
+      <div class="report-info-value" id="title2"></div>
+    </div>
+    <div class="report-info-item">
+      <span class="report-info-label">تاريخ التنفيذ</span>
+      <div class="report-info-value" id="date2"></div>
+    </div>
+    <div class="report-info-item">
+      <span class="report-info-label">المستهدفون</span>
+      <div class="report-info-value" id="target2"></div>
+    </div>
+    <div class="report-info-item">
+      <span class="report-info-label">عدد المستفيدين</span>
+      <div class="report-info-value" id="count2"></div>
+    </div>
+  </div>
+
+  <div class="grid-desc">
+    <div class="desc-box">
+      <strong>النتائج</strong>
+      <p id="desc3"></p>
     </div>
 
-    <div class="main-container">
-        <div class="instruction-box">
-            <h3><i class="fas fa-info-circle"></i> تعليمات إعداد التقرير</h3>
-            <p>يرجى تعبئة جميع الحقول المطلوبة (*) بدقة. يمكنك استخدام زر "تعبئة تلقائية" لملء الحقول بالنصوص المناسبة حسب نوع التقرير، ثم تعديلها حسب الحاجة.</p>
-        </div>
-
-        <div class="report-form-container">
-            <div class="form-section">
-                <h2 class="section-header"><i class="fas fa-file-signature"></i> اختيار نوع التقرير</h2>
-                <p class="section-subtitle">اختر نوع التقرير المناسب لهذا البند من القائمة التالية</p>
-                
-                <div class="form-group">
-                    <label class="form-label required"><i class="fas fa-tasks"></i> أداء الواجبات الوظيفية (البند رقم 1)</label>
-                    <select class="form-select" id="reportType">
-                        <option value="">اختر نوع التقرير...</option>
-                        <option value="strategy" selected>تقرير تنفيذ استراتيجية تدريس</option>
-                        <option value="activity-session">تقرير حصة النشاط الطلابي</option>
-                        <option value="class-activities">تقرير الأنشطة الصفية</option>
-                        <option value="educational-trip">تقرير رحلة تربوية</option>
-                        <option value="workshop">تقرير ورشة عمل تربوية</option>
-                        <option value="competition">تقرير مسابقة مدرسية</option>
-                        <option value="parent-meeting">تقرير اجتماع أولياء الأمور</option>
-                        <option value="training-program">تقرير برنامج تدريبي</option>
-                        <option value="educational-project">تقرير مشروع تربوي</option>
-                        <option value="scientific-club">تقرير النادي العلمي</option>
-                        <option value="cultural-activity">تقرير نشاط ثقافي</option>
-                        <option value="sports-activity">تقرير نشاط رياضي</option>
-                        <option value="art-activity">تقرير نشاط فني</option>
-                        <option value="technology-activity">تقرير نشاط تقني</option>
-                        <option value="learning-communities">تقرير مجتمعات التعلم</option>
-                        <option value="practical-lesson">تقرير تنفيذ درس تطبيقي</option>
-                        <option value="training-courses">تقرير حضور دورات وورش تدريبية</option>
-                        <option value="parent-communication">تقرير التواصل مع ولي الأمر</option>
-                        <option value="parent-notification">تقرير إشعار ولي الأمر عن مستوى ابنه</option>
-                        <option value="parent-attendance">تقرير حضور اجتماع أولياء الأمور</option>
-                        <option value="weekly-plan">تقرير تفعيل الخطة الاسبوعية</option>
-                        <option value="results-analysis">تقرير تحليل نتائج الطلاب</option>
-                        <option value="student-diagnosis">تقرير تشخيص الطلاب حسب مستوياتهم</option>
-                        <option value="improvement-test">تقرير تنفيذ اختبار تحسن</option>
-                        <option value="student-participation">تقرير المشاركات بين الطلاب</option>
-                    </select>
-                    <div id="reportTypeError" class="validation-error" style="display: none;">
-                        <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                    </div>
-                </div>
-                
-                <div class="auto-fill-section">
-                    <div class="auto-fill-header">
-                        <div class="auto-fill-title">
-                            <i class="fas fa-magic"></i> تعبئة تلقائية للحقول
-                        </div>
-                        <button class="btn btn-info btn-sm" id="autoFillBtn">
-                            <i class="fas fa-bolt"></i> تعبئة تلقائية
-                        </button>
-                    </div>
-                    <p style="color: var(--gray-color); font-size: 14px; line-height: 1.6;">
-                        سيتم تعبئة الحقول التالية تلقائياً بناءً على نوع التقرير المحدد. يمكنك تعديل النصوص بعد ذلك حسب الحاجة.
-                    </p>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h2 class="section-header"><i class="fas fa-database"></i> البيانات الرئيسية</h2>
-                <p class="section-subtitle">البيانات الرئيسية التي ستظهر في رأس التقرير النهائي</p>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label required"><i class="fas fa-map-marker-alt"></i> اسم المنطقة</label>
-                        <input type="text" class="form-input" id="region" placeholder="مكة المكرمة" value="مكة المكرمة">
-                        <div class="form-example">مثال: مكة المكرمة، المدينة المنورة، الرياض</div>
-                        <div id="regionError" class="validation-error" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label required"><i class="fas fa-school"></i> اسم المدرسة</label>
-                        <input type="text" class="form-input" id="school" placeholder="اسم المدرسة" value="سعيد بن العاص المتوسطة">
-                        <div id="schoolError" class="validation-error" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label required"><i class="fas fa-user-tie"></i> مدير المدرسة</label>
-                        <input type="text" class="form-input" id="principal" placeholder="مدير المدرسة" value="نايف عوض اللحياني">
-                        <div class="form-example">مثال: نايف عوض اللحياني</div>
-                        <div id="principalError" class="validation-error" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label required"><i class="fas fa-user-edit"></i> معد التقرير</label>
-                        <input type="text" class="form-input" id="reporter" placeholder="معد التقرير" value="فهد نغيمش الخالدي">
-                        <div class="form-example">مثال: فهد نغيمش الخالدي</div>
-                        <div id="reporterError" class="validation-error" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label required"><i class="fas fa-heading"></i> عنوان التقرير</label>
-                    <input type="text" class="form-input" id="reportTitle" placeholder="عنوان التقرير" value="تقرير تنفيذ استراتيجية تدريس">
-                    <div id="reportTitleError" class="validation-error" style="display: none;">
-                        <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label required"><i class="fas fa-book"></i> تابع للمناهج (نعم/لا)</label>
-                    <select class="form-select" id="curriculumRelated">
-                        <option value="نعم" selected>نعم</option>
-                        <option value="لا">لا</option>
-                    </select>
-                    <div id="curriculumRelatedError" class="validation-error" style="display: none;">
-                        <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h2 class="section-header"><i class="fas fa-calendar-alt"></i> تفاصيل البرنامج</h2>
-                <p class="section-subtitle">التفاصيل الزمنية والمكانية للبرنامج المنفذ</p>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label required"><i class="fas fa-calendar"></i> تاريخ البرنامج (هجري)</label>
-                        <input type="text" class="form-input" id="programDate" placeholder="1447-06-12" value="1447-06-12">
-                        <div class="form-example">التاريخ الهجري بالصيغة: 1447-06-12</div>
-                        <div id="programDateError" class="validation-error" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label required"><i class="fas fa-map-marker"></i> مكان التنفيذ</label>
-                        <input type="text" class="form-input" id="location" placeholder="مثال: قاعة المصادر" value="قاعة المصادر">
-                        <div class="form-example">مثال: قاعة المصادر، الفصل الدراسي، الساحة المدرسية</div>
-                        <div id="locationError" class="validation-error" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label required"><i class="fas fa-users"></i> المستهدفون</label>
-                        <input type="text" class="form-input" id="target" placeholder="مثال: طلاب الصف الثالث متوسط" value="طلاب الصف الثالث متوسط">
-                        <div class="form-example">مثال: طلاب الصف الثالث متوسط، معلمو المرحلة</div>
-                        <div id="targetError" class="validation-error" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label required"><i class="fas fa-user-check"></i> عدد المستفيدين</label>
-                        <input type="number" class="form-input" id="beneficiaries" placeholder="مثال: 30" value="30" min="1">
-                        <div class="form-example">أدخل عدد المستفيدين من البرنامج (رقم فقط)</div>
-                        <div id="beneficiariesError" class="validation-error" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h2 class="section-header"><i class="fas fa-align-left"></i> وصف النشاط</h2>
-                <p class="section-subtitle">وصف شامل وواضح للنشاط الذي تم تنفيذه</p>
-                
-                <div class="form-group text-with-actions">
-                    <div class="text-actions">
-                        <button type="button" class="text-action-btn" id="clearDescription">
-                            <i class="fas fa-trash-alt"></i> حذف النص
-                        </button>
-                    </div>
-                    <label class="form-label required"><i class="fas fa-clipboard-list"></i> وصف مختصر لما تم تنفيذه</label>
-                    <textarea class="form-textarea" id="description" placeholder="وصف مختصر لما تم تنفيذه في النشاط">تم تنفيذ استراتيجية التدريس وفق الخطة المعتمدة، مع توزيع الطلاب على مجموعات عمل تعاونية وتنويع الأنشطة بما يناسب ميولهم واحتياجاتهم. تم تطبيق استراتيجية التعلم النشط من خلال أنشطة عملية وتفاعلية.</textarea>
-                    <div class="form-example">يجب أن يتضمن الوصف ملخصاً واضحاً وشاملاً للنشاط المنفذ</div>
-                    <div id="descriptionError" class="validation-error" style="display: none;">
-                        <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h2 class="section-header"><i class="fas fa-tasks"></i> إجراءات التنفيذ</h2>
-                <p class="section-subtitle">الخطوات والإجراءات التي تم اتباعها لتنفيذ النشاط</p>
-                
-                <div class="form-group text-with-actions">
-                    <div class="text-actions">
-                        <button type="button" class="text-action-btn" id="clearProcedures">
-                            <i class="fas fa-trash-alt"></i> حذف النص
-                        </button>
-                    </div>
-                    <label class="form-label required"><i class="fas fa-list-ol"></i> إجراءات التنفيذ (افصل بين النقاط بفاصلة)</label>
-                    <textarea class="form-textarea" id="procedures" placeholder="أدخل إجراءات التنفيذ">إعداد خطة حصة النشاط وتحديد الأهداف والأنشطة المناسبة, توزيع الطلاب إلى مجموعات عمل وتوضيح المهام لكل مجموعة, توفير المواد والأدوات اللازمة للنشاط, متابعة تنفيذ الطلاب للنشاط وتقديم التوجيه اللازم, تقييم مخرجات النشاط من قبل الطلاب والمعلم</textarea>
-                    <div class="form-example">أدخل كل إجراء في سطر جديد أو افصل بين النقاط بفاصلة (,) كل إجراء يجب أن يكون جملة كاملة</div>
-                    <div id="proceduresError" class="validation-error" style="display: none;">
-                        <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h2 class="section-header"><i class="fas fa-chart-line"></i> النتائج</h2>
-                <p class="section-subtitle">النتائج المتحققة والأثر الإيجابي للنشاط</p>
-                
-                <div class="form-group text-with-actions">
-                    <div class="text-actions">
-                        <button type="button" class="text-action-btn" id="clearResults">
-                            <i class="fas fa-trash-alt"></i> حذف النص
-                        </button>
-                    </div>
-                    <label class="form-label required"><i class="fas fa-chart-bar"></i> النتائج (افصل بين النقاط بفاصلة)</label>
-                    <textarea class="form-textarea" id="results" placeholder="أدخل النتائج المتحققة">تفاعل إيجابي من الطلاب أثناء تنفيذ استراتيجية التدريس, تنمية روح التعاون والعمل الجماعي بين الطلاب, اكتشاف مواهب الطلاب في مجالات متنوعة, تطبيق المعرفة النظرية في أنشطة عملية, زيادة دافعية الطلاب للتعلم والمشاركة</textarea>
-                    <div class="form-example">اذكر النتائج الإيجابية التي تحققت من تنفيذ النشاط بشكل واضح ومفصل</div>
-                    <div id="resultsError" class="validation-error" style="display: none;">
-                        <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h2 class="section-header"><i class="fas fa-lightbulb"></i> التوصيات</h2>
-                <p class="section-subtitle">توصيات للتحسين والتطوير في المستقبل</p>
-                
-                <div class="form-group text-with-actions">
-                    <div class="text-actions">
-                        <button type="button" class="text-action-btn" id="clearRecommendations">
-                            <i class="fas fa-trash-alt"></i> حذف النص
-                        </button>
-                    </div>
-                    <label class="form-label required"><i class="fas fa-comments"></i> التوصيات</label>
-                    <textarea class="form-textarea" id="recommendations" placeholder="أدخل التوصيات">الاستمرار في تنويع استراتيجيات التدريس وتوثيق الممارسات المميزة لإثراء التجارب المستقبلية. توفير المزيد من الموارد والأدوات اللازمة للأنشطة العملية. تشجيع الطلاب المبدعين للمشاركة في المسابقات والمنافسات الخارجية. عقد ورش عمل للمعلمين لتبادل الخبرات في مجال استراتيجيات التدريس الحديثة.</textarea>
-                    <div class="form-example">قدم توصيات واضحة وعملية للتحسين والتطوير في المستقبل</div>
-                    <div id="recommendationsError" class="validation-error" style="display: none;">
-                        <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-section upload-section">
-                <h2 class="section-header"><i class="fas fa-images"></i> الصور المرفقة بالتقرير</h2>
-                <p class="section-subtitle">صور توثيقية للنشاط المنفذ (صورتان كحد أقصى)</p>
-                
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                    </div>
-                    <div class="upload-text">انقر لرفع الصور أو اسحبها إلى هنا</div>
-                    <div class="upload-hint">الحجم الأقصى: 5MB لكل صورة | الصيغ المدعومة: JPG, PNG, GIF | الحد الأقصى: 4 صور</div>
-                    <input type="file" id="imageUpload" accept="image/*" multiple style="display: none;">
-                </div>
-                
-                <div class="image-preview" id="imagePreview"></div>
-                
-                <div class="form-group" style="margin-top: 20px;">
-                    <label class="form-label"><i class="fas fa-tips"></i> نصائح للصور المرفقة:</label>
-                    <ul style="padding-right: 20px; color: var(--gray-color); font-size: 14px; line-height: 1.8;">
-                        <li>صورة توثيق تنفيذ النشاط داخل الصف أو ساحة المدرسة</li>
-                        <li>صورة لأعمال أو منتجات الطلاب الناتجة عن النشاط</li>
-                        <li>صورة لعرض الطلاب لمخرجاتهم أو مشاركتهم في النشاط</li>
-                        <li>يفضل إرفاق صور واضحة توثق التنفيذ أو النماذج أو أعمال الطلاب</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="action-buttons">
-                <button class="btn btn-secondary" id="saveDraft">
-                    <i class="fas fa-save"></i> حفظ كمسودة
-                </button>
-                
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <button class="btn btn-outline" id="previewReport">
-                        <i class="fas fa-eye"></i> معاينة التقرير
-                    </button>
-                    <button class="btn btn-success" id="createReport">
-                        <i class="fas fa-file-alt"></i> إنشاء التقرير النهائي
-                    </button>
-                </div>
-            </div>
-        </div>
+    <div class="vertical">
+      <div class="right">النتائج</div>
+      <div class="divider"></div>
+      <div class="left">التوصيات</div>
     </div>
 
-    <div class="export-modal" id="exportModal">
-        <div class="export-modal-content">
-            <div class="export-modal-header">
-                <div class="export-modal-title">
-                    <i class="fas fa-download"></i> تصدير التقرير النهائي
-                </div>
-                <button class="export-modal-close" id="closeExportModal">&times;</button>
-            </div>
-            <div class="export-modal-body">
-                <p style="text-align: center; margin-bottom: 20px; color: var(--gray-color); font-size: 16px; line-height: 1.6;">
-                    اختر الصيغة المناسبة لتصدير التقرير النهائي. يمكنك طباعة التقرير مباشرة بعد إنشاء ملف Word.
-                </p>
-                
-                <div class="export-options">
-                    <div class="export-option" data-format="word">
-                        <i class="fas fa-file-word"></i>
-                        <div class="export-option-title">Microsoft Word</div>
-                        <div class="export-option-desc">نسق احترافي قابلة للتعديل والطباعة مع تنسيق متقدم يدعم اللغة العربية والصور المرفقة</div>
-                    </div>
-                    
-                    <div class="export-option" data-format="print">
-                        <i class="fas fa-print"></i>
-                        <div class="export-option-title">طباعة مباشرة</div>
-                        <div class="export-option-desc">طباعة التقرير مباشرة على ورق A4 مع تنسيق احترافي يدعم العربية والصور بشكل كامل</div>
-                    </div>
-                    
-                    <div class="export-option" data-format="pdf">
-                        <i class="fas fa-file-pdf"></i>
-                        <div class="export-option-title">PDF</div>
-                        <div class="export-option-desc">نسخة PDF احترافية ثابتة مع الصور والتنسيق الكامل</div>
-                    </div>
-                    
-                    <div class="export-option" data-format="html">
-                        <i class="fas fa-file-code"></i>
-                        <div class="export-option-title">نسخة ويب</div>
-                        <div class="export-option-desc">نسخة ويب تفاعلية مع تنسيق احترافي متكامل يدعم الصور المرفوعة</div>
-                    </div>
-                </div>
-                
-                <div class="export-actions">
-                    <button class="btn btn-outline" id="cancelExport">
-                        <i class="fas fa-times"></i> إلغاء
-                    </button>
-                </div>
-            </div>
-        </div>
+    <div class="desc-box">
+      <strong>التوصيات</strong>
+      <p id="desc4"></p>
     </div>
+  </div>
+  
+  <div class="page-footer">صفحة 2 من 3</div>
+</div>
 
-    <div class="scroll-indicator" id="scrollToTop">
-        <i class="fas fa-arrow-up"></i>
-    </div>
+<!-- الصفحة الثالثة -->
+<div class="page images-page">
+  <div class="header-full">
+    <img src="https://i.ibb.co/2037zjqy/IMG-2102.jpg" alt="شعار الوزارة">
+    <h1>الإدارة العامة للتعليم</h1>
+    <h2>وزارة التعليم</h2>
+  </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const uploadArea = document.getElementById('uploadArea');
-            const imageUpload = document.getElementById('imageUpload');
-            const imagePreview = document.getElementById('imagePreview');
-            const scrollToTopBtn = document.getElementById('scrollToTop');
-            const saveDraftBtn = document.getElementById('saveDraft');
-            const previewReportBtn = document.getElementById('previewReport');
-            const createReportBtn = document.getElementById('createReport');
-            const exportModal = document.getElementById('exportModal');
-            const closeExportModal = document.getElementById('closeExportModal');
-            const cancelExport = document.getElementById('cancelExport');
-            const exportOptions = document.querySelectorAll('.export-option');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const loadingText = document.getElementById('loadingText');
-            const successMessage = document.getElementById('successMessage');
-            const successTitle = document.getElementById('successTitle');
-            const successDetails = document.getElementById('successDetails');
-            const closeSuccessMessage = document.getElementById('closeSuccessMessage');
-            const autoFillBtn = document.getElementById('autoFillBtn');
-            const clearDescription = document.getElementById('clearDescription');
-            const clearProcedures = document.getElementById('clearProcedures');
-            const clearResults = document.getElementById('clearResults');
-            const clearRecommendations = document.getElementById('clearRecommendations');
-            
-            let uploadedImages = [];
-            let currentReportData = null;
-            
-            const reportTemplates = {
-                'strategy': {
-                    description: 'تم تنفيذ استراتيجية تدريس حديثة تعتمد على التعلم النشط والتعاوني، حيث تم تصميم الأنشطة لتتناسب مع قدرات الطلاب المختلفة وتنمي مهارات التفكير العليا لديهم. ركزت الاستراتيجية على جعل الطالب محور العملية التعليمية.',
-                    procedures: 'تحليل المحتوى التعليمي وتحديد الأهداف, تصميم أنشطة تعليمية متنوعة, تقسيم الطلاب إلى مجموعات عمل, توفير الأدوات والمواد التعليمية, تقديم التوجيه والإرشاد, تقييم الأداء وتقديم التغذية الراجعة',
-                    results: 'تحسن ملحوظ في مستوى الفهم والاستيعاب, زيادة مشاركة الطلاب في الأنشطة الصفية, تنمية مهارات العمل الجماعي, ارتفاع مستوى التحصيل الدراسي, تعزيز الثقة بالنفس لدى الطلاب',
-                    recommendations: 'الاستمرار في تطبيق استراتيجيات التعلم النشط, تنظيم ورش عمل للمعلمين حول استراتيجيات التدريس, توفير المزيد من الموارد التعليمية, توثيق التجارب الناجحة ونشرها'
-                },
-                'activity-session': {
-                    description: 'تم تنفيذ حصة نشاط طلابي هادفة تهدف إلى تنمية المهارات الحياتية والاجتماعية للطلاب، حيث اشتملت على أنشطة عملية وتفاعلية تعزز القيم والمبادئ التربوية.',
-                    procedures: 'تحديد أهداف حصة النشاط, إعداد المواد والأدوات اللازمة, تنظيم المكان وتجهيزه, شرح النشاط وتوزيع المهام, متابعة تنفيذ الطلاب, تقييم النتائج وتلخيصها',
-                    results: 'تفاعل إيجابي من جميع الطلاب, اكتشاف مواهب وقدرات جديدة, تنمية روح التعاون والمسؤولية, تحسين المهارات الاجتماعية, زيادة الحماس للأنشطة المدرسية',
-                    recommendations: 'تنويع أنشطة الحصص النشاطية, تخصيص مساحة أكبر للأنشطة, إشراك أولياء الأمور في بعض الأنشطة, تنظيم مسابقات بين الفصول'
-                }
-            };
-            
-            function setupEventListeners() {
-                uploadArea.addEventListener('click', function() {
-                    imageUpload.click();
-                });
-                
-                uploadArea.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    this.classList.add('dragover');
-                });
-                
-                uploadArea.addEventListener('dragleave', function() {
-                    this.classList.remove('dragover');
-                });
-                
-                uploadArea.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    this.classList.remove('dragover');
-                    const files = e.dataTransfer.files;
-                    handleImageUpload(files);
-                });
-                
-                imageUpload.addEventListener('change', function(e) {
-                    const files = e.target.files;
-                    handleImageUpload(files);
-                });
-                
-                scrollToTopBtn.addEventListener('click', function() {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-                
-                window.addEventListener('scroll', function() {
-                    if (window.scrollY > 300) {
-                        scrollToTopBtn.classList.add('visible');
-                    } else {
-                        scrollToTopBtn.classList.remove('visible');
-                    }
-                });
-                
-                saveDraftBtn.addEventListener('click', saveAsDraft);
-                previewReportBtn.addEventListener('click', previewReport);
-                createReportBtn.addEventListener('click', createReport);
-                
-                document.querySelectorAll('.form-input, .form-textarea, .form-select').forEach(input => {
-                    input.addEventListener('blur', function() {
-                        validateField(this);
-                    });
-                    
-                    input.addEventListener('input', function() {
-                        if (this.value.trim()) {
-                            this.classList.remove('invalid');
-                            const errorDiv = document.getElementById(`${this.id}Error`);
-                            if (errorDiv) errorDiv.style.display = 'none';
-                        }
-                    });
-                });
-                
-                closeExportModal.addEventListener('click', function() {
-                    exportModal.style.display = 'none';
-                });
-                
-                cancelExport.addEventListener('click', function() {
-                    exportModal.style.display = 'none';
-                });
-                
-                exportOptions.forEach(option => {
-                    option.addEventListener('click', function() {
-                        const format = this.dataset.format;
-                        exportReport(format);
-                    });
-                });
-                
-                window.addEventListener('click', function(event) {
-                    if (event.target === exportModal) {
-                        exportModal.style.display = 'none';
-                    }
-                });
-                
-                closeSuccessMessage.addEventListener('click', function() {
-                    successMessage.classList.remove('active');
-                });
-                
-                autoFillBtn.addEventListener('click', autoFillFields);
-                clearDescription.addEventListener('click', () => clearField('description'));
-                clearProcedures.addEventListener('click', () => clearField('procedures'));
-                clearResults.addEventListener('click', () => clearField('results'));
-                clearRecommendations.addEventListener('click', () => clearField('recommendations'));
-            }
-            
-            function handleImageUpload(files) {
-                if (uploadedImages.length + files.length > 4) {
-                    showError('يمكنك رفع 4 صور كحد أقصى فقط');
-                    return;
-                }
-                
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    
-                    if (!file.type.startsWith('image/')) {
-                        showError('الرجاء رفع ملفات صور فقط (JPG, PNG, GIF)');
-                        continue;
-                    }
-                    
-                    if (file.size > 5 * 1024 * 1024) {
-                        showError('حجم الصورة يجب أن يكون أقل من 5MB');
-                        continue;
-                    }
-                    
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        uploadedImages.push({
-                            data: e.target.result,
-                            name: file.name,
-                            type: file.type
-                        });
-                        updateImagePreview();
-                    };
-                    
-                    reader.readAsDataURL(file);
-                }
-                
-                imageUpload.value = '';
-            }
-            
-            function updateImagePreview() {
-                imagePreview.innerHTML = '';
-                
-                uploadedImages.forEach((imgData, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'preview-item';
-                    
-                    item.innerHTML = `
-                        <img src="${imgData.data}" class="preview-img" alt="صورة ${index + 1}">
-                        <button class="preview-remove" data-index="${index}">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    
-                    imagePreview.appendChild(item);
-                });
-                
-                document.querySelectorAll('.preview-remove').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const index = parseInt(this.dataset.index);
-                        uploadedImages.splice(index, 1);
-                        updateImagePreview();
-                    });
-                });
-            }
-            
-            function loadInitialData() {
-                const savedDraft = localStorage.getItem('reportDraft');
-                if (savedDraft) {
-                    try {
-                        const draftData = JSON.parse(savedDraft);
-                        if (confirm('يوجد تقرير محفوظ كمسودة. هل تريد استكماله؟')) {
-                            loadDraftData(draftData);
-                        }
-                    } catch (e) {
-                        console.error('Error loading draft:', e);
-                    }
-                }
-            }
-            
-            function loadDraftData(draftData) {
-                document.getElementById('reportType').value = draftData.type || 'strategy';
-                document.getElementById('reportTitle').value = draftData.title || 'تقرير تنفيذ استراتيجية تدريس';
-                document.getElementById('curriculumRelated').value = draftData.curriculumRelated || 'نعم';
-                document.getElementById('programDate').value = draftData.programDate || '1447-06-12';
-                document.getElementById('location').value = draftData.location || '';
-                document.getElementById('target').value = draftData.target || '';
-                document.getElementById('beneficiaries').value = draftData.beneficiaries || '30';
-                document.getElementById('description').value = draftData.description || '';
-                document.getElementById('procedures').value = draftData.procedures ? (Array.isArray(draftData.procedures) ? draftData.procedures.join(', ') : draftData.procedures) : '';
-                document.getElementById('results').value = draftData.results ? (Array.isArray(draftData.results) ? draftData.results.join(', ') : draftData.results) : '';
-                document.getElementById('recommendations').value = draftData.recommendations || '';
-                
-                if (draftData.images && draftData.images.length > 0) {
-                    uploadedImages = [...draftData.images];
-                    updateImagePreview();
-                }
-                
-                showSuccess('تم تحميل بيانات المسودة بنجاح');
-            }
-            
-            function autoFillFields() {
-                const reportType = document.getElementById('reportType').value;
-                const reportTitle = document.getElementById('reportTitle').value;
-                
-                if (!reportType) {
-                    showError('يرجى اختيار نوع التقرير أولاً');
-                    return;
-                }
-                
-                const template = reportTemplates[reportType];
-                if (template) {
-                    document.getElementById('description').value = template.description;
-                    document.getElementById('procedures').value = template.procedures;
-                    document.getElementById('results').value = template.results;
-                    document.getElementById('recommendations').value = template.recommendations;
-                    
-                    if (!reportTitle || reportTitle === 'تقرير تنفيذ استراتيجية تدريس') {
-                        const reportTypeText = document.getElementById('reportType').options[document.getElementById('reportType').selectedIndex].text;
-                        document.getElementById('reportTitle').value = reportTypeText;
-                    }
-                    
-                    showSuccess('تم تعبئة الحقول تلقائياً بنجاح. يمكنك تعديل النصوص حسب الحاجة.');
-                } else {
-                    showError('لا يوجد قالب لهذا النوع من التقارير');
-                }
-            }
-            
-            function clearField(fieldId) {
-                document.getElementById(fieldId).value = '';
-                showSuccess('تم حذف النص من الحقل');
-            }
-            
-            function validateField(field) {
-                const errorDiv = document.getElementById(`${field.id}Error`);
-                
-                if (field.hasAttribute('required') && !field.value.trim()) {
-                    field.classList.add('invalid');
-                    if (errorDiv) errorDiv.style.display = 'flex';
-                    return false;
-                }
-                
-                field.classList.remove('invalid');
-                if (errorDiv) errorDiv.style.display = 'none';
-                return true;
-            }
-            
-            function validateForm() {
-                let isValid = true;
-                const requiredFields = document.querySelectorAll('[required]');
-                
-                requiredFields.forEach(field => {
-                    if (!validateField(field)) {
-                        isValid = false;
-                    }
-                });
-                
-                return isValid;
-            }
-            
-            function saveAsDraft() {
-                if (!validateForm()) {
-                    showError('يرجى ملء جميع الحقول المطلوبة قبل الحفظ');
-                    return;
-                }
-                
-                const reportData = collectReportData();
-                reportData.status = 'draft';
-                reportData.savedAt = new Date().toLocaleString('ar-SA');
-                
-                localStorage.setItem('reportDraft', JSON.stringify(reportData));
-                
-                showSuccess('تم حفظ التقرير كمسودة بنجاح!\n' + reportData.savedAt);
-            }
-            
-            function previewReport() {
-                if (!validateForm()) {
-                    showError('يرجى ملء جميع الحقول المطلوبة قبل المعاينة');
-                    return;
-                }
-                
-                currentReportData = collectReportData();
-                
-                const previewWindow = window.open('', '_blank');
-                previewWindow.document.write(generatePreviewHTML(currentReportData));
-                previewWindow.document.close();
-            }
-            
-            function createReport() {
-                if (!validateForm()) {
-                    showError('يرجى ملء جميع الحقول المطلوبة قبل الإنشاء');
-                    return;
-                }
-                
-                currentReportData = collectReportData();
-                currentReportData.status = 'completed';
-                currentReportData.submissionDate = new Date().toLocaleDateString('ar-SA');
-                
-                exportModal.style.display = 'flex';
-            }
-            
-            async function exportReport(format) {
-                if (!currentReportData) {
-                    showError('لا توجد بيانات للتقرير');
-                    return;
-                }
-                
-                exportModal.style.display = 'none';
-                
-                switch(format) {
-                    case 'word':
-                        showLoading('جاري إنشاء ملف Word...');
-                        try {
-                            await exportToWordWithImages();
-                            hideLoading();
-                            showSuccess('تم إنشاء ملف Word بنجاح! يمكنك فتحه وطباعته مباشرة.');
-                        } catch (error) {
-                            hideLoading();
-                            showError(`حدث خطأ أثناء إنشاء ملف Word: ${error.message}`);
-                        }
-                        break;
-                        
-                    case 'print':
-                        showLoading('جاري تحضير التقرير للطباعة...');
-                        setTimeout(() => {
-                            printReportWithImages();
-                            hideLoading();
-                        }, 500);
-                        break;
-                        
-                    case 'pdf':
-                        showLoading('جاري إنشاء ملف PDF...');
-                        try {
-                            await exportToPDF();
-                            hideLoading();
-                            showSuccess('تم إنشاء ملف PDF بنجاح!');
-                        } catch (error) {
-                            hideLoading();
-                            showError(`حدث خطأ أثناء إنشاء ملف PDF: ${error.message}`);
-                        }
-                        break;
-                        
-                    case 'html':
-                        showLoading('جاري إنشاء نسخة الويب...');
-                        setTimeout(() => {
-                            exportToHTML();
-                            hideLoading();
-                            showSuccess('تم إنشاء نسخة الويب بنجاح!');
-                        }, 500);
-                        break;
-                }
-            }
-            
-            async function exportToWordWithImages() {
-                const docx = window.docx;
-                const { AlignmentType, BorderStyle, WidthType, TableCell, TableRow, Paragraph } = docx;
-                
-                const children = [];
-                
-                children.push(
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: "إدارة تعليم منطقة مكة المكرمة",
-                                bold: true,
-                                size: 36,
-                                font: "Traditional Arabic",
-                                color: "2c3e50"
-                            })
-                        ],
-                        alignment: AlignmentType.CENTER,
-                        spacing: { after: 200 }
-                    }),
-                    
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: "مكتب التعليم بوسط مكة",
-                                bold: true,
-                                size: 28,
-                                font: "Traditional Arabic",
-                                color: "2c3e50"
-                            })
-                        ],
-                        alignment: AlignmentType.CENTER,
-                        spacing: { after: 400 }
-                    }),
-                    
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: currentReportData.title,
-                                bold: true,
-                                size: 32,
-                                font: "Traditional Arabic",
-                                color: "000000"
-                            })
-                        ],
-                        alignment: AlignmentType.CENTER,
-                        border: {
-                            bottom: {
-                                color: "e74c3c",
-                                size: 8,
-                                space: 2,
-                                style: BorderStyle.SINGLE
-                            }
-                        },
-                        spacing: { after: 600 }
-                    })
-                );
-                
-                children.push(
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: `التاريخ: ${currentReportData.programDate} هـ`,
-                                size: 22,
-                                font: "Traditional Arabic",
-                                bold: true
-                            })
-                        ],
-                        alignment: AlignmentType.RIGHT,
-                        spacing: { after: 400 }
-                    })
-                );
-                
-                children.push(
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: "البيانات الأساسية",
-                                bold: true,
-                                size: 28,
-                                font: "Traditional Arabic",
-                                color: "2c3e50"
-                            })
-                        ],
-                        alignment: AlignmentType.RIGHT,
-                        spacing: { before: 200, after: 300 }
-                    })
-                );
-                
-                const basicInfoRows = [
-                    { label: "المدرسة", value: currentReportData.school },
-                    { label: "مدير المدرسة", value: currentReportData.principal },
-                    { label: "معد التقرير", value: currentReportData.reporter },
-                    { label: "مكان التنفيذ", value: currentReportData.location },
-                    { label: "المستهدفون", value: currentReportData.target },
-                    { label: "عدد المستفيدين", value: currentReportData.beneficiaries },
-                    { label: "تابع للمناهج", value: currentReportData.curriculumRelated }
-                ];
-                
-                const basicInfoTableRows = basicInfoRows.map(item => 
-                    new TableRow({
-                        children: [
-                            new TableCell({
-                                children: [
-                                    new Paragraph({
-                                        children: [
-                                            new docx.TextRun({
-                                                text: item.value,
-                                                size: 24,
-                                                font: "Traditional Arabic"
-                                            })
-                                        ],
-                                        alignment: AlignmentType.RIGHT
-                                    })
-                                ],
-                                width: { size: 60, type: WidthType.PERCENTAGE }
-                            }),
-                            new TableCell({
-                                children: [
-                                    new Paragraph({
-                                        children: [
-                                            new docx.TextRun({
-                                                text: item.label,
-                                                bold: true,
-                                                size: 24,
-                                                font: "Traditional Arabic"
-                                            })
-                                        ],
-                                        alignment: AlignmentType.RIGHT
-                                    })
-                                ],
-                                shading: { fill: "f8f9fa" },
-                                width: { size: 40, type: WidthType.PERCENTAGE }
-                            })
-                        ]
-                    })
-                );
-                
-                children.push(
-                    new docx.Table({
-                        rows: basicInfoTableRows,
-                        width: { size: 100, type: WidthType.PERCENTAGE },
-                        borders: {
-                            top: { style: BorderStyle.SINGLE, size: 1, color: "bdc3c7" },
-                            bottom: { style: BorderStyle.SINGLE, size: 1, color: "bdc3c7" },
-                            left: { style: BorderStyle.SINGLE, size: 1, color: "bdc3c7" },
-                            right: { style: BorderStyle.SINGLE, size: 1, color: "bdc3c7" },
-                            insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: "bdc3c7" },
-                            insideVertical: { style: BorderStyle.SINGLE, size: 1, color: "bdc3c7" }
-                        }
-                    })
-                );
-                
-                children.push(
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: "وصف مختصر لما تم تنفيذه",
-                                bold: true,
-                                size: 28,
-                                font: "Traditional Arabic",
-                                color: "2c3e50"
-                            })
-                        ],
-                        alignment: AlignmentType.RIGHT,
-                        spacing: { before: 600, after: 300 }
-                    }),
-                    
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: currentReportData.description,
-                                size: 24,
-                                font: "Traditional Arabic"
-                            })
-                        ],
-                        alignment: AlignmentType.RIGHT,
-                        spacing: { after: 400 }
-                    })
-                );
-                
-                if (currentReportData.procedures && currentReportData.procedures.length > 0) {
-                    children.push(
-                        new Paragraph({
-                            children: [
-                                new docx.TextRun({
-                                    text: "إجراءات التنفيذ",
-                                    bold: true,
-                                    size: 28,
-                                    font: "Traditional Arabic",
-                                    color: "2c3e50"
-                                })
-                            ],
-                            alignment: AlignmentType.RIGHT,
-                            spacing: { before: 400, after: 300 }
-                        })
-                    );
-                    
-                    currentReportData.procedures.forEach((procedure, index) => {
-                        children.push(
-                            new Paragraph({
-                                children: [
-                                    new docx.TextRun({
-                                        text: `${procedure}`,
-                                        size: 24,
-                                        font: "Traditional Arabic"
-                                    })
-                                ],
-                                alignment: AlignmentType.RIGHT,
-                                spacing: { after: 150 }
-                            })
-                        );
-                    });
-                }
-                
-                if (currentReportData.results && currentReportData.results.length > 0) {
-                    children.push(
-                        new Paragraph({
-                            children: [
-                                new docx.TextRun({
-                                    text: "النتائج",
-                                    bold: true,
-                                    size: 28,
-                                    font: "Traditional Arabic",
-                                    color: "2c3e50"
-                                })
-                            ],
-                            alignment: AlignmentType.RIGHT,
-                            spacing: { before: 600, after: 300 }
-                        })
-                    );
-                    
-                    currentReportData.results.forEach((result, index) => {
-                        children.push(
-                            new Paragraph({
-                                children: [
-                                    new docx.TextRun({
-                                        text: `${result}`,
-                                        size: 24,
-                                        font: "Traditional Arabic"
-                                    })
-                                ],
-                                alignment: AlignmentType.RIGHT,
-                                spacing: { after: 150 }
-                            })
-                        );
-                    });
-                }
-                
-                children.push(
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: "التوصيات",
-                                bold: true,
-                                size: 28,
-                                font: "Traditional Arabic",
-                                color: "2c3e50"
-                            })
-                        ],
-                        alignment: AlignmentType.RIGHT,
-                        spacing: { before: 600, after: 300 }
-                    }),
-                    
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: currentReportData.recommendations,
-                                size: 24,
-                                font: "Traditional Arabic"
-                            })
-                        ],
-                        alignment: AlignmentType.RIGHT,
-                        spacing: { after: 600 }
-                    })
-                );
-                
-                if (uploadedImages.length > 0) {
-                    children.push(
-                        new Paragraph({
-                            children: [
-                                new docx.TextRun({
-                                    text: "الصور المرفقة بالتقرير",
-                                    bold: true,
-                                    size: 28,
-                                    font: "Traditional Arabic",
-                                    color: "2c3e50"
-                                })
-                            ],
-                            alignment: AlignmentType.RIGHT,
-                            spacing: { before: 600, after: 300 }
-                        }),
-                        
-                        new Paragraph({
-                            children: [
-                                new docx.TextRun({
-                                    text: `تم رفع ${uploadedImages.length} صورة توثيقية مع التقرير`,
-                                    size: 22,
-                                    font: "Traditional Arabic",
-                                    italics: true,
-                                    color: "7f8c8d"
-                                })
-                            ],
-                            alignment: AlignmentType.RIGHT,
-                            spacing: { after: 400 }
-                        })
-                    );
-                }
-                
-                children.push(
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: "التوقيعات",
-                                bold: true,
-                                size: 28,
-                                font: "Traditional Arabic",
-                                color: "2c3e50"
-                            })
-                        ],
-                        alignment: AlignmentType.CENTER,
-                        spacing: { before: 800, after: 400 }
-                    }),
-                    
-                    new docx.Table({
-                        rows: [
-                            new TableRow({
-                                children: [
-                                    new TableCell({
-                                        children: [
-                                            new Paragraph({
-                                                children: [
-                                                    new docx.TextRun({
-                                                        text: "مدير المدرسة",
-                                                        bold: true,
-                                                        size: 24,
-                                                        font: "Traditional Arabic"
-                                                    })
-                                                ],
-                                                alignment: AlignmentType.CENTER
-                                            }),
-                                            new Paragraph({
-                                                children: [
-                                                    new docx.TextRun({
-                                                        text: currentReportData.principal,
-                                                        size: 22,
-                                                        font: "Traditional Arabic"
-                                                    })
-                                                ],
-                                                alignment: AlignmentType.CENTER
-                                            }),
-                                            new Paragraph({
-                                                children: [
-                                                    new docx.TextRun({
-                                                        text: ".........................",
-                                                        size: 24,
-                                                        font: "Traditional Arabic"
-                                                    })
-                                                ],
-                                                alignment: AlignmentType.CENTER
-                                            })
-                                        ],
-                                        margins: { top: 200, bottom: 200 }
-                                    }),
-                                    new TableCell({
-                                        children: [
-                                            new Paragraph({
-                                                children: [
-                                                    new docx.TextRun({
-                                                        text: "معد التقرير",
-                                                        bold: true,
-                                                        size: 24,
-                                                        font: "Traditional Arabic"
-                                                    })
-                                                ],
-                                                alignment: AlignmentType.CENTER
-                                            }),
-                                            new Paragraph({
-                                                children: [
-                                                    new docx.TextRun({
-                                                        text: currentReportData.reporter,
-                                                        size: 22,
-                                                        font: "Traditional Arabic"
-                                                    })
-                                                ],
-                                                alignment: AlignmentType.CENTER
-                                            }),
-                                            new Paragraph({
-                                                children: [
-                                                    new docx.TextRun({
-                                                        text: ".........................",
-                                                        size: 24,
-                                                        font: "Traditional Arabic"
-                                                    })
-                                                ],
-                                                alignment: AlignmentType.CENTER
-                                            })
-                                        ],
-                                        margins: { top: 200, bottom: 200 }
-                                    })
-                                ]
-                            })
-                        ],
-                        width: { size: 100, type: WidthType.PERCENTAGE }
-                    })
-                );
-                
-                children.push(
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: `تم إنشاء هذا التقرير بواسطة النظام الإلكتروني لإعداد التقارير التربوية`,
-                                size: 18,
-                                font: "Traditional Arabic",
-                                color: "7f8c8d",
-                                italics: true
-                            })
-                        ],
-                        alignment: AlignmentType.CENTER,
-                        spacing: { before: 800 }
-                    }),
-                    
-                    new Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: `${new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`,
-                                size: 16,
-                                font: "Traditional Arabic",
-                                color: "7f8c8d"
-                            })
-                        ],
-                        alignment: AlignmentType.CENTER
-                    })
-                );
-                
-                const doc = new docx.Document({
-                    creator: "النظام الإلكتروني لإعداد التقارير التربوية",
-                    title: currentReportData.title,
-                    description: "تقرير تربوي - إدارة تعليم مكة المكرمة",
-                    sections: [{
-                        properties: {
-                            page: {
-                                margin: {
-                                    top: 1417,
-                                    right: 1417,
-                                    bottom: 1417,
-                                    left: 1417
-                                }
-                            }
-                        },
-                        children: children
-                    }]
-                });
-                
-                const buffer = await docx.Packer.toBlob(doc);
-                saveAs(buffer, `${currentReportData.title}.docx`);
-            }
-            
-            function printReportWithImages() {
-                const printWindow = window.open('', '_blank');
-                const printHTML = generatePrintHTMLWithImages();
-                printWindow.document.write(printHTML);
-                printWindow.document.close();
-                
-                setTimeout(() => {
-                    printWindow.print();
-                    setTimeout(() => {
-                        printWindow.close();
-                    }, 1000);
-                }, 500);
-            }
-            
-            async function exportToPDF() {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4',
-                    hotfixes: ["px_scaling"]
-                });
-                
-                doc.setLanguage('ar');
-                doc.setR2L(true);
-                
-                let yPos = 20;
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const margin = 20;
-                
-                doc.setFontSize(24);
-                doc.setFont("helvetica", "bold");
-                doc.text("إدارة تعليم منطقة مكة المكرمة", pageWidth / 2, yPos, { align: 'center' });
-                yPos += 10;
-                
-                doc.setFontSize(18);
-                doc.text("مكتب التعليم بوسط مكة", pageWidth / 2, yPos, { align: 'center' });
-                yPos += 15;
-                
-                doc.setFontSize(20);
-                doc.text(currentReportData.title, pageWidth / 2, yPos, { align: 'center' });
-                yPos += 20;
-                
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "normal");
-                doc.text(`التاريخ: ${currentReportData.programDate} هـ`, pageWidth - margin, yPos, { align: 'right' });
-                yPos += 15;
-                
-                doc.setFontSize(16);
-                doc.setFont("helvetica", "bold");
-                doc.text("البيانات الأساسية", pageWidth - margin, yPos, { align: 'right' });
-                yPos += 10;
-                
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "normal");
-                
-                const basicData = [
-                    ["المدرسة", currentReportData.school],
-                    ["مدير المدرسة", currentReportData.principal],
-                    ["معد التقرير", currentReportData.reporter],
-                    ["مكان التنفيذ", currentReportData.location],
-                    ["المستهدفون", currentReportData.target],
-                    ["عدد المستفيدين", currentReportData.beneficiaries],
-                    ["تابع للمناهج", currentReportData.curriculumRelated]
-                ];
-                
-                basicData.forEach(([label, value]) => {
-                    if (yPos > 250) {
-                        doc.addPage();
-                        yPos = 20;
-                    }
-                    
-                    doc.setFont("helvetica", "bold");
-                    doc.text(`${label}:`, pageWidth - margin - 80, yPos, { align: 'right' });
-                    doc.setFont("helvetica", "normal");
-                    doc.text(value, pageWidth - margin, yPos, { align: 'right' });
-                    yPos += 8;
-                });
-                
-                yPos += 10;
-                
-                doc.setFontSize(16);
-                doc.setFont("helvetica", "bold");
-                doc.text("وصف مختصر لما تم تنفيذه", pageWidth - margin, yPos, { align: 'right' });
-                yPos += 10;
-                
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "normal");
-                const descriptionLines = doc.splitTextToSize(currentReportData.description, pageWidth - (2 * margin));
-                descriptionLines.forEach(line => {
-                    if (yPos > 250) {
-                        doc.addPage();
-                        yPos = 20;
-                    }
-                    doc.text(line, pageWidth - margin, yPos, { align: 'right' });
-                    yPos += 7;
-                });
-                
-                yPos += 10;
-                
-                if (currentReportData.procedures && currentReportData.procedures.length > 0) {
-                    doc.setFontSize(16);
-                    doc.setFont("helvetica", "bold");
-                    doc.text("إجراءات التنفيذ", pageWidth - margin, yPos, { align: 'right' });
-                    yPos += 10;
-                    
-                    doc.setFontSize(12);
-                    doc.setFont("helvetica", "normal");
-                    
-                    currentReportData.procedures.forEach((procedure, index) => {
-                        if (yPos > 250) {
-                            doc.addPage();
-                            yPos = 20;
-                        }
-                        
-                        const procLines = doc.splitTextToSize(`${procedure}`, pageWidth - (2 * margin));
-                        procLines.forEach(line => {
-                            doc.text(line, pageWidth - margin, yPos, { align: 'right' });
-                            yPos += 7;
-                        });
-                        yPos += 3;
-                    });
-                    
-                    yPos += 10;
-                }
-                
-                if (currentReportData.results && currentReportData.results.length > 0) {
-                    doc.setFontSize(16);
-                    doc.setFont("helvetica", "bold");
-                    doc.text("النتائج", pageWidth - margin, yPos, { align: 'right' });
-                    yPos += 10;
-                    
-                    doc.setFontSize(12);
-                    doc.setFont("helvetica", "normal");
-                    
-                    currentReportData.results.forEach((result, index) => {
-                        if (yPos > 250) {
-                            doc.addPage();
-                            yPos = 20;
-                        }
-                        
-                        const resultLines = doc.splitTextToSize(`${result}`, pageWidth - (2 * margin));
-                        resultLines.forEach(line => {
-                            doc.text(line, pageWidth - margin, yPos, { align: 'right' });
-                            yPos += 7;
-                        });
-                        yPos += 3;
-                    });
-                    
-                    yPos += 10;
-                }
-                
-                doc.setFontSize(16);
-                doc.setFont("helvetica", "bold");
-                doc.text("التوصيات", pageWidth - margin, yPos, { align: 'right' });
-                yPos += 10;
-                
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "normal");
-                const recommendationsLines = doc.splitTextToSize(currentReportData.recommendations, pageWidth - (2 * margin));
-                recommendationsLines.forEach(line => {
-                    if (yPos > 250) {
-                        doc.addPage();
-                        yPos = 20;
-                    }
-                    doc.text(line, pageWidth - margin, yPos, { align: 'right' });
-                    yPos += 7;
-                });
-                
-                yPos += 15;
-                
-                if (uploadedImages.length > 0) {
-                    doc.setFontSize(16);
-                    doc.setFont("helvetica", "bold");
-                    doc.text("الصور المرفقة بالتقرير", pageWidth - margin, yPos, { align: 'right' });
-                    yPos += 10;
-                    
-                    doc.setFontSize(12);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`عدد الصور المرفقة: ${uploadedImages.length}`, pageWidth - margin, yPos, { align: 'right' });
-                    yPos += 15;
-                    
-                    for (let i = 0; i < uploadedImages.length; i++) {
-                        if (yPos > 150) {
-                            doc.addPage();
-                            yPos = 20;
-                        }
-                        
-                        try {
-                            const img = new Image();
-                            img.src = uploadedImages[i].data;
-                            
-                            await new Promise((resolve) => {
-                                img.onload = () => {
-                                    const maxWidth = pageWidth - (2 * margin);
-                                    const maxHeight = 80;
-                                    
-                                    let width = img.width;
-                                    let height = img.height;
-                                    
-                                    if (width > maxWidth) {
-                                        const ratio = maxWidth / width;
-                                        width = maxWidth;
-                                        height = height * ratio;
-                                    }
-                                    
-                                    if (height > maxHeight) {
-                                        const ratio = maxHeight / height;
-                                        height = maxHeight;
-                                        width = width * ratio;
-                                    }
-                                    
-                                    doc.addImage(img, 'JPEG', (pageWidth - width) / 2, yPos, width, height);
-                                    yPos += height + 10;
-                                    
-                                    doc.setFontSize(10);
-                                    doc.text(`صورة ${i + 1}`, pageWidth - margin, yPos, { align: 'right' });
-                                    yPos += 15;
-                                    
-                                    resolve();
-                                };
-                                
-                                img.onerror = () => {
-                                    doc.setFontSize(10);
-                                    doc.text(`(تعذر تحميل الصورة ${i + 1})`, pageWidth - margin, yPos, { align: 'right' });
-                                    yPos += 10;
-                                    resolve();
-                                };
-                            });
-                        } catch (error) {
-                            console.warn('خطأ في إضافة الصورة:', error);
-                            doc.setFontSize(10);
-                            doc.text(`(تعذر إضافة الصورة ${i + 1})`, pageWidth - margin, yPos, { align: 'right' });
-                            yPos += 10;
-                        }
-                        
-                        yPos += 5;
-                    }
-                }
-                
-                yPos += 20;
-                
-                doc.setFontSize(16);
-                doc.setFont("helvetica", "bold");
-                doc.text("التوقيعات", pageWidth / 2, yPos, { align: 'center' });
-                yPos += 15;
-                
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "normal");
-                
-                doc.text("مدير المدرسة", margin + 60, yPos + 30, { align: 'center' });
-                doc.text(currentReportData.principal, margin + 60, yPos + 40, { align: 'center' });
-                doc.line(margin, yPos + 50, margin + 120, yPos + 50);
-                doc.text("التوقيع", margin + 60, yPos + 60, { align: 'center' });
-                
-                doc.text("معد التقرير", pageWidth - margin - 60, yPos + 30, { align: 'center' });
-                doc.text(currentReportData.reporter, pageWidth - margin - 60, yPos + 40, { align: 'center' });
-                doc.line(pageWidth - margin - 120, yPos + 50, pageWidth - margin, yPos + 50);
-                doc.text("التوقيع", pageWidth - margin - 60, yPos + 60, { align: 'center' });
-                
-                yPos += 80;
-                
-                doc.setFontSize(10);
-                doc.text("تم إنشاء هذا التقرير بواسطة النظام الإلكتروني لإعداد التقارير التربوية", pageWidth / 2, yPos, { align: 'center' });
-                yPos += 7;
-                doc.text(new Date().toLocaleDateString('ar-SA'), pageWidth / 2, yPos, { align: 'center' });
-                
-                doc.save(`${currentReportData.title}.pdf`);
-            }
-            
-            function generatePrintHTMLWithImages() {
-                const currentDate = new Date().toLocaleDateString('ar-SA', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-                
-                let imagesHTML = '';
-                if (uploadedImages.length > 0) {
-                    imagesHTML = `
-                    <div class="print-section">
-                        <h3 class="print-section-title">الصور المرفقة بالتقرير</h3>
-                        <div class="images-grid">
-                            ${uploadedImages.map((img, index) => `
-                            <div class="image-container">
-                                <img src="${img.data}" alt="صورة توثيقية ${index + 1}" class="report-image">
-                                <div class="image-caption">صورة ${index + 1}</div>
-                            </div>
-                            `).join('')}
-                        </div>
-                    </div>`;
-                }
-                
-                return `<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${currentReportData.title} - طباعة</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
-        
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            font-family: 'Cairo', 'Traditional Arabic', sans-serif;
-        }
-        
-        body {
-            direction: rtl;
-            text-align: right;
-            line-height: 1.8;
-            color: #000;
-            background: white;
-            padding: 20mm;
-            font-size: 14pt;
-        }
-        
-        .print-container {
-            width: 100%;
-            max-width: 210mm;
-            margin: 0 auto;
-        }
-        
-        .print-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #2c3e50;
-            padding-bottom: 20px;
-        }
-        
-        .print-title {
-            color: #2c3e50;
-            font-size: 24pt;
-            margin-bottom: 10px;
-            font-weight: 800;
-        }
-        
-        .print-subtitle {
-            color: #e74c3c;
-            font-size: 18pt;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        
-        .report-title {
-            color: #2c3e50;
-            font-size: 22pt;
-            margin: 20px 0;
-            font-weight: 700;
-            text-align: center;
-        }
-        
-        .print-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border-right: 4px solid #2c3e50;
-            text-align: right;
-        }
-        
-        .print-section {
-            margin: 30px 0;
-            page-break-inside: avoid;
-        }
-        
-        .print-section-title {
-            color: #2c3e50;
-            font-size: 20pt;
-            margin-bottom: 20px;
-            border-right: 4px solid #e74c3c;
-            padding-right: 15px;
-            font-weight: 700;
-            text-align: right;
-        }
-        
-        .print-content {
-            font-size: 14pt;
-            line-height: 1.8;
-            text-align: right;
-            padding-right: 10px;
-        }
-        
-        .print-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 12pt;
-            direction: rtl;
-        }
-        
-        .print-table th {
-            background-color: #2c3e50;
-            color: white;
-            padding: 12px;
-            text-align: right;
-            font-weight: bold;
-            border: 1px solid #1a252f;
-        }
-        
-        .print-table td {
-            padding: 10px 12px;
-            border: 1px solid #bdc3c7;
-            text-align: right;
-        }
-        
-        .print-table tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        
-        .print-procedures, .print-results {
-            padding-right: 25px;
-            margin: 15px 0;
-            text-align: right;
-        }
-        
-        .procedure-item, .result-item {
-            margin-bottom: 10px;
-            padding: 10px 15px;
-            background: white;
-            border-radius: 5px;
-            border-right: 3px solid #3498db;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .images-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .image-container {
-            text-align: center;
-            page-break-inside: avoid;
-        }
-        
-        .report-image {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid #ddd;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        
-        .image-caption {
-            margin-top: 8px;
-            font-size: 11pt;
-            color: #666;
-        }
-        
-        .print-signatures {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 80px;
-            padding-top: 40px;
-            border-top: 2px solid #2c3e50;
-            flex-wrap: wrap;
-            page-break-inside: avoid;
-            direction: rtl;
-        }
-        
-        .print-signature {
-            text-align: center;
-            min-width: 250px;
-            margin-bottom: 30px;
-        }
-        
-        .print-signature-title {
-            font-size: 16pt;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-        
-        .print-signature-name {
-            font-size: 14pt;
-            margin: 25px 0;
-            font-weight: 600;
-        }
-        
-        .print-signature-line {
-            width: 200px;
-            height: 1px;
-            background: #333;
-            margin: 30px auto;
-            border-top: 2px solid #333;
-        }
-        
-        .print-footer {
-            text-align: center;
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 1px dashed #bdc3c7;
-            color: #7f8c8d;
-            font-size: 11pt;
-        }
-        
-        @page {
-            size: A4;
-            margin: 20mm;
-        }
-        
-        @media print {
-            body {
-                padding: 0;
-                font-size: 12pt;
-            }
-            
-            .print-container {
-                width: 100%;
-                margin: 0;
-            }
-            
-            .print-title {
-                font-size: 22pt;
-            }
-            
-            .print-subtitle {
-                font-size: 16pt;
-            }
-            
-            .report-title {
-                font-size: 20pt;
-            }
-            
-            .report-image {
-                max-height: 120px;
-            }
-            
-            .images-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="print-container">
-        <div class="print-header">
-            <h1 class="print-title">إدارة تعليم منطقة مكة المكرمة</h1>
-            <div class="print-subtitle">مكتب التعليم بوسط مكة</div>
-            <h2 class="report-title">${currentReportData.title}</h2>
-            <div class="print-info">
-                <strong>التاريخ:</strong> ${currentReportData.programDate} هـ
-            </div>
-        </div>
-        
-        <div class="print-section">
-            <h3 class="print-section-title">البيانات الأساسية</h3>
-            <table class="print-table">
-                ${[
-                    { label: 'المدرسة', value: currentReportData.school },
-                    { label: 'مدير المدرسة', value: currentReportData.principal },
-                    { label: 'معد التقرير', value: currentReportData.reporter },
-                    { label: 'مكان التنفيذ', value: currentReportData.location },
-                    { label: 'المستهدفون', value: currentReportData.target },
-                    { label: 'عدد المستفيدين', value: currentReportData.beneficiaries },
-                    { label: 'تابع للمناهج', value: currentReportData.curriculumRelated }
-                ].map(item => `
-                <tr>
-                    <td>${item.value}</td>
-                    <th>${item.label}</th>
-                </tr>
-                `).join('')}
-            </table>
-        </div>
-        
-        <div class="print-section">
-            <h3 class="print-section-title">وصف مختصر لما تم تنفيذه</h3>
-            <div class="print-content">
-                <p>${currentReportData.description}</p>
-            </div>
-        </div>
-        
-        ${currentReportData.procedures && currentReportData.procedures.length > 0 ? `
-        <div class="print-section">
-            <h3 class="print-section-title">إجراءات التنفيذ</h3>
-            <div class="print-procedures">
-                ${currentReportData.procedures.map((procedure, index) => `
-                <div class="procedure-item">${procedure}</div>
-                `).join('')}
-            </div>
-        </div>` : ''}
-        
-        ${currentReportData.results && currentReportData.results.length > 0 ? `
-        <div class="print-section">
-            <h3 class="print-section-title">النتائج</h3>
-            <div class="print-results">
-                ${currentReportData.results.map((result, index) => `
-                <div class="result-item">${result}</div>
-                `).join('')}
-            </div>
-        </div>` : ''}
-        
-        <div class="print-section">
-            <h3 class="print-section-title">التوصيات</h3>
-            <div class="print-content">
-                <p>${currentReportData.recommendations}</p>
-            </div>
-        </div>
-        
-        ${imagesHTML}
-        
-        <div class="print-signatures">
-            <div class="print-signature">
-                <div class="print-signature-title">مدير المدرسة</div>
-                <div class="print-signature-name">${currentReportData.principal}</div>
-                <div class="print-signature-line"></div>
-                <div>التوقيع</div>
-            </div>
-            <div class="print-signature">
-                <div class="print-signature-title">معد التقرير</div>
-                <div class="print-signature-name">${currentReportData.reporter}</div>
-                <div class="print-signature-line"></div>
-                <div>التوقيع</div>
-            </div>
-        </div>
-        
-        <div class="print-footer">
-            <p>تم إنشاء هذا التقرير بواسطة النظام الإلكتروني لإعداد التقارير التربوية</p>
-            <p>${currentDate}</p>
-        </div>
+  <div class="school-name" id="school3"></div>
+
+  <!-- معلومات التقرير - الصفحة الثالثة -->
+  <div class="report-info-grid" id="reportInfo3">
+    <div class="report-info-item">
+      <span class="report-info-label">عنوان التقرير</span>
+      <div class="report-info-value" id="title3"></div>
     </div>
-</body>
-</html>`;
-            }
-            
-            function exportToHTML() {
-                const htmlContent = generateProfessionalHTMLWithImages();
-                const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-                saveAs(blob, `${currentReportData.title}.html`);
-            }
-            
-            function generateProfessionalHTMLWithImages() {
-                const currentDate = new Date().toLocaleDateString('ar-SA', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-                
-                let imagesSection = '';
-                if (uploadedImages.length > 0) {
-                    imagesSection = `
-                    <div class="section images-section">
-                        <h3 class="section-title"><i class="fas fa-images"></i>الصور المرفقة</h3>
-                        <div class="images-grid">
-                            ${uploadedImages.map((img, index) => `
-                            <div class="image-container">
-                                <div class="image-card">
-                                    <img src="${img.data}" alt="صورة توثيقية ${index + 1}" class="report-image">
-                                    <div class="image-caption">صورة ${index + 1}</div>
-                                </div>
-                            </div>
-                            `).join('')}
-                        </div>
-                    </div>`;
-                }
-                
-                return `<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${currentReportData.title}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Cairo', sans-serif;
-            line-height: 1.8; color: #333;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh; padding: 40px 20px; direction: rtl;
-        }
-        
-        .report-container {
-            max-width: 1000px; margin: 0 auto; background: white; padding: 50px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15); border-radius: 12px;
-            position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.3);
-        }
-        
-        .report-container::before {
-            content: ''; position: absolute; top: 0; right: 0; width: 100%; height: 8px;
-            background: linear-gradient(90deg, #2c3e50 0%, #3498db 100%);
-        }
-        
-        .header { text-align: center; margin-bottom: 60px; position: relative; padding-bottom: 30px; }
-        .header::after {
-            content: ''; position: absolute; bottom: 0; right: 50%; transform: translateX(50%);
-            width: 200px; height: 4px; background: linear-gradient(90deg, #2c3e50 0%, #e74c3c 100%); border-radius: 2px;
-        }
-        
-        h1 { color: #2c3e50; font-size: 36px; margin-bottom: 15px; font-weight: 800; }
-        h2 { color: #e74c3c; font-size: 24px; margin-bottom: 10px; font-weight: 600; }
-        
-        .report-info { display: flex; justify-content: center; gap: 30px; margin-top: 25px; flex-wrap: wrap; }
-        .info-item {
-            background: #f8f9fa; padding: 15px 25px; border-radius: 8px; font-size: 16px;
-            display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border-right: 3px solid #3498db;
-        }
-        
-        .section {
-            margin-bottom: 50px; padding: 30px; background: #f8f9fa; border-radius: 12px;
-            border-right: 5px solid #2c3e50; box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-            position: relative; overflow: hidden;
-        }
-        
-        .section-title {
-            color: #2c3e50; font-size: 28px; margin-bottom: 25px; font-weight: 700;
-            display: flex; align-items: center; gap: 15px;
-        }
-        
-        .basic-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px; }
-        .info-card {
-            background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 1px solid #e9ecef; transition: transform 0.3s ease;
-        }
-        .info-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        
-        .info-label {
-            color: #2c3e50; font-weight: 600; font-size: 16px; margin-bottom: 10px;
-            display: flex; align-items: center; gap: 10px;
-        }
-        .info-value { color: #333; font-size: 18px; font-weight: 500; padding-right: 10px; }
-        
-        .content-box {
-            background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e9ecef;
-        }
-        .content-box p { font-size: 18px; line-height: 1.8; color: #444; text-align: justify; }
-        
-        .procedures-container, .results-container { padding-right: 20px; }
-        .procedure-item, .result-item {
-            margin-bottom: 15px; padding: 15px;
-            background: white; border-radius: 8px; border-right: 4px solid #3498db;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-        }
-        
-        .images-section {
-            margin: 30px 0;
-        }
-        
-        .images-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-        
-        .image-container {
-            text-align: center;
-        }
-        
-        .image-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            border: 1px solid #e9ecef;
-        }
-        
-        .image-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-        }
-        
-        .report-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
-        }
-        
-        .image-caption {
-            padding: 15px;
-            font-size: 16px;
-            color: #2c3e50;
-            font-weight: 600;
-            background: #f8f9fa;
-        }
-        
-        .signatures {
-            display: flex; justify-content: space-around; margin-top: 80px; padding-top: 40px;
-            border-top: 3px solid #2c3e50; flex-wrap: wrap; gap: 40px;
-        }
-        .signature-box {
-            text-align: center; width: 300px; padding: 30px; background: #f8f9fa;
-            border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); position: relative;
-        }
-        .signature-title { color: #2c3e50; font-size: 22px; font-weight: 700; margin-bottom: 15px; }
-        .signature-name { font-size: 20px; color: #333; margin-bottom: 30px; font-weight: 600; }
-        .signature-line { width: 200px; height: 2px; background: #333; margin: 30px auto 15px; border-top: 2px dashed #333; }
-        
-        .footer {
-            text-align: center; margin-top: 60px; padding-top: 30px; border-top: 2px dashed #bdc3c7;
-            color: #7f8c8d; font-size: 16px;
-        }
-        
-        @media (max-width: 768px) {
-            .report-container { padding: 30px 20px; }
-            h1 { font-size: 28px; } h2 { font-size: 20px; }
-            .section-title { font-size: 24px; }
-            .basic-info-grid { grid-template-columns: 1fr; }
-            .signatures { flex-direction: column; align-items: center; }
-            .signature-box { width: 100%; max-width: 300px; }
-            .info-item { padding: 12px 20px; font-size: 14px; }
-            .images-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
-        }
-    </style>
-</head>
-<body>
-    <div class="report-container">
-        <div class="header">
-            <h1>إدارة تعليم منطقة مكة المكرمة</h1>
-            <h2>${currentReportData.title}</h2>
-            
-            <div class="report-info">
-                <div class="info-item"><i class="fas fa-calendar"></i><span>تاريخ البرنامج: ${currentReportData.programDate} هـ</span></div>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h3 class="section-title"><i class="fas fa-database"></i>البيانات الأساسية</h3>
-            <div class="basic-info-grid">
-                <div class="info-card"><div class="info-label"><i class="fas fa-school"></i>المدرسة</div><div class="info-value">${currentReportData.school}</div></div>
-                <div class="info-card"><div class="info-label"><i class="fas fa-user-tie"></i>مدير المدرسة</div><div class="info-value">${currentReportData.principal}</div></div>
-                <div class="info-card"><div class="info-label"><i class="fas fa-user-edit"></i>معد التقرير</div><div class="info-value">${currentReportData.reporter}</div></div>
-                <div class="info-card"><div class="info-label"><i class="fas fa-map-marker"></i>مكان التنفيذ</div><div class="info-value">${currentReportData.location}</div></div>
-                <div class="info-card"><div class="info-label"><i class="fas fa-users"></i>المستهدفون</div><div class="info-value">${currentReportData.target}</div></div>
-                <div class="info-card"><div class="info-label"><i class="fas fa-user-check"></i>عدد المستفيدين</div><div class="info-value">${currentReportData.beneficiaries}</div></div>
-                <div class="info-card"><div class="info-label"><i class="fas fa-book"></i>تابع للمناهج</div><div class="info-value">${currentReportData.curriculumRelated}</div></div>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h3 class="section-title"><i class="fas fa-clipboard-list"></i>وصف مختصر لما تم تنفيذه</h3>
-            <div class="content-box"><p>${currentReportData.description}</p></div>
-        </div>
-        
-        ${currentReportData.procedures && currentReportData.procedures.length > 0 ? `
-        <div class="section">
-            <h3 class="section-title"><i class="fas fa-tasks"></i>إجراءات التنفيذ</h3>
-            <div class="procedures-container">
-                ${currentReportData.procedures.map((procedure, index) => `
-                <div class="procedure-item">${procedure}</div>
-                `).join('')}
-            </div>
-        </div>` : ''}
-        
-        ${currentReportData.results && currentReportData.results.length > 0 ? `
-        <div class="section">
-            <h3 class="section-title"><i class="fas fa-chart-line"></i>النتائج</h3>
-            <div class="results-container">
-                ${currentReportData.results.map((result, index) => `
-                <div class="result-item">${result}</div>
-                `).join('')}
-            </div>
-        </div>` : ''}
-        
-        <div class="section">
-            <h3 class="section-title"><i class="fas fa-lightbulb"></i>التوصيات</h3>
-            <div class="content-box"><p>${currentReportData.recommendations}</p></div>
-        </div>
-        
-        ${imagesSection}
-        
-        <div class="signatures">
-            <div class="signature-box">
-                <div class="signature-title">مدير المدرسة</div>
-                <div class="signature-name">${currentReportData.principal}</div>
-                <div class="signature-line"></div>
-                <div>التوقيع</div>
-            </div>
-            <div class="signature-box">
-                <div class="signature-title">معد التقرير</div>
-                <div class="signature-name">${currentReportData.reporter}</div>
-                <div class="signature-line"></div>
-                <div>التوقيع</div>
-            </div>
-        </div>
-        
-        <div class="footer">
-            <p>تم إنشاء هذا التقرير بواسطة النظام الإلكتروني لإعداد التقارير التربوية</p>
-            <p>${currentDate}</p>
-        </div>
+    <div class="report-info-item">
+      <span class="report-info-label">تاريخ التنفيذ</span>
+      <div class="report-info-value" id="date3"></div>
     </div>
-</body>
-</html>`;
-            }
-            
-            function generatePreviewHTML(reportData) {
-                return `<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معاينة: ${reportData.title}</title>
-    <style>
-        body { font-family: 'Cairo', sans-serif; direction: rtl; padding: 20px; background: #f5f5f5; }
-        .report { background: white; padding: 40px; max-width: 1000px; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); border-radius: 10px; }
-        .header { text-align: center; border-bottom: 3px solid #2c3e50; padding-bottom: 20px; margin-bottom: 30px; }
-        h1 { color: #2c3e50; margin-bottom: 10px; }
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 20px 0; }
-        .info-item { background: #f8f9fa; padding: 15px; border-radius: 8px; border-right: 4px solid #2c3e50; }
-        .info-label { color: #2c3e50; font-weight: bold; }
-        .section { margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
-        .section h3 { color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 15px; }
-        .procedure-item, .result-item { margin-bottom: 10px; padding: 10px; background: white; border-radius: 5px; border-right: 3px solid #3498db; }
-        .signatures { display: flex; justify-content: space-around; margin-top: 50px; padding-top: 30px; border-top: 2px solid #2c3e50; }
-        .signature { text-align: center; }
-        @media print { body { padding: 0; } .report { box-shadow: none; } }
-    </style>
-</head>
-<body>
-    <div class="report">
-        <div class="header">
-            <h1>${reportData.title}</h1>
-            <div>إدارة تعليم منطقة مكة المكرمة</div>
-            <div style="margin-top: 15px; color: #666;">
-                <strong>التاريخ:</strong> ${reportData.programDate}
-            </div>
-        </div>
-        
-        <div class="info-grid">
-            <div class="info-item"><span class="info-label">المدرسة:</span><br>${reportData.school}</div>
-            <div class="info-item"><span class="info-label">مدير المدرسة:</span><br>${reportData.principal}</div>
-            <div class="info-item"><span class="info-label">معد التقرير:</span><br>${reportData.reporter}</div>
-            <div class="info-item"><span class="info-label">مكان التنفيذ:</span><br>${reportData.location}</div>
-            <div class="info-item"><span class="info-label">المستهدفون:</span><br>${reportData.target}</div>
-            <div class="info-item"><span class="info-label">عدد المستفيدين:</span><br>${reportData.beneficiaries}</div>
-            <div class="info-item"><span class="info-label">تابع للمناهج:</span><br>${reportData.curriculumRelated}</div>
-        </div>
-        
-        <div class="section">
-            <h3>وصف مختصر لما تم تنفيذه</h3>
-            <p>${reportData.description}</p>
-        </div>
-        
-        ${reportData.procedures && reportData.procedures.length > 0 ? `
-        <div class="section">
-            <h3>إجراءات التنفيذ</h3>
-            <div>${reportData.procedures.map(p => `<div class="procedure-item">${p}</div>`).join('')}</div>
-        </div>` : ''}
-        
-        ${reportData.results && reportData.results.length > 0 ? `
-        <div class="section">
-            <h3>النتائج</h3>
-            <div>${reportData.results.map(r => `<div class="result-item">${r}</div>`).join('')}</div>
-        </div>` : ''}
-        
-        <div class="section">
-            <h3>التوصيات</h3>
-            <p>${reportData.recommendations}</p>
-        </div>
-        
-        ${uploadedImages.length > 0 ? `
-        <div class="section">
-            <h3>الصور المرفقة (${uploadedImages.length} صورة)</h3>
-            <p style="color: #666; font-style: italic;">تم رفع ${uploadedImages.length} صورة توثيقية مع التقرير</p>
-        </div>` : ''}
-        
-        <div class="signatures">
-            <div class="signature">
-                <div style="font-weight: bold; margin-bottom: 10px;">مدير المدرسة</div>
-                <div>${reportData.principal}</div>
-                <div style="margin-top: 20px; border-top: 1px solid #000; width: 150px; margin: 20px auto 0; padding-top: 5px;">التوقيع</div>
-            </div>
-            <div class="signature">
-                <div style="font-weight: bold; margin-bottom: 10px;">معد التقرير</div>
-                <div>${reportData.reporter}</div>
-                <div style="margin-top: 20px; border-top: 1px solid #000; width: 150px; margin: 20px auto 0; padding-top: 5px;">التوقيع</div>
-            </div>
-        </div>
-        
-        <div style="text-align: center; margin-top: 50px; color: #666; font-size: 14px; border-top: 1px dashed #ddd; padding-top: 20px;">
-            تم إنشاء هذا التقرير بواسطة النظام الإلكتروني لإعداد التقارير التربوية - ${new Date().toLocaleDateString('ar-SA')}
-        </div>
+    <div class="report-info-item">
+      <span class="report-info-label">المستهدفون</span>
+      <div class="report-info-value" id="target3"></div>
     </div>
-</body>
-</html>`;
-            }
-            
-            function collectReportData() {
-                return {
-                    type: document.getElementById('reportType').value,
-                    region: document.getElementById('region').value,
-                    school: document.getElementById('school').value,
-                    principal: document.getElementById('principal').value,
-                    reporter: document.getElementById('reporter').value,
-                    title: document.getElementById('reportTitle').value,
-                    curriculumRelated: document.getElementById('curriculumRelated').value,
-                    programDate: document.getElementById('programDate').value,
-                    location: document.getElementById('location').value,
-                    target: document.getElementById('target').value,
-                    beneficiaries: document.getElementById('beneficiaries').value,
-                    description: document.getElementById('description').value,
-                    procedures: document.getElementById('procedures').value.split(',').map(p => p.trim()).filter(p => p),
-                    results: document.getElementById('results').value.split(',').map(r => r.trim()).filter(r => r),
-                    recommendations: document.getElementById('recommendations').value,
-                    images: [...uploadedImages]
-                };
-            }
-            
-            function showLoading(text) {
-                loadingText.textContent = text;
-                loadingOverlay.classList.add('active');
-            }
-            
-            function hideLoading() {
-                loadingOverlay.classList.remove('active');
-            }
-            
-            function showError(message) {
-                alert(`❌ ${message}`);
-            }
-            
-            function showSuccess(message) {
-                alert(`✅ ${message}`);
-            }
-            
-            setupEventListeners();
-            loadInitialData();
-            
-            setInterval(() => {
-                if (validateForm()) {
-                    const reportData = collectReportData();
-                    reportData.status = 'draft';
-                    reportData.autoSaved = new Date().toLocaleTimeString('ar-SA');
-                    localStorage.setItem('reportDraft', JSON.stringify(reportData));
-                }
-            }, 30000);
-        });
-    </script>
+    <div class="report-info-item">
+      <span class="report-info-label">عدد المستفيدين</span>
+      <div class="report-info-value" id="count3"></div>
+    </div>
+  </div>
+
+  <h3>📸 شواهد الصور</h3>
+  <div class="images" id="imagesContainer"></div>
+  
+  <!-- التوقيعات -->
+  <div class="signatures">
+    <div class="signature-box">
+      <div class="signature-label">المعلم/ة</div>
+      <div class="signature-name" id="teacherName"></div>
+      <div class="signature-line">التوقيع</div>
+    </div>
+    
+    <div class="signature-box">
+      <div class="signature-label">مدير المدرسة</div>
+      <div class="signature-name" id="managerName"></div>
+      <div class="signature-line">التوقيع والختم</div>
+    </div>
+  </div>
+  
+  <div class="page-footer">صفحة 3 من 3</div>
+</div>
+
+</div>
+
+<script>
+// عناصر DOM
+const schoolInput = document.getElementById('schoolInput');
+const teacherInput = document.getElementById('teacherInput');
+const managerInput = document.getElementById('managerInput');
+const reportType = document.getElementById('reportType');
+const dateInput = document.getElementById('dateInput');
+const targetInput = document.getElementById('targetInput');
+const countInput = document.getElementById('countInput');
+const desc1Input = document.getElementById('desc1Input');
+const desc2Input = document.getElementById('desc2Input');
+const desc3Input = document.getElementById('desc3Input');
+const desc4Input = document.getElementById('desc4Input');
+const imageInput = document.getElementById('imageInput');
+
+// عناصر التقرير
+const schoolElement = document.getElementById('school');
+const schoolElement2 = document.getElementById('school2');
+const schoolElement3 = document.getElementById('school3');
+const titleElement = document.getElementById('title1');
+const titleElement2 = document.getElementById('title2');
+const titleElement3 = document.getElementById('title3');
+const dateElement = document.getElementById('date1');
+const dateElement2 = document.getElementById('date2');
+const dateElement3 = document.getElementById('date3');
+const targetElement = document.getElementById('target1');
+const targetElement2 = document.getElementById('target2');
+const targetElement3 = document.getElementById('target3');
+const countElement = document.getElementById('count1');
+const countElement2 = document.getElementById('count2');
+const countElement3 = document.getElementById('count3');
+const desc1Element = document.getElementById('desc1');
+const desc2Element = document.getElementById('desc2');
+const desc3Element = document.getElementById('desc3');
+const desc4Element = document.getElementById('desc4');
+const teacherNameElement = document.getElementById('teacherName');
+const managerNameElement = document.getElementById('managerName');
+
+// النصوص الافتراضية لكل نوع تقرير (مختصرة إلى 6 أسطر)
+const defaultTexts = {
+  "تقرير تنفيذ استراتيجية": {
+    desc1: "تنفيذ استراتيجية تدريسية متطورة لتحسين نواتج التعلم.\nاستهدفت رفع مستوى المهارات الأساسية.\nاعتمدت على أساليب التعلم النشط.\nركزت على التفاعل والمشاركة الصفية.\nتم تطبيقها وفق خطة زمنية محددة.\nشارك فيها جميع معلمي المادة.",
+    desc2: "عقد ورشة عمل للمعلمين للتعريف بالاستراتيجية.\nتصميم أدوات تقييم قبلي وبعدي.\nتطبيق الاستراتيجية داخل الفصول.\nمتابعة أسبوعية من فريق التطوير.\nتوثيق الممارسات الناجحة.\nتقييم أثر التنفيذ على الطلاب.",
+    desc3: "1. تحسن ملحوظ في دافعية الطلاب نحو التعلم\n2. ارتفاع في نسب التفاعل الصفي بنسبة 40%\n3. تحسن في نتائج الاختبارات التكوينية\n4. رضا المعلمين عن الأساليب الجديدة بنسبة 85%\n5. توثيق 15 ممارسة ناجحة قابلة للتعميم",
+    desc4: "1. تعميم الاستراتيجية على جميع الصفوف المماثلة\n2. تدريب معلمين جدد على الاستراتيجية\n3. توفير موارد إضافية لدعم التنفيذ\n4. استمرار المتابعة والتقييم الدوري\n5. عقد لقاءات تبادل خبرات بين المعلمين"
+  },
+  "تقرير تنفيذ أنشطة داخل الفصل": {
+    desc1: "سلسلة أنشطة صفية تفاعلية لتعزيز المهارات.\nركزت على التفكير الناقد والتعلم التعاوني.\nدمجت التقنية والألعاب التعليمية.\nصممت لتناسب مختلف أنماط التعلم.\nنفذت في بيئة صفية محفزة.\nاستهدفت جميع طلاب الصف.",
+    desc2: "تقسيم الطلاب إلى مجموعات تعاونية.\nتوزيع المهام والأدوار على المجموعات.\nاستخدام وسائل تعليمية تفاعلية.\nتخصيص وقت للمناقشة والعرض.\nتقديم تغذية راجعة فورية.\nتقويم أداء المجموعات.",
+    desc3: "1. تفاعل إيجابي من جميع الطلاب مع الأنشطة\n2. تنمية مهارات العمل الجماعي والتعاون\n3. تحسن في قدرة الطلاب على التعبير عن الأفكار\n4. زيادة ثقة الطلاب بأنفسهم\n5. تحقيق الأهداف التعليمية المخطط لها بنسبة 90%",
+    desc4: "1. الاستمرار في تطبيق الأنشطة التفاعلية بشكل دوري\n2. تنويع أساليب التقويم المستخدمة\n3. تخصيص وقت كافٍ لكل نشاط\n4. تدريب الطلاب على مهارات الحوار والمناقشة\n5. توثيق الأنشطة الناجحة في بنك الأنشطة المدرسية"
+  },
+  "تقرير نشاط إثرائي": {
+    desc1: "نشاط إثرائي خارج الإطار الدراسي.\nهدف إلى تنمية مواهب الطلاب وصقل مهاراتهم.\nغطى مجالات فنية وأدبية وعلمية.\nشارك فيه طلاب بمختلف اهتماماتهم.\nنظم في بيئة جاذبة ومحفزة.\nاستمر لمدة فصل دراسي كامل.",
+    desc2: "تحديد المجالات الإثرائية المطلوبة.\nدعوة الطلاب للمشاركة حسب اهتماماتهم.\nتوفير المواد والأدوات اللازمة.\nتنظيم ورش العمل والجلسات التدريبية.\nمتابعة تقدم المشاركين أسبوعياً.\nعرض منتجات الطلاب وإنجازاتهم.",
+    desc3: "1. اكتشاف مواهب جديدة لدى 25 طالباً\n2. تنمية الثقة بالنفس لدى المشاركين\n3. إنتاج أعمال فنية وأدبية متميزة\n4. زيادة الانتماء للمدرسة والمجتمع\n5. رضا أولياء الأمور عن الأنشطة الإثرائية",
+    desc4: "1. استمرار النشاط الإثرائي كبرنامج دائم\n2. تخصيص مساحة مناسبة للأنشطة الإثرائية\n3. تدريب معلمين متخصصين في المجالات المختلفة\n4. مشاركة الأعمال في معارض ومناسبات\n5. توفير جوائز تشجيعية للمتميزين"
+  },
+  "تقرير خطة علاجية": {
+    desc1: "خطة علاجية شاملة للطلاب المتعثرين.\nهدفت لرفع المستوى التحصيلي.\nتجاوزت الصعوبات التعليمية.\nركزت على المواد الأساسية.\nصممت برامج فردية وجماعية.\nتابعت التقدم أسبوعياً.",
+    desc2: "تشخيص الصعوبات التعليمية لكل طالب.\nوضع أهداف علاجية قابلة للقياس.\nتصميم برامج علاجية فردية وجماعية.\nتنفيذ جلسات علاجية مكثفة.\nمتابعة التقدم وتعديل الخطة.\nتواصل مع أولياء الأمور.",
+    desc3: "1. تحسن ملحوظ في مستوى 18 طالباً من أصل 25\n2. ارتفاع درجات الطلاب في الاختبارات\n3. تحسن في دافعية التعلم لدى الطلاب المتعثرين\n4. انخفاض نسبة الغياب بين الطلاب المستهدفين\n5. رضا أولياء الأمور عن الخطة العلاجية",
+    desc4: "1. الاستمرار في المتابعة للطلاب الذين يحتاجون مزيداً من الوقت\n2. تدريب المعلمين على استراتيجيات العلاج الفعالة\n3. توفير مواد تعليمية علاجية إضافية\n4. عقد لقاءات دورية مع أولياء الأمور\n5. توثيق الحالات الناجحة للاستفادة منها مستقبلاً"
+  },
+  "تقرير تكريم المتميزين": {
+    desc1: "حفل تكريم للطلاب المتميزين بمختلف المجالات.\nهدف لتحفيز الطلاب وتعزيز التنافس الإيجابي.\nشمل المجالات الدراسية والسلوكية.\nتضمن الرياضية والفنية والإبداعية.\nنظم بحضور أولياء الأمور.\nشمل فقرات فنية وتكريمية.",
+    desc2: "تحديد معايير التميز والتفوق.\nترشيح الطلاب المتميزين من قبل المعلمين.\nتشكيل لجنة لاختيار المكرمين.\nإعداد شهادات التقدير والهدايا.\nتنظيم حفل التكريم.\nتغطية إعلامية للفعالية.",
+    desc3: "1. تكريم 35 طالباً وطالبة في مختلف المجالات\n2. ارتفاع الروح المعنوية لدى الطلاب المكرمين\n3. تحفيز باقي الطلاب للسعي نحو التميز\n4. تعزيز الشراكة مع أولياء الأمور\n5. تغطية إعلامية إيجابية للفعالية",
+    desc4: "1. جعل التكريم حدثاً سنوياً للمدرسة\n2. تنويع مجالات التكريم لتشمل جميع المواهب\n3. ربط التكريم بجوائز معنوية ومادية\n4. توثيق إنجازات المتميزين في سجلات المدرسة\n5. إشراك الطلاب في تنظيم فعاليات التكريم"
+  }
+};
+
+// تحديث جميع نسخ التقرير في الوقت الحقيقي
+function updateAllReports() {
+  // اسم المدرسة في جميع الصفحات
+  schoolElement.textContent = schoolInput.value;
+  schoolElement2.textContent = schoolInput.value;
+  schoolElement3.textContent = schoolInput.value;
+  
+  // اسم المعلم ومدير المدرسة
+  teacherNameElement.textContent = teacherInput.value;
+  managerNameElement.textContent = managerInput.value;
+  
+  // عنوان التقرير في جميع الصفحات
+  titleElement.textContent = reportType.value;
+  titleElement2.textContent = reportType.value;
+  titleElement3.textContent = reportType.value;
+  
+  // تاريخ التنفيذ في جميع الصفحات
+  dateElement.textContent = dateInput.value;
+  dateElement2.textContent = dateInput.value;
+  dateElement3.textContent = dateInput.value;
+  
+  // المستهدفون في جميع الصفحات
+  targetElement.textContent = targetInput.value;
+  targetElement2.textContent = targetInput.value;
+  targetElement3.textContent = targetInput.value;
+  
+  // عدد المستفيدين في جميع الصفحات
+  countElement.textContent = countInput.value;
+  countElement2.textContent = countInput.value;
+  countElement3.textContent = countInput.value;
+  
+  // المحتوى - تقييد النص ليتناسب مع المساحة
+  desc1Element.textContent = limitTextForSpace(desc1Input.value, 500);
+  desc2Element.textContent = limitTextForSpace(desc2Input.value, 500);
+  desc3Element.textContent = desc3Input.value;
+  desc4Element.textContent = desc4Input.value;
+}
+
+// تقييد النص ليتناسب مع المساحة المحددة
+function limitTextForSpace(text, maxChars) {
+  if (!text) return '';
+  
+  if (text.length > maxChars) {
+    return text.substring(0, maxChars) + '... [تم تقصير النص ليتناسب مع المساحة]';
+  }
+  
+  return text;
+}
+
+// إضافة المستمعين للأحداث
+schoolInput.addEventListener('input', updateAllReports);
+teacherInput.addEventListener('input', updateAllReports);
+managerInput.addEventListener('input', updateAllReports);
+reportType.addEventListener('change', () => {
+  updateAllReports();
+  // تحديث العنوان في الواجهة أيضًا
+  const title = reportType.value;
+  titleElement.textContent = title;
+  titleElement2.textContent = title;
+  titleElement3.textContent = title;
+});
+dateInput.addEventListener('input', updateAllReports);
+targetInput.addEventListener('input', updateAllReports);
+countInput.addEventListener('input', updateAllReports);
+desc1Input.addEventListener('input', updateAllReports);
+desc2Input.addEventListener('input', updateAllReports);
+desc3Input.addEventListener('input', () => desc3Element.textContent = desc3Input.value);
+desc4Input.addEventListener('input', () => desc4Element.textContent = desc4Input.value);
+
+// تحميل النصوص الافتراضية
+function loadDefaultTexts() {
+  const selectedReport = reportType.value;
+  
+  if (!selectedReport) {
+    alert('⚠️ الرجاء اختيار نوع التقرير أولاً');
+    reportType.focus();
+    return;
+  }
+  
+  if (confirm(`هل تريد تحميل النصوص الافتراضية لتقرير "${selectedReport}"؟\n(يمكنك تعديلها لاحقاً كما تشاء)`)) {
+    const texts = defaultTexts[selectedReport];
+    
+    desc1Input.value = texts.desc1;
+    desc2Input.value = texts.desc2;
+    desc3Input.value = texts.desc3;
+    desc4Input.value = texts.desc4;
+    
+    // تحديث المعاينة
+    desc1Element.textContent = limitTextForSpace(texts.desc1, 500);
+    desc2Element.textContent = limitTextForSpace(texts.desc2, 500);
+    desc3Element.textContent = texts.desc3;
+    desc4Element.textContent = texts.desc4;
+    
+    alert('✅ تم تحميل النصوص الافتراضية بنجاح\nيمكنك الآن تعديلها كما تريد');
+  }
+}
+
+// مسح حقل معين
+function clearField(fieldId) {
+  const field = document.getElementById(fieldId);
+  field.value = '';
+  
+  // تحديث المعاينة
+  if (fieldId === 'desc1Input') desc1Element.textContent = '';
+  if (fieldId === 'desc2Input') desc2Element.textContent = '';
+  if (fieldId === 'desc3Input') desc3Element.textContent = '';
+  if (fieldId === 'desc4Input') desc4Element.textContent = '';
+}
+
+// تحميل الصور
+imageInput.addEventListener('change', function(e) {
+  const preview = document.getElementById('preview');
+  const container = document.getElementById('imagesContainer');
+  
+  preview.innerHTML = '';
+  container.innerHTML = '';
+  
+  const files = Array.from(e.target.files);
+  
+  files.forEach((file, index) => {
+    if (!file.type.startsWith('image/')) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      // صورة المعاينة
+      const previewImg = document.createElement('img');
+      previewImg.src = e.target.result;
+      previewImg.title = `صورة ${index + 1}`;
+      preview.appendChild(previewImg);
+      
+      // صورة التقرير
+      const reportImg = document.createElement('img');
+      reportImg.src = e.target.result;
+      reportImg.alt = `شاهد ${index + 1}`;
+      container.appendChild(reportImg);
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+// توليد التقرير
+function generateReport() {
+  // التحقق من الحقول المطلوبة
+  if (!schoolInput.value.trim()) {
+    alert('⚠️ الرجاء إدخال اسم المدرسة');
+    schoolInput.focus();
+    return;
+  }
+  
+  if (!reportType.value) {
+    alert('⚠️ الرجاء اختيار نوع التقرير');
+    reportType.focus();
+    return;
+  }
+  
+  if (!dateInput.value.trim()) {
+    alert('⚠️ الرجاء إدخال تاريخ التنفيذ');
+    dateInput.focus();
+    return;
+  }
+  
+  if (!teacherInput.value.trim()) {
+    alert('⚠️ الرجاء إدخال اسم المعلم/ة');
+    teacherInput.focus();
+    return;
+  }
+  
+  if (!managerInput.value.trim()) {
+    alert('⚠️ الرجاء إدخال اسم مدير المدرسة');
+    managerInput.focus();
+    return;
+  }
+  
+  // تحديث جميع نسخ التقرير
+  updateAllReports();
+  
+  // تعيين قيم افتراضية إذا كانت فارغة
+  if (!targetInput.value.trim()) {
+    targetElement.textContent = targetElement2.textContent = targetElement3.textContent = 'غير محدد';
+  }
+  
+  if (!countInput.value.trim()) {
+    countElement.textContent = countElement2.textContent = countElement3.textContent = 'غير محدد';
+  }
+  
+  if (!desc1Input.value.trim()) {
+    desc1Element.textContent = 'لا يوجد وصف';
+  }
+  
+  if (!desc2Input.value.trim()) {
+    desc2Element.textContent = 'لا توجد إجراءات محددة';
+  }
+  
+  if (!desc3Input.value.trim()) {
+    desc3Element.textContent = 'لا توجد نتائج مسجلة';
+  }
+  
+  if (!desc4Input.value.trim()) {
+    desc4Element.textContent = 'لا توجد توصيات';
+  }
+  
+  // إظهار رسالة نجاح
+  alert('✅ تم إنشاء التقرير بنجاح! جارٍ فتح نافذة الطباعة...');
+  
+  // تأخير بسيط لضمان تحديث العناصر
+  setTimeout(() => {
+    window.print();
+  }, 500);
+}
+
+// مسح النموذج
+function resetForm() {
+  if (confirm('هل تريد مسح جميع الحقول؟')) {
+    schoolInput.value = '';
+    teacherInput.value = '';
+    managerInput.value = '';
+    reportType.selectedIndex = 0;
+    dateInput.value = '';
+    targetInput.value = '';
+    countInput.value = '';
+    desc1Input.value = '';
+    desc2Input.value = '';
+    desc3Input.value = '';
+    desc4Input.value = '';
+    imageInput.value = '';
+    
+    // مسح المعاينة
+    document.getElementById('preview').innerHTML = '';
+    document.getElementById('imagesContainer').innerHTML = '';
+    
+    // إعادة تعيين التقرير
+    updateAllReports();
+    
+    // إعادة تعيين القيم الخاصة
+    desc1Element.textContent = '';
+    desc2Element.textContent = '';
+    desc3Element.textContent = '';
+    desc4Element.textContent = '';
+    teacherNameElement.textContent = '';
+    managerNameElement.textContent = '';
+    
+    alert('✅ تم مسح النموذج بنجاح');
+  }
+}
+
+// تعيين تاريخ افتراضي
+window.onload = function() {
+  const today = new Date();
+  const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+  dateInput.value = formattedDate;
+  
+  // تحديث جميع النسخ بالتاريخ
+  updateAllReports();
+};
+</script>
+
 </body>
 </html>
