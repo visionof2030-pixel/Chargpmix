@@ -251,8 +251,6 @@ button {
   .page {
     page-break-after: always;
     padding-bottom: 20mm;
-    position: relative;
-    min-height: 297mm;
   }
   
   .page:last-child { page-break-after: auto; }
@@ -274,16 +272,27 @@ button {
 
   .header-full h1 {
     margin: 0;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
     letter-spacing: 0.5px;
   }
 
   .header-full h2 {
-    margin: 8px 0 0;
-    font-size: 15px;
+    margin: 5px 0 0;
+    font-size: 18px;
     font-weight: 400;
     opacity: 0.9;
+  }
+
+  .header-full .region {
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    background: rgba(255,255,255,0.1);
+    padding: 5px 15px;
+    border-radius: 8px;
+    display: inline-block;
   }
 
   .school-name {
@@ -302,7 +311,7 @@ button {
   /* ===== معلومات التقرير في جميع الصفحات ===== */
   .report-info-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 12px;
     margin-bottom: 20px;
     background: #f9fbfb;
@@ -332,45 +341,24 @@ button {
     min-height: 20px;
   }
 
-  /* ===== محتوى الصفحة الأولى ===== */
-  .page:first-child .grid-desc {
+  /* ===== محتوى ===== */
+  .grid-desc {
     display: grid;
     grid-template-columns: 1fr 90px 1fr;
     gap: 15px;
     margin-top: 20px;
-    height: 360px; /* ارتفاع محدد لضمان بقاء المحتوى في الصفحة الأولى */
   }
 
-  .page:first-child .desc-box {
+  .desc-box {
     border: 2px solid #cfd8dc;
     border-radius: 16px;
     padding: 18px;
     background: #f9fbfb;
     font-size: 14px;
     line-height: 1.6;
-    overflow: hidden; /* منع تجاوز النص */
-    height: 100%;
-    display: flex;
-    flex-direction: column;
   }
 
-  .page:first-child .desc-content {
-    flex: 1;
-    overflow: hidden;
-    max-height: 300px;
-  }
-
-  .page:nth-child(2) .desc-box {
-    border: 2px solid #cfd8dc;
-    border-radius: 16px;
-    padding: 18px;
-    background: #f9fbfb;
-    font-size: 14px;
-    line-height: 1.6;
-    min-height: 400px;
-  }
-
-  .page:first-child .desc-box strong {
+  .desc-box strong {
     display: block;
     color: #0a3b40;
     margin-bottom: 10px;
@@ -379,7 +367,7 @@ button {
     padding-bottom: 8px;
   }
 
-  .page:first-child .desc-box p {
+  .desc-box p {
     margin: 8px 0;
     white-space: pre-line;
   }
@@ -420,7 +408,7 @@ button {
     margin: auto;
   }
 
-  /* ===== الصور والتوقيعات ===== */
+  /* ===== الصور ===== */
   .images-page {
     margin-top: 20px;
   }
@@ -439,7 +427,6 @@ button {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
     margin-top: 15px;
-    margin-bottom: 50px;
   }
 
   .images img {
@@ -450,46 +437,36 @@ button {
     border: 2px solid #b0bec5;
   }
   
-  /* ===== التوقيعات ===== */
+  /* ===== التوقيعات في الصفحة الثالثة ===== */
   .signatures {
-    position: absolute;
-    bottom: 60px;
-    left: 14mm;
-    right: 14mm;
+    margin-top: 40px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    padding-top: 20px;
+    gap: 40px;
+    padding-top: 30px;
     border-top: 2px solid #cfd8dc;
-    margin-top: 20px;
   }
-  
+
   .signature-box {
     text-align: center;
-    padding: 15px;
   }
-  
-  .signature-label {
+
+  .signature-name {
     font-weight: 700;
     color: #0a3b40;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     font-size: 16px;
   }
-  
-  .signature-name {
-    margin-bottom: 40px;
-    font-size: 15px;
-    min-height: 25px;
-  }
-  
+
   .signature-line {
-    border-top: 1px solid #333;
-    width: 80%;
-    margin: 0 auto;
-    position: relative;
-    padding-top: 25px;
-    color: #666;
-    font-size: 13px;
+    border-bottom: 2px solid #333;
+    height: 30px;
+    margin-bottom: 10px;
+  }
+
+  .signature-label {
+    font-size: 14px;
+    color: #4f6f68;
   }
   
   /* ===== فوتر الصفحة ===== */
@@ -523,13 +500,8 @@ button {
   </div>
 
   <div class="input-group">
-    <label>👨‍🏫 اسم المعلم/ة</label>
-    <input type="text" id="teacherInput" placeholder="اسم المعلم/ة المعد للتقرير">
-  </div>
-
-  <div class="input-group">
-    <label>👨‍💼 اسم مدير المدرسة</label>
-    <input type="text" id="managerInput" placeholder="اسم مدير المدرسة">
+    <label>🏙️ المنطقة</label>
+    <input type="text" id="regionInput" placeholder="أدخل اسم المنطقة التعليمية">
   </div>
 
   <div class="input-group">
@@ -548,8 +520,13 @@ button {
   <button class="load-defaults-btn" onclick="loadDefaultTexts()">📥 تحميل النصوص الافتراضية للتقريـر المختار</button>
 
   <div class="input-group">
-    <label>📅 تاريخ التنفيذ</label>
+    <label>📅 تاريخ التنفيذ (ميلادي)</label>
     <input type="text" id="dateInput" placeholder="يوم / شهر / سنة">
+  </div>
+
+  <div class="input-group">
+    <label>📅 التاريخ الهجري</label>
+    <input type="text" id="hijriDateInput" placeholder="يوم / شهر / سنة هجرية">
   </div>
 
   <div class="input-group">
@@ -563,17 +540,17 @@ button {
   </div>
 
   <div class="input-group">
-    <label>📝 الوصف المختصر</label>
+    <label>📝 الوصف المختصر (5 أسطر بالضبط)</label>
     <button class="clear-default-btn" onclick="clearField('desc1Input')">مسح</button>
     <textarea id="desc1Input" placeholder="وصف مختصر للنشاط أو البرنامج" rows="6"></textarea>
-    <div class="default-text-note">يمكنك حذف هذا النص والكتابة بما يناسبك (سيتم قص النص إذا تجاوز المساحة)</div>
+    <div class="default-text-note">5 أسطر بالضبط (بدون مسافات بين الأسطر)</div>
   </div>
 
   <div class="input-group">
-    <label>⚙️ إجراءات التنفيذ</label>
+    <label>⚙️ إجراءات التنفيذ (5 أسطر بالضبط)</label>
     <button class="clear-default-btn" onclick="clearField('desc2Input')">مسح</button>
     <textarea id="desc2Input" placeholder="الخطوات والإجراءات التنفيذية" rows="6"></textarea>
-    <div class="default-text-note">يمكنك حذف هذا النص والكتابة بما يناسبك (سيتم قص النص إذا تجاوز المساحة)</div>
+    <div class="default-text-note">5 أسطر بالضبط (بدون مسافات بين الأسطر)</div>
   </div>
 
   <div class="input-group">
@@ -612,8 +589,9 @@ button {
 <div class="page">
   <div class="header-full">
     <img src="https://i.ibb.co/2037zjqy/IMG-2102.jpg" alt="شعار الوزارة">
-    <h1>الإدارة العامة للتعليم</h1>
-    <h2>وزارة التعليم</h2>
+    <h1>وزارة التعليم</h1>
+    <h2>الإدارة العامة للتعليم</h2>
+    <div class="region" id="region">إدارة التعليم بمنطقة ________</div>
   </div>
 
   <div class="school-name" id="school"></div>
@@ -629,6 +607,10 @@ button {
       <div class="report-info-value" id="date1"></div>
     </div>
     <div class="report-info-item">
+      <span class="report-info-label">التاريخ الهجري</span>
+      <div class="report-info-value" id="hijriDate1"></div>
+    </div>
+    <div class="report-info-item">
       <span class="report-info-label">المستهدفون</span>
       <div class="report-info-value" id="target1"></div>
     </div>
@@ -641,9 +623,7 @@ button {
   <div class="grid-desc">
     <div class="desc-box">
       <strong>وصف مختصر</strong>
-      <div class="desc-content">
-        <p id="desc1"></p>
-      </div>
+      <p id="desc1"></p>
     </div>
 
     <div class="vertical">
@@ -654,9 +634,7 @@ button {
 
     <div class="desc-box">
       <strong>إجراءات التنفيذ</strong>
-      <div class="desc-content">
-        <p id="desc2"></p>
-      </div>
+      <p id="desc2"></p>
     </div>
   </div>
   
@@ -667,8 +645,9 @@ button {
 <div class="page">
   <div class="header-full">
     <img src="https://i.ibb.co/2037zjqy/IMG-2102.jpg" alt="شعار الوزارة">
-    <h1>الإدارة العامة للتعليم</h1>
-    <h2>وزارة التعليم</h2>
+    <h1>وزارة التعليم</h1>
+    <h2>الإدارة العامة للتعليم</h2>
+    <div class="region" id="region2">إدارة التعليم بمنطقة ________</div>
   </div>
 
   <div class="school-name" id="school2"></div>
@@ -682,6 +661,10 @@ button {
     <div class="report-info-item">
       <span class="report-info-label">تاريخ التنفيذ</span>
       <div class="report-info-value" id="date2"></div>
+    </div>
+    <div class="report-info-item">
+      <span class="report-info-label">التاريخ الهجري</span>
+      <div class="report-info-value" id="hijriDate2"></div>
     </div>
     <div class="report-info-item">
       <span class="report-info-label">المستهدفون</span>
@@ -718,8 +701,9 @@ button {
 <div class="page images-page">
   <div class="header-full">
     <img src="https://i.ibb.co/2037zjqy/IMG-2102.jpg" alt="شعار الوزارة">
-    <h1>الإدارة العامة للتعليم</h1>
-    <h2>وزارة التعليم</h2>
+    <h1>وزارة التعليم</h1>
+    <h2>الإدارة العامة للتعليم</h2>
+    <div class="region" id="region3">إدارة التعليم بمنطقة ________</div>
   </div>
 
   <div class="school-name" id="school3"></div>
@@ -735,6 +719,10 @@ button {
       <div class="report-info-value" id="date3"></div>
     </div>
     <div class="report-info-item">
+      <span class="report-info-label">التاريخ الهجري</span>
+      <div class="report-info-value" id="hijriDate3"></div>
+    </div>
+    <div class="report-info-item">
       <span class="report-info-label">المستهدفون</span>
       <div class="report-info-value" id="target3"></div>
     </div>
@@ -747,18 +735,17 @@ button {
   <h3>📸 شواهد الصور</h3>
   <div class="images" id="imagesContainer"></div>
   
-  <!-- التوقيعات -->
+  <!-- التوقيعات في الصفحة الثالثة -->
   <div class="signatures">
     <div class="signature-box">
-      <div class="signature-label">المعلم/ة</div>
-      <div class="signature-name" id="teacherName"></div>
-      <div class="signature-line">التوقيع</div>
+      <div class="signature-name">اسم المعلم:</div>
+      <div class="signature-line"></div>
+      <div class="signature-label">التوقيع</div>
     </div>
-    
     <div class="signature-box">
-      <div class="signature-label">مدير المدرسة</div>
-      <div class="signature-name" id="managerName"></div>
-      <div class="signature-line">التوقيع والختم</div>
+      <div class="signature-name">اسم المدير:</div>
+      <div class="signature-line"></div>
+      <div class="signature-label">التوقيع</div>
     </div>
   </div>
   
@@ -770,10 +757,10 @@ button {
 <script>
 // عناصر DOM
 const schoolInput = document.getElementById('schoolInput');
-const teacherInput = document.getElementById('teacherInput');
-const managerInput = document.getElementById('managerInput');
+const regionInput = document.getElementById('regionInput');
 const reportType = document.getElementById('reportType');
 const dateInput = document.getElementById('dateInput');
+const hijriDateInput = document.getElementById('hijriDateInput');
 const targetInput = document.getElementById('targetInput');
 const countInput = document.getElementById('countInput');
 const desc1Input = document.getElementById('desc1Input');
@@ -786,12 +773,18 @@ const imageInput = document.getElementById('imageInput');
 const schoolElement = document.getElementById('school');
 const schoolElement2 = document.getElementById('school2');
 const schoolElement3 = document.getElementById('school3');
+const regionElement = document.getElementById('region');
+const regionElement2 = document.getElementById('region2');
+const regionElement3 = document.getElementById('region3');
 const titleElement = document.getElementById('title1');
 const titleElement2 = document.getElementById('title2');
 const titleElement3 = document.getElementById('title3');
 const dateElement = document.getElementById('date1');
 const dateElement2 = document.getElementById('date2');
 const dateElement3 = document.getElementById('date3');
+const hijriDateElement = document.getElementById('hijriDate1');
+const hijriDateElement2 = document.getElementById('hijriDate2');
+const hijriDateElement3 = document.getElementById('hijriDate3');
 const targetElement = document.getElementById('target1');
 const targetElement2 = document.getElementById('target2');
 const targetElement3 = document.getElementById('target3');
@@ -802,42 +795,75 @@ const desc1Element = document.getElementById('desc1');
 const desc2Element = document.getElementById('desc2');
 const desc3Element = document.getElementById('desc3');
 const desc4Element = document.getElementById('desc4');
-const teacherNameElement = document.getElementById('teacherName');
-const managerNameElement = document.getElementById('managerName');
 
-// النصوص الافتراضية لكل نوع تقرير (مختصرة إلى 6 أسطر)
+// النصوص الافتراضية لكل نوع تقرير (5 أسطر فقط)
 const defaultTexts = {
   "تقرير تنفيذ استراتيجية": {
-    desc1: "تنفيذ استراتيجية تدريسية متطورة لتحسين نواتج التعلم.\nاستهدفت رفع مستوى المهارات الأساسية.\nاعتمدت على أساليب التعلم النشط.\nركزت على التفاعل والمشاركة الصفية.\nتم تطبيقها وفق خطة زمنية محددة.\nشارك فيها جميع معلمي المادة.",
-    desc2: "عقد ورشة عمل للمعلمين للتعريف بالاستراتيجية.\nتصميم أدوات تقييم قبلي وبعدي.\nتطبيق الاستراتيجية داخل الفصول.\nمتابعة أسبوعية من فريق التطوير.\nتوثيق الممارسات الناجحة.\nتقييم أثر التنفيذ على الطلاب.",
+    desc1: "تنفيذ استراتيجية تدريسية متطورة لتحسين نواتج التعلم.\nاستهدفت رفع مستوى المهارات الأساسية.\nاعتمدت على أساليب التعلم النشط.\nركزت على التفاعل والمشاركة الصفية.\nتم تطبيقها وفق خطة زمنية محددة.",
+    desc2: "عقد ورشة عمل للمعلمين للتعريف بالاستراتيجية.\nتصميم أدوات تقييم قبلي وبعدي.\nتطبيق الاستراتيجية داخل الفصول.\nمتابعة أسبوعية من فريق التطوير.\nتوثيق الممارسات الناجحة.",
     desc3: "1. تحسن ملحوظ في دافعية الطلاب نحو التعلم\n2. ارتفاع في نسب التفاعل الصفي بنسبة 40%\n3. تحسن في نتائج الاختبارات التكوينية\n4. رضا المعلمين عن الأساليب الجديدة بنسبة 85%\n5. توثيق 15 ممارسة ناجحة قابلة للتعميم",
     desc4: "1. تعميم الاستراتيجية على جميع الصفوف المماثلة\n2. تدريب معلمين جدد على الاستراتيجية\n3. توفير موارد إضافية لدعم التنفيذ\n4. استمرار المتابعة والتقييم الدوري\n5. عقد لقاءات تبادل خبرات بين المعلمين"
   },
   "تقرير تنفيذ أنشطة داخل الفصل": {
-    desc1: "سلسلة أنشطة صفية تفاعلية لتعزيز المهارات.\nركزت على التفكير الناقد والتعلم التعاوني.\nدمجت التقنية والألعاب التعليمية.\nصممت لتناسب مختلف أنماط التعلم.\nنفذت في بيئة صفية محفزة.\nاستهدفت جميع طلاب الصف.",
-    desc2: "تقسيم الطلاب إلى مجموعات تعاونية.\nتوزيع المهام والأدوار على المجموعات.\nاستخدام وسائل تعليمية تفاعلية.\nتخصيص وقت للمناقشة والعرض.\nتقديم تغذية راجعة فورية.\nتقويم أداء المجموعات.",
+    desc1: "سلسلة أنشطة صفية تفاعلية لتعزيز المهارات.\nركزت على التفكير الناقد والتعلم التعاوني.\nدمجت التقنية والألعاب التعليمية.\nصممت لتناسب مختلف أنماط التعلم.\nنفذت في بيئة صفية محفزة.",
+    desc2: "تقسيم الطلاب إلى مجموعات تعاونية.\nتوزيع المهام والأدوار على المجموعات.\nاستخدام وسائل تعليمية تفاعلية.\nتخصيص وقت للمناقشة والعرض.\nتقديم تغذية راجعة فورية.",
     desc3: "1. تفاعل إيجابي من جميع الطلاب مع الأنشطة\n2. تنمية مهارات العمل الجماعي والتعاون\n3. تحسن في قدرة الطلاب على التعبير عن الأفكار\n4. زيادة ثقة الطلاب بأنفسهم\n5. تحقيق الأهداف التعليمية المخطط لها بنسبة 90%",
     desc4: "1. الاستمرار في تطبيق الأنشطة التفاعلية بشكل دوري\n2. تنويع أساليب التقويم المستخدمة\n3. تخصيص وقت كافٍ لكل نشاط\n4. تدريب الطلاب على مهارات الحوار والمناقشة\n5. توثيق الأنشطة الناجحة في بنك الأنشطة المدرسية"
   },
   "تقرير نشاط إثرائي": {
-    desc1: "نشاط إثرائي خارج الإطار الدراسي.\nهدف إلى تنمية مواهب الطلاب وصقل مهاراتهم.\nغطى مجالات فنية وأدبية وعلمية.\nشارك فيه طلاب بمختلف اهتماماتهم.\nنظم في بيئة جاذبة ومحفزة.\nاستمر لمدة فصل دراسي كامل.",
-    desc2: "تحديد المجالات الإثرائية المطلوبة.\nدعوة الطلاب للمشاركة حسب اهتماماتهم.\nتوفير المواد والأدوات اللازمة.\nتنظيم ورش العمل والجلسات التدريبية.\nمتابعة تقدم المشاركين أسبوعياً.\nعرض منتجات الطلاب وإنجازاتهم.",
+    desc1: "نشاط إثرائي خارج الإطار الدراسي.\nهدف إلى تنمية مواهب الطلاب وصقل مهاراتهم.\nغطى مجالات فنية وأدبية وعلمية.\nشارك فيه طلاب بمختلف اهتماماتهم.\nنظم في بيئة جاذبة ومحفزة.",
+    desc2: "تحديد المجالات الإثرائية المطلوبة.\nدعوة الطلاب للمشاركة حسب اهتماماتهم.\nتوفير المواد والأدوات اللازمة.\nتنظيم ورش العمل والجلسات التدريبية.\nمتابعة تقدم المشاركين أسبوعياً.",
     desc3: "1. اكتشاف مواهب جديدة لدى 25 طالباً\n2. تنمية الثقة بالنفس لدى المشاركين\n3. إنتاج أعمال فنية وأدبية متميزة\n4. زيادة الانتماء للمدرسة والمجتمع\n5. رضا أولياء الأمور عن الأنشطة الإثرائية",
     desc4: "1. استمرار النشاط الإثرائي كبرنامج دائم\n2. تخصيص مساحة مناسبة للأنشطة الإثرائية\n3. تدريب معلمين متخصصين في المجالات المختلفة\n4. مشاركة الأعمال في معارض ومناسبات\n5. توفير جوائز تشجيعية للمتميزين"
   },
   "تقرير خطة علاجية": {
-    desc1: "خطة علاجية شاملة للطلاب المتعثرين.\nهدفت لرفع المستوى التحصيلي.\nتجاوزت الصعوبات التعليمية.\nركزت على المواد الأساسية.\nصممت برامج فردية وجماعية.\nتابعت التقدم أسبوعياً.",
-    desc2: "تشخيص الصعوبات التعليمية لكل طالب.\nوضع أهداف علاجية قابلة للقياس.\nتصميم برامج علاجية فردية وجماعية.\nتنفيذ جلسات علاجية مكثفة.\nمتابعة التقدم وتعديل الخطة.\nتواصل مع أولياء الأمور.",
+    desc1: "خطة علاجية شاملة للطلاب المتعثرين.\nهدفت لرفع المستوى التحصيلي.\nتجاوزت الصعوبات التعليمية.\nركزت على المواد الأساسية.\nصممت برامج فردية وجماعية.",
+    desc2: "تشخيص الصعوبات التعليمية لكل طالب.\nوضع أهداف علاجية قابلة للقياس.\nتصميم برامج علاجية فردية وجماعية.\nتنفيذ جلسات علاجية مكثفة.\nمتابعة التقدم وتعديل الخطة.",
     desc3: "1. تحسن ملحوظ في مستوى 18 طالباً من أصل 25\n2. ارتفاع درجات الطلاب في الاختبارات\n3. تحسن في دافعية التعلم لدى الطلاب المتعثرين\n4. انخفاض نسبة الغياب بين الطلاب المستهدفين\n5. رضا أولياء الأمور عن الخطة العلاجية",
     desc4: "1. الاستمرار في المتابعة للطلاب الذين يحتاجون مزيداً من الوقت\n2. تدريب المعلمين على استراتيجيات العلاج الفعالة\n3. توفير مواد تعليمية علاجية إضافية\n4. عقد لقاءات دورية مع أولياء الأمور\n5. توثيق الحالات الناجحة للاستفادة منها مستقبلاً"
   },
   "تقرير تكريم المتميزين": {
-    desc1: "حفل تكريم للطلاب المتميزين بمختلف المجالات.\nهدف لتحفيز الطلاب وتعزيز التنافس الإيجابي.\nشمل المجالات الدراسية والسلوكية.\nتضمن الرياضية والفنية والإبداعية.\nنظم بحضور أولياء الأمور.\nشمل فقرات فنية وتكريمية.",
-    desc2: "تحديد معايير التميز والتفوق.\nترشيح الطلاب المتميزين من قبل المعلمين.\nتشكيل لجنة لاختيار المكرمين.\nإعداد شهادات التقدير والهدايا.\nتنظيم حفل التكريم.\nتغطية إعلامية للفعالية.",
+    desc1: "حفل تكريم للطلاب المتميزين بمختلف المجالات.\nهدف لتحفيز الطلاب وتعزيز التنافس الإيجابي.\nشمل المجالات الدراسية والسلوكية.\nتضمن الرياضية والفنية والإبداعية.\nنظم بحضور أولياء الأمور.",
+    desc2: "تحديد معايير التميز والتفوق.\nترشيح الطلاب المتميزين من قبل المعلمين.\nتشكيل لجنة لاختيار المكرمين.\nإعداد شهادات التقدير والهدايا.\nتنظيم حفل التكريم.",
     desc3: "1. تكريم 35 طالباً وطالبة في مختلف المجالات\n2. ارتفاع الروح المعنوية لدى الطلاب المكرمين\n3. تحفيز باقي الطلاب للسعي نحو التميز\n4. تعزيز الشراكة مع أولياء الأمور\n5. تغطية إعلامية إيجابية للفعالية",
     desc4: "1. جعل التكريم حدثاً سنوياً للمدرسة\n2. تنويع مجالات التكريم لتشمل جميع المواهب\n3. ربط التكريم بجوائز معنوية ومادية\n4. توثيق إنجازات المتميزين في سجلات المدرسة\n5. إشراك الطلاب في تنظيم فعاليات التكريم"
   }
 };
+
+// دالة تحويل التاريخ الميلادي إلى هجري (تقريبية)
+function toHijri(gregorianDate) {
+  if (!gregorianDate) return '';
+  
+  try {
+    // فصل اليوم والشهر والسنة
+    const parts = gregorianDate.split('/');
+    if (parts.length !== 3) return '';
+    
+    let day = parseInt(parts[0]);
+    let month = parseInt(parts[1]);
+    let year = parseInt(parts[2]);
+    
+    if (isNaN(day) || isNaN(month) || isNaN(year)) return '';
+    
+    // تحويل تقريبي (هذا للعرض فقط، للدقة الكاملة تحتاج مكتبة متخصصة)
+    // معادلة تقريبية: السنة الهجرية = (الميلادية - 622) × 33 ÷ 32
+    const hijriYear = Math.floor((year - 622) * 33 / 32);
+    
+    // نفس اليوم والشهر تقريباً (مع تعديل بسيط)
+    let hijriMonth = month;
+    let hijriDay = day;
+    
+    // تعديل للأشهر التي لها فرق
+    if (month === 1 && day < 10) {
+      hijriMonth = 10;
+      hijriYear -= 1;
+    }
+    
+    return `${hijriDay}/${hijriMonth}/${hijriYear} هـ`;
+  } catch (e) {
+    return '';
+  }
+}
 
 // تحديث جميع نسخ التقرير في الوقت الحقيقي
 function updateAllReports() {
@@ -846,9 +872,11 @@ function updateAllReports() {
   schoolElement2.textContent = schoolInput.value;
   schoolElement3.textContent = schoolInput.value;
   
-  // اسم المعلم ومدير المدرسة
-  teacherNameElement.textContent = teacherInput.value;
-  managerNameElement.textContent = managerInput.value;
+  // المنطقة في جميع الصفحات
+  const regionText = regionInput.value ? `إدارة التعليم بمنطقة ${regionInput.value}` : 'إدارة التعليم بمنطقة ________';
+  regionElement.textContent = regionText;
+  regionElement2.textContent = regionText;
+  regionElement3.textContent = regionText;
   
   // عنوان التقرير في جميع الصفحات
   titleElement.textContent = reportType.value;
@@ -860,6 +888,11 @@ function updateAllReports() {
   dateElement2.textContent = dateInput.value;
   dateElement3.textContent = dateInput.value;
   
+  // التاريخ الهجري في جميع الصفحات
+  hijriDateElement.textContent = hijriDateInput.value;
+  hijriDateElement2.textContent = hijriDateInput.value;
+  hijriDateElement3.textContent = hijriDateInput.value;
+  
   // المستهدفون في جميع الصفحات
   targetElement.textContent = targetInput.value;
   targetElement2.textContent = targetInput.value;
@@ -870,43 +903,54 @@ function updateAllReports() {
   countElement2.textContent = countInput.value;
   countElement3.textContent = countInput.value;
   
-  // المحتوى - تقييد النص ليتناسب مع المساحة
-  desc1Element.textContent = limitTextForSpace(desc1Input.value, 500);
-  desc2Element.textContent = limitTextForSpace(desc2Input.value, 500);
+  // المحتوى
+  desc1Element.textContent = desc1Input.value;
+  desc2Element.textContent = desc2Input.value;
   desc3Element.textContent = desc3Input.value;
   desc4Element.textContent = desc4Input.value;
 }
 
-// تقييد النص ليتناسب مع المساحة المحددة
-function limitTextForSpace(text, maxChars) {
-  if (!text) return '';
-  
-  if (text.length > maxChars) {
-    return text.substring(0, maxChars) + '... [تم تقصير النص ليتناسب مع المساحة]';
-  }
-  
-  return text;
-}
-
 // إضافة المستمعين للأحداث
 schoolInput.addEventListener('input', updateAllReports);
-teacherInput.addEventListener('input', updateAllReports);
-managerInput.addEventListener('input', updateAllReports);
+regionInput.addEventListener('input', updateAllReports);
 reportType.addEventListener('change', () => {
   updateAllReports();
-  // تحديث العنوان في الواجهة أيضًا
-  const title = reportType.value;
-  titleElement.textContent = title;
-  titleElement2.textContent = title;
-  titleElement3.textContent = title;
 });
-dateInput.addEventListener('input', updateAllReports);
+dateInput.addEventListener('input', () => {
+  updateAllReports();
+  // تحديث التاريخ الهجري تلقائياً
+  if (dateInput.value) {
+    hijriDateInput.value = toHijri(dateInput.value);
+    updateAllReports();
+  }
+});
+hijriDateInput.addEventListener('input', updateAllReports);
 targetInput.addEventListener('input', updateAllReports);
 countInput.addEventListener('input', updateAllReports);
-desc1Input.addEventListener('input', updateAllReports);
-desc2Input.addEventListener('input', updateAllReports);
+desc1Input.addEventListener('input', () => {
+  desc1Element.textContent = desc1Input.value;
+  checkLines(desc1Input.value, 'desc1Input');
+});
+desc2Input.addEventListener('input', () => {
+  desc2Element.textContent = desc2Input.value;
+  checkLines(desc2Input.value, 'desc2Input');
+});
 desc3Input.addEventListener('input', () => desc3Element.textContent = desc3Input.value);
 desc4Input.addEventListener('input', () => desc4Element.textContent = desc4Input.value);
+
+// تحقق من عدد الأسطر
+function checkLines(text, fieldId) {
+  const lines = text.split('\n').filter(line => line.trim() !== '');
+  const field = document.getElementById(fieldId);
+  
+  if (lines.length > 5) {
+    field.style.borderColor = '#ff6b6b';
+    field.style.boxShadow = '0 0 0 3px rgba(255, 107, 107, 0.1)';
+  } else {
+    field.style.borderColor = '';
+    field.style.boxShadow = '';
+  }
+}
 
 // تحميل النصوص الافتراضية
 function loadDefaultTexts() {
@@ -927,10 +971,14 @@ function loadDefaultTexts() {
     desc4Input.value = texts.desc4;
     
     // تحديث المعاينة
-    desc1Element.textContent = limitTextForSpace(texts.desc1, 500);
-    desc2Element.textContent = limitTextForSpace(texts.desc2, 500);
+    desc1Element.textContent = texts.desc1;
+    desc2Element.textContent = texts.desc2;
     desc3Element.textContent = texts.desc3;
     desc4Element.textContent = texts.desc4;
+    
+    // تحقق من عدد الأسطر
+    checkLines(texts.desc1, 'desc1Input');
+    checkLines(texts.desc2, 'desc2Input');
     
     alert('✅ تم تحميل النصوص الافتراضية بنجاح\nيمكنك الآن تعديلها كما تريد');
   }
@@ -946,6 +994,10 @@ function clearField(fieldId) {
   if (fieldId === 'desc2Input') desc2Element.textContent = '';
   if (fieldId === 'desc3Input') desc3Element.textContent = '';
   if (fieldId === 'desc4Input') desc4Element.textContent = '';
+  
+  // إعادة تعيين اللون
+  field.style.borderColor = '';
+  field.style.boxShadow = '';
 }
 
 // تحميل الصور
@@ -979,6 +1031,26 @@ imageInput.addEventListener('change', function(e) {
   });
 });
 
+// تحقق من عدد الأسطر قبل الطباعة
+function validateLinesBeforePrint() {
+  const desc1Lines = desc1Input.value.split('\n').filter(line => line.trim() !== '').length;
+  const desc2Lines = desc2Input.value.split('\n').filter(line => line.trim() !== '').length;
+  
+  if (desc1Lines > 5) {
+    alert('⚠️ الوصف المختصر يحتوي على أكثر من 5 أسطر\nالرجاء تقليل عدد الأسطر إلى 5 أسطر بالضبط');
+    desc1Input.focus();
+    return false;
+  }
+  
+  if (desc2Lines > 5) {
+    alert('⚠️ إجراءات التنفيذ تحتوي على أكثر من 5 أسطر\nالرجاء تقليل عدد الأسطر إلى 5 أسطر بالضبط');
+    desc2Input.focus();
+    return false;
+  }
+  
+  return true;
+}
+
 // توليد التقرير
 function generateReport() {
   // التحقق من الحقول المطلوبة
@@ -1000,15 +1072,8 @@ function generateReport() {
     return;
   }
   
-  if (!teacherInput.value.trim()) {
-    alert('⚠️ الرجاء إدخال اسم المعلم/ة');
-    teacherInput.focus();
-    return;
-  }
-  
-  if (!managerInput.value.trim()) {
-    alert('⚠️ الرجاء إدخال اسم مدير المدرسة');
-    managerInput.focus();
+  // تحقق من عدد الأسطر
+  if (!validateLinesBeforePrint()) {
     return;
   }
   
@@ -1016,6 +1081,14 @@ function generateReport() {
   updateAllReports();
   
   // تعيين قيم افتراضية إذا كانت فارغة
+  if (!regionInput.value.trim()) {
+    regionElement.textContent = regionElement2.textContent = regionElement3.textContent = 'إدارة التعليم بمنطقة ________';
+  }
+  
+  if (!hijriDateInput.value.trim()) {
+    hijriDateElement.textContent = hijriDateElement2.textContent = hijriDateElement3.textContent = 'غير محدد';
+  }
+  
   if (!targetInput.value.trim()) {
     targetElement.textContent = targetElement2.textContent = targetElement3.textContent = 'غير محدد';
   }
@@ -1053,10 +1126,10 @@ function generateReport() {
 function resetForm() {
   if (confirm('هل تريد مسح جميع الحقول؟')) {
     schoolInput.value = '';
-    teacherInput.value = '';
-    managerInput.value = '';
+    regionInput.value = '';
     reportType.selectedIndex = 0;
     dateInput.value = '';
+    hijriDateInput.value = '';
     targetInput.value = '';
     countInput.value = '';
     desc1Input.value = '';
@@ -1077,8 +1150,6 @@ function resetForm() {
     desc2Element.textContent = '';
     desc3Element.textContent = '';
     desc4Element.textContent = '';
-    teacherNameElement.textContent = '';
-    managerNameElement.textContent = '';
     
     alert('✅ تم مسح النموذج بنجاح');
   }
@@ -1089,6 +1160,9 @@ window.onload = function() {
   const today = new Date();
   const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
   dateInput.value = formattedDate;
+  
+  // تحويل التاريخ إلى هجري
+  hijriDateInput.value = toHijri(formattedDate);
   
   // تحديث جميع النسخ بالتاريخ
   updateAllReports();
