@@ -23,6 +23,7 @@ body {
   padding:20px;
 }
 
+/* ===== الأداة ===== */
 .tool {
   max-width:900px;
   margin:auto;
@@ -34,6 +35,7 @@ body {
 .tool h2 {
   text-align:center;
   color:#0a3b40;
+  margin-bottom:6px;
 }
 
 .by {
@@ -86,6 +88,7 @@ button {
 
 .reset-btn { background:#9e9e9e; }
 
+/* ===== التقرير ===== */
 .report { display:none; }
 
 @page { size:A4; margin:14mm; }
@@ -99,6 +102,7 @@ body { background:white; padding:0; }
 .page { page-break-after:always; }
 .page:last-child { page-break-after:auto; }
 
+/* ===== الهيدر ===== */
 .header {
   background:#0a3b40;
   color:white;
@@ -108,8 +112,13 @@ body { background:white; padding:0; }
   margin-bottom:12px;
 }
 
-.header img { width:45px; display:block; margin:0 auto 4px; }
+.header img {
+  width:45px;
+  display:block;
+  margin:0 auto 4px;
+}
 
+/* ===== معلومات ===== */
 .info-grid {
   display:grid;
   grid-template-columns:repeat(5,1fr);
@@ -135,6 +144,7 @@ body { background:white; padding:0; }
   margin-bottom:4px;
 }
 
+/* ===== المحتوى ===== */
 .grid-desc {
   display:flex;
   gap:12px;
@@ -159,7 +169,10 @@ body { background:white; padding:0; }
   color:#0a3b40;
 }
 
-.desc-box p { flex:1; white-space:pre-line; }
+.desc-box p {
+  flex:1;
+  white-space:pre-line;
+}
 
 .vertical {
   width:60px;
@@ -171,6 +184,7 @@ body { background:white; padding:0; }
   font-weight:700;
 }
 
+/* ===== الصور ===== */
 .images {
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -185,6 +199,7 @@ body { background:white; padding:0; }
   border-radius:10px;
 }
 
+/* ===== التوقيعات ===== */
 .signatures {
   margin-top:30px;
   display:grid;
@@ -208,39 +223,39 @@ body { background:white; padding:0; }
   <div class="by">نُفِّذت بواسطة / فهد الخالدي</div>
 
   <label>المنطقة التعليمية</label>
-  <input oninput="syncText('region',this.value)">
+  <input oninput="sync('region',this.value)">
 
   <label>عنوان التقرير</label>
-  <input oninput="syncText('title',this.value)">
+  <input oninput="sync('title',this.value)">
 
   <label>تاريخ التنفيذ</label>
-  <input oninput="syncText('date',this.value)">
+  <input oninput="sync('date',this.value)">
 
   <label>المستهدفون</label>
-  <input oninput="syncText('target',this.value)">
+  <input oninput="sync('target',this.value)">
 
   <label>عدد المستفيدين</label>
-  <input oninput="syncText('count',this.value)">
+  <input oninput="sync('count',this.value)">
 
   <label>وصف مختصر</label>
-  <textarea oninput="validate(this,'desc1','c1')"></textarea>
+  <textarea oninput="limitLines(this,'desc1','c1')"></textarea>
   <div class="counter" id="c1">0 / 10 أسطر</div>
-  <div class="hint">الحد الأقصى 10 أسطر — كل سطر حتى 6 كلمات</div>
+  <div class="hint">الحد الأقصى 10 أسطر — بدون تقييد كلمات</div>
 
   <label>إجراءات التنفيذ</label>
-  <textarea oninput="validate(this,'desc2','c2')"></textarea>
+  <textarea oninput="limitLines(this,'desc2','c2')"></textarea>
   <div class="counter" id="c2">0 / 10 أسطر</div>
-  <div class="hint">الحد الأقصى 10 أسطر — كل سطر حتى 6 كلمات</div>
+  <div class="hint">الحد الأقصى 10 أسطر — بدون تقييد كلمات</div>
 
   <label>النتائج</label>
-  <textarea oninput="validate(this,'desc3','c3')"></textarea>
+  <textarea oninput="limitLines(this,'desc3','c3')"></textarea>
   <div class="counter" id="c3">0 / 10 أسطر</div>
-  <div class="hint">الحد الأقصى 10 أسطر — كل سطر حتى 6 كلمات</div>
+  <div class="hint">الحد الأقصى 10 أسطر — بدون تقييد كلمات</div>
 
   <label>التوصيات</label>
-  <textarea oninput="validate(this,'desc4','c4')"></textarea>
+  <textarea oninput="limitLines(this,'desc4','c4')"></textarea>
   <div class="counter" id="c4">0 / 10 أسطر</div>
-  <div class="hint">الحد الأقصى 10 أسطر — كل سطر حتى 6 كلمات</div>
+  <div class="hint">الحد الأقصى 10 أسطر — بدون تقييد كلمات</div>
 
   <label>إرفاق الصور</label>
   <input type="file" id="imagesInput" multiple accept="image/*">
@@ -250,87 +265,108 @@ body { background:white; padding:0; }
 </div>
 
 <div class="report">
-  <div class="page">
-    <div class="header">
-      <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
-      وزارة التعليم
-    </div>
 
-    <div class="info-grid">
-      <div class="info-box"><span>المنطقة</span><div id="region"></div></div>
-      <div class="info-box"><span>عنوان التقرير</span><div id="title"></div></div>
-      <div class="info-box"><span>تاريخ التنفيذ</span><div id="date"></div></div>
-      <div class="info-box"><span>المستهدفون</span><div id="target"></div></div>
-      <div class="info-box"><span>عدد المستفيدين</span><div id="count"></div></div>
-    </div>
-
-    <div class="grid-desc">
-      <div class="desc-box"><strong>وصف مختصر</strong><p id="desc1"></p></div>
-      <div class="vertical">⇄</div>
-      <div class="desc-box"><strong>إجراءات التنفيذ</strong><p id="desc2"></p></div>
-    </div>
+<!-- الصفحة الأولى -->
+<div class="page">
+  <div class="header">
+    <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
+    وزارة التعليم
   </div>
 
-  <div class="page">
-    <div class="header">
-      <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
-      وزارة التعليم
-    </div>
-
-    <div class="info-grid">
-      <div class="info-box"><span>المنطقة</span><div id="region2"></div></div>
-      <div class="info-box"><span>عنوان التقرير</span><div id="title2"></div></div>
-      <div class="info-box"><span>تاريخ التنفيذ</span><div id="date2"></div></div>
-      <div class="info-box"><span>المستهدفون</span><div id="target2"></div></div>
-      <div class="info-box"><span>عدد المستفيدين</span><div id="count2"></div></div>
-    </div>
-
-    <div class="grid-desc">
-      <div class="desc-box"><strong>النتائج</strong><p id="desc3"></p></div>
-      <div class="vertical">⇄</div>
-      <div class="desc-box"><strong>التوصيات</strong><p id="desc4"></p></div>
-    </div>
+  <div class="info-grid">
+    <div class="info-box"><span>المنطقة</span><div id="region"></div></div>
+    <div class="info-box"><span>عنوان التقرير</span><div id="title"></div></div>
+    <div class="info-box"><span>تاريخ التنفيذ</span><div id="date"></div></div>
+    <div class="info-box"><span>المستهدفون</span><div id="target"></div></div>
+    <div class="info-box"><span>عدد المستفيدين</span><div id="count"></div></div>
   </div>
+
+  <div class="grid-desc">
+    <div class="desc-box"><strong>وصف مختصر</strong><p id="desc1"></p></div>
+    <div class="vertical">⇄</div>
+    <div class="desc-box"><strong>إجراءات التنفيذ</strong><p id="desc2"></p></div>
+  </div>
+</div>
+
+<!-- الصفحة الثانية -->
+<div class="page">
+  <div class="header">
+    <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
+    وزارة التعليم
+  </div>
+
+  <div class="info-grid">
+    <div class="info-box"><span>المنطقة</span><div id="region2"></div></div>
+    <div class="info-box"><span>عنوان التقرير</span><div id="title2"></div></div>
+    <div class="info-box"><span>تاريخ التنفيذ</span><div id="date2"></div></div>
+    <div class="info-box"><span>المستهدفون</span><div id="target2"></div></div>
+    <div class="info-box"><span>عدد المستفيدين</span><div id="count2"></div></div>
+  </div>
+
+  <div class="grid-desc">
+    <div class="desc-box"><strong>النتائج</strong><p id="desc3"></p></div>
+    <div class="vertical">⇄</div>
+    <div class="desc-box"><strong>التوصيات</strong><p id="desc4"></p></div>
+  </div>
+</div>
+
+<!-- الصفحة الثالثة -->
+<div class="page">
+  <div class="header">
+    <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
+    وزارة التعليم
+  </div>
+
+  <h3 style="text-align:center">شواهد الصور</h3>
+  <div class="images" id="imagesContainer"></div>
+
+  <div class="signatures">
+    <div>اسم المعلم<div class="signature-line"></div>التوقيع</div>
+    <div>مدير المدرسة<div class="signature-line"></div>التوقيع</div>
+  </div>
+</div>
+
 </div>
 
 <script>
 const imagesInput=document.getElementById('imagesInput');
 const imagesContainer=document.getElementById('imagesContainer');
 
-function syncText(id,val){
+function sync(id,val){
   document.getElementById(id).textContent=val;
   if(document.getElementById(id+'2')) document.getElementById(id+'2').textContent=val;
 }
 
-function validate(el,target,counterId){
+function limitLines(el,target,counter){
   let lines=el.value.split('\n');
-
   if(lines.length>10){
     el.value=lines.slice(0,10).join('\n');
     lines=el.value.split('\n');
   }
-
-  let error=false;
-  lines.forEach(line=>{
-    const words=line.trim().split(/\s+/).filter(w=>w);
-    if(words.length>6) error=true;
-  });
-
-  el.style.borderColor=error?'#e53935':'#cfd8dc';
-  document.getElementById(counterId).textContent=`${lines.length} / 10 أسطر`;
+  document.getElementById(counter).textContent=`${lines.length} / 10 أسطر`;
   document.getElementById(target).textContent=el.value;
 }
+
+imagesInput.addEventListener('change',e=>{
+  imagesContainer.innerHTML='';
+  [...e.target.files].forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{
+      const img=document.createElement('img');
+      img.src=ev.target.result;
+      imagesContainer.appendChild(img);
+    };
+    r.readAsDataURL(f);
+  });
+});
 
 function printReport(){
   const ids=['desc1','desc2','desc3','desc4'];
   for(const id of ids){
-    const lines=document.getElementById(id).textContent.split('\n');
-    if(lines.length>10){ alert('عدد الأسطر تجاوز 10'); return; }
-    for(const l of lines){
-      if(l.trim().split(/\s+/).filter(x=>x).length>6){
-        alert('يوجد سطر يحتوي أكثر من 6 كلمات');
-        return;
-      }
+    const lines=document.getElementById(id).textContent.split('\n').filter(l=>l.trim());
+    if(lines.length>10){
+      alert('الحد الأقصى 10 أسطر فقط');
+      return;
     }
   }
   window.print();
@@ -340,6 +376,7 @@ function resetForm(){
   if(!confirm('مسح جميع الخانات؟'))return;
   document.querySelectorAll('input,textarea').forEach(e=>e.value='');
   document.querySelectorAll('[id]').forEach(e=>e.textContent='');
+  imagesContainer.innerHTML='';
 }
 </script>
 
