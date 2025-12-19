@@ -32,6 +32,22 @@ body {
   border-radius: 20px;
 }
 
+.tool-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.tool-title h2 {
+  margin: 0;
+  color: #0a3b40;
+}
+
+.tool-title .by {
+  font-size: 13px;
+  color: #4f6f68;
+  margin-top: 6px;
+}
+
 .tool label {
   font-weight: 700;
   margin-top: 14px;
@@ -77,26 +93,25 @@ body { background:white; padding:0; }
 .page { page-break-after:always; }
 .page:last-child { page-break-after:auto; }
 
-/* ===== الهيدر ===== */
+/* ===== الهيدر (مصغر) ===== */
 .header {
   background:#0a3b40;
   color:white;
-  padding:15px;
-  border-radius:12px;
+  padding:8px 10px;
+  border-radius:10px;
   text-align:center;
-  margin-bottom:15px;
+  margin-bottom:12px;
 }
 
 .header img {
-  width:70px;
+  width:45px;
   display:block;
-  margin:0 auto 8px;
+  margin:0 auto 4px;
 }
 
-.header .by {
-  font-size:12px;
-  opacity:.9;
-  margin-top:5px;
+.header span {
+  font-size:14px;
+  font-weight:700;
 }
 
 /* ===== المعلومات ===== */
@@ -104,7 +119,7 @@ body { background:white; padding:0; }
   display:grid;
   grid-template-columns:repeat(5,1fr);
   gap:10px;
-  margin-bottom:20px;
+  margin-bottom:18px;
 }
 
 .info-box {
@@ -156,7 +171,7 @@ body { background:white; padding:0; }
 }
 
 .vertical {
-  width:70px;
+  width:60px;
   background:#eef3f1;
   border-radius:14px;
   display:flex;
@@ -201,6 +216,11 @@ body { background:white; padding:0; }
 <body>
 
 <div class="tool">
+  <div class="tool-title">
+    <h2>أداة إعداد التقارير</h2>
+    <div class="by">نُفِّذت بواسطة / فهد الخالدي</div>
+  </div>
+
   <label>المنطقة التعليمية</label>
   <input oninput="setText('region',this.value)">
 
@@ -241,8 +261,7 @@ body { background:white; padding:0; }
 <div class="page">
   <div class="header">
     <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
-    وزارة التعليم
-    <div class="by">نُفِّذ بواسطة / فهد الخالدي</div>
+    <span>وزارة التعليم</span>
   </div>
 
   <div class="info-grid">
@@ -264,17 +283,15 @@ body { background:white; padding:0; }
 <div class="page">
   <div class="header">
     <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
-    وزارة التعليم
-    <div class="by">نُفِّذ بواسطة / فهد الخالدي</div>
+    <span>وزارة التعليم</span>
   </div>
 
-  <!-- تكرار المعلومات -->
   <div class="info-grid">
+    <div class="info-box"><span>المنطقة</span><div id="region2"></div></div>
     <div class="info-box"><span>عنوان التقرير</span><div id="title2"></div></div>
     <div class="info-box"><span>تاريخ التنفيذ</span><div id="date2"></div></div>
     <div class="info-box"><span>المستهدفون</span><div id="target2"></div></div>
     <div class="info-box"><span>عدد المستفيدين</span><div id="count2"></div></div>
-    <div class="info-box"><span>المنطقة</span><div id="region2"></div></div>
   </div>
 
   <div class="grid-desc">
@@ -288,8 +305,7 @@ body { background:white; padding:0; }
 <div class="page">
   <div class="header">
     <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
-    وزارة التعليم
-    <div class="by">نُفِّذ بواسطة / فهد الخالدي</div>
+    <span>وزارة التعليم</span>
   </div>
 
   <h3 style="text-align:center">شواهد الصور</h3>
@@ -314,14 +330,17 @@ function setText(id,val){
 
 function validateText(el,target){
   const lines=el.value.trim().split('\n');
-  if(lines.length>10){ alert('الحد الأقصى 10 أسطر'); el.value=lines.slice(0,10).join('\n'); }
-  lines.forEach(l=>{
+  if(lines.length>10){
+    alert('الحد الأقصى 10 أسطر');
+    el.value=lines.slice(0,10).join('\n');
+  }
+  for(const l of lines){
     if(l.trim().split(/\s+/).length!==6){
       el.style.borderColor='red';
       return;
     }
-    el.style.borderColor='';
-  });
+  }
+  el.style.borderColor='#cfd8dc';
   document.getElementById(target).textContent=el.value;
 }
 
