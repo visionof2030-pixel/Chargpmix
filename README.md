@@ -49,7 +49,7 @@ body {
 }
 
 button {
-  margin-top: 25px;
+  margin-top: 15px;
   padding: 15px;
   width: 100%;
   background: #0a3b40;
@@ -59,6 +59,11 @@ button {
   font-size: 17px;
   font-weight: 700;
   cursor: pointer;
+}
+
+/* زر المسح */
+.reset-btn {
+  background: #9e9e9e;
 }
 
 /* ============ التقرير ============ */
@@ -228,6 +233,7 @@ body { background: white; padding: 0; }
   <input type="file" id="imagesInput" multiple accept="image/*">
 
   <button onclick="printReport()">تصدير PDF</button>
+  <button class="reset-btn" onclick="resetForm()">مسح جميع الخانات</button>
 </div>
 
 <div class="report">
@@ -304,6 +310,23 @@ imagesInput.addEventListener('change', e => {
 
 function printReport() {
   window.print();
+}
+
+function resetForm() {
+  if (!confirm('هل أنت متأكد من مسح جميع الخانات؟')) return;
+
+  document.querySelectorAll('.tool input[type="text"], .tool textarea').forEach(el => {
+    el.value = '';
+  });
+
+  imagesInput.value = '';
+  imagesContainer.innerHTML = '';
+
+  document.querySelectorAll(
+    '#region, #title, #date, #target, #count, #desc1, #desc2, #desc3, #desc4'
+  ).forEach(el => {
+    el.textContent = '';
+  });
 }
 </script>
 
