@@ -23,7 +23,7 @@ body {
   padding: 20px;
 }
 
-/* ============ الأداة ============ */
+/* ===== الأداة ===== */
 .tool {
   max-width: 900px;
   margin: auto;
@@ -61,138 +61,137 @@ button {
   cursor: pointer;
 }
 
-/* زر المسح */
-.reset-btn {
-  background: #9e9e9e;
-}
+.reset-btn { background:#9e9e9e; }
 
-/* ============ التقرير ============ */
-.report { display: none; }
+/* ===== التقرير ===== */
+.report { display:none; }
 
-@page {
-  size: A4;
-  margin: 14mm;
-}
+@page { size:A4; margin:14mm; }
 
 @media print {
 
-body { background: white; padding: 0; }
-.tool { display: none; }
-.report { display: block; }
+body { background:white; padding:0; }
+.tool { display:none; }
+.report { display:block; }
 
-.page {
-  page-break-after: always;
-}
-.page:last-child { page-break-after: auto; }
+.page { page-break-after:always; }
+.page:last-child { page-break-after:auto; }
 
+/* ===== الهيدر ===== */
 .header {
-  background: #0a3b40;
-  color: white;
-  padding: 15px;
-  border-radius: 12px;
-  text-align: center;
-  margin-bottom: 15px;
+  background:#0a3b40;
+  color:white;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+  margin-bottom:15px;
 }
 
+.header img {
+  width:70px;
+  display:block;
+  margin:0 auto 8px;
+}
+
+.header .by {
+  font-size:12px;
+  opacity:.9;
+  margin-top:5px;
+}
+
+/* ===== المعلومات ===== */
 .info-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-bottom:20px;
 }
 
 .info-box {
-  border: 2px solid #cfd8dc;
-  border-radius: 12px;
-  padding: 8px;
-  text-align: center;
-  font-size: 12px;
+  border:2px solid #cfd8dc;
+  border-radius:12px;
+  padding:8px;
+  text-align:center;
+  font-size:12px;
 }
 
 .info-box span {
-  display: block;
-  background: #0a3b40;
-  color: white;
-  border-radius: 8px;
-  padding: 4px;
-  font-weight: 700;
-  margin-bottom: 4px;
+  display:block;
+  background:#0a3b40;
+  color:white;
+  border-radius:8px;
+  padding:4px;
+  font-weight:700;
+  margin-bottom:4px;
 }
 
-/* ===== صف المحتوى ===== */
+/* ===== المحتوى ===== */
 .grid-desc {
-  display: flex;
-  gap: 12px;
-  align-items: stretch;
-  min-height: 240px;
+  display:flex;
+  gap:12px;
+  min-height:260px;
 }
 
 .desc-box {
-  flex: 1;
-  border: 2px solid #cfd8dc;
-  border-radius: 14px;
-  padding: 15px;
-  background: #f9fbfb;
-  font-size: 13px;
-  line-height: 1.5;
-  display: flex;
-  flex-direction: column;
+  flex:1;
+  border:2px solid #cfd8dc;
+  border-radius:14px;
+  padding:15px;
+  background:#f9fbfb;
+  display:flex;
+  flex-direction:column;
+  font-size:13px;
 }
 
 .desc-box strong {
-  margin-bottom: 8px;
-  color: #0a3b40;
-  border-bottom: 1px dashed #cfd8dc;
-  padding-bottom: 6px;
+  margin-bottom:8px;
+  border-bottom:1px dashed #cfd8dc;
+  padding-bottom:6px;
+  color:#0a3b40;
 }
 
 .desc-box p {
-  flex: 1;
-  white-space: pre-line;
+  flex:1;
+  white-space:pre-line;
 }
 
 .vertical {
-  width: 70px;
-  background: #eef3f1;
-  border-radius: 14px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 700;
-  color: #1b5e52;
+  width:70px;
+  background:#eef3f1;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
 }
 
 /* ===== الصور ===== */
 .images {
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 12px;
-  margin-top: 20px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-top:20px;
 }
 
 .images img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 10px;
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  border-radius:10px;
 }
 
 /* ===== التوقيعات ===== */
 .signatures {
-  margin-top: 30px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-}
-
-.signature-box {
-  text-align: center;
+  margin-top:30px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:30px;
 }
 
 .signature-line {
-  border-bottom: 2px solid #333;
-  height: 30px;
-  margin: 10px 0;
+  border-bottom:2px solid #333;
+  height:30px;
+  margin:10px 0;
 }
 
 }
@@ -203,31 +202,31 @@ body { background: white; padding: 0; }
 
 <div class="tool">
   <label>المنطقة التعليمية</label>
-  <input oninput="region.textContent=this.value">
+  <input oninput="setText('region',this.value)">
 
   <label>عنوان التقرير</label>
-  <input oninput="title.textContent=this.value">
+  <input oninput="setText('title',this.value)">
 
   <label>تاريخ التنفيذ</label>
-  <input oninput="date.textContent=this.value">
+  <input oninput="setText('date',this.value)">
 
   <label>المستهدفون</label>
-  <input oninput="target.textContent=this.value">
+  <input oninput="setText('target',this.value)">
 
   <label>عدد المستفيدين</label>
-  <input oninput="count.textContent=this.value">
+  <input oninput="setText('count',this.value)">
 
   <label>وصف مختصر</label>
-  <textarea oninput="desc1.textContent=this.value"></textarea>
+  <textarea oninput="validateText(this,'desc1')"></textarea>
 
   <label>إجراءات التنفيذ</label>
-  <textarea oninput="desc2.textContent=this.value"></textarea>
+  <textarea oninput="validateText(this,'desc2')"></textarea>
 
   <label>النتائج</label>
-  <textarea oninput="desc3.textContent=this.value"></textarea>
+  <textarea oninput="validateText(this,'desc3')"></textarea>
 
   <label>التوصيات</label>
-  <textarea oninput="desc4.textContent=this.value"></textarea>
+  <textarea oninput="validateText(this,'desc4')"></textarea>
 
   <label>إرفاق الصور</label>
   <input type="file" id="imagesInput" multiple accept="image/*">
@@ -240,7 +239,11 @@ body { background: white; padding: 0; }
 
 <!-- الصفحة الأولى -->
 <div class="page">
-  <div class="header">وزارة التعليم</div>
+  <div class="header">
+    <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
+    وزارة التعليم
+    <div class="by">نُفِّذ بواسطة / فهد الخالدي</div>
+  </div>
 
   <div class="info-grid">
     <div class="info-box"><span>المنطقة</span><div id="region"></div></div>
@@ -259,7 +262,20 @@ body { background: white; padding: 0; }
 
 <!-- الصفحة الثانية -->
 <div class="page">
-  <div class="header">وزارة التعليم</div>
+  <div class="header">
+    <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
+    وزارة التعليم
+    <div class="by">نُفِّذ بواسطة / فهد الخالدي</div>
+  </div>
+
+  <!-- تكرار المعلومات -->
+  <div class="info-grid">
+    <div class="info-box"><span>عنوان التقرير</span><div id="title2"></div></div>
+    <div class="info-box"><span>تاريخ التنفيذ</span><div id="date2"></div></div>
+    <div class="info-box"><span>المستهدفون</span><div id="target2"></div></div>
+    <div class="info-box"><span>عدد المستفيدين</span><div id="count2"></div></div>
+    <div class="info-box"><span>المنطقة</span><div id="region2"></div></div>
+  </div>
 
   <div class="grid-desc">
     <div class="desc-box"><strong>النتائج</strong><p id="desc3"></p></div>
@@ -270,63 +286,65 @@ body { background: white; padding: 0; }
 
 <!-- الصفحة الثالثة -->
 <div class="page">
-  <div class="header">وزارة التعليم</div>
+  <div class="header">
+    <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
+    وزارة التعليم
+    <div class="by">نُفِّذ بواسطة / فهد الخالدي</div>
+  </div>
 
   <h3 style="text-align:center">شواهد الصور</h3>
   <div class="images" id="imagesContainer"></div>
 
   <div class="signatures">
-    <div class="signature-box">
-      اسم المعلم
-      <div class="signature-line"></div>
-      التوقيع
-    </div>
-    <div class="signature-box">
-      مدير المدرسة
-      <div class="signature-line"></div>
-      التوقيع
-    </div>
+    <div>اسم المعلم<div class="signature-line"></div>التوقيع</div>
+    <div>مدير المدرسة<div class="signature-line"></div>التوقيع</div>
   </div>
 </div>
 
 </div>
 
 <script>
-const imagesInput = document.getElementById('imagesInput');
-const imagesContainer = document.getElementById('imagesContainer');
+const imagesInput=document.getElementById('imagesInput');
+const imagesContainer=document.getElementById('imagesContainer');
 
-imagesInput.addEventListener('change', e => {
-  imagesContainer.innerHTML = '';
-  [...e.target.files].forEach(file => {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const img = document.createElement('img');
-      img.src = ev.target.result;
+function setText(id,val){
+  document.getElementById(id).textContent=val;
+  if(document.getElementById(id+'2')) document.getElementById(id+'2').textContent=val;
+}
+
+function validateText(el,target){
+  const lines=el.value.trim().split('\n');
+  if(lines.length>10){ alert('الحد الأقصى 10 أسطر'); el.value=lines.slice(0,10).join('\n'); }
+  lines.forEach(l=>{
+    if(l.trim().split(/\s+/).length!==6){
+      el.style.borderColor='red';
+      return;
+    }
+    el.style.borderColor='';
+  });
+  document.getElementById(target).textContent=el.value;
+}
+
+imagesInput.addEventListener('change',e=>{
+  imagesContainer.innerHTML='';
+  [...e.target.files].forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{
+      const img=document.createElement('img');
+      img.src=ev.target.result;
       imagesContainer.appendChild(img);
     };
-    reader.readAsDataURL(file);
+    r.readAsDataURL(f);
   });
 });
 
-function printReport() {
-  window.print();
-}
+function printReport(){ window.print(); }
 
-function resetForm() {
-  if (!confirm('هل أنت متأكد من مسح جميع الخانات؟')) return;
-
-  document.querySelectorAll('.tool input[type="text"], .tool textarea').forEach(el => {
-    el.value = '';
-  });
-
-  imagesInput.value = '';
-  imagesContainer.innerHTML = '';
-
-  document.querySelectorAll(
-    '#region, #title, #date, #target, #count, #desc1, #desc2, #desc3, #desc4'
-  ).forEach(el => {
-    el.textContent = '';
-  });
+function resetForm(){
+  if(!confirm('مسح جميع الخانات؟'))return;
+  document.querySelectorAll('input,textarea').forEach(e=>e.value='');
+  imagesContainer.innerHTML='';
+  document.querySelectorAll('[id]').forEach(e=>e.textContent='');
 }
 </script>
 
