@@ -16,7 +16,7 @@
 }
 
 body {
-  font-family: 'KufamLocal', sans-serif;
+  font-family:'KufamLocal', sans-serif;
   background:#f2f7f6;
   margin:0;
   padding:20px;
@@ -101,26 +101,24 @@ body { background:white; padding:0; }
 .page { page-break-after:always; }
 .page:last-child { page-break-after:auto; }
 
-/* ===== الهيدر المصغر جدًا ===== */
+/* ===== الهيدر الصغير جدًا ===== */
 .header {
   background:#0a3b40;
   color:white;
-  padding:4px 6px;        /* ↓↓↓ تصغير قوي */
+  padding:4px 6px;
   border-radius:6px;
   text-align:center;
   margin-bottom:8px;
-  line-height:1.2;
 }
 
 .header img {
-  width:28px;             /* ↓↓↓ تصغير الشعار */
-  display:inline-block;
+  width:28px;
   vertical-align:middle;
   margin-left:6px;
 }
 
 .header span {
-  font-size:11px;         /* ↓↓↓ تصغير النص */
+  font-size:11px;
   font-weight:700;
   vertical-align:middle;
 }
@@ -226,6 +224,7 @@ body { background:white; padding:0; }
 
 <body>
 
+<!-- ========= الأداة ========= -->
 <div class="tool">
   <h2>أداة إعداد التقارير</h2>
   <div class="by">نُفِّذت بواسطة / فهد الخالدي</div>
@@ -248,22 +247,19 @@ body { background:white; padding:0; }
   <label>وصف مختصر</label>
   <textarea oninput="limitLines(this,'desc1','c1')"></textarea>
   <div class="counter" id="c1">0 / 10 أسطر</div>
-  <div class="hint">الحد الأقصى 10 أسطر — بدون تقييد كلمات</div>
+  <div class="hint">الحد الأقصى 10 أسطر</div>
 
   <label>إجراءات التنفيذ</label>
   <textarea oninput="limitLines(this,'desc2','c2')"></textarea>
   <div class="counter" id="c2">0 / 10 أسطر</div>
-  <div class="hint">الحد الأقصى 10 أسطر — بدون تقييد كلمات</div>
 
   <label>النتائج</label>
   <textarea oninput="limitLines(this,'desc3','c3')"></textarea>
   <div class="counter" id="c3">0 / 10 أسطر</div>
-  <div class="hint">الحد الأقصى 10 أسطر — بدون تقييد كلمات</div>
 
   <label>التوصيات</label>
   <textarea oninput="limitLines(this,'desc4','c4')"></textarea>
   <div class="counter" id="c4">0 / 10 أسطر</div>
-  <div class="hint">الحد الأقصى 10 أسطر — بدون تقييد كلمات</div>
 
   <label>إرفاق الصور</label>
   <input type="file" id="imagesInput" multiple accept="image/*">
@@ -272,9 +268,69 @@ body { background:white; padding:0; }
   <button class="reset-btn" onclick="resetForm()">مسح جميع الخانات</button>
 </div>
 
-<!-- التقرير (لم يتغير سوى الهيدر) -->
+<!-- ========= التقرير ========= -->
 <div class="report">
-  <!-- نفس صفحاتك السابقة تمامًا -->
+
+<!-- الصفحة الأولى -->
+<div class="page">
+  <div class="header">
+    <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
+    <span>وزارة التعليم</span>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-box"><span>المنطقة</span><div id="region"></div></div>
+    <div class="info-box"><span>عنوان التقرير</span><div id="title"></div></div>
+    <div class="info-box"><span>تاريخ التنفيذ</span><div id="date"></div></div>
+    <div class="info-box"><span>المستهدفون</span><div id="target"></div></div>
+    <div class="info-box"><span>عدد المستفيدين</span><div id="count"></div></div>
+  </div>
+
+  <div class="grid-desc">
+    <div class="desc-box"><strong>وصف مختصر</strong><p id="desc1"></p></div>
+    <div class="vertical">⇄</div>
+    <div class="desc-box"><strong>إجراءات التنفيذ</strong><p id="desc2"></p></div>
+  </div>
+</div>
+
+<!-- الصفحة الثانية -->
+<div class="page">
+  <div class="header">
+    <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
+    <span>وزارة التعليم</span>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-box"><span>المنطقة</span><div id="region2"></div></div>
+    <div class="info-box"><span>عنوان التقرير</span><div id="title2"></div></div>
+    <div class="info-box"><span>تاريخ التنفيذ</span><div id="date2"></div></div>
+    <div class="info-box"><span>المستهدفون</span><div id="target2"></div></div>
+    <div class="info-box"><span>عدد المستفيدين</span><div id="count2"></div></div>
+  </div>
+
+  <div class="grid-desc">
+    <div class="desc-box"><strong>النتائج</strong><p id="desc3"></p></div>
+    <div class="vertical">⇄</div>
+    <div class="desc-box"><strong>التوصيات</strong><p id="desc4"></p></div>
+  </div>
+</div>
+
+<!-- الصفحة الثالثة -->
+<div class="page">
+  <div class="header">
+    <img src="https://i.ibb.co/kshh2Tf8/IMG-2109.jpg">
+    <span>وزارة التعليم</span>
+  </div>
+
+  <h3 style="text-align:center">شواهد الصور</h3>
+  <div class="images" id="imagesContainer"></div>
+
+  <div class="signatures">
+    <div>اسم المعلم<div class="signature-line"></div>التوقيع</div>
+    <div>مدير المدرسة<div class="signature-line"></div>التوقيع</div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -295,6 +351,19 @@ function limitLines(el,target,counter){
   document.getElementById(counter).textContent=`${lines.length} / 10 أسطر`;
   document.getElementById(target).textContent=el.value;
 }
+
+imagesInput.addEventListener('change',e=>{
+  imagesContainer.innerHTML='';
+  [...e.target.files].forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{
+      const img=document.createElement('img');
+      img.src=ev.target.result;
+      imagesContainer.appendChild(img);
+    };
+    r.readAsDataURL(f);
+  });
+});
 
 function printReport(){
   const ids=['desc1','desc2','desc3','desc4'];
