@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -255,43 +255,36 @@ button {
   
   .page:last-child { page-break-after: auto; }
 
-  /* ===== الهيدر ===== */
+  /* ===== الهيدر المعدل - أصغر حجم بدون "الإدارة العامة للتعليم" ===== */
   .header-full {
     background: linear-gradient(135deg, #0a3b40 0%, #1b5e52 100%);
     color: white;
-    border-radius: 18px;
-    padding: 22px;
+    border-radius: 12px;
+    padding: 15px;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
   }
 
   .header-full img {
-    width: 110px;
-    margin-bottom: 12px;
+    width: 80px;
+    margin-bottom: 8px;
   }
 
   .header-full h1 {
     margin: 0;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 700;
     letter-spacing: 0.5px;
   }
 
-  .header-full h2 {
-    margin: 5px 0 0;
-    font-size: 18px;
-    font-weight: 400;
-    opacity: 0.9;
-  }
-
   .header-full .region {
     margin-top: 5px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     color: #ffffff;
     background: rgba(255,255,255,0.1);
-    padding: 5px 15px;
-    border-radius: 8px;
+    padding: 4px 10px;
+    border-radius: 6px;
     display: inline-block;
   }
 
@@ -299,26 +292,26 @@ button {
     background: #0a3b40;
     color: white;
     width: fit-content;
-    margin: 15px auto 20px;
-    padding: 10px 35px;
-    border-radius: 14px;
-    font-size: 16px;
+    margin: 12px auto 15px;
+    padding: 8px 25px;
+    border-radius: 10px;
+    font-size: 14px;
     font-weight: 700;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
   }
 
   /* ===== معلومات التقرير في جميع الصفحات ===== */
   .report-info-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: 10px;
+    margin-bottom: 15px;
     background: #f9fbfb;
-    padding: 15px;
-    border-radius: 14px;
+    padding: 12px;
+    border-radius: 12px;
     border: 2px solid #cfd8dc;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .report-info-item {
@@ -329,64 +322,85 @@ button {
     display: block;
     background: #0a3b40;
     color: white;
-    border-radius: 10px;
-    padding: 6px;
+    border-radius: 8px;
+    padding: 5px;
     font-weight: 700;
-    margin-bottom: 8px;
-    font-size: 13px;
+    margin-bottom: 6px;
+    font-size: 12px;
   }
 
   .report-info-value {
-    padding: 4px;
-    min-height: 20px;
+    padding: 3px;
+    min-height: 18px;
+    font-size: 12px;
   }
 
-  /* ===== محتوى ===== */
+  /* ===== محتوى - تم تعديله لمنع انقسام المحتوى بين الصفحات ===== */
   .grid-desc {
     display: grid;
-    grid-template-columns: 1fr 90px 1fr;
-    gap: 15px;
-    margin-top: 20px;
+    grid-template-columns: 1fr 70px 1fr;
+    gap: 12px;
+    margin-top: 15px;
+    /* منع انقسام هذا القسم بين صفحات */
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .desc-box {
     border: 2px solid #cfd8dc;
-    border-radius: 16px;
-    padding: 18px;
+    border-radius: 14px;
+    padding: 15px;
     background: #f9fbfb;
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 13px;
+    line-height: 1.5;
+    /* منع انقسام المحتوى داخل المربع */
+    page-break-inside: avoid;
+    break-inside: avoid;
+    /* ارتفاع ثابت لضمان بقاء المربعين في نفس الصفحة */
+    min-height: 180px;
+    max-height: 200px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .desc-box strong {
     display: block;
     color: #0a3b40;
-    margin-bottom: 10px;
-    font-size: 16px;
+    margin-bottom: 8px;
+    font-size: 14px;
     border-bottom: 1px dashed #cfd8dc;
-    padding-bottom: 8px;
+    padding-bottom: 6px;
+    flex-shrink: 0;
   }
 
   .desc-box p {
-    margin: 8px 0;
+    margin: 5px 0;
     white-space: pre-line;
+    flex-grow: 1;
+    overflow: hidden;
+    /* ضبط المحاذاة ليكون النص في أعلى المربع */
+    text-align: justify;
   }
 
   /* ===== المربع النصفي المعدل ===== */
   .vertical {
     background: #eef3f1;
-    border-radius: 16px;
+    border-radius: 14px;
     display: grid;
     grid-template-columns: 1fr 1px 1fr;
     align-items: center;
-    padding: 15px 8px;
+    padding: 12px 6px;
     font-weight: 600;
     height: 100%;
+    /* منع الانقسام */
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .vertical .right {
     writing-mode: vertical-rl;
-    font-size: 13px;
+    font-size: 12px;
     color: #1b5e52;
     text-align: center;
     font-weight: 700;
@@ -395,7 +409,7 @@ button {
   .vertical .left {
     writing-mode: vertical-lr;
     transform: rotate(180deg);
-    font-size: 13px;
+    font-size: 12px;
     color: #4f6f68;
     text-align: center;
     font-weight: 700;
@@ -410,40 +424,40 @@ button {
 
   /* ===== الصور ===== */
   .images-page {
-    margin-top: 20px;
+    margin-top: 15px;
   }
   
   .images-page h3 {
     text-align: center;
     color: #0a3b40;
-    font-size: 20px;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
+    font-size: 18px;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
     border-bottom: 2px solid #cfd8dc;
   }
 
   .images {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-top: 15px;
+    gap: 12px;
+    margin-top: 12px;
   }
 
   .images img {
     width: 100%;
-    height: 180px;
+    height: 160px;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 2px solid #b0bec5;
   }
   
   /* ===== التوقيعات في الصفحة الثالثة ===== */
   .signatures {
-    margin-top: 40px;
+    margin-top: 30px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    padding-top: 30px;
+    gap: 30px;
+    padding-top: 20px;
     border-top: 2px solid #cfd8dc;
   }
 
@@ -454,18 +468,18 @@ button {
   .signature-name {
     font-weight: 700;
     color: #0a3b40;
-    margin-bottom: 20px;
-    font-size: 16px;
+    margin-bottom: 15px;
+    font-size: 14px;
   }
 
   .signature-line {
     border-bottom: 2px solid #333;
-    height: 30px;
-    margin-bottom: 10px;
+    height: 25px;
+    margin-bottom: 8px;
   }
 
   .signature-label {
-    font-size: 14px;
+    font-size: 13px;
     color: #4f6f68;
   }
   
@@ -477,9 +491,21 @@ button {
     right: 14mm;
     text-align: center;
     color: #666;
-    font-size: 12px;
+    font-size: 11px;
     border-top: 1px solid #ddd;
-    padding-top: 10px;
+    padding-top: 8px;
+  }
+  
+  /* ===== ضبط للصفحة الأولى لمنع الانقسام ===== */
+  .page:first-child {
+    height: 297mm; /* ارتفاع A4 */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .page:first-child .grid-desc {
+    flex-grow: 1;
+    margin-bottom: 0;
   }
 }
 </style>
@@ -542,15 +568,15 @@ button {
   <div class="input-group">
     <label>📝 الوصف المختصر (5 أسطر بالضبط)</label>
     <button class="clear-default-btn" onclick="clearField('desc1Input')">مسح</button>
-    <textarea id="desc1Input" placeholder="وصف مختصر للنشاط أو البرنامج" rows="6"></textarea>
-    <div class="default-text-note">5 أسطر بالضبط (بدون مسافات بين الأسطر)</div>
+    <textarea id="desc1Input" placeholder="وصف مختصر للنشاط أو البرنامج" rows="5"></textarea>
+    <div class="default-text-note">5 أسطر بالضبط (بدون مسافات بين الأسطر) - سيظهر في صفحة واحدة فقط</div>
   </div>
 
   <div class="input-group">
     <label>⚙️ إجراءات التنفيذ (5 أسطر بالضبط)</label>
     <button class="clear-default-btn" onclick="clearField('desc2Input')">مسح</button>
-    <textarea id="desc2Input" placeholder="الخطوات والإجراءات التنفيذية" rows="6"></textarea>
-    <div class="default-text-note">5 أسطر بالضبط (بدون مسافات بين الأسطر)</div>
+    <textarea id="desc2Input" placeholder="الخطوات والإجراءات التنفيذية" rows="5"></textarea>
+    <div class="default-text-note">5 أسطر بالضبط (بدون مسافات بين الأسطر) - سيظهر في صفحة واحدة فقط</div>
   </div>
 
   <div class="input-group">
@@ -590,7 +616,6 @@ button {
   <div class="header-full">
     <img src="https://i.ibb.co/2037zjqy/IMG-2102.jpg" alt="شعار الوزارة">
     <h1>وزارة التعليم</h1>
-    <h2>الإدارة العامة للتعليم</h2>
     <div class="region" id="region">إدارة التعليم بمنطقة ________</div>
   </div>
 
@@ -646,7 +671,6 @@ button {
   <div class="header-full">
     <img src="https://i.ibb.co/2037zjqy/IMG-2102.jpg" alt="شعار الوزارة">
     <h1>وزارة التعليم</h1>
-    <h2>الإدارة العامة للتعليم</h2>
     <div class="region" id="region2">إدارة التعليم بمنطقة ________</div>
   </div>
 
@@ -702,7 +726,6 @@ button {
   <div class="header-full">
     <img src="https://i.ibb.co/2037zjqy/IMG-2102.jpg" alt="شعار الوزارة">
     <h1>وزارة التعليم</h1>
-    <h2>الإدارة العامة للتعليم</h2>
     <div class="region" id="region3">إدارة التعليم بمنطقة ________</div>
   </div>
 
