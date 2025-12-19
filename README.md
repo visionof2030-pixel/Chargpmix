@@ -1278,13 +1278,13 @@
                     <div class="export-option" data-format="print">
                         <i class="fas fa-print"></i>
                         <div class="export-option-title">طباعة مباشرة</div>
-                        <div class="export-option-desc">طباعة التقرير مباشرة على ورق A4 مع تنسيق احترافي</div>
+                        <div class="export-option-desc">طباعة التقرير مباشرة على ورق A4 مع تنسيق احترافي يدعم العربية بشكل كامل</div>
                     </div>
                     
                     <div class="export-option" data-format="html">
                         <i class="fas fa-file-code"></i>
                         <div class="export-option-title">نسخة ويب</div>
-                        <div class="export-option-desc">نسخة ويب تفاعلية مع تنسيق احترافي متكامل</div>
+                        <div class="export-option-desc">نسخة ويب تفاعلية مع تنسيق احترافي متكامل تدعم الصور المرفوعة</div>
                     </div>
                 </div>
                 
@@ -1812,13 +1812,13 @@
             
             async function exportToWord() {
                 const docx = window.docx;
-                const { AlignmentType, BorderStyle, WidthType, TableCell, TableRow } = docx;
+                const { AlignmentType, BorderStyle, WidthType, TableCell, TableRow, Paragraph } = docx;
                 
                 const children = [];
                 
                 // الهيدر الرئيسي
                 children.push(
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: "إدارة تعليم منطقة مكة المكرمة",
@@ -1832,7 +1832,7 @@
                         spacing: { after: 200 }
                     }),
                     
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: "مكتب التعليم بوسط مكة",
@@ -1846,7 +1846,7 @@
                         spacing: { after: 400 }
                     }),
                     
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: currentReportData.title,
@@ -1871,7 +1871,7 @@
                 
                 // معلومات التقرير
                 children.push(
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: `التاريخ: ${currentReportData.programDate} هـ`,
@@ -1887,7 +1887,7 @@
                 
                 // جدول البيانات الأساسية
                 children.push(
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: "البيانات الأساسية",
@@ -1917,7 +1917,7 @@
                         children: [
                             new TableCell({
                                 children: [
-                                    new docx.Paragraph({
+                                    new Paragraph({
                                         children: [
                                             new docx.TextRun({
                                                 text: item.value,
@@ -1932,7 +1932,7 @@
                             }),
                             new TableCell({
                                 children: [
-                                    new docx.Paragraph({
+                                    new Paragraph({
                                         children: [
                                             new docx.TextRun({
                                                 text: item.label,
@@ -1968,7 +1968,7 @@
                 
                 // وصف النشاط
                 children.push(
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: "وصف مختصر لما تم تنفيذه",
@@ -1982,7 +1982,7 @@
                         spacing: { before: 600, after: 300 }
                     }),
                     
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: currentReportData.description,
@@ -1995,10 +1995,10 @@
                     })
                 );
                 
-                // إجراءات التنفيذ - بدون ترقيم
+                // إجراءات التنفيذ - بدون نقاط أو ترقيم
                 if (currentReportData.procedures && currentReportData.procedures.length > 0) {
                     children.push(
-                        new docx.Paragraph({
+                        new Paragraph({
                             children: [
                                 new docx.TextRun({
                                     text: "إجراءات التنفيذ",
@@ -2015,26 +2015,25 @@
                     
                     currentReportData.procedures.forEach((procedure, index) => {
                         children.push(
-                            new docx.Paragraph({
+                            new Paragraph({
                                 children: [
                                     new docx.TextRun({
-                                        text: `• ${procedure}`,
+                                        text: `${procedure}`,
                                         size: 24,
                                         font: "Traditional Arabic"
                                     })
                                 ],
                                 alignment: AlignmentType.RIGHT,
-                                spacing: { after: 150 },
-                                indent: { firstLine: 400 }
+                                spacing: { after: 150 }
                             })
                         );
                     });
                 }
                 
-                // النتائج - بدون ترقيم
+                // النتائج - بدون نقاط أو ترقيم
                 if (currentReportData.results && currentReportData.results.length > 0) {
                     children.push(
-                        new docx.Paragraph({
+                        new Paragraph({
                             children: [
                                 new docx.TextRun({
                                     text: "النتائج",
@@ -2051,17 +2050,16 @@
                     
                     currentReportData.results.forEach((result, index) => {
                         children.push(
-                            new docx.Paragraph({
+                            new Paragraph({
                                 children: [
                                     new docx.TextRun({
-                                        text: `• ${result}`,
+                                        text: `${result}`,
                                         size: 24,
                                         font: "Traditional Arabic"
                                     })
                                 ],
                                 alignment: AlignmentType.RIGHT,
-                                spacing: { after: 150 },
-                                indent: { firstLine: 400 }
+                                spacing: { after: 150 }
                             })
                         );
                     });
@@ -2069,7 +2067,7 @@
                 
                 // التوصيات
                 children.push(
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: "التوصيات",
@@ -2083,7 +2081,7 @@
                         spacing: { before: 600, after: 300 }
                     }),
                     
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: currentReportData.recommendations,
@@ -2096,9 +2094,42 @@
                     })
                 );
                 
+                // إضافة قسم الصور المرفوعة (إن وجدت)
+                if (uploadedImages.length > 0) {
+                    children.push(
+                        new Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "الصور المرفقة بالتقرير",
+                                    bold: true,
+                                    size: 28,
+                                    font: "Traditional Arabic",
+                                    color: "2c3e50"
+                                })
+                            ],
+                            alignment: AlignmentType.RIGHT,
+                            spacing: { before: 600, after: 300 }
+                        }),
+                        
+                        new Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: `تم رفع ${uploadedImages.length} صورة توثيقية مع التقرير`,
+                                    size: 24,
+                                    font: "Traditional Arabic",
+                                    italics: true,
+                                    color: "7f8c8d"
+                                })
+                            ],
+                            alignment: AlignmentType.RIGHT,
+                            spacing: { after: 400 }
+                        })
+                    );
+                }
+                
                 // التوقيعات
                 children.push(
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: "التوقيعات",
@@ -2118,7 +2149,7 @@
                                 children: [
                                     new TableCell({
                                         children: [
-                                            new docx.Paragraph({
+                                            new Paragraph({
                                                 children: [
                                                     new docx.TextRun({
                                                         text: "مدير المدرسة",
@@ -2129,7 +2160,7 @@
                                                 ],
                                                 alignment: AlignmentType.CENTER
                                             }),
-                                            new docx.Paragraph({
+                                            new Paragraph({
                                                 children: [
                                                     new docx.TextRun({
                                                         text: currentReportData.principal,
@@ -2139,7 +2170,7 @@
                                                 ],
                                                 alignment: AlignmentType.CENTER
                                             }),
-                                            new docx.Paragraph({
+                                            new Paragraph({
                                                 children: [
                                                     new docx.TextRun({
                                                         text: ".........................",
@@ -2154,7 +2185,7 @@
                                     }),
                                     new TableCell({
                                         children: [
-                                            new docx.Paragraph({
+                                            new Paragraph({
                                                 children: [
                                                     new docx.TextRun({
                                                         text: "معد التقرير",
@@ -2165,7 +2196,7 @@
                                                 ],
                                                 alignment: AlignmentType.CENTER
                                             }),
-                                            new docx.Paragraph({
+                                            new Paragraph({
                                                 children: [
                                                     new docx.TextRun({
                                                         text: currentReportData.reporter,
@@ -2175,7 +2206,7 @@
                                                 ],
                                                 alignment: AlignmentType.CENTER
                                             }),
-                                            new docx.Paragraph({
+                                            new Paragraph({
                                                 children: [
                                                     new docx.TextRun({
                                                         text: ".........................",
@@ -2197,7 +2228,7 @@
                 
                 // تذييل الصفحة
                 children.push(
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: `تم إنشاء هذا التقرير بواسطة النظام الإلكتروني لإعداد التقارير التربوية`,
@@ -2211,7 +2242,7 @@
                         spacing: { before: 800 }
                     }),
                     
-                    new docx.Paragraph({
+                    new Paragraph({
                         children: [
                             new docx.TextRun({
                                 text: `${new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`,
@@ -2276,8 +2307,7 @@
                     day: 'numeric'
                 });
                 
-                return `
-<!DOCTYPE html>
+                return `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
@@ -2286,16 +2316,21 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
         
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Cairo', 'Traditional Arabic', sans-serif;
+        }
         
         body {
-            font-family: 'Cairo', 'Traditional Arabic', sans-serif;
+            direction: rtl;
+            text-align: right;
             line-height: 1.8;
             color: #000;
-            direction: rtl;
             background: white;
             padding: 20mm;
-            font-size: 14pt;
+            font-size: 16pt;
         }
         
         .print-container {
@@ -2313,16 +2348,24 @@
         
         .print-title {
             color: #2c3e50;
-            font-size: 24pt;
-            margin-bottom: 15px;
+            font-size: 28pt;
+            margin-bottom: 10px;
             font-weight: 800;
         }
         
         .print-subtitle {
             color: #e74c3c;
-            font-size: 18pt;
-            margin-bottom: 10px;
+            font-size: 22pt;
+            margin-bottom: 15px;
             font-weight: 600;
+        }
+        
+        .report-title {
+            color: #2c3e50;
+            font-size: 26pt;
+            margin: 20px 0;
+            font-weight: 700;
+            text-align: center;
         }
         
         .print-info {
@@ -2331,6 +2374,7 @@
             border-radius: 8px;
             margin: 20px 0;
             border-right: 4px solid #2c3e50;
+            text-align: right;
         }
         
         .print-section {
@@ -2340,37 +2384,40 @@
         
         .print-section-title {
             color: #2c3e50;
-            font-size: 20pt;
+            font-size: 22pt;
             margin-bottom: 20px;
             border-right: 4px solid #e74c3c;
             padding-right: 15px;
             font-weight: 700;
+            text-align: right;
         }
         
         .print-content {
-            font-size: 14pt;
+            font-size: 16pt;
             line-height: 1.8;
-            text-align: justify;
+            text-align: right;
+            padding-right: 10px;
         }
         
         .print-table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
-            font-size: 12pt;
+            font-size: 14pt;
+            direction: rtl;
         }
         
         .print-table th {
             background-color: #2c3e50;
             color: white;
-            padding: 12px;
+            padding: 15px;
             text-align: right;
             font-weight: bold;
             border: 1px solid #1a252f;
         }
         
         .print-table td {
-            padding: 10px 12px;
+            padding: 12px 15px;
             border: 1px solid #bdc3c7;
             text-align: right;
         }
@@ -2379,23 +2426,17 @@
             background-color: #f8f9fa;
         }
         
-        .print-list {
+        .print-procedures, .print-results {
             padding-right: 25px;
             margin: 15px 0;
+            text-align: right;
         }
         
-        .print-list-item {
+        .procedure-item, .result-item {
             margin-bottom: 10px;
             padding-right: 15px;
-            position: relative;
-        }
-        
-        .print-list-item::before {
-            content: "•";
-            color: #e74c3c;
-            font-size: 20pt;
-            position: absolute;
-            right: -20px;
+            text-align: right;
+            font-size: 16pt;
         }
         
         .print-signatures {
@@ -2406,6 +2447,7 @@
             border-top: 2px solid #2c3e50;
             flex-wrap: wrap;
             page-break-inside: avoid;
+            direction: rtl;
         }
         
         .print-signature {
@@ -2415,14 +2457,14 @@
         }
         
         .print-signature-title {
-            font-size: 16pt;
+            font-size: 18pt;
             font-weight: bold;
             margin-bottom: 20px;
             color: #2c3e50;
         }
         
         .print-signature-name {
-            font-size: 14pt;
+            font-size: 16pt;
             margin: 25px 0;
             font-weight: 600;
         }
@@ -2441,7 +2483,26 @@
             padding-top: 30px;
             border-top: 1px dashed #bdc3c7;
             color: #7f8c8d;
-            font-size: 11pt;
+            font-size: 12pt;
+        }
+        
+        .images-section {
+            margin: 30px 0;
+            text-align: right;
+        }
+        
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .image-note {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 10px;
+            text-align: right;
         }
         
         @page {
@@ -2452,11 +2513,24 @@
         @media print {
             body {
                 padding: 0;
+                font-size: 14pt;
             }
             
             .print-container {
                 width: 100%;
                 margin: 0;
+            }
+            
+            .print-title {
+                font-size: 24pt;
+            }
+            
+            .print-subtitle {
+                font-size: 20pt;
+            }
+            
+            .report-title {
+                font-size: 22pt;
             }
         }
     </style>
@@ -2466,7 +2540,7 @@
         <div class="print-header">
             <h1 class="print-title">إدارة تعليم منطقة مكة المكرمة</h1>
             <div class="print-subtitle">مكتب التعليم بوسط مكة</div>
-            <h2 style="color: #2c3e50; font-size: 22pt; margin: 20px 0;">${currentReportData.title}</h2>
+            <h2 class="report-title">${currentReportData.title}</h2>
             <div class="print-info">
                 <strong>التاريخ:</strong> ${currentReportData.programDate} هـ
             </div>
@@ -2502,9 +2576,9 @@
         ${currentReportData.procedures && currentReportData.procedures.length > 0 ? `
         <div class="print-section">
             <h3 class="print-section-title">إجراءات التنفيذ</h3>
-            <div class="print-list">
+            <div class="print-procedures">
                 ${currentReportData.procedures.map((procedure, index) => `
-                <div class="print-list-item">${procedure}</div>
+                <div class="procedure-item">${procedure}</div>
                 `).join('')}
             </div>
         </div>` : ''}
@@ -2512,9 +2586,9 @@
         ${currentReportData.results && currentReportData.results.length > 0 ? `
         <div class="print-section">
             <h3 class="print-section-title">النتائج</h3>
-            <div class="print-list">
+            <div class="print-results">
                 ${currentReportData.results.map((result, index) => `
-                <div class="print-list-item">${result}</div>
+                <div class="result-item">${result}</div>
                 `).join('')}
             </div>
         </div>` : ''}
@@ -2525,6 +2599,12 @@
                 <p>${currentReportData.recommendations}</p>
             </div>
         </div>
+        
+        ${uploadedImages.length > 0 ? `
+        <div class="print-section images-section">
+            <h3 class="print-section-title">الصور المرفقة</h3>
+            <div class="image-note">تم رفع ${uploadedImages.length} صورة توثيقية مع التقرير</div>
+        </div>` : ''}
         
         <div class="print-signatures">
             <div class="print-signature">
@@ -2634,18 +2714,37 @@
         }
         .content-box p { font-size: 18px; line-height: 1.8; color: #444; text-align: justify; }
         
-        .list-container { padding-right: 20px; }
-        .list-item {
-            display: flex; align-items: flex-start; gap: 15px; margin-bottom: 15px; padding: 15px;
+        .procedures-container, .results-container { padding-right: 20px; }
+        .procedure-item, .result-item {
+            margin-bottom: 15px; padding: 15px;
             background: white; border-radius: 8px; border-right: 4px solid #3498db;
             box-shadow: 0 3px 10px rgba(0,0,0,0.05);
         }
         
-        .list-number {
-            background: #2c3e50; color: white; width: 35px; height: 35px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; flex-shrink: 0;
+        .images-section {
+            margin: 30px 0;
         }
-        .list-text { font-size: 16px; color: #444; flex: 1; }
+        
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .image-item {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
+        
+        .image-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
         
         .signatures {
             display: flex; justify-content: space-around; margin-top: 80px; padding-top: 40px;
@@ -2672,6 +2771,7 @@
             .signatures { flex-direction: column; align-items: center; }
             .signature-box { width: 100%; max-width: 300px; }
             .info-item { padding: 12px 20px; font-size: 14px; }
+            .images-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
         }
     </style>
 </head>
@@ -2707,11 +2807,9 @@
         ${currentReportData.procedures && currentReportData.procedures.length > 0 ? `
         <div class="section">
             <h3 class="section-title"><i class="fas fa-tasks"></i>إجراءات التنفيذ</h3>
-            <div class="list-container">
+            <div class="procedures-container">
                 ${currentReportData.procedures.map((procedure, index) => `
-                <div class="list-item">
-                    <div class="list-text"><strong>•</strong> ${procedure}</div>
-                </div>
+                <div class="procedure-item">${procedure}</div>
                 `).join('')}
             </div>
         </div>` : ''}
@@ -2719,11 +2817,9 @@
         ${currentReportData.results && currentReportData.results.length > 0 ? `
         <div class="section">
             <h3 class="section-title"><i class="fas fa-chart-line"></i>النتائج</h3>
-            <div class="list-container">
+            <div class="results-container">
                 ${currentReportData.results.map((result, index) => `
-                <div class="list-item">
-                    <div class="list-text"><strong>•</strong> ${result}</div>
-                </div>
+                <div class="result-item">${result}</div>
                 `).join('')}
             </div>
         </div>` : ''}
@@ -2732,6 +2828,18 @@
             <h3 class="section-title"><i class="fas fa-lightbulb"></i>التوصيات</h3>
             <div class="content-box"><p>${currentReportData.recommendations}</p></div>
         </div>
+        
+        ${uploadedImages.length > 0 ? `
+        <div class="section images-section">
+            <h3 class="section-title"><i class="fas fa-images"></i>الصور المرفقة</h3>
+            <div class="images-grid">
+                ${uploadedImages.map((img, index) => `
+                <div class="image-item">
+                    <img src="${img.data}" alt="صورة توثيقية ${index + 1}">
+                </div>
+                `).join('')}
+            </div>
+        </div>` : ''}
         
         <div class="signatures">
             <div class="signature-box">
@@ -2774,6 +2882,7 @@
         .info-label { color: #2c3e50; font-weight: bold; }
         .section { margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
         .section h3 { color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 15px; }
+        .procedure-item, .result-item { margin-bottom: 10px; padding: 10px; background: white; border-radius: 5px; border-right: 3px solid #3498db; }
         .signatures { display: flex; justify-content: space-around; margin-top: 50px; padding-top: 30px; border-top: 2px solid #2c3e50; }
         .signature { text-align: center; }
         @media print { body { padding: 0; } .report { box-shadow: none; } }
@@ -2807,23 +2916,25 @@
         ${reportData.procedures && reportData.procedures.length > 0 ? `
         <div class="section">
             <h3>إجراءات التنفيذ</h3>
-            <div>${reportData.procedures.map(p => `<div style="margin-bottom: 8px; padding-right: 20px; position: relative;">
-                <span style="position: absolute; right: -15px; color: #e74c3c;">•</span> ${p}
-            </div>`).join('')}</div>
+            <div>${reportData.procedures.map(p => `<div class="procedure-item">${p}</div>`).join('')}</div>
         </div>` : ''}
         
         ${reportData.results && reportData.results.length > 0 ? `
         <div class="section">
             <h3>النتائج</h3>
-            <div>${reportData.results.map(r => `<div style="margin-bottom: 8px; padding-right: 20px; position: relative;">
-                <span style="position: absolute; right: -15px; color: #e74c3c;">•</span> ${r}
-            </div>`).join('')}</div>
+            <div>${reportData.results.map(r => `<div class="result-item">${r}</div>`).join('')}</div>
         </div>` : ''}
         
         <div class="section">
             <h3>التوصيات</h3>
             <p>${reportData.recommendations}</p>
         </div>
+        
+        ${uploadedImages.length > 0 ? `
+        <div class="section">
+            <h3>الصور المرفقة (${uploadedImages.length} صورة)</h3>
+            <p style="color: #666; font-style: italic;">تم رفع ${uploadedImages.length} صورة توثيقية مع التقرير</p>
+        </div>` : ''}
         
         <div class="signatures">
             <div class="signature">
@@ -2865,24 +2976,6 @@
                     recommendations: document.getElementById('recommendations').value,
                     images: [...uploadedImages]
                 };
-            }
-            
-            function resetForm() {
-                document.getElementById('programDate').value = '1447-06-12';
-                document.getElementById('location').value = '';
-                document.getElementById('target').value = '';
-                document.getElementById('beneficiaries').value = '30';
-                document.getElementById('description').value = '';
-                document.getElementById('procedures').value = '';
-                document.getElementById('results').value = '';
-                document.getElementById('recommendations').value = '';
-                
-                uploadedImages = [];
-                imagePreview.innerHTML = '';
-                
-                localStorage.removeItem('reportDraft');
-                
-                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
             
             function showLoading(text) {
