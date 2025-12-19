@@ -344,21 +344,24 @@ button {
     /* منع انقسام هذا القسم بين صفحات */
     page-break-inside: avoid;
     break-inside: avoid;
+    /* محاذاة العناصر لتمتد بنفس الارتفاع */
+    align-items: stretch;
   }
 
+  /* زيادة حجم مربعات النص بنسبة 20% */
   .desc-box {
     border: 2px solid #cfd8dc;
     border-radius: 14px;
-    padding: 15px;
+    padding: 18px; /* زيادة البادنج */
     background: #f9fbfb;
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 14px; /* زيادة حجم الخط قليلاً */
+    line-height: 1.6;
     /* منع انقسام المحتوى داخل المربع */
     page-break-inside: avoid;
     break-inside: avoid;
     /* ارتفاع ثابت لضمان بقاء المربعين في نفس الصفحة */
-    min-height: 180px;
-    max-height: 200px;
+    min-height: 216px; /* زيادة 20% من 180px */
+    max-height: 240px; /* زيادة 20% من 200px */
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -367,15 +370,15 @@ button {
   .desc-box strong {
     display: block;
     color: #0a3b40;
-    margin-bottom: 8px;
-    font-size: 14px;
+    margin-bottom: 10px; /* زيادة قليلاً */
+    font-size: 15px; /* زيادة حجم الخط */
     border-bottom: 1px dashed #cfd8dc;
-    padding-bottom: 6px;
+    padding-bottom: 8px;
     flex-shrink: 0;
   }
 
   .desc-box p {
-    margin: 5px 0;
+    margin: 6px 0;
     white-space: pre-line;
     flex-grow: 1;
     overflow: hidden;
@@ -383,43 +386,45 @@ button {
     text-align: justify;
   }
 
-  /* ===== المربع النصفي المعدل ===== */
+  /* ===== المربع النصفي المعدل - تم تحسينه ليكون محاذياً للمربعات الجانبية ===== */
   .vertical {
     background: #eef3f1;
     border-radius: 14px;
-    display: grid;
-    grid-template-columns: 1fr 1px 1fr;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    padding: 12px 6px;
+    padding: 0;
     font-weight: 600;
-    height: 100%;
+    height: auto;
     /* منع الانقسام */
     page-break-inside: avoid;
     break-inside: avoid;
+    /* محاذاة مع المربعات الجانبية */
+    align-self: stretch;
   }
 
-  .vertical .right {
+  /* ضبط النصوص العمودية لتكون محاذية للمربعات الجانبية */
+  .vertical .right,
+  .vertical .left {
     writing-mode: vertical-rl;
+    transform: rotate(180deg);
     font-size: 12px;
     color: #1b5e52;
     text-align: center;
     font-weight: 700;
-  }
-
-  .vertical .left {
-    writing-mode: vertical-lr;
-    transform: rotate(180deg);
-    font-size: 12px;
-    color: #4f6f68;
-    text-align: center;
-    font-weight: 700;
+    padding: 15px 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .vertical .divider {
-    width: 1px;
-    height: 85%;
+    width: 85%;
+    height: 1px;
     background: #8fbfb3;
-    margin: auto;
+    margin: 5px auto;
   }
 
   /* ===== الصور ===== */
@@ -985,7 +990,7 @@ function loadDefaultTexts() {
     return;
   }
   
-  if (confirm(`هل تريد تحميل النصوص الافتراضية لتقرير "${selectedReport}"؟\n(يمكنك تعديلها لاحقاً كما تشاء)`)) {
+  if (confirm(`هل تريد تحميل النصوص الافتراضية لتقرير "${selectedReport}"؟\n(يمكنك تعديلها لاحقاً كما تشاء`)) {
     const texts = defaultTexts[selectedReport];
     
     desc1Input.value = texts.desc1;
