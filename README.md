@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -92,11 +93,11 @@ body { background:white; padding:0; }
 .page { page-break-after:always; }
 .page:last-child { page-break-after:auto; }
 
-/* ===== الهيدر (مصغر) ===== */
+/* ===== الهيدر المصغر ===== */
 .header {
   background:#0a3b40;
   color:white;
-  padding:8px 10px;
+  padding:8px;
   border-radius:10px;
   text-align:center;
   margin-bottom:12px;
@@ -207,7 +208,6 @@ body { background:white; padding:0; }
   height:30px;
   margin:10px 0;
 }
-
 }
 </style>
 </head>
@@ -328,18 +328,19 @@ function setText(id,val){
 }
 
 function validateText(el,target){
-  const lines=el.value.trim().split('\n');
+  const lines=el.value.split('\n');
   if(lines.length>10){
     alert('الحد الأقصى 10 أسطر');
     el.value=lines.slice(0,10).join('\n');
   }
-  for(const l of lines){
-    if(l.trim().split(/\s+/).length!==6){
-      el.style.borderColor='red';
-      return;
-    }
-  }
-  el.style.borderColor='#cfd8dc';
+
+  let hasError=false;
+  lines.forEach(line=>{
+    const words=line.trim().split(/\s+/).filter(w=>w);
+    if(words.length>0 && words.length!==6) hasError=true;
+  });
+
+  el.style.borderColor = hasError ? '#e53935' : '#cfd8dc';
   document.getElementById(target).textContent=el.value;
 }
 
@@ -356,7 +357,21 @@ imagesInput.addEventListener('change',e=>{
   });
 });
 
-function printReport(){ window.print(); }
+function printReport(){
+  const fields=['desc1','desc2','desc3','desc4'];
+  for(const id of fields){
+    const text=document.getElementById(id).textContent;
+    const lines=text.split('\n');
+    for(const l of lines){
+      const w=l.trim().split(/\s+/).filter(x=>x);
+      if(w.length>0 && w.length!==6){
+        alert('يوجد سطر لا يحتوي 6 كلمات. لا يمكن الطباعة.');
+        return;
+      }
+    }
+  }
+  window.print();
+}
 
 function resetForm(){
   if(!confirm('مسح جميع الخانات؟'))return;
