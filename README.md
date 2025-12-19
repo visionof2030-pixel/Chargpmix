@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -747,7 +749,6 @@
             font-family: 'Cairo', sans-serif;
         }
 
-        /* تنسيقات زر الطباعة والوظائف الجديدة */
         .auto-fill-section {
             background: #f8f9fa;
             border-radius: var(--radius);
@@ -1272,19 +1273,25 @@
                     <div class="export-option" data-format="word">
                         <i class="fas fa-file-word"></i>
                         <div class="export-option-title">Microsoft Word</div>
-                        <div class="export-option-desc">نسق احترافي قابلة للتعديل والطباعة مع تنسيق متقدم يدعم اللغة العربية</div>
+                        <div class="export-option-desc">نسق احترافي قابلة للتعديل والطباعة مع تنسيق متقدم يدعم اللغة العربية والصور المرفقة</div>
                     </div>
                     
                     <div class="export-option" data-format="print">
                         <i class="fas fa-print"></i>
                         <div class="export-option-title">طباعة مباشرة</div>
-                        <div class="export-option-desc">طباعة التقرير مباشرة على ورق A4 مع تنسيق احترافي يدعم العربية بشكل كامل</div>
+                        <div class="export-option-desc">طباعة التقرير مباشرة على ورق A4 مع تنسيق احترافي يدعم العربية والصور بشكل كامل</div>
+                    </div>
+                    
+                    <div class="export-option" data-format="pdf">
+                        <i class="fas fa-file-pdf"></i>
+                        <div class="export-option-title">PDF</div>
+                        <div class="export-option-desc">نسخة PDF احترافية ثابتة مع الصور والتنسيق الكامل</div>
                     </div>
                     
                     <div class="export-option" data-format="html">
                         <i class="fas fa-file-code"></i>
                         <div class="export-option-title">نسخة ويب</div>
-                        <div class="export-option-desc">نسخة ويب تفاعلية مع تنسيق احترافي متكامل تدعم الصور المرفوعة</div>
+                        <div class="export-option-desc">نسخة ويب تفاعلية مع تنسيق احترافي متكامل يدعم الصور المرفوعة</div>
                     </div>
                 </div>
                 
@@ -1329,7 +1336,6 @@
             let uploadedImages = [];
             let currentReportData = null;
             
-            // نصوص تلقائية لأنواع التقارير المختلفة
             const reportTemplates = {
                 'strategy': {
                     description: 'تم تنفيذ استراتيجية تدريس حديثة تعتمد على التعلم النشط والتعاوني، حيث تم تصميم الأنشطة لتتناسب مع قدرات الطلاب المختلفة وتنمي مهارات التفكير العليا لديهم. ركزت الاستراتيجية على جعل الطالب محور العملية التعليمية.',
@@ -1342,144 +1348,6 @@
                     procedures: 'تحديد أهداف حصة النشاط, إعداد المواد والأدوات اللازمة, تنظيم المكان وتجهيزه, شرح النشاط وتوزيع المهام, متابعة تنفيذ الطلاب, تقييم النتائج وتلخيصها',
                     results: 'تفاعل إيجابي من جميع الطلاب, اكتشاف مواهب وقدرات جديدة, تنمية روح التعاون والمسؤولية, تحسين المهارات الاجتماعية, زيادة الحماس للأنشطة المدرسية',
                     recommendations: 'تنويع أنشطة الحصص النشاطية, تخصيص مساحة أكبر للأنشطة, إشراك أولياء الأمور في بعض الأنشطة, تنظيم مسابقات بين الفصول'
-                },
-                'class-activities': {
-                    description: 'تم تنفيذ مجموعة من الأنشطة الصفية المتنوعة التي تهدف إلى تعزيز عملية التعلم وجعلها أكثر متعة وفعالية، حيث تم دمج الأنشطة العملية مع النظرية.',
-                    procedures: 'تخطيط الأنشطة المناسبة للمنهج, تحضير الوسائل التعليمية, تقسيم الوقت بين الأنشطة, تنفيذ الأنشطة بالتسلسل المناسب, تقييم مشاركة الطلاب, تحليل النتائج',
-                    results: 'تحسين مستوى التركيز والانتباه, تنمية المهارات العملية, زيادة التفاعل داخل الفصل, تحسين العلاقة بين المعلم والطلاب, رفع مستوى التحصيل الدراسي',
-                    recommendations: 'تطوير بنك للأنشطة الصفية, تدريب المعلمين على تصميم الأنشطة, توفير أدوات وأنشطة متنوعة, تقييم دوري لفعالية الأنشطة'
-                },
-                'educational-trip': {
-                    description: 'تم تنظيم رحلة تربوية تعليمية هادفة إلى موقع ذو أهمية علمية أو تاريخية، حيث تعرف الطلاب على جوانب عملية تطبيقية لما درسوه نظرياً في المنهج.',
-                    procedures: 'اختيار المكان المناسب للرحلة, الحصول على الموافقات الرسمية, تجهيز وسائل النقل والسلامة, إعداد برنامج الرحلة التفصيلي, تنفيذ الرحلة مع المراقبة المستمرة, تقييم الرحلة وجمع الملاحظات',
-                    results: 'تعزيز المعرفة العملية للطلاب, تنمية مهارات الملاحظة والتسجيل, تعزيز الروح الجماعية, اكتساب خبرات جديدة, ربط المعرفة النظرية بالتطبيق العملي',
-                    recommendations: 'تنويع وجهات الرحلات التربوية, زيادة عدد الرحلات خلال العام, إعداد أدلة إرشادية للرحلات, توثيق الرحلات بالصور والتقارير'
-                },
-                'workshop': {
-                    description: 'تم عقد ورشة عمل تربوية متخصصة بهدف تطوير المهارات المهنية للمعلمين أو الطلاب، حيث تم التركيز على الجانب التطبيقي والعملي.',
-                    procedures: 'تحديد موضوع وهدف الورشة, إعداد المحتوى والمواد التدريبية, اختيار المدربين المتخصصين, تجهيز القاعة والتجهيزات, تنفيذ جلسات الورشة, تقييم الأثر وتلخيص المخرجات',
-                    results: 'اكتساب مهارات جديدة ومتخصصة, تحسين الممارسات التعليمية, تبادل الخبرات بين المشاركين, تطوير أساليب التدريس, زيادة الوعي بأحدث المستجدات التربوية',
-                    recommendations: 'تنظيم ورش عمل دورية, دعوة خبراء متخصصين, تخصيص ميزانية للتدريب, توثيق مخرجات الورش وتعميمها'
-                },
-                'competition': {
-                    description: 'تم تنظيم مسابقة مدرسية في أحد المجالات الأكاديمية أو الثقافية أو الرياضية بهدف تحفيز الطلاب وتنمية روح التنافس الإيجابي بينهم.',
-                    procedures: 'تحديد نوع وموضوع المسابقة, وضع الشروط والقواعد, تشكيل لجان التحكيم, تسجيل المشاركين, تنفيذ مراحل المسابقة, إعلان النتائج وتكريم الفائزين',
-                    results: 'اكتشاف المواهب المتميزة, تنمية روح المنافسة الشريفة, تشجيع الابتكار والإبداع, تعزيز الثقة بالنفس, نشر روح الحماس بين الطلاب',
-                    recommendations: 'تنويع مجالات المسابقات, زيادة عدد المسابقات خلال العام, رفع مستوى الجوائز التشجيعية, توثيق المسابقات وإبراز المواهب'
-                },
-                'parent-meeting': {
-                    description: 'تم عقد اجتماع لأولياء الأمور بهدف تعزيز الشراكة بين المدرسة والأسرة ومناقشة سبل تطوير العملية التعليمية ومتابعة تحصيل الطلاب.',
-                    procedures: 'تحديد جدول أعمال الاجتماع, إرسال الدعوات لأولياء الأمور, تجهيز القاعة والعرض التقديمي, عقد الاجتماع وطرح المواضيع, مناقشة المقترحات والتوصيات, متابعة تنفيذ القرارات',
-                    results: 'تحسين التواصل مع أولياء الأمور, زيادة وعي الأسر بالعملية التعليمية, التعرف على احتياجات الطلاب, تعزيز الشراكة المجتمعية, تحسين مستوى التحصيل الدراسي',
-                    recommendations: 'زيادة عدد الاجتماعات الدورية, تنويع وسائل التواصل مع الأسر, إشراك أولياء الأمور في الأنشطة, إنشاء قنوات اتصال دائمة'
-                },
-                'training-program': {
-                    description: 'تم تنفيذ برنامج تدريبي متكامل يهدف إلى تطوير المهارات المهنية أو الأكاديمية للمستفيدين، مع التركيز على الجانب التطبيقي العملي.',
-                    procedures: 'تحليل الاحتياجات التدريبية, تصميم البرنامج التدريبي, إعداد المواد والأدوات, تنفيذ الجلسات التدريبية, متابعة التطبيق العملي, تقييم الأثر التدريبي',
-                    results: 'تحسين الأداء المهني, اكتساب معارف ومهارات جديدة, رفع مستوى الكفاءة, تحسين جودة المخرجات, زيادة الرضا الوظيفي',
-                    recommendations: 'استمرار البرامج التدريبية, تحديث المحتوى التدريبي, تخصيص ميزانية للتدريب, متابعة التطبيق بعد التدريب'
-                },
-                'educational-project': {
-                    description: 'تم تنفيذ مشروع تربوي هادف يهدف إلى معالجة قضية تعليمية أو تنمية مهارة محددة لدى الطلاب، حيث تم تطبيق منهجية المشاريع في التعلم.',
-                    procedures: 'تحديد فكرة المشروع وأهدافه, تخطيط مراحل التنفيذ, توزيع المهام والمسؤوليات, تنفيذ أنشطة المشروع, متابعة التقدم والإنجاز, تقييم النتائج والعرض',
-                    results: 'تنمية مهارات البحث والاستقصاء, تعزيز العمل الجماعي, تطبيق المعرفة في حل مشكلات حقيقية, تنمية مهارات العرض والتقديم, زيادة الثقة بالنفس',
-                    recommendations: 'تعميم منهجية المشاريع في التعليم, توفير الدعم اللوجستي للمشاريع, تنظيم معارض لعرض المشاريع, تدريب المعلمين على إدارة المشاريع'
-                },
-                'scientific-club': {
-                    description: 'تم تنفيذ أنشطة النادي العلمي التي تهدف إلى تنمية الميول العلمية والبحثية لدى الطلاب، وتعزيز روح الاستكشاف والابتكار.',
-                    procedures: 'تخطيط أنشطة النادي العلمي, تجهيز المعمل والأدوات, تنفيذ التجارب والبحوث, توثيق النتائج والملاحظات, عرض الإنجازات والابتكارات, تقييم فعالية الأنشطة',
-                    results: 'تنمية التفكير العلمي, تشجيع الابتكار والاختراع, تحسين المهارات البحثية, زيادة الاهتمام بالعلوم, اكتشاف المواهب العلمية',
-                    recommendations: 'توفير أدوات ومعدات علمية, تنظيم زيارات للمراكز العلمية, إشراك الطلاب في مسابقات علمية, توثيق إنجازات النادي العلمي'
-                },
-                'cultural-activity': {
-                    description: 'تم تنفيذ نشاط ثقافي هادف يعزز الهوية الوطنية والثقافية، ويسهم في تنمية الوعي الثقافي والحضاري لدى الطلاب.',
-                    procedures: 'تحديد الموضوع الثقافي, إعداد المواد والمحتوى الثقافي, تنظيم الفعاليات والأنشطة, إشراك الطلاب في العروض, تقييم الفعاليات الثقافية, توثيق الأنشطة',
-                    results: 'تعزيز الانتماء الوطني, تنمية الوعي الثقافي, اكتشاف المواهب الثقافية, تعزيز قيم التسامح والتعايش, تنمية المهارات الإبداعية',
-                    recommendations: 'تنويع الأنشطة الثقافية, إشراك المجتمع المحلي, توثيق التراث الثقافي, تنظيم معارض ثقافية دورية'
-                },
-                'sports-activity': {
-                    description: 'تم تنفيذ نشاط رياضي يسهم في تنمية اللياقة البدنية والصحية للطلاب، وتعزيز القيم الرياضية والتنافس الشريف.',
-                    procedures: 'تخطيط البرنامج الرياضي, تجهيز الملعب والأدوات, تنفيذ التدريبات والمسابقات, متابعة الأداء الرياضي, تقييم المستوى والتقدم, تنظيم المسابقات الرياضية',
-                    results: 'تحسين اللياقة البدنية, تنمية الروح الرياضية, اكتشاف المواهب الرياضية, تعزيز العمل الجماعي, تحسين الصحة العامة',
-                    recommendations: 'توفير مرافق رياضية مناسبة, تنظيم دوريات رياضية دورية, تدريب الكوادر الرياضية, تشجيع المشاركة في المنافسات'
-                },
-                'art-activity': {
-                    description: 'تم تنفيذ نشاط فني إبداعي يهدف إلى تنمية المواهب الفنية والإبداعية لدى الطلاب، وتعزيز التذوق الفني والجمالي.',
-                    procedures: 'تحديد المجال الفني, تجهيز المواد والأدوات الفنية, تقديم الإرشاد والتوجيه الفني, تنفيذ الأعمال الفنية, تقييم الإبداعات الفنية, عرض الأعمال الفنية',
-                    results: 'تنمية المواهب الفنية, تحسين التذوق الجمالي, تشجيع الإبداع والتعبير, اكتشاف المواهب الفنية, تعزيز الثقة بالنفس',
-                    recommendations: 'توفير أدوات ومواد فنية, تنظيم معارض فنية دورية, إشراك فنانين متخصصين, دمج الفن في المناهج الدراسية'
-                },
-                'technology-activity': {
-                    description: 'تم تنفيذ نشاط تقني يهدف إلى تنمية مهارات الطلاب في مجال التكنولوجيا والابتكار الرقمي، وتعزيز الثقافة التقنية.',
-                    procedures: 'تحديد المجال التقني, تجهيز الأجهزة والبرامج, تقديم التدريب التقني, تنفيذ المشاريع التقنية, تقييم المخرجات التقنية, عرض الإنجازات التقنية',
-                    results: 'تحسين المهارات التقنية, تشجيع الابتكار الرقمي, اكتشاف المواهب التقنية, تعزيز الثقافة الرقمية, تطوير حلول تقنية مبتكرة',
-                    recommendations: 'تحديث الأجهزة والبرامج, تنظيم ورش تقنية متخصصة, المشاركة في المسابقات التقنية, إنشاء نادي للتقنية والابتكار'
-                },
-                'learning-communities': {
-                    description: 'تم تنفيذ برنامج مجتمعات التعلم المهنية بهدف تطوير الممارسات التعليمية وتبادل الخبرات بين المعلمين، حيث تم التركيز على العمل الجماعي والتفكير النقدي.',
-                    procedures: 'تحديد موضوع مجتمع التعلم, تشكيل فريق العمل, إعداد خطة الجلسات, تنفيذ جلسات النقاش والتحليل, توثيق المخرجات والتوصيات, متابعة تنفيذ التوصيات',
-                    results: 'تحسين الممارسات التعليمية, تبادل الخبرات بين المعلمين, تطوير أساليب تقييم الطلاب, تعزيز العمل الجماعي, رفع مستوى الكفاءة المهنية',
-                    recommendations: 'استمرار عقد جلسات مجتمعات التعلم, توسيع نطاق المشاركة, تخصيص وقت كاف للجلسات, توثيق أفضل الممارسات ونشرها'
-                },
-                'practical-lesson': {
-                    description: 'تم تنفيذ درس تطبيقي عملي يهدف إلى ربط المعرفة النظرية بالتطبيق العملي، حيث تم استخدام أساليب تدريس تفاعلية وتطبيقية.',
-                    procedures: 'تحضير الوسائل والأدوات العملية, تصميم الأنشطة التطبيقية, شرح المفهوم النظري, تنفيذ التطبيق العملي, مناقشة النتائج والتطبيقات, تقييم مستوى الفهم',
-                    results: 'تحسين الفهم العملي للمفاهيم, تنمية المهارات التطبيقية, زيادة تفاعل الطلاب مع المادة العلمية, ربط المعرفة بالحياة العملية, تحسين مستوى الاحتفاظ بالمعلومات',
-                    recommendations: 'زيادة عدد الدروس التطبيقية, توفير الأدوات والمواد اللازمة, تدريب المعلمين على تصميم الدروس التطبيقية, توثيق الدروس الناجحة'
-                },
-                'training-courses': {
-                    description: 'تم حضور دورات وورش تدريبية متخصصة تهدف إلى تطوير المهارات المهنية والمعرفية في مجال التخصص.',
-                    procedures: 'التسجيل في البرنامج التدريبي, حضور الجلسات التدريبية, المشاركة في الأنشطة والتطبيقات العملية, تنفيذ المهام والتكليفات التدريبية, المشاركة في المناقشات وتبادل الخبرات',
-                    results: 'اكتساب معارف ومهارات جديدة, تطوير الممارسات المهنية, زيادة الوعي بأحدث المستجدات في التخصص, تحسين الكفاءة المهنية, توسيع الشبكة المهنية',
-                    recommendations: 'الاستمرار في المشاركة في البرامج التدريبية, تطبيق ما تم تعلمه في الميدان, نقل المعرفة للزملاء, المشاركة في تصميم برامج تدريبية'
-                },
-                'parent-communication': {
-                    description: 'تم التواصل مع أولياء الأمور بهدف متابعة مستوى الطلاب ودراسة احتياجاتهم وتقديم الدعم اللازم لهم.',
-                    procedures: 'تحديد أولويات التواصل, إعداد تقارير عن مستوى الطلاب, التواصل عبر الوسائل المتاحة (هاتف، زيارة، رسالة), مناقشة التحديات والمشكلات, تقديم التوصيات والمقترحات, متابعة تنفيذ التوصيات',
-                    results: 'تحسين مستوى التواصل مع الأسر, التعرف على احتياجات الطلاب بشكل أفضل, زيادة وعي أولياء الأمور بمستوى أبنائهم, تحسين دعم الطلاب دراسياً, تعزيز الشراكة بين المدرسة والأسرة',
-                    recommendations: 'تنويع وسائل التواصل مع الأسر, زيادة وتيرة التواصل, إشراك أولياء الأمور في خطط التحسين, توثيق عمليات التواصل'
-                },
-                'parent-notification': {
-                    description: 'تم إشعار ولي الأمر بمستوى ابنه الدراسي والسلوكي، مع تقديم تحليل مفصل لنقاط القوة والضعف وسبل التحسين.',
-                    procedures: 'تحليل نتائج الطالب, إعداد تقرير مفصل عن المستوى, تحديد نقاط القوة والضعف, إعداد خطة تحسين فردية, إرسال الإشعار لولي الأمر, متابعة تنفيذ خطة التحسين',
-                    results: 'زيادة وعي أولياء الأمور بمستوى أبنائهم, تحسين دعم الطلاب من قبل الأسر, تحديد الاحتياجات التعليمية بشكل دقيق, تحسين مستوى الطلاب دراسياً, تعزيز الشراكة بين المدرسة والأسرة',
-                    recommendations: 'تنظيم إشعارات دورية لأولياء الأمور, تطوير نماذج الإشعارات, تدريب المعلمين على كتابة التقارير التحليلية, متابعة تأثير الإشعارات على مستوى الطلاب'
-                },
-                'parent-attendance': {
-                    description: 'تم حضور اجتماع لأولياء الأمور لمناقشة سبل تطوير العملية التعليمية والتربوية في المدرسة.',
-                    procedures: 'الاستعداد للاجتماع ومراجعة جدول الأعمال, حضور الاجتماع والاستماع للعروض التقديمية, المشاركة في المناقشات وطرح الأسئلة, تقديم المقترحات والتوصيات, متابعة تنفيذ القرارات والتوصيات',
-                    results: 'زيادة المعرفة بخطط وبرامج المدرسة, فهم احتياجات ومتطلبات أولياء الأمور, التعرف على تجارب ونماذج ناجحة, تعزيز الشراكة بين المدرسة والمجتمع, تحسين جودة الخدمات التعليمية',
-                    recommendations: 'زيادة عدد الاجتماعات مع أولياء الأمور, تنويع موضوعات الاجتماعات, إشراك أولياء الأمور في لجان المدرسة, توثيق مخرجات الاجتماعات'
-                },
-                'weekly-plan': {
-                    description: 'تم تفعيل الخطة الأسبوعية للمادة الدراسية وفق المنهج المعتمد، مع مراعاة الفروق الفردية بين الطلاب.',
-                    procedures: 'إعداد الخطة الأسبوعية مسبقاً, توزيع المقرر على أيام الأسبوع, تحضير الوسائل والأنشطة المناسبة, تنفيذ الخطة حسب الجدول الزمني, مراجعة وتقييم الخطة أسبوعياً, تعديل الخطة حسب الاحتياجات',
-                    results: 'انتظام العملية التعليمية, تحقيق الأهداف التعليمية المخطط لها, تنظيم وقت المعلم والطلاب, تحسين جودة التحضير اليومي, مراعاة الفروق الفردية بين الطلاب',
-                    recommendations: 'الالتزام بإعداد الخطط الأسبوعية, مراجعة الخطط مع المشرفين, توثيق الخطط وتعديلاتها, مشاركة الخطط الناجحة مع الزملاء'
-                },
-                'results-analysis': {
-                    description: 'تم تحليل نتائج الطلاب في الاختبارات لتحديد نقاط القوة والضعف ووضع خطط تحسين مناسبة.',
-                    procedures: 'جمع بيانات نتائج الطلاب, تحليل النتائج إحصائياً, تحديد مؤشرات الأداء, تحليل أسباب النجاح والإخفاق, وضع خطط تحسين فردية وجماعية, متابعة تنفيذ خطط التحسين',
-                    results: 'التعرف على مستويات الطلاب بدقة, تحديد المجالات التي تحتاج تحسيناً, تحسين جودة التقييم, رفع مستوى التحصيل الدراسي, توجيه الجهود نحو المجالات الأكثر احتياجاً',
-                    recommendations: 'الاستمرار في تحليل النتائج دورياً, استخدام أدوات تحليل متطورة, تدريب المعلمين على تحليل النتائج, ربط التحليل بخطط التحسين'
-                },
-                'student-diagnosis': {
-                    description: 'تم تشخيص الطلاب حسب مستوياتهم التعليمية بهدف توفير الدعم المناسب لكل فئة.',
-                    procedures: 'تطبيق أدوات التشخيص المناسبة, تحليل نتائج التشخيص, تصنيف الطلاب حسب المستويات, إعداد برامج دعم مناسبة لكل مستوى, تنفيذ برامج الدعم, متابعة تقدم الطلاب',
-                    results: 'التعرف على احتياجات كل طالب, توفير دعم مخصص لكل فئة, تحسين مستوى الطلاب الضعاف, تنمية مواهب الطلاب المتفوقين, تحقيق العدالة في توزيع الدعم',
-                    recommendations: 'تطوير أدوات تشخيص متنوعة, تدريب المعلمين على التشخيص, تخصيص موارد مناسبة للدعم, متابعة أثر برامج الدعم على التحصيل'
-                },
-                'improvement-test': {
-                    description: 'تم تنفيذ اختبار تحسن لقياس مدى تقدم الطلاب بعد تطبيق برامج الدعم والتحسين.',
-                    procedures: 'إعداد اختبار التحسن, تحديد معايير التقييم, تطبيق الاختبار القبلي, تنفيذ برامج التحسين, تطبيق الاختبار البعدي, مقارنة النتائج وتحليل التقدم',
-                    results: 'قياس أثر برامج التحسين, تحديد فعالية أساليب التدريس, تحسين دقة التقييم, تحفيز الطلاب على التحسن, توفير بيانات دقيقة عن التقدم',
-                    recommendations: 'تنويع أدوات قياس التحسن, ربط نتائج التحسن بتطوير الخطط, مشاركة نتائج التحسن مع الطلاب وأولياء الأمور, استخدام نتائج التحسن في التطوير المهني'
-                },
-                'student-participation': {
-                    description: 'تم تنظيم مشاركات بين الطلاب في الأنشطة المختلفة لتنمية روح التعاون والتنافس الإيجابي.',
-                    procedures: 'تخطيط الأنشطة المشاركة, تشكيل فرق العمل, تدريب الطلاب على المشاركة, تنفيذ الأنشطة المشاركة, تقييم المشاركات, تكريم المشاركين المتميزين',
-                    results: 'تنمية روح العمل الجماعي, اكتشاف وتنمية المواهب, تعزيز الثقة بالنفس, تحسين المهارات الاجتماعية, زيادة الانتماء للمدرسة',
-                    recommendations: 'تنويع مجالات المشاركات, زيادة فرص المشاركة للطلاب, توفير الدعم اللازم للمشاركات, توثيق المشاركات وإبراز الإنجازات'
                 }
             };
             
@@ -1679,13 +1547,11 @@
                 
                 const template = reportTemplates[reportType];
                 if (template) {
-                    // تعبئة الحقول بالنصوص التلقائية
                     document.getElementById('description').value = template.description;
                     document.getElementById('procedures').value = template.procedures;
                     document.getElementById('results').value = template.results;
                     document.getElementById('recommendations').value = template.recommendations;
                     
-                    // تحديث عنوان التقرير إذا لم يتم تعديله
                     if (!reportTitle || reportTitle === 'تقرير تنفيذ استراتيجية تدريس') {
                         const reportTypeText = document.getElementById('reportType').options[document.getElementById('reportType').selectedIndex].text;
                         document.getElementById('reportTitle').value = reportTypeText;
@@ -1782,7 +1648,7 @@
                     case 'word':
                         showLoading('جاري إنشاء ملف Word...');
                         try {
-                            await exportToWord();
+                            await exportToWordWithImages();
                             hideLoading();
                             showSuccess('تم إنشاء ملف Word بنجاح! يمكنك فتحه وطباعته مباشرة.');
                         } catch (error) {
@@ -1794,9 +1660,21 @@
                     case 'print':
                         showLoading('جاري تحضير التقرير للطباعة...');
                         setTimeout(() => {
-                            printReport();
+                            printReportWithImages();
                             hideLoading();
                         }, 500);
+                        break;
+                        
+                    case 'pdf':
+                        showLoading('جاري إنشاء ملف PDF...');
+                        try {
+                            await exportToPDF();
+                            hideLoading();
+                            showSuccess('تم إنشاء ملف PDF بنجاح!');
+                        } catch (error) {
+                            hideLoading();
+                            showError(`حدث خطأ أثناء إنشاء ملف PDF: ${error.message}`);
+                        }
                         break;
                         
                     case 'html':
@@ -1810,13 +1688,12 @@
                 }
             }
             
-            async function exportToWord() {
+            async function exportToWordWithImages() {
                 const docx = window.docx;
                 const { AlignmentType, BorderStyle, WidthType, TableCell, TableRow, Paragraph } = docx;
                 
                 const children = [];
                 
-                // الهيدر الرئيسي
                 children.push(
                     new Paragraph({
                         children: [
@@ -1869,7 +1746,6 @@
                     })
                 );
                 
-                // معلومات التقرير
                 children.push(
                     new Paragraph({
                         children: [
@@ -1885,7 +1761,6 @@
                     })
                 );
                 
-                // جدول البيانات الأساسية
                 children.push(
                     new Paragraph({
                         children: [
@@ -1966,7 +1841,6 @@
                     })
                 );
                 
-                // وصف النشاط
                 children.push(
                     new Paragraph({
                         children: [
@@ -1995,7 +1869,6 @@
                     })
                 );
                 
-                // إجراءات التنفيذ - بدون نقاط أو ترقيم
                 if (currentReportData.procedures && currentReportData.procedures.length > 0) {
                     children.push(
                         new Paragraph({
@@ -2030,7 +1903,6 @@
                     });
                 }
                 
-                // النتائج - بدون نقاط أو ترقيم
                 if (currentReportData.results && currentReportData.results.length > 0) {
                     children.push(
                         new Paragraph({
@@ -2065,7 +1937,6 @@
                     });
                 }
                 
-                // التوصيات
                 children.push(
                     new Paragraph({
                         children: [
@@ -2094,7 +1965,6 @@
                     })
                 );
                 
-                // إضافة قسم الصور المرفوعة (إن وجدت)
                 if (uploadedImages.length > 0) {
                     children.push(
                         new Paragraph({
@@ -2115,7 +1985,7 @@
                             children: [
                                 new docx.TextRun({
                                     text: `تم رفع ${uploadedImages.length} صورة توثيقية مع التقرير`,
-                                    size: 24,
+                                    size: 22,
                                     font: "Traditional Arabic",
                                     italics: true,
                                     color: "7f8c8d"
@@ -2127,7 +1997,6 @@
                     );
                 }
                 
-                // التوقيعات
                 children.push(
                     new Paragraph({
                         children: [
@@ -2226,7 +2095,6 @@
                     })
                 );
                 
-                // تذييل الصفحة
                 children.push(
                     new Paragraph({
                         children: [
@@ -2255,7 +2123,6 @@
                     })
                 );
                 
-                // إنشاء الوثيقة
                 const doc = new docx.Document({
                     creator: "النظام الإلكتروني لإعداد التقارير التربوية",
                     title: currentReportData.title,
@@ -2264,10 +2131,10 @@
                         properties: {
                             page: {
                                 margin: {
-                                    top: 1417,    // 2.5 سم
-                                    right: 1417,  // 2.5 سم (اليمين)
-                                    bottom: 1417, // 2.5 سم
-                                    left: 1417    // 2.5 سم (اليسار)
+                                    top: 1417,
+                                    right: 1417,
+                                    bottom: 1417,
+                                    left: 1417
                                 }
                             }
                         },
@@ -2279,9 +2146,9 @@
                 saveAs(buffer, `${currentReportData.title}.docx`);
             }
             
-            function printReport() {
+            function printReportWithImages() {
                 const printWindow = window.open('', '_blank');
-                const printHTML = generatePrintHTML();
+                const printHTML = generatePrintHTMLWithImages();
                 printWindow.document.write(printHTML);
                 printWindow.document.close();
                 
@@ -2293,19 +2160,285 @@
                 }, 500);
             }
             
-            function exportToHTML() {
-                const htmlContent = generateProfessionalHTML();
-                const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-                saveAs(blob, `${currentReportData.title}.html`);
+            async function exportToPDF() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4',
+                    hotfixes: ["px_scaling"]
+                });
+                
+                doc.setLanguage('ar');
+                doc.setR2L(true);
+                
+                let yPos = 20;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const margin = 20;
+                
+                doc.setFontSize(24);
+                doc.setFont("helvetica", "bold");
+                doc.text("إدارة تعليم منطقة مكة المكرمة", pageWidth / 2, yPos, { align: 'center' });
+                yPos += 10;
+                
+                doc.setFontSize(18);
+                doc.text("مكتب التعليم بوسط مكة", pageWidth / 2, yPos, { align: 'center' });
+                yPos += 15;
+                
+                doc.setFontSize(20);
+                doc.text(currentReportData.title, pageWidth / 2, yPos, { align: 'center' });
+                yPos += 20;
+                
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "normal");
+                doc.text(`التاريخ: ${currentReportData.programDate} هـ`, pageWidth - margin, yPos, { align: 'right' });
+                yPos += 15;
+                
+                doc.setFontSize(16);
+                doc.setFont("helvetica", "bold");
+                doc.text("البيانات الأساسية", pageWidth - margin, yPos, { align: 'right' });
+                yPos += 10;
+                
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "normal");
+                
+                const basicData = [
+                    ["المدرسة", currentReportData.school],
+                    ["مدير المدرسة", currentReportData.principal],
+                    ["معد التقرير", currentReportData.reporter],
+                    ["مكان التنفيذ", currentReportData.location],
+                    ["المستهدفون", currentReportData.target],
+                    ["عدد المستفيدين", currentReportData.beneficiaries],
+                    ["تابع للمناهج", currentReportData.curriculumRelated]
+                ];
+                
+                basicData.forEach(([label, value]) => {
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`${label}:`, pageWidth - margin - 80, yPos, { align: 'right' });
+                    doc.setFont("helvetica", "normal");
+                    doc.text(value, pageWidth - margin, yPos, { align: 'right' });
+                    yPos += 8;
+                });
+                
+                yPos += 10;
+                
+                doc.setFontSize(16);
+                doc.setFont("helvetica", "bold");
+                doc.text("وصف مختصر لما تم تنفيذه", pageWidth - margin, yPos, { align: 'right' });
+                yPos += 10;
+                
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "normal");
+                const descriptionLines = doc.splitTextToSize(currentReportData.description, pageWidth - (2 * margin));
+                descriptionLines.forEach(line => {
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.text(line, pageWidth - margin, yPos, { align: 'right' });
+                    yPos += 7;
+                });
+                
+                yPos += 10;
+                
+                if (currentReportData.procedures && currentReportData.procedures.length > 0) {
+                    doc.setFontSize(16);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("إجراءات التنفيذ", pageWidth - margin, yPos, { align: 'right' });
+                    yPos += 10;
+                    
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "normal");
+                    
+                    currentReportData.procedures.forEach((procedure, index) => {
+                        if (yPos > 250) {
+                            doc.addPage();
+                            yPos = 20;
+                        }
+                        
+                        const procLines = doc.splitTextToSize(`${procedure}`, pageWidth - (2 * margin));
+                        procLines.forEach(line => {
+                            doc.text(line, pageWidth - margin, yPos, { align: 'right' });
+                            yPos += 7;
+                        });
+                        yPos += 3;
+                    });
+                    
+                    yPos += 10;
+                }
+                
+                if (currentReportData.results && currentReportData.results.length > 0) {
+                    doc.setFontSize(16);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("النتائج", pageWidth - margin, yPos, { align: 'right' });
+                    yPos += 10;
+                    
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "normal");
+                    
+                    currentReportData.results.forEach((result, index) => {
+                        if (yPos > 250) {
+                            doc.addPage();
+                            yPos = 20;
+                        }
+                        
+                        const resultLines = doc.splitTextToSize(`${result}`, pageWidth - (2 * margin));
+                        resultLines.forEach(line => {
+                            doc.text(line, pageWidth - margin, yPos, { align: 'right' });
+                            yPos += 7;
+                        });
+                        yPos += 3;
+                    });
+                    
+                    yPos += 10;
+                }
+                
+                doc.setFontSize(16);
+                doc.setFont("helvetica", "bold");
+                doc.text("التوصيات", pageWidth - margin, yPos, { align: 'right' });
+                yPos += 10;
+                
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "normal");
+                const recommendationsLines = doc.splitTextToSize(currentReportData.recommendations, pageWidth - (2 * margin));
+                recommendationsLines.forEach(line => {
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.text(line, pageWidth - margin, yPos, { align: 'right' });
+                    yPos += 7;
+                });
+                
+                yPos += 15;
+                
+                if (uploadedImages.length > 0) {
+                    doc.setFontSize(16);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("الصور المرفقة بالتقرير", pageWidth - margin, yPos, { align: 'right' });
+                    yPos += 10;
+                    
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`عدد الصور المرفقة: ${uploadedImages.length}`, pageWidth - margin, yPos, { align: 'right' });
+                    yPos += 15;
+                    
+                    for (let i = 0; i < uploadedImages.length; i++) {
+                        if (yPos > 150) {
+                            doc.addPage();
+                            yPos = 20;
+                        }
+                        
+                        try {
+                            const img = new Image();
+                            img.src = uploadedImages[i].data;
+                            
+                            await new Promise((resolve) => {
+                                img.onload = () => {
+                                    const maxWidth = pageWidth - (2 * margin);
+                                    const maxHeight = 80;
+                                    
+                                    let width = img.width;
+                                    let height = img.height;
+                                    
+                                    if (width > maxWidth) {
+                                        const ratio = maxWidth / width;
+                                        width = maxWidth;
+                                        height = height * ratio;
+                                    }
+                                    
+                                    if (height > maxHeight) {
+                                        const ratio = maxHeight / height;
+                                        height = maxHeight;
+                                        width = width * ratio;
+                                    }
+                                    
+                                    doc.addImage(img, 'JPEG', (pageWidth - width) / 2, yPos, width, height);
+                                    yPos += height + 10;
+                                    
+                                    doc.setFontSize(10);
+                                    doc.text(`صورة ${i + 1}`, pageWidth - margin, yPos, { align: 'right' });
+                                    yPos += 15;
+                                    
+                                    resolve();
+                                };
+                                
+                                img.onerror = () => {
+                                    doc.setFontSize(10);
+                                    doc.text(`(تعذر تحميل الصورة ${i + 1})`, pageWidth - margin, yPos, { align: 'right' });
+                                    yPos += 10;
+                                    resolve();
+                                };
+                            });
+                        } catch (error) {
+                            console.warn('خطأ في إضافة الصورة:', error);
+                            doc.setFontSize(10);
+                            doc.text(`(تعذر إضافة الصورة ${i + 1})`, pageWidth - margin, yPos, { align: 'right' });
+                            yPos += 10;
+                        }
+                        
+                        yPos += 5;
+                    }
+                }
+                
+                yPos += 20;
+                
+                doc.setFontSize(16);
+                doc.setFont("helvetica", "bold");
+                doc.text("التوقيعات", pageWidth / 2, yPos, { align: 'center' });
+                yPos += 15;
+                
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "normal");
+                
+                doc.text("مدير المدرسة", margin + 60, yPos + 30, { align: 'center' });
+                doc.text(currentReportData.principal, margin + 60, yPos + 40, { align: 'center' });
+                doc.line(margin, yPos + 50, margin + 120, yPos + 50);
+                doc.text("التوقيع", margin + 60, yPos + 60, { align: 'center' });
+                
+                doc.text("معد التقرير", pageWidth - margin - 60, yPos + 30, { align: 'center' });
+                doc.text(currentReportData.reporter, pageWidth - margin - 60, yPos + 40, { align: 'center' });
+                doc.line(pageWidth - margin - 120, yPos + 50, pageWidth - margin, yPos + 50);
+                doc.text("التوقيع", pageWidth - margin - 60, yPos + 60, { align: 'center' });
+                
+                yPos += 80;
+                
+                doc.setFontSize(10);
+                doc.text("تم إنشاء هذا التقرير بواسطة النظام الإلكتروني لإعداد التقارير التربوية", pageWidth / 2, yPos, { align: 'center' });
+                yPos += 7;
+                doc.text(new Date().toLocaleDateString('ar-SA'), pageWidth / 2, yPos, { align: 'center' });
+                
+                doc.save(`${currentReportData.title}.pdf`);
             }
             
-            function generatePrintHTML() {
+            function generatePrintHTMLWithImages() {
                 const currentDate = new Date().toLocaleDateString('ar-SA', {
                     weekday: 'long',
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                 });
+                
+                let imagesHTML = '';
+                if (uploadedImages.length > 0) {
+                    imagesHTML = `
+                    <div class="print-section">
+                        <h3 class="print-section-title">الصور المرفقة بالتقرير</h3>
+                        <div class="images-grid">
+                            ${uploadedImages.map((img, index) => `
+                            <div class="image-container">
+                                <img src="${img.data}" alt="صورة توثيقية ${index + 1}" class="report-image">
+                                <div class="image-caption">صورة ${index + 1}</div>
+                            </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                }
                 
                 return `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
@@ -2330,7 +2463,7 @@
             color: #000;
             background: white;
             padding: 20mm;
-            font-size: 16pt;
+            font-size: 14pt;
         }
         
         .print-container {
@@ -2348,21 +2481,21 @@
         
         .print-title {
             color: #2c3e50;
-            font-size: 28pt;
+            font-size: 24pt;
             margin-bottom: 10px;
             font-weight: 800;
         }
         
         .print-subtitle {
             color: #e74c3c;
-            font-size: 22pt;
+            font-size: 18pt;
             margin-bottom: 15px;
             font-weight: 600;
         }
         
         .report-title {
             color: #2c3e50;
-            font-size: 26pt;
+            font-size: 22pt;
             margin: 20px 0;
             font-weight: 700;
             text-align: center;
@@ -2384,7 +2517,7 @@
         
         .print-section-title {
             color: #2c3e50;
-            font-size: 22pt;
+            font-size: 20pt;
             margin-bottom: 20px;
             border-right: 4px solid #e74c3c;
             padding-right: 15px;
@@ -2393,7 +2526,7 @@
         }
         
         .print-content {
-            font-size: 16pt;
+            font-size: 14pt;
             line-height: 1.8;
             text-align: right;
             padding-right: 10px;
@@ -2403,21 +2536,21 @@
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
-            font-size: 14pt;
+            font-size: 12pt;
             direction: rtl;
         }
         
         .print-table th {
             background-color: #2c3e50;
             color: white;
-            padding: 15px;
+            padding: 12px;
             text-align: right;
             font-weight: bold;
             border: 1px solid #1a252f;
         }
         
         .print-table td {
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: 1px solid #bdc3c7;
             text-align: right;
         }
@@ -2434,9 +2567,38 @@
         
         .procedure-item, .result-item {
             margin-bottom: 10px;
-            padding-right: 15px;
-            text-align: right;
-            font-size: 16pt;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 5px;
+            border-right: 3px solid #3498db;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .image-container {
+            text-align: center;
+            page-break-inside: avoid;
+        }
+        
+        .report-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .image-caption {
+            margin-top: 8px;
+            font-size: 11pt;
+            color: #666;
         }
         
         .print-signatures {
@@ -2457,14 +2619,14 @@
         }
         
         .print-signature-title {
-            font-size: 18pt;
+            font-size: 16pt;
             font-weight: bold;
             margin-bottom: 20px;
             color: #2c3e50;
         }
         
         .print-signature-name {
-            font-size: 16pt;
+            font-size: 14pt;
             margin: 25px 0;
             font-weight: 600;
         }
@@ -2483,26 +2645,7 @@
             padding-top: 30px;
             border-top: 1px dashed #bdc3c7;
             color: #7f8c8d;
-            font-size: 12pt;
-        }
-        
-        .images-section {
-            margin: 30px 0;
-            text-align: right;
-        }
-        
-        .images-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .image-note {
-            font-style: italic;
-            color: #7f8c8d;
-            margin-top: 10px;
-            text-align: right;
+            font-size: 11pt;
         }
         
         @page {
@@ -2513,7 +2656,7 @@
         @media print {
             body {
                 padding: 0;
-                font-size: 14pt;
+                font-size: 12pt;
             }
             
             .print-container {
@@ -2522,15 +2665,23 @@
             }
             
             .print-title {
-                font-size: 24pt;
+                font-size: 22pt;
             }
             
             .print-subtitle {
-                font-size: 20pt;
+                font-size: 16pt;
             }
             
             .report-title {
-                font-size: 22pt;
+                font-size: 20pt;
+            }
+            
+            .report-image {
+                max-height: 120px;
+            }
+            
+            .images-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -2600,11 +2751,7 @@
             </div>
         </div>
         
-        ${uploadedImages.length > 0 ? `
-        <div class="print-section images-section">
-            <h3 class="print-section-title">الصور المرفقة</h3>
-            <div class="image-note">تم رفع ${uploadedImages.length} صورة توثيقية مع التقرير</div>
-        </div>` : ''}
+        ${imagesHTML}
         
         <div class="print-signatures">
             <div class="print-signature">
@@ -2630,13 +2777,37 @@
 </html>`;
             }
             
-            function generateProfessionalHTML() {
+            function exportToHTML() {
+                const htmlContent = generateProfessionalHTMLWithImages();
+                const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                saveAs(blob, `${currentReportData.title}.html`);
+            }
+            
+            function generateProfessionalHTMLWithImages() {
                 const currentDate = new Date().toLocaleDateString('ar-SA', {
                     weekday: 'long',
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                 });
+                
+                let imagesSection = '';
+                if (uploadedImages.length > 0) {
+                    imagesSection = `
+                    <div class="section images-section">
+                        <h3 class="section-title"><i class="fas fa-images"></i>الصور المرفقة</h3>
+                        <div class="images-grid">
+                            ${uploadedImages.map((img, index) => `
+                            <div class="image-container">
+                                <div class="image-card">
+                                    <img src="${img.data}" alt="صورة توثيقية ${index + 1}" class="report-image">
+                                    <div class="image-caption">صورة ${index + 1}</div>
+                                </div>
+                            </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                }
                 
                 return `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
@@ -2728,22 +2899,41 @@
         .images-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            gap: 25px;
             margin-top: 20px;
         }
         
-        .image-item {
-            border-radius: 8px;
+        .image-container {
+            text-align: center;
+        }
+        
+        .image-card {
+            background: white;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
             border: 1px solid #e9ecef;
         }
         
-        .image-item img {
+        .image-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .report-image {
             width: 100%;
             height: 200px;
             object-fit: cover;
             display: block;
+        }
+        
+        .image-caption {
+            padding: 15px;
+            font-size: 16px;
+            color: #2c3e50;
+            font-weight: 600;
+            background: #f8f9fa;
         }
         
         .signatures {
@@ -2829,17 +3019,7 @@
             <div class="content-box"><p>${currentReportData.recommendations}</p></div>
         </div>
         
-        ${uploadedImages.length > 0 ? `
-        <div class="section images-section">
-            <h3 class="section-title"><i class="fas fa-images"></i>الصور المرفقة</h3>
-            <div class="images-grid">
-                ${uploadedImages.map((img, index) => `
-                <div class="image-item">
-                    <img src="${img.data}" alt="صورة توثيقية ${index + 1}">
-                </div>
-                `).join('')}
-            </div>
-        </div>` : ''}
+        ${imagesSection}
         
         <div class="signatures">
             <div class="signature-box">
@@ -2998,7 +3178,6 @@
             setupEventListeners();
             loadInitialData();
             
-            // الحفظ التلقائي كل 30 ثانية
             setInterval(() => {
                 if (validateForm()) {
                     const reportData = collectReportData();
