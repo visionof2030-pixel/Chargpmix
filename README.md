@@ -5,158 +5,191 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>أداة إعداد التقارير</title>
 
-<!-- مكتبة Word -->
-<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
 <style>
+@font-face {
+  font-family: 'KufamLocal';
+  src: url('static/Kufam-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'KufamLocal';
+  src: url('static/Kufam-Bold.ttf') format('truetype');
+  font-weight: 700;
+}
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'KufamLocal', sans-serif;
   background: #f2f7f6;
   margin: 0;
   padding: 20px;
-  color: #333;
 }
 
+/* ============ الأداة ============ */
 .tool {
   max-width: 900px;
   margin: auto;
   background: white;
   padding: 30px;
   border-radius: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.tool h1 {
-  text-align: center;
-  color: #0a3b40;
-  margin-bottom: 25px;
-  font-size: 28px;
 }
 
 .tool label {
-  font-weight: bold;
-  display: block;
+  font-weight: 700;
   margin-top: 14px;
-  color: #2c5f63;
+  display: block;
 }
 
 .tool input,
-.tool textarea,
-.tool select {
+.tool textarea {
   width: 100%;
   padding: 12px;
   margin-top: 6px;
   border-radius: 12px;
   border: 2px solid #cfd8dc;
-  font-size: 15px;
-  font-family: Arial, sans-serif;
-  box-sizing: border-box;
-  transition: border-color 0.3s;
-}
-
-.tool input:focus,
-.tool textarea:focus,
-.tool select:focus {
-  border-color: #0a3b40;
-  outline: none;
-}
-
-.date-row {
-  display: flex;
-  gap: 15px;
-  margin-top: 6px;
-}
-
-.date-row div {
-  flex: 1;
-}
-
-.date-row input {
-  width: 100%;
-}
-
-.auto-text-btn {
-  background: #e8f4f3;
-  color: #0a3b40;
-  border: 1px solid #0a3b40;
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin: 8px 0;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.auto-text-btn:hover {
-  background: #d0e8e6;
-}
-
-.buttons-row {
-  display: flex;
-  gap: 15px;
-  margin-top: 25px;
-}
-
-.buttons-row button {
-  flex: 1;
+  font-family: inherit;
 }
 
 button {
-  padding: 14px;
+  margin-top: 25px;
+  padding: 15px;
+  width: 100%;
   background: #0a3b40;
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 17px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
 }
 
-button:hover {
-  background: #0c4a50;
-  transform: translateY(-2px);
-}
+/* ============ التقرير ============ */
+.report { display: none; }
 
-button:active {
-  transform: translateY(0);
-}
-
-.alt {
-  background: #455a64;
-}
-
-.alt:hover {
-  background: #546e7a;
-}
-
-.preview-section {
-  margin-top: 25px;
-  padding: 20px;
-  background: #f8fdfc;
-  border-radius: 12px;
-  border: 1px dashed #0a3b40;
-}
-
-.preview-section h3 {
-  color: #0a3b40;
-  margin-top: 0;
+@page {
+  size: A4;
+  margin: 14mm;
 }
 
 @media print {
-  .tool {
-    box-shadow: none;
-    padding: 15px;
-  }
-  
-  button, .auto-text-btn, .preview-section {
-    display: none !important;
-  }
+
+body { background: white; padding: 0; }
+.tool { display: none; }
+.report { display: block; }
+
+.page {
+  page-break-after: always;
+}
+.page:last-child { page-break-after: auto; }
+
+.header {
+  background: #0a3b40;
+  color: white;
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.info-box {
+  border: 2px solid #cfd8dc;
+  border-radius: 12px;
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.info-box span {
+  display: block;
+  background: #0a3b40;
+  color: white;
+  border-radius: 8px;
+  padding: 4px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+/* ===== صف المحتوى ===== */
+.grid-desc {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  min-height: 240px;
+}
+
+.desc-box {
+  flex: 1;
+  border: 2px solid #cfd8dc;
+  border-radius: 14px;
+  padding: 15px;
+  background: #f9fbfb;
+  font-size: 13px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+}
+
+.desc-box strong {
+  margin-bottom: 8px;
+  color: #0a3b40;
+  border-bottom: 1px dashed #cfd8dc;
+  padding-bottom: 6px;
+}
+
+.desc-box p {
+  flex: 1;
+  white-space: pre-line;
+}
+
+.vertical {
+  width: 70px;
+  background: #eef3f1;
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  color: #1b5e52;
+}
+
+/* ===== الصور ===== */
+.images {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.images img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* ===== التوقيعات ===== */
+.signatures {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.signature-box {
+  text-align: center;
+}
+
+.signature-line {
+  border-bottom: 2px solid #333;
+  height: 30px;
+  margin: 10px 0;
+}
+
 }
 </style>
 </head>
@@ -164,248 +197,113 @@ button:active {
 <body>
 
 <div class="tool">
-  <h1>أداة إعداد التقارير التعليمية</h1>
-  
   <label>المنطقة التعليمية</label>
-  <input id="region" placeholder="أدخل المنطقة التعليمية">
-  
+  <input oninput="region.textContent=this.value">
+
   <label>عنوان التقرير</label>
-  <select id="title">
-    <option value="">-- اختر نوع التقرير --</option>
-    <option value="تقرير أنشطة صفية">تقرير أنشطة صفية</option>
-    <option value="تقرير زيارة ميدانية">تقرير زيارة ميدانية</option>
-    <option value="تقرير ورشة عمل">تقرير ورشة عمل</option>
-    <option value="تقرير دورة تدريبية">تقرير دورة تدريبية</option>
-    <option value="تقرير فعالية مدرسية">تقرير فعالية مدرسية</option>
-    <option value="تقرير أنشطة لاصفية">تقرير أنشطة لاصفية</option>
-  </select>
-  
+  <input oninput="title.textContent=this.value">
+
   <label>تاريخ التنفيذ</label>
-  <div class="date-row">
-    <div>
-      <label style="font-size: 14px; font-weight: normal;">التاريخ الميلادي</label>
-      <input id="date" type="date">
-    </div>
-    <div>
-      <label style="font-size: 14px; font-weight: normal;">التاريخ الهجري</label>
-      <input id="hijriDate" placeholder="أدخل التاريخ الهجري">
-    </div>
-  </div>
-  
+  <input oninput="date.textContent=this.value">
+
   <label>المستهدفون</label>
-  <input id="target" value="الطلاب" placeholder="الفئة المستهدفة">
-  
+  <input oninput="target.textContent=this.value">
+
   <label>عدد المستفيدين</label>
-  <input id="count" type="number" placeholder="أدخل عدد المستفيدين">
-  
-  <label>وصف مختصر للنشاط</label>
-  <button type="button" class="auto-text-btn" onclick="fillDesc1()">إضافة نص تلقائي</button>
-  <textarea id="desc1" placeholder="وصف مختصر للنشاط وأهدافه"></textarea>
-  
+  <input oninput="count.textContent=this.value">
+
+  <label>وصف مختصر</label>
+  <textarea oninput="desc1.textContent=this.value"></textarea>
+
   <label>إجراءات التنفيذ</label>
-  <button type="button" class="auto-text-btn" onclick="fillDesc2()">إضافة نص تلقائي</button>
-  <textarea id="desc2" placeholder="الخطوات والإجراءات المتبعة في تنفيذ النشاط"></textarea>
-  
+  <textarea oninput="desc2.textContent=this.value"></textarea>
+
   <label>النتائج</label>
-  <button type="button" class="auto-text-btn" onclick="fillDesc3()">إضافة نص تلقائي</button>
-  <textarea id="desc3" placeholder="النتائج والتأثيرات المتحققة من النشاط"></textarea>
-  
+  <textarea oninput="desc3.textContent=this.value"></textarea>
+
   <label>التوصيات</label>
-  <button type="button" class="auto-text-btn" onclick="fillDesc4()">إضافة نص تلقائي</button>
-  <textarea id="desc4" placeholder="التوصيات والمقترحات للتطوير"></textarea>
-  
-  <label>إرفاق الصور (اختياري)</label>
+  <textarea oninput="desc4.textContent=this.value"></textarea>
+
+  <label>إرفاق الصور</label>
   <input type="file" id="imagesInput" multiple accept="image/*">
-  
-  <div class="preview-section">
-    <h3>معاينة التقرير</h3>
-    <p><strong>المنطقة التعليمية:</strong> <span id="previewRegion">-</span></p>
-    <p><strong>عنوان التقرير:</strong> <span id="previewTitle">-</span></p>
-    <p><strong>تاريخ التنفيذ:</strong> <span id="previewDate">-</span> (هجري: <span id="previewHijriDate">-</span>)</p>
-    <p><strong>المستهدفون:</strong> <span id="previewTarget">-</span></p>
-    <p><strong>عدد المستفيدين:</strong> <span id="previewCount">-</span></p>
+
+  <button onclick="printReport()">تصدير PDF</button>
+</div>
+
+<div class="report">
+
+<!-- الصفحة الأولى -->
+<div class="page">
+  <div class="header">وزارة التعليم</div>
+
+  <div class="info-grid">
+    <div class="info-box"><span>المنطقة</span><div id="region"></div></div>
+    <div class="info-box"><span>عنوان التقرير</span><div id="title"></div></div>
+    <div class="info-box"><span>تاريخ التنفيذ</span><div id="date"></div></div>
+    <div class="info-box"><span>المستهدفون</span><div id="target"></div></div>
+    <div class="info-box"><span>عدد المستفيدين</span><div id="count"></div></div>
   </div>
-  
-  <div class="buttons-row">
-    <button onclick="window.print()">📄 تصدير PDF</button>
-    <button class="alt" onclick="exportWord()">📝 تصدير Word</button>
+
+  <div class="grid-desc">
+    <div class="desc-box"><strong>وصف مختصر</strong><p id="desc1"></p></div>
+    <div class="vertical">⇄</div>
+    <div class="desc-box"><strong>إجراءات التنفيذ</strong><p id="desc2"></p></div>
   </div>
 </div>
 
+<!-- الصفحة الثانية -->
+<div class="page">
+  <div class="header">وزارة التعليم</div>
+
+  <div class="grid-desc">
+    <div class="desc-box"><strong>النتائج</strong><p id="desc3"></p></div>
+    <div class="vertical">⇄</div>
+    <div class="desc-box"><strong>التوصيات</strong><p id="desc4"></p></div>
+  </div>
+</div>
+
+<!-- الصفحة الثالثة -->
+<div class="page">
+  <div class="header">وزارة التعليم</div>
+
+  <h3 style="text-align:center">شواهد الصور</h3>
+  <div class="images" id="imagesContainer"></div>
+
+  <div class="signatures">
+    <div class="signature-box">
+      اسم المعلم
+      <div class="signature-line"></div>
+      التوقيع
+    </div>
+    <div class="signature-box">
+      مدير المدرسة
+      <div class="signature-line"></div>
+      التوقيع
+    </div>
+  </div>
+</div>
+
+</div>
+
 <script>
-// نص تلقائي للوصف المختصر
-function fillDesc1() {
-  const desc1 = document.getElementById('desc1');
-  desc1.value = "يهدف هذا النشاط إلى تنمية مهارات الطلاب في مجال " + 
-                (document.getElementById('title').value || "النشاط") + 
-                "، حيث تم تصميمه بما يتناسب مع المرحلة العمرية للمستهدفين " + 
-                "ويهدف إلى تحقيق الأهداف التعليمية المرجوة من خلال أساليب تدريس تفاعلية وتشاركية.";
-}
+const imagesInput = document.getElementById('imagesInput');
+const imagesContainer = document.getElementById('imagesContainer');
 
-// نص تلقائي لإجراءات التنفيذ
-function fillDesc2() {
-  const desc2 = document.getElementById('desc2');
-  desc2.value = "1. التحضير المسبق للمواد والأدوات اللازمة للنشاط.\n" +
-                "2. تقسيم الطلاب إلى مجموعات عمل صغيرة.\n" +
-                "3. تقديم شرح مفصل عن أهداف النشاط وخطوات التنفيذ.\n" +
-                "4. توزيع المهام على الطلاب وتشجيع العمل الجماعي.\n" +
-                "5. توفير الدعم والإرشاد اللازم أثناء تنفيذ النشاط.\n" +
-                "6. تخصيص وقت لعرض نتائج عمل كل مجموعة.\n" +
-                "7. فتح باب النقاش والتحليل للنتائج المتحققة.";
-}
-
-// نص تلقائي للنتائج
-function fillDesc3() {
-  const desc3 = document.getElementById('desc3');
-  desc3.value = "1. تفاعل إيجابي من قبل الطلاب مع محتوى النشاط.\n" +
-                "2. تحسن ملحوظ في فهم المفاهيم والمهارات المستهدفة.\n" +
-                "3. تنمية روح العمل الجماعي والتعاون بين الطلاب.\n" +
-                "4. تطوير مهارات التفكير النقدي وحل المشكلات.\n" +
-                "5. رفع مستوى الثقة بالنفس والقدرة على التعبير لدى المشاركين.\n" +
-                "6. تحقيق الأهداف التعليمية المخطط لها بنسبة عالية.";
-}
-
-// نص تلقائي للتوصيات
-function fillDesc4() {
-  const desc4 = document.getElementById('desc4');
-  desc4.value = "1. تكرار مثل هذه الأنشطة لتعزيز التعلم النشط.\n" +
-                "2. توفير المزيد من الموارد والأدوات التعليمية الداعمة.\n" +
-                "3. إشراك أولياء الأمور في بعض الأنشطة لتعزيز الشراكة المجتمعية.\n" +
-                "4. تدريب المعلمين على أساليب جديدة في تنفيذ الأنشطة الصفية.\n" +
-                "5. تخصيص جوائز وتقدير للمتميزين في الأنشطة لتشجيع المشاركة.\n" +
-                "6. تقييم فعالية الأنشطة بشكل دوري والتطوير المستمر.";
-}
-
-// تحديث معاينة التقرير عند تغيير المدخلات
-document.querySelectorAll('input, select, textarea').forEach(element => {
-  element.addEventListener('input', updatePreview);
+imagesInput.addEventListener('change', e => {
+  imagesContainer.innerHTML = '';
+  [...e.target.files].forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = document.createElement('img');
+      img.src = ev.target.result;
+      imagesContainer.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
 });
 
-function updatePreview() {
-  document.getElementById('previewRegion').textContent = document.getElementById('region').value || '-';
-  document.getElementById('previewTitle').textContent = document.getElementById('title').value || '-';
-  
-  const date = document.getElementById('date').value;
-  const hijriDate = document.getElementById('hijriDate').value;
-  document.getElementById('previewDate').textContent = date ? new Date(date).toLocaleDateString('ar-SA') : '-';
-  document.getElementById('previewHijriDate').textContent = hijriDate || '-';
-  
-  document.getElementById('previewTarget').textContent = document.getElementById('target').value || '-';
-  document.getElementById('previewCount').textContent = document.getElementById('count').value || '-';
-}
-
-// ضبط التاريخ الميلادي الحالي كقيمة افتراضية
-window.onload = function() {
-  const today = new Date();
-  const formattedDate = today.toISOString().split('T')[0];
-  document.getElementById('date').value = formattedDate;
-  
-  // يمكن إضافة تحويل التاريخ الميلادي إلى هجري هنا باستخدام مكتبة مناسبة
-  // للتبسيط، سنتركه للمستخدم لإدخاله يدوياً
-  updatePreview();
-};
-
-// تصدير إلى Word
-async function exportWord() {
-  const { Document, Packer, Paragraph, TextRun, HeadingLevel } = window.docx;
-
-  // جمع البيانات
-  const region = document.getElementById('region').value || 'غير محدد';
-  const title = document.getElementById('title').value || 'تقرير أنشطة صفية';
-  const date = document.getElementById('date').value ? 
-               new Date(document.getElementById('date').value).toLocaleDateString('ar-SA') : 'غير محدد';
-  const hijriDate = document.getElementById('hijriDate').value || 'غير محدد';
-  const target = document.getElementById('target').value || 'الطلاب';
-  const count = document.getElementById('count').value || 'غير محدد';
-  const desc1 = document.getElementById('desc1').value || 'لا يوجد وصف';
-  const desc2 = document.getElementById('desc2').value || 'لا توجد إجراءات';
-  const desc3 = document.getElementById('desc3').value || 'لا توجد نتائج';
-  const desc4 = document.getElementById('desc4').value || 'لا توجد توصيات';
-
-  const doc = new Document({
-    sections: [{
-      properties: {},
-      children: [
-        // العنوان الرئيسي
-        new Paragraph({
-          children: [new TextRun({ text: "وزارة التعليم", bold: true, size: 32 })],
-          alignment: "CENTER"
-        }),
-        
-        new Paragraph({
-          children: [new TextRun({ text: "الإدارة العامة للتعليم", bold: true, size: 28 })],
-          alignment: "CENTER"
-        }),
-        
-        new Paragraph(""),
-        
-        // عنوان التقرير
-        new Paragraph({
-          children: [new TextRun({ text: title, bold: true, size: 36, color: "0a3b40" })],
-          alignment: "CENTER",
-          heading: HeadingLevel.TITLE
-        }),
-        
-        new Paragraph(""),
-        new Paragraph(""),
-        
-        // معلومات التقرير الأساسية
-        new Paragraph({ children: [new TextRun({ text: "معلومات التقرير", bold: true, size: 28 })] }),
-        new Paragraph(""),
-        
-        new Paragraph("المنطقة التعليمية: " + region),
-        new Paragraph("تاريخ التنفيذ (ميلادي): " + date),
-        new Paragraph("تاريخ التنفيذ (هجري): " + hijriDate),
-        new Paragraph("المستهدفون: " + target),
-        new Paragraph("عدد المستفيدين: " + count),
-        
-        new Paragraph(""),
-        new Paragraph({ children: [new TextRun({ text: "وصف مختصر للنشاط", bold: true, size: 28 })] }),
-        new Paragraph(""),
-        new Paragraph(desc1),
-        
-        new Paragraph(""),
-        new Paragraph({ children: [new TextRun({ text: "إجراءات التنفيذ", bold: true, size: 28 })] }),
-        new Paragraph(""),
-        new Paragraph(desc2),
-        
-        new Paragraph({ text: " ", pageBreakBefore: true }),
-        
-        new Paragraph({ children: [new TextRun({ text: "النتائج", bold: true, size: 28 })] }),
-        new Paragraph(""),
-        new Paragraph(desc3),
-        
-        new Paragraph(""),
-        new Paragraph({ children: [new TextRun({ text: "التوصيات", bold: true, size: 28 })] }),
-        new Paragraph(""),
-        new Paragraph(desc4),
-        
-        new Paragraph({ text: " ", pageBreakBefore: true }),
-        
-        // التوقيعات
-        new Paragraph({ children: [new TextRun({ text: "التوقيعات", bold: true, size: 32 })] }),
-        new Paragraph(""),
-        new Paragraph(""),
-        new Paragraph("اسم المعلم/المشرف: ____________________"),
-        new Paragraph("التوقيع: ____________________"),
-        new Paragraph(""),
-        new Paragraph(""),
-        new Paragraph("مدير المدرسة/المشرف العام: ____________________"),
-        new Paragraph("التوقيع: ____________________"),
-        new Paragraph(""),
-        new Paragraph("ختم المدرسة"),
-        new Paragraph(""),
-        new Paragraph(""),
-        new Paragraph({ 
-          text: "تاريخ الإصدار: " + new Date().toLocaleDateString('ar-SA'), 
-          alignment: "LEFT" 
-        }),
-      ]
-    }]
-  });
-
-  const blob = await Packer.toBlob(doc);
-  saveAs(blob, "التقرير_" + new Date().getTime() + ".docx");
+function printReport() {
+  window.print();
 }
 </script>
 
