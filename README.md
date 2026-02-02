@@ -90,203 +90,7 @@ font-size: 12px;
 margin-bottom: 5px;
 }
 
-/* ========== تصنيف جديد: ثلاثة أزرار في الأعلى جنبًا إلى جنب ========== */
-.top-buttons-container {
-    display: flex;
-    gap: 10px;
-    flex: 1;
-    justify-content: flex-start;
-    min-width: 350px;
-}
-
-/* زر المدة المتبقية - نفس تصميم أزرار الدعم وواتساب */
-.subscription-btn {
-    background: linear-gradient(135deg, #34c759 0%, #2aa44f 100%);
-    color: #fff;
-    border: none;
-    padding: 12px 10px;
-    font-size: 13px;
-    border-radius: 12px;
-    cursor: default;
-    transition: all 0.3s ease;
-    font-weight: 700;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(52, 199, 89, 0.25);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(255,255,255,0.1);
-    min-height: 65px;
-    min-width: 110px;
-    flex: 1;
-    user-select: none;
-}
-
-.subscription-btn::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    transform: translateX(-100%);
-}
-
-.subscription-btn:hover::after {
-    animation: buttonShine 0.6s;
-}
-
-@keyframes buttonShine {
-    100% { transform: translateX(100%); }
-}
-
-.subscription-btn:hover {
-    background: linear-gradient(135deg, #2aa44f 0%, #218c43 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(52, 199, 89, 0.35);
-}
-
-.subscription-btn:active {
-    transform: translateY(-1px);
-}
-
-/* حالة غير مفعلة */
-.subscription-btn.inactive {
-    background: linear-gradient(135deg, #8e8e93 0%, #6d6d72 100%);
-    box-shadow: 0 4px 10px rgba(142, 142, 147, 0.25);
-}
-
-.subscription-btn.inactive:hover {
-    background: linear-gradient(135deg, #6d6d72 0%, #5a5a5f 100%);
-    box-shadow: 0 6px 15px rgba(142, 142, 147, 0.35);
-}
-
-/* حالة تحذير (أقل من 30 دقيقة) */
-.subscription-btn.warning {
-    background: linear-gradient(135deg, #ff9500 0%, #e68500 100%);
-    box-shadow: 0 4px 10px rgba(255, 149, 0, 0.25);
-    animation: pulseWarning 2s infinite;
-}
-
-@keyframes pulseWarning {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
-}
-
-.subscription-btn.warning:hover {
-    background: linear-gradient(135deg, #e68500 0%, #cc7600 100%);
-    box-shadow: 0 6px 15px rgba(255, 149, 0, 0.35);
-}
-
-/* حالة طارئة (أقل من 5 دقائق) */
-.subscription-btn.emergency {
-    background: linear-gradient(135deg, #ff3b30 0%, #d70015 100%);
-    box-shadow: 0 4px 10px rgba(255, 59, 48, 0.25);
-    animation: pulseEmergency 1s infinite;
-}
-
-@keyframes pulseEmergency {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-}
-
-.subscription-btn.emergency:hover {
-    background: linear-gradient(135deg, #d70015 0%, #b30012 100%);
-    box-shadow: 0 6px 15px rgba(255, 59, 48, 0.35);
-}
-
-.btn-icon {
-    font-size: 18px;
-    margin-bottom: 5px;
-}
-
-.btn-text {
-    font-size: 12px;
-    font-weight: 800;
-    text-align: center;
-    line-height: 1.2;
-}
-
-.subscription-time {
-    font-size: 14px;
-    font-weight: 900;
-    text-align: center;
-    margin-top: 2px;
-    direction: ltr;
-}
-
-/* زر الدعم الفني */
-.support-btn {
-    background: linear-gradient(135deg, #5a67d8 0%, #4c51bf 100%);
-    color: #fff;
-    border: none;
-    padding: 12px 10px;
-    font-size: 13px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 700;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(90, 103, 216, 0.25);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(255,255,255,0.1);
-    min-height: 65px;
-    min-width: 110px;
-    flex: 1;
-}
-
-.support-btn:hover {
-    background: linear-gradient(135deg, #4c51bf 0%, #434190 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(90, 103, 216, 0.35);
-}
-
-.support-btn:active {
-    transform: translateY(-1px);
-}
-
-/* زر واتساب */
-.whatsapp-btn {
-    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-    color: #fff;
-    border: none;
-    padding: 12px 10px;
-    font-size: 13px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 700;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(255,255,255,0.1);
-    min-height: 65px;
-    min-width: 110px;
-    flex: 1;
-}
-
-.whatsapp-btn:hover {
-    background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.35);
-}
-
-.whatsapp-btn:active {
-    transform: translateY(-1px);
-}
-
-/* مجموعة الأزرار المعدلة والمرتبة في صفين */
+/* مجموعة الأزرار المعدلة - مرتبة في صفين */
 .btn-group {
     display: flex;
     flex-direction: column;
@@ -317,25 +121,38 @@ background:linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparen
 transform:translateX(-100%);
 }
 button.main-btn:hover::after{animation:buttonShine 0.6s;}
+@keyframes buttonShine{100%{transform:translateX(100%);}}
 button.main-btn:hover{
 background:linear-gradient(135deg, #05553d 0%, #044a35 100%);transform:translateY(-3px);
 box-shadow:0 6px 15px rgba(6, 109, 77, 0.35);
 }
 button.main-btn:active{transform:translateY(-1px);}
 
+.btn-icon{font-size:18px; margin-bottom:5px;}
+.btn-text{font-size:12px;font-weight:800; text-align:center; line-height:1.2;}
+
 /* زر حفظ بيانات المعلم خاص */
 #saveTeacherBtn{background:linear-gradient(135deg, #2a7b5e 0%, #1e6b4f 100%);}
 #saveTeacherBtn:hover{background:linear-gradient(135deg, #1e6b4f 0%, #15563f 100%);}
 
-/* زر المسح - تم إزالته من الهيدر */
+/* زر الدعم الفني */
+#supportBtn{background:linear-gradient(135deg, #5a67d8 0%, #4c51bf 100%);}
+#supportBtn:hover{background:linear-gradient(135deg, #4c51bf 0%, #434190 100%);}
+
+/* زر المسح */
+#clearBtn{background:linear-gradient(135deg, #f0ad4e 0%, #ec971f 100%);}
+#clearBtn:hover{background:linear-gradient(135deg, #ec971f 0%, #d58512 100%);}
 
 /* زر الذكاء الاصطناعي المعدل - الأصفر والأزرق */
 #aiFillBtn{background:linear-gradient(135deg, #ffd166 0%, #4d96ff 100%); position: relative;}
 #aiFillBtn:hover{background:linear-gradient(135deg, #ffc145 0%, #2d7dfd 100%);}
 
-/* زر PDF */
+/* تصميم خاص لأزرار PDF وواتساب */
 #pdfBtn{background:linear-gradient(135deg, #d9534f 0%, #c9302c 100%);}
 #pdfBtn:hover{background:linear-gradient(135deg, #c9302c 0%, #ac2925 100%);}
+
+#whatsappBtn{background:linear-gradient(135deg, #25D366 0%, #128C7E 100%);}
+#whatsappBtn:hover{background:linear-gradient(135deg, #128C7E 0%, #075E54 100%);}
 
 /* ========== تحسين واجهة الإدخال - تصميم عصري 2026 ========== */
 .input-section{
@@ -752,27 +569,10 @@ order: 2;
 min-width: unset;
 }
 
-.top-buttons-container {
-    width: 100%;
-    order: 1;
-    min-width: unset;
-    margin-bottom: 5px;
-    flex-direction: row;
-}
-
-.subscription-btn,
-.support-btn,
-.whatsapp-btn {
-    min-width: 90px;
-    min-height: 55px;
-    padding: 8px 6px;
-    font-size: 11px;
-}
-
 .btn-group {
     width: 100%;
     max-width: 100%;
-    order: 3;
+    order: 1;
     margin: 5px auto 0;
 }
 
@@ -866,23 +666,6 @@ font-size: 11px;
 padding: 5px 8px;
 }
 
-.top-buttons-container {
-    gap: 6px;
-}
-
-.subscription-btn,
-.support-btn,
-.whatsapp-btn {
-    min-width: 80px;
-    min-height: 50px;
-    padding: 6px 4px;
-    font-size: 10px;
-}
-
-.subscription-time {
-    font-size: 11px;
-}
-
 .btn-group {
     margin-top: 3px;
 }
@@ -952,23 +735,6 @@ font-size: 13px;
 .control-bar {
 min-height: 105px;
 padding: 6px;
-}
-
-.top-buttons-container {
-    gap: 4px;
-}
-
-.subscription-btn,
-.support-btn,
-.whatsapp-btn {
-    min-width: 70px;
-    min-height: 45px;
-    padding: 5px 3px;
-    font-size: 9px;
-}
-
-.subscription-time {
-    font-size: 10px;
 }
 
 .btn-row {
@@ -1098,11 +864,6 @@ gap: 10px;
 .date-toggle-container {
 max-width: 180px;
 min-width: 150px;
-}
-
-.top-buttons-container {
-    max-width: 400px;
-    min-width: 350px;
 }
 
 .btn-group {
@@ -1633,30 +1394,6 @@ font-family:Cairo;
                    onchange="updateManualDate()">
         </div>
         
-        <!-- ========== ثلاثة أزرار في الأعلى جنبًا إلى جنب ========== -->
-        <div class="top-buttons-container">
-            <!-- زر المدة المتبقية -->
-            <div class="subscription-btn" id="subscriptionBtn">
-                <i class="fas fa-clock btn-icon"></i>
-                <div class="btn-text">المدة المتبقية</div>
-                <div class="subscription-time" id="subscriptionTime">
-                    غير مفعل
-                </div>
-            </div>
-            
-            <!-- زر الدعم الفني -->
-            <button class="support-btn" id="supportBtn" onclick="openSupportModal()" title="الدعم الفني والتواصل مع المطور">
-                <i class="fas fa-headset btn-icon"></i>
-                <div class="btn-text">الدعم الفني</div>
-            </button>
-            
-            <!-- زر مشاركة واتساب -->
-            <button class="whatsapp-btn" id="whatsappBtn" onclick="sharePDFWhatsApp()" title="مشاركة التقرير عبر واتساب">
-                <i class="fab fa-whatsapp btn-icon"></i>
-                <div class="btn-text">مشاركة واتساب</div>
-            </button>
-        </div>
-        
         <!-- مجموعة الأزرار المعدلة والمرتبة في صفين -->
         <div class="btn-group">
             <!-- الصف الأول: 3 أزرار -->
@@ -1675,15 +1412,19 @@ font-family:Cairo;
                 </button>
             </div>
             
-            <!-- الصف الثاني: أزرار إضافية -->
+            <!-- الصف الثاني: 3 أزرار (تم إزالة زر التعبئة الذكية ٢) -->
             <div class="btn-row">
-                <button class="main-btn" id="clearBtn" onclick="clearData()" title="مسح جميع البيانات">
+                <button class="main-btn" id="clearBtn" onclick="clearData()" title="مسح جميع البيانات المدخلة">
                     <i class="fas fa-trash-alt btn-icon"></i>
                     <span class="btn-text">مسح البيانات</span>
                 </button>
-                <button class="main-btn" id="activationStatusBtn" onclick="showActivationStatus()" title="عرض حالة التفعيل">
-                    <i class="fas fa-key btn-icon"></i>
-                    <span class="btn-text">حالة التفعيل</span>
+                <button class="main-btn" id="supportBtn" onclick="openSupportModal()" title="الدعم الفني والتواصل مع المطور">
+                    <i class="fas fa-headset btn-icon"></i>
+                    <span class="btn-text">الدعم الفني</span>
+                </button>
+                <button class="main-btn" id="whatsappBtn" onclick="sharePDFWhatsApp()" title="مشاركة التقرير عبر واتساب">
+                    <i class="fab fa-whatsapp btn-icon"></i>
+                    <span class="btn-text">مشاركة واتساب</span>
                 </button>
             </div>
         </div>
@@ -2096,7 +1837,6 @@ font-family:Cairo;
 </div>
 
 <script>
-// ==================== نظام التفعيل والعد التنازلي المحسن ====================
 
 // ==================== وظائف التفعيل ====================
 async function activateTool() {
@@ -2108,7 +1848,7 @@ async function activateTool() {
     }
 
     try {
-        const res = await fetch("https://nassrbackend.onrender.com/activate", {
+        const res = await fetch("https://ksa-w073.onrender.com/activate", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -2119,148 +1859,25 @@ async function activateTool() {
         });
 
         if (!res.ok) {
-            throw new Error("كود التفعيل غير صحيح");
+            throw new Error("INVALID_CODE");
         }
 
         const data = await res.json();
 
-        // ✅ حفظ التوكن في localStorage
+        // حفظ التوكن النهائي
         localStorage.setItem("AI_TOKEN", data.token);
-        
-        // ✅ حفظ معلومات التفعيل الجديدة - فقط expires_at من السيرفر
-        const activationInfo = {
-            activated: true,
-            expiresAt: data.expires_at
-        };
-        localStorage.setItem("activation_info", JSON.stringify(activationInfo));
 
         // إخفاء شاشة التفعيل
         document.getElementById("activationScreen").style.display = "none";
 
         // تشغيل الأداة
         initializeApp();
-        
-        // عرض رسالة نجاح
-        showNotification("تم تفعيل الأداة بنجاح! ✓");
-        
-        // تحديث عرض المدة المتبقية
-        updateSubscriptionDisplay();
 
     } catch (error) {
-        alert("❌ " + error.message);
+        alert("❌ كود التفعيل غير صحيح أو منتهي");
         localStorage.removeItem("AI_TOKEN");
-        localStorage.removeItem("activation_info");
     }
 }
-
-// ✅ دالة للتحقق من صلاحية التوكن فقط عند الطلبات الحساسة
-function checkTokenValidity() {
-    const info = JSON.parse(localStorage.getItem("activation_info") || "{}");
-    if (!info.expiresAt) return false;
-    return new Date() < new Date(info.expiresAt);
-}
-
-// ========== دالة تحديث عرض المدة المتبقية - قراءة حقيقية ==========
-function updateSubscriptionDisplay() {
-    const info = JSON.parse(localStorage.getItem("activation_info") || "{}");
-    const btn = document.getElementById('subscriptionBtn');
-    const el = document.getElementById('subscriptionTime');
-
-    if (!info.expiresAt) {
-        el.textContent = "غير مفعل";
-        btn.className = 'subscription-btn inactive';
-        return;
-    }
-
-    const now = new Date();
-    const expiresAt = new Date(info.expiresAt);
-    let diffMs = expiresAt - now;
-
-    if (diffMs <= 0) {
-        el.textContent = "انتهت المدة";
-        btn.className = 'subscription-btn inactive';
-        localStorage.removeItem("AI_TOKEN");
-        localStorage.removeItem("activation_info");
-        return;
-    }
-
-    const totalSeconds = Math.floor(diffMs / 1000);
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    // تنسيق مختلف حسب المدة المتبقية
-    let timeText = "";
-    
-    if (days > 7) {
-        timeText = `${days} يوم`;
-    } else if (days > 0) {
-        timeText = `${days} يوم ${hours} ساعة`;
-    } else if (hours > 0) {
-        timeText = `${hours} ساعة ${minutes} دقيقة`;
-    } else if (minutes > 0) {
-        timeText = `${minutes} دقيقة ${seconds} ثانية`;
-    } else {
-        timeText = `${seconds} ثانية`;
-    }
-
-    el.textContent = timeText;
-
-    // تغيير لون الزر حسب الحالة
-    if (totalSeconds < 300) { // أقل من 5 دقائق
-        btn.className = 'subscription-btn emergency';
-    } else if (totalSeconds < 1800) { // أقل من 30 دقيقة
-        btn.className = 'subscription-btn warning';
-    } else {
-        btn.className = 'subscription-btn';
-    }
-}
-
-// دالة لعرض حالة التفعيل
-function showActivationStatus() {
-    const token = localStorage.getItem("AI_TOKEN");
-    const activationInfo = JSON.parse(localStorage.getItem("activation_info") || "{}");
-    
-    if (!token || !activationInfo.activated) {
-        alert("❌ الأداة غير مفعّلة\nالرجاء التفعيل للاستخدام");
-        document.getElementById("activationScreen").style.display = "flex";
-        return;
-    }
-    
-    const now = new Date();
-    const expiresAt = new Date(activationInfo.expiresAt);
-    const diffMs = expiresAt - now;
-    
-    if (diffMs <= 0) {
-        alert("❌ انتهت صلاحية التفعيل\nالرجاء التجديد");
-        document.getElementById("activationScreen").style.display = "flex";
-        return;
-    }
-    
-    const totalSeconds = Math.floor(diffMs / 1000);
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    
-    let timeLeftText = "";
-    if (days > 0) {
-        timeLeftText = `${days} يوم`;
-        if (hours > 0) timeLeftText += ` و ${hours} ساعة`;
-    } else if (hours > 0) {
-        timeLeftText = `${hours} ساعة`;
-        if (minutes > 0) timeLeftText += ` و ${minutes} دقيقة`;
-    } else {
-        timeLeftText = `${minutes} دقيقة`;
-    }
-    
-    let message = `✅ الأداة مفعّلة\n`;
-    message += `📅 تاريخ الانتهاء: ${new Date(activationInfo.expiresAt).toLocaleString('ar-SA')}\n`;
-    message += `⏳ المدة المتبقية: ${timeLeftText}`;
-    
-    alert(message);
-}
-
 // ==================== كائن التقارير ====================
 // كائن يحتوي على جميع التقارير مصنفة
 const allReportsByCategory = {
@@ -2500,7 +2117,7 @@ let currentHijriDate = '';
 let currentGregorianDate = '';
 
 // رابط خادم الذكاء الاصطناعي
-const backendAIUrl = 'https://nassrbackend.onrender.com/generate-report';
+const backendAIUrl = 'https://ksa-w073.onrender.com/generate';
 
 // ==================== دوال التحويل والتواريخ ====================
 async function convertHijriToGregorian(hijriDate) {
@@ -2993,9 +2610,9 @@ function loadTeacherData() {
 
 // دالة الذكاء الاصطناعي
 async function fillWithAI() {
-    // ✅ التحقق من التفعيل فقط عند الطلب الحساس
+    // التحقق من التفعيل أولاً
     const token = localStorage.getItem("AI_TOKEN");
-    if (!token || !checkTokenValidity()) {
+    if (!token) {
         alert("يرجى تفعيل الأداة أولاً");
         document.getElementById("activationScreen").style.display = "flex";
         return;
@@ -3041,6 +2658,45 @@ async function fillWithAI() {
     aiButton.disabled = true;
     
     try {
+        const prompt = `أنت خبير تربوي تعليمي محترف تمتلك خبرة ميدانية واسعة في التعليم العام.  
+اعتمد منظورًا تربويًا مهنيًا احترافيًا يركّز على تحسين جودة التعليم، ودعم المعلم، وتعزيز بيئة التعلّم، وخدمة القيادة المدرسية.  
+
+التقرير المطلوب: "${reportType}"
+${subject ? `المادة: ${subject}` : ''}
+${lesson ? `الدرس: ${lesson}` : ''}
+${grade ? `الصف: ${grade}` : ''}
+${target ? `المستهدفون: ${target}` : ''}
+${place ? `مكان التنفيذ: ${place}` : ''}
+${count ? `عدد الحضور: ${count}` : ''}
+
+**توجيهات مهنية:**
+- كن موضوعيًا ومتزنًا وبنّاءً  
+- قدّم الملاحظات بصيغة تطويرية غير نقدية  
+- راعِ واقع الميدان التعليمي وسياق المدرسة  
+- اربط بين المعلم والطالب والمنهج والبيئة الصفية والقيادة المدرسية  
+- ركّز على جودة التعليم وأثر الممارسات على تعلم الطلاب  
+- التزم بلغة عربية فصيحة سليمة وخالية من الأخطاء  
+
+**شروط المحتوى:**اكتب محتوى كل حقل بصيغة تقريرية مهنية وكأنه صادر عن المعلم.
+لا تكتب أبداً عنوان الحقل داخل المحتوى ولا تعِد صياغته بصيغة مباشرة (مثل: الهدف التربوي هو، النبذة المختصرة).
+يجب أن يحتوي كل حقل على ما يقارب 25 كلمة.
+ابدأ بالمضمون مباشرة دون تمهيد أو عبارات إنشائية.
+يمكن الاستفادة من معنى العنوان أو أحد مفاهيمه بشكل غير مباشر فقط عند الحاجة وبما يخدم الفكرة دون تكرار أو حشو.
+احرص على وجود ترابط منطقي بين الأهداف، النبذة المختصرة، الاستراتيجيات، إجراءات التنفيذ، نقاط القوة، نقاط التحسين، والتوصيات.
+اربط المحتوى بالمادة الدراسية وعنوان الدرس إن وُجد، وكذلك بمكان التنفيذ، بأسلوب مهني متوازن يجمع بين الإشارة المباشرة وغير المباشرة دون تكلف.
+اجعل الهدف النهائي للمحتوى تحسين الممارسة التعليمية ودعم التطوير المهني المستدام.
+راعِ الوضوح والترابط، واجعل كل جملة تضيف قيمة تعليمية فعلية.
+الحقول المطلوبة:**
+1. الهدف التربوي
+2. نبذة مختصرة  
+3. إجراءات التنفيذ
+4. الاستراتيجيات
+5. نقاط القوة
+6. نقاط التحسين
+7. التوصيات
+
+يرجى تقديم الإجابة باللغة العربية الفصحى، وتنظيمها بحيث يكون كل حقل في سطر منفصل يبدأ برقمه فقط دون ذكر العنوان.`;
+
         const response = await fetch(backendAIUrl, {
             method: 'POST',
             headers: {
@@ -3048,13 +2704,16 @@ async function fillWithAI() {
                 'X-Token': token
             },
             body: JSON.stringify({
-                report_type: reportType,
-                subject: subject,
-                lesson: lesson,
-                grade: grade,
-                target: target,
-                place: place,
-                count: count
+                prompt: prompt,
+                reportData: {
+                    reportType: reportType,
+                    subject: subject,
+                    lesson: lesson,
+                    grade: grade,
+                    target: target,
+                    place: place,
+                    count: count
+                }
             })
         });
 
@@ -3069,7 +2728,7 @@ async function fillWithAI() {
         }
 
         const aiResponse = data.answer;
-        parseAIResponse(aiResponse);
+        parseAIResponseProfessional(aiResponse);
         showNotification('تم تعبئة الحقول باستخدام الذكاء الاصطناعي بنجاح! ✓');
         
     } catch (error) {
@@ -3087,8 +2746,8 @@ async function fillWithAI() {
     }
 }
 
-// دالة بسيطة لتحليل استجابة الذكاء الاصطناعي
-function parseAIResponse(response) {
+// دالة محسنة لتحليل استجابة الذكاء الاصطناعي المهنية
+function parseAIResponseProfessional(response) {
     const lines = response.split('\n').filter(line => line.trim());
     
     const fieldMapping = {
@@ -3107,10 +2766,15 @@ function parseAIResponse(response) {
         const match = line.match(/^(\d+)[\.\-]\s*(.+)/);
         if (match) {
             const fieldNumber = match[1];
-            const content = match[2].trim();
+            let content = match[2].trim();
+            
+            content = removeFieldTitles(content);
             
             if (fieldMapping[fieldNumber]) {
                 const fieldId = fieldMapping[fieldNumber];
+                content = ensureWordCount(content, 25);
+                content = addProfessionalTouch(content, fieldId);
+                
                 document.getElementById(fieldId).value = content;
                 foundFields++;
             }
@@ -3118,17 +2782,110 @@ function parseAIResponse(response) {
     });
     
     if (foundFields < 3) {
-        fallbackAIParsing(response);
+        fallbackProfessionalAIParsing(response);
     }
     
     updateReport();
 }
 
-// نهج بديل بسيط لتحليل الاستجابة
-function fallbackAIParsing(response) {
+// دالة لإزالة عناوين الحقول من النص
+function removeFieldTitles(content) {
+    const fieldTitles = [
+        'الهدف التربوي', 'الهدف التربوي', ,
+        'نبذة مختصرة', 'نبذة مختصرة', ,
+        'إجراءات التنفيذ', 'إجراءات التنفيذ', ,
+        'الاستراتيجيات', 'الاستراتيجيات',
+        'نقاط القوة', 'نقاط القوة',
+        'نقاط التحسين', 'نقاط تحسين',
+        'التوصيات', 'التوصيات',
+        'هو:', 'تشمل:', 'تشمل', 'يتضمن:', 'يتضمن',
+        'يتمثل في', 'يتمثل', 'يمثل', 'يتم',
+        'يشمل', 'تحتوي', 'تتضمن'
+    ];
+    
+    let cleanedContent = content;
+    
+    fieldTitles.forEach(title => {
+        const regex = new RegExp(`^${title}[:\\.\\-]?\\s*`, 'i');
+        cleanedContent = cleanedContent.replace(regex, '');
+        
+        const regex2 = new RegExp(`\\s*${title}[:\\.\\-]?\\s*`, 'gi');
+        cleanedContent = cleanedContent.replace(regex2, ' ');
+    });
+    
+    cleanedContent = cleanedContent.trim().replace(/\s+/g, ' ');
+    
+    return cleanedContent || content;
+}
+
+// دالة لتأكيد عدد الكلمات مع لمسة مهنية
+function ensureWordCount(content, targetWords) {
+    const words = content.split(' ');
+    
+    if (words.length >= targetWords - 5 && words.length <= targetWords + 5) {
+        return content;
+    }
+    
+    if (words.length < targetWords - 5) {
+        const professionalPhrases = [
+            'مع التركيز على تحقيق أهداف التعلم وتنمية المهارات الأساسية',
+            'بما يسهم في رفع مستوى التحصيل الدراسي وتحسين المخرجات التعليمية',
+            'وذلك لتحقيق التكامل بين الجوانب المعرفية والمهارية والوجدانية',
+            'مع مراعاة الفروق الفردية وتنويع أساليب التدريس لتناسب جميع الطلاب',
+            'لضمان تحقيق رؤية التعليم وتطوير العملية التعليمية بصورة شاملة',
+            'مع الاستفادة من أفضل الممارسات التربوية والتقنيات التعليمية الحديثة',
+            'بما يعزز من دور المعلم كميسر للتعلم وموجه للطالب نحو التميز'
+        ];
+        
+        let extendedContent = content;
+        while (extendedContent.split(' ').length < targetWords) {
+            const randomPhrase = professionalPhrases[Math.floor(Math.random() * professionalPhrases.length)];
+            extendedContent += ' ' + randomPhrase;
+        }
+        
+        const extendedWords = extendedContent.split(' ');
+        if (extendedWords.length > targetWords + 5) {
+            return extendedWords.slice(0, targetWords).join(' ');
+        }
+        
+        return extendedContent;
+    }
+    
+    if (words.length > targetWords + 5) {
+        return words.slice(0, targetWords).join(' ');
+    }
+    
+    return content;
+}
+
+// دالة لإضافة لمسة مهنية للمحتوى
+function addProfessionalTouch(content, fieldId) {
+    const words = content.split(' ');
+    if (words.length >= 20) return content;
+    
+    const professionalAdditions = {
+        'goal': ' بما يعزز من جودة التعليم ويدعم تحقيق رؤية المدرسة التعليمية',
+        'summary': ' مع التركيز على الأثر الإيجابي في تحسين الممارسات التعليمية',
+        'steps': ' ومراعاة الجوانب التربوية والنفسية للطلاب في جميع المراحل',
+        'strategies': ' بما يناسب البيئة الصفية ويحقق أقصى استفادة تعليمية',
+        'strengths': ' مما يسهم في تحقيق بيئة تعلم إيجابية ومنتجة',
+        'improve': ' مع وضع خطط تطويرية قابلة للتنفيذ في الفصول القادمة',
+        'recomm': ' بما يدعم التطوير المهني المستمر ويعزز جودة التعليم'
+    };
+    
+    if (professionalAdditions[fieldId]) {
+        return content + professionalAdditions[fieldId];
+    }
+    
+    return content;
+}
+
+// نهج بديل محسن لتحليل الاستجابة المهنية
+function fallbackProfessionalAIParsing(response) {
     const sentences = response.split(/[\.\n]/).filter(s => {
         const trimmed = s.trim();
-        return trimmed.length > 10;
+        return trimmed.length > 20 && 
+               !trimmed.match(/الهدف التربوي|نبذة مختصرة|إجراءات التنفيذ|الاستراتيجيات|نقاط القوة|نقاط التحسين|التوصيات|الحقل|المطلوب|يجب|يرجى/i);
     });
     
     const fields = ['goal', 'summary', 'steps', 'strategies', 'strengths', 'improve', 'recomm'];
@@ -3136,9 +2893,20 @@ function fallbackAIParsing(response) {
     let sentenceIndex = 0;
     fields.forEach((field, index) => {
         if (sentenceIndex < sentences.length) {
-            const content = sentences[sentenceIndex].trim();
+            let content = sentences[sentenceIndex].trim();
+            content = removeFieldTitles(content);
+            content = ensureWordCount(content, 25);
+            content = addProfessionalTouch(content, field);
+            
             document.getElementById(field).value = content;
             sentenceIndex++;
+        } else if (sentenceIndex > 0) {
+            const previousContent = document.getElementById(fields[sentenceIndex-1]).value;
+            if (previousContent) {
+                const words = previousContent.split(' ');
+                const modifiedContent = words.slice(5).join(' ') + ' مع التركيز على تطوير الممارسات التعليمية وتحسين جودة التعلم';
+                document.getElementById(field).value = ensureWordCount(modifiedContent, 25);
+            }
         }
     });
 }
@@ -3183,23 +2951,9 @@ function sendWhatsAppSupport() {
     setTimeout(closeSupportModal, 500);
 }
 
-// دالة مسح البيانات
 function clearData(){
     if(confirm("هل أنت متأكد من مسح جميع البيانات؟")){
-        // الاحتفاظ ببيانات التفعيل فقط
-        const activationInfo = JSON.parse(localStorage.getItem("activation_info") || "{}");
-        const aiToken = localStorage.getItem("AI_TOKEN");
-        
         localStorage.clear();
-        
-        // إعادة حفظ بيانات التفعيل
-        if (activationInfo.activated) {
-            localStorage.setItem("activation_info", JSON.stringify(activationInfo));
-        }
-        if (aiToken) {
-            localStorage.setItem("AI_TOKEN", aiToken);
-        }
-        
         location.reload();
     }
 }
@@ -3317,7 +3071,6 @@ async function loadDates(){
             currentGregorianDate = teacherData.manualGregorianDate || '';
             document.getElementById('manualDateInput').value = currentHijriDate;
             document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
-            
             document.getElementById('hDate').innerHTML = currentHijriDate + " هـ";
             document.getElementById('gDate').innerHTML = currentGregorianDate ? currentGregorianDate + " م" : currentHijriDate + " هـ";
             return;
@@ -3397,23 +3150,11 @@ function handleReportType() {
     }
 }
 
-// ✅ دالة تهيئة التطبيق - بدون التحقق من JWT عند التحميل
+// دالة تهيئة التطبيق بعد التفعيل
 function initializeApp() {
-    // ✅ فقط تحميل البيانات والتأكد من التفعيل المبدئي
-    const activationInfo = JSON.parse(localStorage.getItem("activation_info") || "{}");
-    
-    if (!activationInfo.activated) {
-        localStorage.removeItem("AI_TOKEN");
-        localStorage.removeItem("activation_info");
-        document.getElementById("activationScreen").style.display = "flex";
-        return;
-    }
-    
-    // إذا كان هناك تفعيل، قم بتحميل التطبيق مباشرة
     loadDates();
     loadTeacherData();
     updateReport();
-    updateSubscriptionDisplay(); // تحديث عرض المدة المتبقية
 
     document.getElementById('reportSearch').addEventListener('input', handleReportSearch);
 
@@ -3437,29 +3178,33 @@ function initializeApp() {
             setTimeout(adaptSubjectLessonFont, 100);
         }
     });
-    
-    // تحديث عرض المدة المتبقية كل ثانية (عد تنازلي حي)
-    setInterval(updateSubscriptionDisplay, 1000);
-    
-    // عرض معلومات التفعيل في الكونسول
-    if (activationInfo.activated) {
-        console.log("✅ الأداة مفعّلة");
-        console.log("📅 تاريخ الانتهاء:", activationInfo.expiresAt);
-    }
 }
 
-// ==================== عند تحميل الصفحة ====================
+// عند تحميل الصفحة
 document.addEventListener("DOMContentLoaded", function() {
-    // ✅ لا تتحقق من JWT، فقط من بيانات التفعيل الأساسية
-    const activationInfo = JSON.parse(localStorage.getItem("activation_info") || "{}");
+    const token = localStorage.getItem("AI_TOKEN");
     
-    if (activationInfo.activated) {
-        // المستخدم مفعل سابقًا - قم بتحميل التطبيق مباشرة
-        initializeApp();
+    if (token) {
+        // تحقق من صلاحية التوكن
+        fetch("https://ksa-w073.onrender.com/verify", {
+            headers: {
+                "X-Token": token
+            }
+        })
+        .then(res => {
+            if (res.ok) {
+                document.getElementById("activationScreen").style.display = "none";
+                initializeApp();
+            } else {
+                localStorage.removeItem("AI_TOKEN");
+                document.getElementById("activationScreen").style.display = "flex";
+            }
+        })
+        .catch(() => {
+            localStorage.removeItem("AI_TOKEN");
+            document.getElementById("activationScreen").style.display = "flex";
+        });
     } else {
-        // المستخدم غير مفعل - اعرض شاشة التفعيل
-        localStorage.removeItem("AI_TOKEN");
-        localStorage.removeItem("activation_info");
         document.getElementById("activationScreen").style.display = "flex";
     }
 });
