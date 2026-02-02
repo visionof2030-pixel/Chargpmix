@@ -90,8 +90,17 @@ font-size: 12px;
 margin-bottom: 5px;
 }
 
-/* ========== مربع المدة المتبقية من الاشتراك الجديد - تصميم مشابه لزر التعبئة الذكية ========== */
-.subscription-box {
+/* ========== تصنيف جديد: ثلاثة أزرار في الأعلى جنبًا إلى جنب ========== */
+.top-buttons-container {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    justify-content: flex-start;
+    min-width: 350px;
+}
+
+/* زر المدة المتبقية - نفس تصميم أزرار الدعم وواتساب */
+.subscription-btn {
     background: linear-gradient(135deg, #34c759 0%, #2aa44f 100%);
     color: #fff;
     border: none;
@@ -110,12 +119,12 @@ margin-bottom: 5px;
     justify-content: center;
     border: 1px solid rgba(255,255,255,0.1);
     min-height: 65px;
-    min-width: 150px;
-    user-select: none;
+    min-width: 110px;
     flex: 1;
+    user-select: none;
 }
 
-.subscription-box::after {
+.subscription-btn::after {
     content: '';
     position: absolute;
     top: 0;
@@ -126,7 +135,7 @@ margin-bottom: 5px;
     transform: translateX(-100%);
 }
 
-.subscription-box:hover::after {
+.subscription-btn:hover::after {
     animation: buttonShine 0.6s;
 }
 
@@ -134,22 +143,67 @@ margin-bottom: 5px;
     100% { transform: translateX(100%); }
 }
 
-.subscription-box:hover {
+.subscription-btn:hover {
     background: linear-gradient(135deg, #2aa44f 0%, #218c43 100%);
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(52, 199, 89, 0.35);
 }
 
-.subscription-box:active {
+.subscription-btn:active {
     transform: translateY(-1px);
 }
 
-.subscription-icon {
+/* حالة غير مفعلة */
+.subscription-btn.inactive {
+    background: linear-gradient(135deg, #8e8e93 0%, #6d6d72 100%);
+    box-shadow: 0 4px 10px rgba(142, 142, 147, 0.25);
+}
+
+.subscription-btn.inactive:hover {
+    background: linear-gradient(135deg, #6d6d72 0%, #5a5a5f 100%);
+    box-shadow: 0 6px 15px rgba(142, 142, 147, 0.35);
+}
+
+/* حالة تحذير (أقل من 30 دقيقة) */
+.subscription-btn.warning {
+    background: linear-gradient(135deg, #ff9500 0%, #e68500 100%);
+    box-shadow: 0 4px 10px rgba(255, 149, 0, 0.25);
+    animation: pulseWarning 2s infinite;
+}
+
+@keyframes pulseWarning {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.subscription-btn.warning:hover {
+    background: linear-gradient(135deg, #e68500 0%, #cc7600 100%);
+    box-shadow: 0 6px 15px rgba(255, 149, 0, 0.35);
+}
+
+/* حالة طارئة (أقل من 5 دقائق) */
+.subscription-btn.emergency {
+    background: linear-gradient(135deg, #ff3b30 0%, #d70015 100%);
+    box-shadow: 0 4px 10px rgba(255, 59, 48, 0.25);
+    animation: pulseEmergency 1s infinite;
+}
+
+@keyframes pulseEmergency {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.subscription-btn.emergency:hover {
+    background: linear-gradient(135deg, #d70015 0%, #b30012 100%);
+    box-shadow: 0 6px 15px rgba(255, 59, 48, 0.35);
+}
+
+.btn-icon {
     font-size: 18px;
     margin-bottom: 5px;
 }
 
-.subscription-text {
+.btn-text {
     font-size: 12px;
     font-weight: 800;
     text-align: center;
@@ -164,49 +218,72 @@ margin-bottom: 5px;
     direction: ltr;
 }
 
-/* حالة غير مفعلة */
-.subscription-box.inactive {
-    background: linear-gradient(135deg, #8e8e93 0%, #6d6d72 100%);
-    box-shadow: 0 4px 10px rgba(142, 142, 147, 0.25);
+/* زر الدعم الفني */
+.support-btn {
+    background: linear-gradient(135deg, #5a67d8 0%, #4c51bf 100%);
+    color: #fff;
+    border: none;
+    padding: 12px 10px;
+    font-size: 13px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 700;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(90, 103, 216, 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    min-height: 65px;
+    min-width: 110px;
+    flex: 1;
 }
 
-.subscription-box.inactive:hover {
-    background: linear-gradient(135deg, #6d6d72 0%, #5a5a5f 100%);
-    box-shadow: 0 6px 15px rgba(142, 142, 147, 0.35);
+.support-btn:hover {
+    background: linear-gradient(135deg, #4c51bf 0%, #434190 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(90, 103, 216, 0.35);
 }
 
-/* حالة تحذير (أقل من 30 دقيقة) */
-.subscription-box.warning {
-    background: linear-gradient(135deg, #ff9500 0%, #e68500 100%);
-    box-shadow: 0 4px 10px rgba(255, 149, 0, 0.25);
-    animation: pulseWarning 2s infinite;
+.support-btn:active {
+    transform: translateY(-1px);
 }
 
-@keyframes pulseWarning {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
+/* زر واتساب */
+.whatsapp-btn {
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: #fff;
+    border: none;
+    padding: 12px 10px;
+    font-size: 13px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 700;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    min-height: 65px;
+    min-width: 110px;
+    flex: 1;
 }
 
-.subscription-box.warning:hover {
-    background: linear-gradient(135deg, #e68500 0%, #cc7600 100%);
-    box-shadow: 0 6px 15px rgba(255, 149, 0, 0.35);
+.whatsapp-btn:hover {
+    background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.35);
 }
 
-/* حالة طارئة (أقل من 5 دقائق) */
-.subscription-box.emergency {
-    background: linear-gradient(135deg, #ff3b30 0%, #d70015 100%);
-    box-shadow: 0 4px 10px rgba(255, 59, 48, 0.25);
-    animation: pulseEmergency 1s infinite;
-}
-
-@keyframes pulseEmergency {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-}
-
-.subscription-box.emergency:hover {
-    background: linear-gradient(135deg, #d70015 0%, #b30012 100%);
-    box-shadow: 0 6px 15px rgba(255, 59, 48, 0.35);
+.whatsapp-btn:active {
+    transform: translateY(-1px);
 }
 
 /* مجموعة الأزرار المعدلة والمرتبة في صفين */
@@ -240,23 +317,15 @@ background:linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparen
 transform:translateX(-100%);
 }
 button.main-btn:hover::after{animation:buttonShine 0.6s;}
-@keyframes buttonShine{100%{transform:translateX(100%);}}
 button.main-btn:hover{
 background:linear-gradient(135deg, #05553d 0%, #044a35 100%);transform:translateY(-3px);
 box-shadow:0 6px 15px rgba(6, 109, 77, 0.35);
 }
 button.main-btn:active{transform:translateY(-1px);}
 
-.btn-icon{font-size:18px; margin-bottom:5px;}
-.btn-text{font-size:12px;font-weight:800; text-align:center; line-height:1.2;}
-
 /* زر حفظ بيانات المعلم خاص */
 #saveTeacherBtn{background:linear-gradient(135deg, #2a7b5e 0%, #1e6b4f 100%);}
 #saveTeacherBtn:hover{background:linear-gradient(135deg, #1e6b4f 0%, #15563f 100%);}
-
-/* زر الدعم الفني */
-#supportBtn{background:linear-gradient(135deg, #5a67d8 0%, #4c51bf 100%);}
-#supportBtn:hover{background:linear-gradient(135deg, #4c51bf 0%, #434190 100%);}
 
 /* زر المسح - تم إزالته من الهيدر */
 
@@ -264,12 +333,9 @@ button.main-btn:active{transform:translateY(-1px);}
 #aiFillBtn{background:linear-gradient(135deg, #ffd166 0%, #4d96ff 100%); position: relative;}
 #aiFillBtn:hover{background:linear-gradient(135deg, #ffc145 0%, #2d7dfd 100%);}
 
-/* تصميم خاص لأزرار PDF وواتساب */
+/* زر PDF */
 #pdfBtn{background:linear-gradient(135deg, #d9534f 0%, #c9302c 100%);}
 #pdfBtn:hover{background:linear-gradient(135deg, #c9302c 0%, #ac2925 100%);}
-
-#whatsappBtn{background:linear-gradient(135deg, #25D366 0%, #128C7E 100%);}
-#whatsappBtn:hover{background:linear-gradient(135deg, #128C7E 0%, #075E54 100%);}
 
 /* ========== تحسين واجهة الإدخال - تصميم عصري 2026 ========== */
 .input-section{
@@ -686,18 +752,27 @@ order: 2;
 min-width: unset;
 }
 
-.subscription-box {
+.top-buttons-container {
     width: 100%;
-    max-width: 100%;
-    order: 3;
+    order: 1;
     min-width: unset;
-    margin-top: 5px;
+    margin-bottom: 5px;
+    flex-direction: row;
+}
+
+.subscription-btn,
+.support-btn,
+.whatsapp-btn {
+    min-width: 90px;
+    min-height: 55px;
+    padding: 8px 6px;
+    font-size: 11px;
 }
 
 .btn-group {
     width: 100%;
     max-width: 100%;
-    order: 1;
+    order: 3;
     margin: 5px auto 0;
 }
 
@@ -791,19 +866,17 @@ font-size: 11px;
 padding: 5px 8px;
 }
 
-.subscription-box {
-    font-size: 11px;
-    padding: 8px 6px;
-    min-height: 55px;
+.top-buttons-container {
+    gap: 6px;
 }
 
-.subscription-icon {
-    font-size: 14px !important;
-    margin-bottom: 3px;
-}
-
-.subscription-text {
-    font-size: 9px !important;
+.subscription-btn,
+.support-btn,
+.whatsapp-btn {
+    min-width: 80px;
+    min-height: 50px;
+    padding: 6px 4px;
+    font-size: 10px;
 }
 
 .subscription-time {
@@ -881,10 +954,17 @@ min-height: 105px;
 padding: 6px;
 }
 
-.subscription-box {
-    font-size: 10px;
-    padding: 6px 4px;
-    min-height: 50px;
+.top-buttons-container {
+    gap: 4px;
+}
+
+.subscription-btn,
+.support-btn,
+.whatsapp-btn {
+    min-width: 70px;
+    min-height: 45px;
+    padding: 5px 3px;
+    font-size: 9px;
 }
 
 .subscription-time {
@@ -1020,9 +1100,9 @@ max-width: 180px;
 min-width: 150px;
 }
 
-.subscription-box {
-    max-width: 180px;
-    min-width: 150px;
+.top-buttons-container {
+    max-width: 400px;
+    min-width: 350px;
 }
 
 .btn-group {
@@ -1553,13 +1633,28 @@ font-family:Cairo;
                    onchange="updateManualDate()">
         </div>
         
-        <!-- ========== مربع المدة المتبقية من الاشتراك الجديد - تصميم مشابه لزر التعبئة الذكية ========== -->
-        <div class="subscription-box" id="subscriptionBox">
-            <i class="fas fa-clock subscription-icon"></i>
-            <div class="subscription-text">المدة المتبقية</div>
-            <div class="subscription-time" id="subscriptionTime">
-                غير مفعل
+        <!-- ========== ثلاثة أزرار في الأعلى جنبًا إلى جنب ========== -->
+        <div class="top-buttons-container">
+            <!-- زر المدة المتبقية -->
+            <div class="subscription-btn" id="subscriptionBtn">
+                <i class="fas fa-clock btn-icon"></i>
+                <div class="btn-text">المدة المتبقية</div>
+                <div class="subscription-time" id="subscriptionTime">
+                    غير مفعل
+                </div>
             </div>
+            
+            <!-- زر الدعم الفني -->
+            <button class="support-btn" id="supportBtn" onclick="openSupportModal()" title="الدعم الفني والتواصل مع المطور">
+                <i class="fas fa-headset btn-icon"></i>
+                <div class="btn-text">الدعم الفني</div>
+            </button>
+            
+            <!-- زر مشاركة واتساب -->
+            <button class="whatsapp-btn" id="whatsappBtn" onclick="sharePDFWhatsApp()" title="مشاركة التقرير عبر واتساب">
+                <i class="fab fa-whatsapp btn-icon"></i>
+                <div class="btn-text">مشاركة واتساب</div>
+            </button>
         </div>
         
         <!-- مجموعة الأزرار المعدلة والمرتبة في صفين -->
@@ -1580,17 +1675,16 @@ font-family:Cairo;
                 </button>
             </div>
             
-            <!-- الصف الثاني: 2 أزرار فقط (تم إزالة زر المسح) -->
+            <!-- الصف الثاني: أزرار إضافية -->
             <div class="btn-row">
-                <button class="main-btn" id="supportBtn" onclick="openSupportModal()" title="الدعم الفني والتواصل مع المطور">
-                    <i class="fas fa-headset btn-icon"></i>
-                    <span class="btn-text">الدعم الفني</span>
+                <button class="main-btn" id="clearBtn" onclick="clearData()" title="مسح جميع البيانات">
+                    <i class="fas fa-trash-alt btn-icon"></i>
+                    <span class="btn-text">مسح البيانات</span>
                 </button>
-                <button class="main-btn" id="whatsappBtn" onclick="sharePDFWhatsApp()" title="مشاركة التقرير عبر واتساب">
-                    <i class="fab fa-whatsapp btn-icon"></i>
-                    <span class="btn-text">مشاركة واتساب</span>
+                <button class="main-btn" id="activationStatusBtn" onclick="showActivationStatus()" title="عرض حالة التفعيل">
+                    <i class="fas fa-key btn-icon"></i>
+                    <span class="btn-text">حالة التفعيل</span>
                 </button>
-                <!-- تمت إزالة زر المسح من هنا -->
             </div>
         </div>
     </div>
@@ -2002,6 +2096,7 @@ font-family:Cairo;
 </div>
 
 <script>
+// ==================== نظام التفعيل والعد التنازلي المحسن ====================
 
 // ==================== وظائف التفعيل ====================
 async function activateTool() {
@@ -2029,15 +2124,13 @@ async function activateTool() {
 
         const data = await res.json();
 
-        // حفظ التوكن النهائي
+        // ✅ حفظ التوكن في localStorage
         localStorage.setItem("AI_TOKEN", data.token);
         
-        // حفظ معلومات التفعيل
+        // ✅ حفظ معلومات التفعيل الجديدة - فقط expires_at من السيرفر
         const activationInfo = {
             activated: true,
-            expiresAt: data.expires_at,
-            expiresInSeconds: data.expires_in_seconds,
-            duration: data.duration
+            expiresAt: data.expires_at
         };
         localStorage.setItem("activation_info", JSON.stringify(activationInfo));
 
@@ -2060,95 +2153,110 @@ async function activateTool() {
     }
 }
 
-// دالة للتحقق من صلاحية التوكن
+// ✅ دالة للتحقق من صلاحية التوكن فقط عند الطلبات الحساسة
 function checkTokenValidity() {
-    const activationInfo = JSON.parse(
-        localStorage.getItem("activation_info") || "{}"
-    );
-    if (!activationInfo.expiresAt) return false;
-    return new Date() < new Date(activationInfo.expiresAt);
+    const info = JSON.parse(localStorage.getItem("activation_info") || "{}");
+    if (!info.expiresAt) return false;
+    return new Date() < new Date(info.expiresAt);
 }
 
-// ========== دالة تحديث عرض المدة المتبقية - تصميم جديد ==========
+// ========== دالة تحديث عرض المدة المتبقية - قراءة حقيقية ==========
 function updateSubscriptionDisplay() {
-    const activationInfo = JSON.parse(
-        localStorage.getItem("activation_info") || "{}"
-    );
-    const subscriptionBox = document.getElementById('subscriptionBox');
-    const timeElement = document.getElementById('subscriptionTime');
+    const info = JSON.parse(localStorage.getItem("activation_info") || "{}");
+    const btn = document.getElementById('subscriptionBtn');
+    const el = document.getElementById('subscriptionTime');
 
-    if (!activationInfo.expiresAt) {
-        subscriptionBox.className = 'subscription-box inactive';
-        timeElement.textContent = "غير مفعل";
+    if (!info.expiresAt) {
+        el.textContent = "غير مفعل";
+        btn.className = 'subscription-btn inactive';
         return;
     }
 
     const now = new Date();
-    const expiresAt = new Date(activationInfo.expiresAt);
-    const diffMs = expiresAt - now;
+    const expiresAt = new Date(info.expiresAt);
+    let diffMs = expiresAt - now;
 
     if (diffMs <= 0) {
-        subscriptionBox.className = 'subscription-box inactive';
-        timeElement.textContent = "انتهت";
+        el.textContent = "انتهت المدة";
+        btn.className = 'subscription-btn inactive';
+        localStorage.removeItem("AI_TOKEN");
+        localStorage.removeItem("activation_info");
         return;
     }
 
-    const minutes = Math.floor(diffMs / 60000);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
 
-    // تحديث النص حسب المدة المتبقية
+    // تنسيق مختلف حسب المدة المتبقية
     let timeText = "";
-    if (days > 0) {
+    
+    if (days > 7) {
         timeText = `${days} يوم`;
+    } else if (days > 0) {
+        timeText = `${days} يوم ${hours} ساعة`;
     } else if (hours > 0) {
-        timeText = `${hours} ساعة`;
+        timeText = `${hours} ساعة ${minutes} دقيقة`;
+    } else if (minutes > 0) {
+        timeText = `${minutes} دقيقة ${seconds} ثانية`;
     } else {
-        timeText = `${minutes} دقيقة`;
+        timeText = `${seconds} ثانية`;
     }
 
-    timeElement.textContent = timeText;
+    el.textContent = timeText;
 
-    // تحديث لون المربع حسب الحالة
-    if (minutes < 5) {
-        // حالة طارئة (أقل من 5 دقائق)
-        subscriptionBox.className = 'subscription-box emergency';
-    } else if (minutes < 30) {
-        // حالة تحذير (أقل من 30 دقيقة)
-        subscriptionBox.className = 'subscription-box warning';
+    // تغيير لون الزر حسب الحالة
+    if (totalSeconds < 300) { // أقل من 5 دقائق
+        btn.className = 'subscription-btn emergency';
+    } else if (totalSeconds < 1800) { // أقل من 30 دقيقة
+        btn.className = 'subscription-btn warning';
     } else {
-        // حالة طبيعية
-        subscriptionBox.className = 'subscription-box';
+        btn.className = 'subscription-btn';
     }
 }
 
 // دالة لعرض حالة التفعيل
 function showActivationStatus() {
+    const token = localStorage.getItem("AI_TOKEN");
     const activationInfo = JSON.parse(localStorage.getItem("activation_info") || "{}");
     
-    if (!activationInfo.activated) {
+    if (!token || !activationInfo.activated) {
         alert("❌ الأداة غير مفعّلة\nالرجاء التفعيل للاستخدام");
         document.getElementById("activationScreen").style.display = "flex";
         return;
     }
     
-    let message = "✅ الأداة مفعّلة";
-    if (activationInfo.expiresAt) {
-        const now = new Date();
-        const expiresAt = new Date(activationInfo.expiresAt);
-        const diffMs = expiresAt - now;
-        const minutes = Math.floor(diffMs / 60000);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
-        
-        if (days > 0) {
-            message += `\nالمدة المتبقية: ${days} يوم`;
-        } else if (hours > 0) {
-            message += `\nالمدة المتبقية: ${hours} ساعة`;
-        } else {
-            message += `\nالمدة المتبقية: ${minutes} دقيقة`;
-        }
+    const now = new Date();
+    const expiresAt = new Date(activationInfo.expiresAt);
+    const diffMs = expiresAt - now;
+    
+    if (diffMs <= 0) {
+        alert("❌ انتهت صلاحية التفعيل\nالرجاء التجديد");
+        document.getElementById("activationScreen").style.display = "flex";
+        return;
     }
+    
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    
+    let timeLeftText = "";
+    if (days > 0) {
+        timeLeftText = `${days} يوم`;
+        if (hours > 0) timeLeftText += ` و ${hours} ساعة`;
+    } else if (hours > 0) {
+        timeLeftText = `${hours} ساعة`;
+        if (minutes > 0) timeLeftText += ` و ${minutes} دقيقة`;
+    } else {
+        timeLeftText = `${minutes} دقيقة`;
+    }
+    
+    let message = `✅ الأداة مفعّلة\n`;
+    message += `📅 تاريخ الانتهاء: ${new Date(activationInfo.expiresAt).toLocaleString('ar-SA')}\n`;
+    message += `⏳ المدة المتبقية: ${timeLeftText}`;
     
     alert(message);
 }
@@ -2885,7 +2993,7 @@ function loadTeacherData() {
 
 // دالة الذكاء الاصطناعي
 async function fillWithAI() {
-    // التحقق من التفعيل أولاً
+    // ✅ التحقق من التفعيل فقط عند الطلب الحساس
     const token = localStorage.getItem("AI_TOKEN");
     if (!token || !checkTokenValidity()) {
         alert("يرجى تفعيل الأداة أولاً");
@@ -3075,10 +3183,23 @@ function sendWhatsAppSupport() {
     setTimeout(closeSupportModal, 500);
 }
 
-// دالة مسح البيانات - موجودة في الواجهة الرئيسية
+// دالة مسح البيانات
 function clearData(){
     if(confirm("هل أنت متأكد من مسح جميع البيانات؟")){
+        // الاحتفاظ ببيانات التفعيل فقط
+        const activationInfo = JSON.parse(localStorage.getItem("activation_info") || "{}");
+        const aiToken = localStorage.getItem("AI_TOKEN");
+        
         localStorage.clear();
+        
+        // إعادة حفظ بيانات التفعيل
+        if (activationInfo.activated) {
+            localStorage.setItem("activation_info", JSON.stringify(activationInfo));
+        }
+        if (aiToken) {
+            localStorage.setItem("AI_TOKEN", aiToken);
+        }
+        
         location.reload();
     }
 }
@@ -3196,6 +3317,7 @@ async function loadDates(){
             currentGregorianDate = teacherData.manualGregorianDate || '';
             document.getElementById('manualDateInput').value = currentHijriDate;
             document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
+            
             document.getElementById('hDate').innerHTML = currentHijriDate + " هـ";
             document.getElementById('gDate').innerHTML = currentGregorianDate ? currentGregorianDate + " م" : currentHijriDate + " هـ";
             return;
@@ -3275,16 +3397,19 @@ function handleReportType() {
     }
 }
 
-// دالة تهيئة التطبيق
+// ✅ دالة تهيئة التطبيق - بدون التحقق من JWT عند التحميل
 function initializeApp() {
-    // التحقق من صلاحية التوكن
-    if (!checkTokenValidity()) {
+    // ✅ فقط تحميل البيانات والتأكد من التفعيل المبدئي
+    const activationInfo = JSON.parse(localStorage.getItem("activation_info") || "{}");
+    
+    if (!activationInfo.activated) {
         localStorage.removeItem("AI_TOKEN");
         localStorage.removeItem("activation_info");
         document.getElementById("activationScreen").style.display = "flex";
         return;
     }
     
+    // إذا كان هناك تفعيل، قم بتحميل التطبيق مباشرة
     loadDates();
     loadTeacherData();
     updateReport();
@@ -3313,28 +3438,26 @@ function initializeApp() {
         }
     });
     
-    // تحديث عرض المدة المتبقية كل دقيقة
-    setInterval(updateSubscriptionDisplay, 60000); // كل دقيقة
+    // تحديث عرض المدة المتبقية كل ثانية (عد تنازلي حي)
+    setInterval(updateSubscriptionDisplay, 1000);
     
     // عرض معلومات التفعيل في الكونسول
-    const activationInfo = JSON.parse(localStorage.getItem("activation_info") || "{}");
     if (activationInfo.activated) {
         console.log("✅ الأداة مفعّلة");
         console.log("📅 تاريخ الانتهاء:", activationInfo.expiresAt);
-        console.log("⏳ المدة المتبقية:", activationInfo.duration);
     }
 }
 
 // ==================== عند تحميل الصفحة ====================
 document.addEventListener("DOMContentLoaded", function() {
-    const token = localStorage.getItem("AI_TOKEN");
+    // ✅ لا تتحقق من JWT، فقط من بيانات التفعيل الأساسية
     const activationInfo = JSON.parse(localStorage.getItem("activation_info") || "{}");
     
-    if (token && activationInfo.activated) {
-        // المستخدم مفعل سابقًا
+    if (activationInfo.activated) {
+        // المستخدم مفعل سابقًا - قم بتحميل التطبيق مباشرة
         initializeApp();
     } else {
-        // المستخدم غير مفعل
+        // المستخدم غير مفعل - اعرض شاشة التفعيل
         localStorage.removeItem("AI_TOKEN");
         localStorage.removeItem("activation_info");
         document.getElementById("activationScreen").style.display = "flex";
