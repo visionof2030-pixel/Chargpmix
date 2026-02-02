@@ -1848,7 +1848,7 @@ async function activateTool() {
     }
 
     try {
-        const res = await fetch("https://ksa-w073.onrender.com/activate", {
+        const res = await fetch("https://nassrbackend.onrender.com/activate", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -1878,6 +1878,7 @@ async function activateTool() {
         localStorage.removeItem("AI_TOKEN");
     }
 }
+
 // ==================== كائن التقارير ====================
 // كائن يحتوي على جميع التقارير مصنفة
 const allReportsByCategory = {
@@ -2117,7 +2118,7 @@ let currentHijriDate = '';
 let currentGregorianDate = '';
 
 // رابط خادم الذكاء الاصطناعي
-const backendAIUrl = 'https://ksa-w073.onrender.com/generate';
+const backendAIUrl = 'https://nassrbackend.onrender.com/generate';
 
 // ==================== دوال التحويل والتواريخ ====================
 async function convertHijriToGregorian(hijriDate) {
@@ -3150,7 +3151,7 @@ function handleReportType() {
     }
 }
 
-// دالة تهيئة التطبيق بعد التفعيل
+// دالة تهيئة التطبيق
 function initializeApp() {
     loadDates();
     loadTeacherData();
@@ -3180,31 +3181,16 @@ function initializeApp() {
     });
 }
 
-// عند تحميل الصفحة
+// ==================== عند تحميل الصفحة ====================
 document.addEventListener("DOMContentLoaded", function() {
     const token = localStorage.getItem("AI_TOKEN");
     
     if (token) {
-        // تحقق من صلاحية التوكن
-        fetch("https://ksa-w073.onrender.com/verify", {
-            headers: {
-                "X-Token": token
-            }
-        })
-        .then(res => {
-            if (res.ok) {
-                document.getElementById("activationScreen").style.display = "none";
-                initializeApp();
-            } else {
-                localStorage.removeItem("AI_TOKEN");
-                document.getElementById("activationScreen").style.display = "flex";
-            }
-        })
-        .catch(() => {
-            localStorage.removeItem("AI_TOKEN");
-            document.getElementById("activationScreen").style.display = "flex";
-        });
+        // المستخدم مفعل سابقًا - عرض التطبيق مباشرة
+        document.getElementById("activationScreen").style.display = "none";
+        initializeApp();
     } else {
+        // المستخدم غير مفعل - عرض شاشة التفعيل
         document.getElementById("activationScreen").style.display = "flex";
     }
 });
