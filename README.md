@@ -12,6 +12,23 @@
 html,body{font-family:'Cairo',sans-serif;background: linear-gradient(135deg, #f0f9f6 0%, #e8f4f0 50%, #d4ebe2 100%);direction:rtl;overflow-x:hidden;min-height:100vh;-webkit-text-size-adjust:100%; -moz-text-size-adjust:100%; -ms-text-size-adjust:100%; text-size-adjust:100%; touch-action: manipulation;}
 .wrapper{max-width:900px;margin:auto;padding:20px;width:100%;}
 
+/* العداد التنازلي الجديد */
+#subscriptionTimer {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background: linear-gradient(135deg, #044a35 0%, #022e22 100%);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    border-right: 3px solid #ffd166;
+    max-width: 300px;
+    text-align: center;
+}
+
 /* شريط الأخبار العلوي - محسن للأجهزة المحمولة */
 .top-marquee{
 position:fixed;top:0;left:0;right:0;width:100%;background:linear-gradient(135deg, #022e22 0%, #044a35 100%);color:#fff;
@@ -643,6 +660,15 @@ left: 10px;
 max-width: unset;
 bottom: 10px;
 }
+
+#subscriptionTimer {
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
+    max-width: unset;
+    font-size: 11px;
+    padding: 6px 8px;
+}
 }
 
 /* تحسينات للشاشات الصغيرة جداً */
@@ -728,6 +754,11 @@ font-size: 18px;
 padding: 12px;
 font-size: 13px;
 }
+
+#subscriptionTimer {
+    font-size: 10px;
+    padding: 4px 6px;
+}
 }
 
 /* تحسينات للأجهزة فائقة الصغر */
@@ -762,6 +793,10 @@ padding: 10px;
 input, select, textarea {
 padding: 10px;
 }
+
+#subscriptionTimer {
+    font-size: 9px;
+}
 }
 
 /* تحسينات خاصة لـ iPhone ذات الشقوق */
@@ -782,6 +817,10 @@ padding-bottom: env(safe-area-inset-top);
 .input-section {
 margin-top: calc(140px + env(safe-area-inset-top) * 2);
 }
+
+#subscriptionTimer {
+    bottom: env(safe-area-inset-bottom);
+}
 }
 
 /* iPhone 12/13/14 */
@@ -801,6 +840,10 @@ padding-bottom: env(safe-area-inset-top);
 .input-section {
 margin-top: calc(140px + env(safe-area-inset-top) * 2);
 }
+
+#subscriptionTimer {
+    bottom: env(safe-area-inset-bottom);
+}
 }
 
 /* iPhone 12/13/14 Pro Max */
@@ -819,6 +862,10 @@ padding-bottom: env(safe-area-inset-top);
 
 .input-section {
 margin-top: calc(140px + env(safe-area-inset-top) * 2);
+}
+
+#subscriptionTimer {
+    bottom: env(safe-area-inset-bottom);
 }
 }
 
@@ -846,6 +893,10 @@ font-size: 14px;
 .auto-btn {
 padding: 8px;
 font-size: 12px;
+}
+
+#subscriptionTimer {
+    bottom: 5px;
 }
 }
 
@@ -882,6 +933,11 @@ padding: 12px;
 .form-row {
 grid-template-columns: 1fr 1fr;
 gap: 10px;
+}
+
+#subscriptionTimer {
+    bottom: 5px;
+    left: 5px;
 }
 }
 
@@ -1372,6 +1428,9 @@ font-family:Cairo;
   </div>
 </div>
 
+<!-- عداد الاشتراك -->
+<div id="subscriptionTimer"></div>
+
 <div class="top-marquee">
 <div class="marquee-inner">
 <i class="fas fa-bullhorn" style="margin-left:10px;"></i>
@@ -1489,19 +1548,7 @@ font-family:Cairo;
     <!-- التصنيف العام -->
     <select id="reportCategory" oninput="handleReportCategory()" style="margin-bottom:10px;">
         <option value="">اختر تصنيف التقرير</option>
-        <option value="التقارير التعليمية الصفية">أولا: التقارير التعليمية الصفية</option>
-        <option value="التقارير العلاجية والدعم الفردي">ثانيا: التقارير العلاجية والدعم الفردي</option>
-        <option value="التقارير التحفيزية والسلوكية">ثالثا: التقارير التحفيزية والسلوكية</option>
-        <option value="تقارير الأنشطة غير الصفية">رابعا: تقارير الأنشطة غير الصفية</option>
-        <option value="تقارير التواصل مع أولياء الأمور والمجتمع">سادسا: تقارير التواصل مع أولياء الأمور والمجتمع</option>
-        <option value="التقارير التخطيطية والتنظيمية">سادسا: التقارير التخطيطية والتنظيمية</option>
-        <option value="تقارير التقييم والمتابعة">سابعا: تقارير التقييم والمتابعة</option>
-        <option value="تقارير التدريب والتطوير المهني">ثامنا: تقارير التدريب والتطوير المهني</option>
-        <option value="تقارير توظيف التكنولوجيا">تاسعا: تقارير توظيف التكنولوجيا</option>
-        <option value="تقارير البحث والتطوير المناهجي">عاشرا: تقارير البحث والتطوير المناهجي</option>
-        <option value="تقارير الجودة واللجان">حادي عشر: تقارير الجودة واللجان</option>
-        <option value="تقارير الأمن والسلامة">ثاني عشر: تقارير الأمن والسلامة</option>
-        <option value="أخرى">تقارير أخرى (إدخال يدوي)</option>
+        <!-- سيتم ملؤها من الباك إند -->
     </select>
     
     <!-- حقل البحث -->
@@ -1528,22 +1575,7 @@ font-family:Cairo;
   <div class="form-group">
     <label><i class="fas fa-university"></i>إدارة التعليم</label>
     <select id="education" oninput="updateReport()">
-      <option>الإدارة العامة للتعليم بمنطقة مكة المكرمة</option>
-      <option>الإدارة العامة للتعليم بمنطقة الرياض</option>
-      <option>الإدارة العامة للتعليم بمنطقة المدينة المنورة</option>
-      <option>الإدارة العامة للتعليم بالمنطقة الشرقية</option>
-      <option>الإدارة العامة للتعليم بمنطقة القصيم</option>
-      <option>الإدارة العامة للتعليم بمنطقة عسير</option>
-      <option>الإدارة العامة للتعليم بمنطقة تبوك</option>
-      <option>الإدارة العامة للتعليم بمنطقة حائل</option>
-      <option>الإدارة العامة للتعليم بمنطقة الحدود الشمالية</option>
-      <option>الإدارة العامة للتعليم بمنطقة جازان</option>
-      <option>الإدارة العامة للتعليم بمنطقة نجران</option>
-      <option>الإدارة العامة للتعليم بمنطقة الباحة</option>
-      <option>الإدارة العامة للتعليم بمنطقة الجوف</option>
-      <option>الإدارة العامة للتعليم بمحافظة الأحساء</option>
-      <option>الإدارة العامة للتعليم بمحافظة الطائف</option>
-      <option>الإدارة العامة للتعليم بمحافظة جدة</option>
+      <!-- سيتم ملؤها من الباك إند -->
     </select>
   </div>
   
@@ -1629,102 +1661,46 @@ font-family:Cairo;
   <div class="form-group">
     <label><i class="fas fa-flag"></i>الهدف التربوي</label>
     <textarea id="goal" placeholder="أدخل الهدف التربوي" oninput="updateReport()"></textarea>
-    <!-- تم إزالة أزرار التعبئة الذكية -->
   </div>
   
   <div class="form-group">
     <label><i class="fas fa-file-signature"></i>نبذة مختصرة</label>
     <textarea id="summary" placeholder="أدخل نبذة مختصرة" oninput="updateReport()"></textarea>
-    <!-- تم إزالة أزرار التعبئة الذكية -->
   </div>
   
   <div class="form-group">
     <label><i class="fas fa-tasks"></i>إجراءات التنفيذ</label>
     <textarea id="steps" placeholder="كيف تم تنفيذ النشاط؟" oninput="updateReport()"></textarea>
-    <!-- تم إزالة أزرار التعبئة الذكية -->
   </div>
   
   <div class="form-group">
     <label><i class="fas fa-chess-board"></i>الاستراتيجيات</label>
     <textarea id="strategies" placeholder="ما هي الاستراتيجيات" oninput="updateReport()"></textarea>
-    <!-- تم إزالة أزرار التعبئة الذكية -->
   </div>
   
   <div class="form-row">
     <div class="form-group">
       <label><i class="fas fa-thumbs-up"></i>نقاط القوة</label>
       <textarea id="strengths" placeholder="نقاط القوة" oninput="updateReport()"></textarea>
-      <!-- تم إزالة أزرار التعبئة الذكية -->
     </div>
     
     <div class="form-group">
       <label><i class="fas fa-tools"></i>نقاط التحسين</label>
       <textarea id="improve" placeholder="نقاط تحتاج تطوير" oninput="updateReport()"></textarea>
-      <!-- تم إزالة أزرار التعبئة الذكية -->
     </div>
   </div>
   
   <div class="form-group">
     <label><i class="fas fa-lightbulb"></i>التوصيات</label>
     <textarea id="recomm" placeholder="توصيات مستقبلية" oninput="updateReport()"></textarea>
-    <!-- تم إزالة أزرار التعبئة الذكية -->
   </div>
   
   <!-- قسم الأدوات والوسائل التعليمية -->
   <div class="form-group">
     <label><i class="fas fa-tools"></i>الأدوات والوسائل التعليمية</label>
     <div class="tools-section">
-      <div class="tools-grid">
-        <label class="tool-checkbox" onclick="toggleTool(this)">
-          <input type="checkbox" id="tool1" value="سبورة" style="display:none;">
-          <span>سبورة</span>
-          <span class="checkmark">✅</span>
-        </label>
-        <label class="tool-checkbox" onclick="toggleTool(this)">
-          <input type="checkbox" id="tool2" value="سبورة ذكية" style="display:none;">
-          <span>سبورة ذكية</span>
-          <span class="checkmark">✅</span>
-        </label>
-        <label class="tool-checkbox" onclick="toggleTool(this)">
-          <input type="checkbox" id="tool3" value="جهاز عرض" style="display:none;">
-          <span>جهاز عرض</span>
-          <span class="checkmark">✅</span>
-        </label>
-        <label class="tool-checkbox" onclick="toggleTool(this)">
-          <input type="checkbox" id="tool4" value="أوراق عمل" style="display:none;">
-          <span>أوراق عمل</span>
-          <span class="checkmark">✅</span>
-        </label>
-        <label class="tool-checkbox" onclick="toggleTool(this)">
-          <input type="checkbox" id="tool5" value="حاسب" style="display:none;">
-          <span>حاسب</span>
-          <span class="checkmark">✅</span>
-        </label>
-        <label class="tool-checkbox" onclick="toggleTool(this)">
-          <input type="checkbox" id="tool6" value="عرض تقديمي" style="display:none;">
-          <span>عرض تقديمي</span>
-          <span class="checkmark">✅</span>
-        </label>
-        <label class="tool-checkbox" onclick="toggleTool(this)">
-          <input type="checkbox" id="tool7" value="بطاقات تعليمية" style="display:none;">
-          <span>بطاقات تعليمية</span>
-          <span class="checkmark">✅</span>
-        </label>
-        <label class="tool-checkbox" onclick="toggleTool(this)">
-          <input type="checkbox" id="tool8" value="صور توضيحية" style="display:none;">
-          <span>صور توضيحية</span>
-          <span class="checkmark">✅</span>
-        </label>
-        <label class="tool-checkbox" onclick="toggleTool(this)">
-          <input type="checkbox" id="tool9" value="كتاب" style="display:none;">
-          <span>كتاب</span>
-          <span class="checkmark">✅</span>
-        </label>
-        <label class="tool-checkbox" onclick="toggleTool(this)">
-          <input type="checkbox" id="tool10" value="أدوات رياضية" style="display:none;">
-          <span>أدوات رياضية</span>
-          <span class="checkmark">✅</span>
-        </label>
+      <div class="tools-grid" id="toolsContainer">
+        <!-- سيتم ملؤها من الباك إند -->
       </div>
       <div style="text-align:center; margin-top:10px; font-size:11px; color:#666;">
         <i class="fas fa-info-circle"></i> اضغط على الأداة لتحديدها، ستظهر علامة ✅ عند التحديد
@@ -1837,6 +1813,11 @@ font-family:Cairo;
 </div>
 
 <script>
+// ==================== متغيرات أساسية ====================
+const BACKEND_URL = "https://nassrbackend.onrender.com"; // رابط الباك إند
+let allReportsByCategory = {};
+let educationAdministrations = [];
+let educationalTools = [];
 
 // ==================== وظائف التفعيل ====================
 async function activateTool() {
@@ -1848,7 +1829,7 @@ async function activateTool() {
     }
 
     try {
-        const res = await fetch("https://nassrbackend.onrender.com/activate", {
+        const res = await fetch(`${BACKEND_URL}/activate`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -1866,319 +1847,209 @@ async function activateTool() {
 
         // حفظ التوكن النهائي
         localStorage.setItem("AI_TOKEN", data.token);
+        
+        // حفظ تاريخ انتهاء الصلاحية بتنسيق AI_EXPIRES_AT
+        localStorage.setItem("AI_EXPIRES_AT", data.expires_at);
 
         // إخفاء شاشة التفعيل
         document.getElementById("activationScreen").style.display = "none";
 
-        // تشغيل الأداة
+        // تشغيل الأداة والعداد
         initializeApp();
+        startSubscriptionCountdown();
 
     } catch (error) {
         alert("❌ كود التفعيل غير صحيح أو منتهي");
         localStorage.removeItem("AI_TOKEN");
+        localStorage.removeItem("AI_EXPIRES_AT");
     }
 }
 
-// ==================== كائن التقارير ====================
-// كائن يحتوي على جميع التقارير مصنفة
-const allReportsByCategory = {
-  "التقارير التعليمية الصفية": [
-    "تقرير أنشطة صفية",
-    "تقرير توزيع وقت الحصة",
-    "تقرير درس تم تنفيذه",
-    "تقرير تعليم تعاوني بين الطلاب",
-    "تقرير المشاركات بين الطلاب",
-    "تقرير توزيع المنهج",
-    "تقرير الفصول المقلوبة",
-    "تقرير تنفيذ درس تطبيقي",
-    "تقرير تفعيل الفصول الافتراضية",
-    "تقرير التعليم المدمج",
-    "تقرير التعليم عن بعد",
-    "تقرير استخدام أنظمة إدارة التعلم",
-    "تقرير إدارة الوقت في الصف",
-    "تقرير تنظيم البيئة الصفية",
-    "تقرير إدارة الموارد التعليمية",
-    "تقرير إدارة السلوك الصفي",
-    "تقرير الأنشطة التفاعلية",
-    "تقرير العروض العملية",
-    "تقرير التعلم التعاوني",
-    "تقرير التعلم الذاتي الموجه",
-    "تقرير الألعاب التعليمية الرقمية",
-    "تقرير التعلم بالأقران",
-    "تقرير استراتيجيات التدريس المستخدمة",
-    "تقرير تنويع أساليب الشرح",
-    "تقرير مراعاة الفروق الفردية",
-    "تقرير تفعيل مهارات التفكير",
-    "تقرير دمج مهارات القرن الحادي والعشرين",
-    "تقرير توظيف الوسائل التعليمية",
-    "تقرير التهيئة الذهنية للدرس",
-    "تقرير ختام الدرس والتقويم الختامي",
-    "تقرير ربط الدرس بالحياة"
-  ],
-  "التقارير العلاجية والدعم الفردي": [
-    "تقرير خطة علاجية",
-    "تقرير سجل الخطط العلاجية",
-    "تقرير رعاية الطلاب المتأخرين دراسيًا",
-    "تقرير دراسة حالة",
-    "تقرير معرفة الميول والاتجاهات",
-    "تقرير التحليل الاحتياجات التدريبية",
-    "تقرير دعم الطلاب ذوي الإعاقة",
-    "تقرير خطة دعم فردية",
-    "تقرير متابعة التحسن الأكاديمي",
-    "تقرير تشخيص صعوبات التعلم",
-    "تقرير برامج التقوية",
-    "تقرير الإرشاد الأكاديمي الفردي",
-    "تقرير متابعة الخطط العلاجية",
-    "تقرير دعم الموهبة منخفضة التحصيل"
-  ],
-  "التقارير التحفيزية والسلوكية": [
-    "تقرير تحفيز الطلاب",
-    "تقرير تعزيز السلوك الإيجابي",
-    "تقرير نظام الحوافز والمكافآت",
-    "تقرير برنامج الدعم النفسي",
-    "تقرير تحسين نتائج العلوم في الاختبارات الوطنية (نافس)",
-    "تقرير تحسين نتائج الرياضيات في الاختبارات الوطنية (نافس)",
-    "تقرير تحسين نتائج اللغة العربية في الاختبارات الوطنية (نافس)",
-    "تقرير الانضباط المدرسي",
-    "تقرير معالجة السلوكيات السلبية",
-    "تقرير تعزيز الدافعية للتعلم",
-    "تقرير بناء الاتجاهات الإيجابية",
-    "تقرير متابعة السلوك الفردي",
-    "تقرير برامج تعديل السلوك",
-    "تقرير تعزيز القيم والاتجاهات"
-  ],
-  "تقارير الأنشطة غير الصفية": [
-    "تقرير نشاط إثرائي",
-    "تقرير رعاية الموهوبين",
-    "تقرير المبادرات والابتكار",
-    "تقرير تفعيل المنصات التعليمية",
-    "تقرير حصة النشاط",
-    "تقرير تفعيل حصص النشاط",
-    "تقرير تنفيذ إذاعة مدرسية",
-    "تقرير الزيارات الميدانية",
-    "تقرير مبادرة تطوعية",
-    "تقرير الاحتفال باليوم الوطني",
-    "تقرير المعلم الصغير",
-    "تقرير الأندية الطلابية",
-    "تقرير المسابقات التعليمية",
-    "تقرير الأنشطة الثقافية",
-    "تقرير الأنشطة العلمية",
-    "تقرير الأنشطة الرياضية",
-    "تقرير الأنشطة الفنية",
-    "تقرير المعارض المدرسية",
-    "تقرير الأيام العالمية",
-    "تقرير البرامج الموسمية"
-  ],
-  "تقارير التواصل مع أولياء الأمور والمجتمع": [
-    "تقرير التواصل مع ولي الأمر",
-    "تقرير إشعار ولي الأمر عن مستوى ابنه",
-    "تقرير سجل التواصل مع أولياء الأمور",
-    "تقرير حضور اجتماع أولياء الأمور",
-    "تقرير الشراكات المهنية",
-    "تقرير مجتمعات التعلم",
-    "تقرير المجتمعات المهنية",
-    "تقرير اللقاءات التربوية",
-    "تقرير المبادرات المجتمعية",
-    "تقرير التواصل الإلكتروني مع أولياء الأمور",
-    "تقرير الزيارات المنزلية",
-    "تقرير استطلاع رضا أولياء الأمور",
-    "تقرير التعاون مع الجهات الخارجية",
-    "تقرير العمل التطوعي المجتمعي"
-  ],
-  "التقارير التخطيطية والتنظيمية": [
-    "تقرير خطة أسبوعية",
-    "تقرير تفعيل الخطة الأسبوعية",
-    "تقرير تخطيط المشاريع التعليمية",
-    "تقرير تخطيط الرحلات التعليمية",
-    "تقرير إدارة الاجتماعات",
-    "تقرير المناوبة والفسحة",
-    "تقرير الإشراف اليومي",
-    "تقرير إدارة الأزمات",
-    "تقرير الخطة الفصلية",
-    "تقرير الخطة السنوية",
-    "تقرير تنظيم الجداول الدراسية",
-    "تقرير تنظيم المهام الإدارية",
-    "تقرير توزيع الأدوار",
-    "تقرير إدارة الوقت المدرسي",
-    "تقرير متابعة تنفيذ الخطط"
-  ],
-  "تقارير التقييم والمتابعة": [
-    "تقرير كشف المتابعة",
-    "تقرير تصنيف الطلاب",
-    "تقرير تنفيذ اختبار تحسن",
-    "تقرير سجل الدرجات الإلكتروني",
-    "تقرير تحليل النتائج",
-    "تقرير مقارنة السلاسل الزمنية",
-    "تقرير قياس الأثر التعليمي",
-    "تقرير مؤشرات الأداء التعليمي",
-    "تقرير تقييم المخرجات التعليمية",
-    "تقرير تقييم المشاريع الطلابية",
-    "تقرير تقييم الأداء العملي",
-    "تقرير تقييم المحافظ الإلكترونية",
-    "تقرير التقييم الإلكتروني",
-    "تقرير تحليل نتائج الاختبارات التشخيصية",
-    "تقرير تحليل الاختبارات التحصيلية",
-    "تقرير متابعة مستوى الإتقان",
-    "تقرير فجوات التعلم",
-    "تقرير تقدم الطلاب",
-    "تقرير تحليل بنود الاختبار",
-    "تقرير متابعة نواتج التعلم"
-  ],
-  "تقارير التدريب والتطوير المهني": [
-    "تقرير حضور دورات وورش تدريبية",
-    "تقرير الورش التدريبية التي قدمتها",
-    "تقرير التدريب على الاختبارات المعيارية",
-    "تقرير التدريب على المناهج الحديثة",
-    "تقرير نقل أثر التدريب",
-    "تقرير متابعة الدورات العالمية",
-    "تقرير التطوير المهني المستمر",
-    "تقرير المشاركة في المؤتمرات التعليمية",
-    "تقرير حضور الندوات العلمية",
-    "تقرير المشاركة في البحث التربوي",
-    "تقرير التعلم الذاتي المهني",
-    "تقرير مجتمعات التعلم المهنية",
-    "تقرير القراءة التربوية المتخصصة",
-    "تقرير تبادل الخبرات",
-    "تقرير بناء المسار المهني"
-  ],
-  "تقارير توظيف التكنولوجيا": [
-    "تقرير المحتوى الرقمي المنتج",
-    "تقرير إنتاج المحتوى الرقمي",
-    "تقرير استخدام أنظمة إدارة التعلم",
-    "تقرير التقييم الإلكتروني",
-    "تقرير الواقع المعزز في التعليم",
-    "تقرير الألعاب التعليمية الرقمية",
-    "تقرير توظيف الذكاء الاصطناعي",
-    "تقرير التعلم المتنقل",
-    "تقرير الصفوف الافتراضية",
-    "تقرير أدوات التعلم التفاعلي",
-    "تقرير الأمن الرقمي",
-    "تقرير الثقافة الرقمية",
-    "تقرير التحول الرقمي",
-    "تقرير استخدام التطبيقات التعليمية"
-  ],
-  "تقارير البحث والتطوير المناهجي": [
-    "تقرير تصميم الوحدات التعليمية",
-    "تقرير إعداد المواد التعليمية",
-    "تقرير تطوير المناهج الإثرائية",
-    "تقرير إعداد بنك الأسئلة",
-    "تقرير تصميم الأنشطة اللاصفية",
-    "تقرير تحليل محتوى المنهج",
-    "تقرير مواءمة المنهج مع نواتج التعلم",
-    "t report تطوير أدوات التقويم",
-    "تقرير البحث الإجرائي"
-  ],
-  "تقارير الجودة واللجان": [
-    "تقرير عضوية لجنة التميز والجودة",
-    "تقرير عضوية لجنة التدقيق",
-    "تقرير إدارة الموارد التعليمية",
-    "تقرير تحسين الجودة",
-    "تقرير متابعة مؤشرات الأداء",
-    "تقرير التقييم الذاتي",
-    "تقرير الاعتماد المدرسي",
-    "تقرير الخطط التحسينية"
-  ],
-  "تقارير الأمن والسلامة": [
-    "تقرير إجراءات السلامة في الصف",
-    "تقرير الرعاية الصحية في المدرسة",
-    "تقرير جرد المختبرات وغرف المصادر",
-    "تقرير خطط الإخلاء",
-    "تقرير السلامة المدرسية",
-    "تقرير إدارة المخاطر",
-    "تقرير الإسعافات الأولية",
-    "تقرير جاهزية المباني"
-  ]
-};
+// ==================== نظام العد التنازلي المعدل ====================
+function startSubscriptionCountdown() {
+    const timerEl = document.getElementById("subscriptionTimer");
+    const expiresAt = localStorage.getItem("AI_EXPIRES_AT");
 
-// إنشاء قائمة بجميع التقارير لاستخدامها في البحث العام
-const allReports = [];
-for (const category in allReportsByCategory) {
-    allReportsByCategory[category].forEach(report => {
-        allReports.push({name: report, category: category});
+    if (!timerEl || !expiresAt) {
+        if (timerEl) timerEl.textContent = "⏳ الاشتراك غير مفعل";
+        return;
+    }
+
+    const expiresTime = new Date(expiresAt).getTime();
+
+    function updateCountdown() {
+        const now = Date.now();
+        let diff = expiresTime - now;
+
+        if (diff <= 0) {
+            timerEl.textContent = "⛔ انتهت صلاحية الاشتراك";
+            localStorage.clear();
+            // إعادة تحميل الصفحة للعودة إلى شاشة التفعيل
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        diff %= (1000 * 60 * 60 * 24);
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        diff %= (1000 * 60 * 60);
+
+        const minutes = Math.floor(diff / (1000 * 60));
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        // تنسيق الرسالة
+        let message = `⏳ ينتهي الاشتراك بعد `;
+        
+        if (days > 0) {
+            message += `${days} يوم `;
+        }
+        
+        if (hours > 0) {
+            message += `${hours} ساعة `;
+        }
+        
+        if (minutes > 0) {
+            message += `${minutes} دقيقة `;
+        }
+        
+        message += `${seconds} ثانية`;
+
+        timerEl.textContent = message;
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+}
+
+// ==================== جلب البيانات من الباك إند ====================
+async function loadDataFromBackend() {
+    try {
+        // جلب تصنيفات التقارير
+        const reportsRes = await fetch(`${BACKEND_URL}/reports/categories`);
+        if (reportsRes.ok) {
+            const reportsData = await reportsRes.json();
+            allReportsByCategory = reportsData.reports_by_category;
+            populateReportCategories();
+        }
+        
+        // جلب إدارات التعليم
+        const eduRes = await fetch(`${BACKEND_URL}/education/administrations`);
+        if (eduRes.ok) {
+            const eduData = await eduRes.json();
+            educationAdministrations = eduData.administrations;
+            populateEducationAdministrations();
+        }
+        
+        // جلب الأدوات التعليمية
+        const toolsRes = await fetch(`${BACKEND_URL}/education/tools`);
+        if (toolsRes.ok) {
+            const toolsData = await toolsRes.json();
+            educationalTools = toolsData.tools;
+            populateEducationalTools();
+        }
+        
+    } catch (error) {
+        console.error("خطأ في جلب البيانات من الباك إند:", error);
+        showNotification("⚠️ تعذر تحميل بعض البيانات، جارٍ استخدام البيانات المحلية");
+        
+        // استخدام بيانات افتراضية احتياطية
+        useFallbackData();
+    }
+}
+
+// ==================== تعبئة البيانات في الفرونت ====================
+function populateReportCategories() {
+    const categorySelect = document.getElementById('reportCategory');
+    categorySelect.innerHTML = '<option value="">اختر تصنيف التقرير</option>';
+    
+    for (const category in allReportsByCategory) {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categorySelect.appendChild(option);
+    }
+}
+
+function populateEducationAdministrations() {
+    const educationSelect = document.getElementById('education');
+    educationSelect.innerHTML = '';
+    
+    educationAdministrations.forEach(admin => {
+        const option = document.createElement('option');
+        option.value = admin;
+        option.textContent = admin;
+        educationSelect.appendChild(option);
+    });
+    
+    // تحديد القيمة الافتراضية إذا كانت موجودة في localStorage
+    const savedData = localStorage.getItem('teacherData');
+    if (savedData) {
+        const teacherData = JSON.parse(savedData);
+        if (teacherData.education) {
+            educationSelect.value = teacherData.education;
+        }
+    }
+}
+
+function populateEducationalTools() {
+    const toolsContainer = document.getElementById('toolsContainer');
+    toolsContainer.innerHTML = '';
+    
+    educationalTools.forEach((tool, index) => {
+        const toolId = `tool${index + 1}`;
+        
+        const label = document.createElement('label');
+        label.className = 'tool-checkbox';
+        label.setAttribute('onclick', `toggleTool(this)`);
+        
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.id = toolId;
+        input.value = tool;
+        input.style.display = 'none';
+        
+        const span = document.createElement('span');
+        span.textContent = tool;
+        
+        const checkmark = document.createElement('span');
+        checkmark.className = 'checkmark';
+        checkmark.textContent = '✅';
+        
+        label.appendChild(input);
+        label.appendChild(span);
+        label.appendChild(checkmark);
+        
+        toolsContainer.appendChild(label);
     });
 }
 
-// النصوص الافتراضية
-const defaultTexts = {
-    goal: ["الهدف التربوي"],
-    summary: ["النبذة المختصرة"],
-    steps: ["إجراءات التنفيذ"],
-    strategies: ["الاستراتيجيات"],
-    strengths: ["نقاط القوة"],
-    improve: ["نقاط التحسين"],
-    recomm: ["التوصيات"]
-};
-
-let counters = {goal:0,summary:0,steps:0,strategies:0,strengths:0,improve:0,recomm:0};
-let currentReportType = "";
-
-// متغيرات للتحكم بالتاريخ
-let dateMode = 'hijri'; // hijri أو gregorian
-let currentHijriDate = '';
-let currentGregorianDate = '';
-
-// رابط خادم الذكاء الاصطناعي
-const backendAIUrl = 'https://nassrbackend.onrender.com/generate';
-
-// ==================== دوال التحويل والتواريخ ====================
-async function convertHijriToGregorian(hijriDate) {
-    if (!hijriDate || hijriDate.trim() === '') return '';
+// ==================== بيانات احتياطية ====================
+function useFallbackData() {
+    // بيانات احتياطية بسيطة
+    const fallbackCategories = {
+        "التقارير التعليمية": ["تقرير أنشطة صفية", "تقرير درس تم تنفيذ"],
+        "التقارير العلاجية": ["تقرير خطة علاجية", "تقرير دعم فردي"]
+    };
     
-    try {
-        // تحويل الأرقام العربية إلى إنجليزية
-        const arabicToEnglish = {
-            '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
-            '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9'
-        };
-        
-        let cleanDate = hijriDate;
-        for (let arabic in arabicToEnglish) {
-            cleanDate = cleanDate.replace(new RegExp(arabic, 'g'), arabicToEnglish[arabic]);
-        }
-        
-        const dateParts = cleanDate.split(/[-\/]/);
-        if (dateParts.length === 3) {
-            const day = parseInt(dateParts[2]);
-            const month = parseInt(dateParts[1]);
-            const year = parseInt(dateParts[0]);
-            
-            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-                const response = await fetch(`https://api.aladhan.com/v1/hToG?date=${day}-${month}-${year}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.data && data.data.gregorian) {
-                        const g = data.data.gregorian;
-                        return `${g.day}/${g.month.number}/${g.year}`;
-                    }
-                }
-            }
-        }
-        
-        return hijriDate;
-        
-    } catch (error) {
-        console.error('خطأ في تحويل التاريخ:', error);
-        return hijriDate;
-    }
+    allReportsByCategory = fallbackCategories;
+    populateReportCategories();
+    
+    // إدارات تعليم افتراضية
+    educationAdministrations = [
+        "الإدارة العامة للتعليم بمنطقة مكة المكرمة",
+        "الإدارة العامة للتعليم بمنطقة الرياض"
+    ];
+    populateEducationAdministrations();
+    
+    // أدوات افتراضية
+    educationalTools = ["سبورة", "سبورة ذكية", "جهاز عرض"];
+    populateEducationalTools();
 }
 
-function getCurrentTexts() {
-    const reportType = document.getElementById('reportType').value;
-    return defaultTexts;
-}
-
-function autoFill(id){
-    const texts = getCurrentTexts();
-    if (texts[id] && texts[id].length > 0) {
-        counters[id] = (counters[id] + 1) % texts[id].length;
-        document.getElementById(id).value = texts[id][counters[id]];
-        updateReport();
-    } else {
-        alert("لا توجد نصوص ذكية متاحة لهذا الحقل في التقرير الحالي");
-    }
-}
-
-// دالة معالجة اختيار التصنيف
+// ==================== دالة معالجة اختيار التصنيف ====================
 function handleReportCategory() {
     const categorySelect = document.getElementById('reportCategory');
     const reportTypeSelect = document.getElementById('reportType');
@@ -2212,7 +2083,7 @@ function handleReportCategory() {
     }
 }
 
-// دالة تحديث خيارات قائمة التقارير
+// ==================== دالة تحديث خيارات قائمة التقارير ====================
 function updateReportTypeOptions(reports) {
     const reportTypeSelect = document.getElementById('reportType');
     reportTypeSelect.innerHTML = '<option value="">اختر تقريرًا</option>';
@@ -2225,7 +2096,7 @@ function updateReportTypeOptions(reports) {
     });
 }
 
-// دالة البحث الفوري في التقارير
+// ==================== دالة البحث الفوري في التقارير ====================
 function handleReportSearch() {
     const reportSearch = document.getElementById('reportSearch');
     const searchResults = document.getElementById('searchResults');
@@ -2250,6 +2121,14 @@ function handleReportSearch() {
     } else if (categorySelect.value === "أخرى") {
         filteredReports = [];
     } else {
+        // بحث في جميع التقارير
+        const allReports = [];
+        for (const category in allReportsByCategory) {
+            allReportsByCategory[category].forEach(report => {
+                allReports.push({name: report, category: category});
+            });
+        }
+        
         filteredReports = allReports.filter(item => 
             item.name.toLowerCase().includes(searchTerm)
         );
@@ -2302,12 +2181,12 @@ function handleReportSearch() {
     }
 }
 
-// دالة لتحديث عنوان التقرير اليدوي
+// ==================== دالة لتحديث عنوان التقرير اليدوي ====================
 function updateManualTitle() {
     updateReport();
 }
 
-// دالة تكيف الخطوط
+// ==================== دالة تكيف الخطوط للمادة والدرس ====================
 function adaptSubjectLessonFont() {
   const elements = [
     document.getElementById('subjectBox'),
@@ -2390,6 +2269,7 @@ function adaptSubjectLessonFontWithRetry() {
     setTimeout(adaptSubjectLessonFont, 100);
 }
 
+// ==================== دالة تحديث التقرير المعروض ====================
 function updateReport(){
     document.getElementById('educationBox').innerText = document.getElementById('education').value;
     document.getElementById('schoolBox').innerText = document.getElementById('school').value;
@@ -2421,6 +2301,7 @@ function updateReport(){
     setTimeout(adaptSubjectLessonFontWithRetry, 10);
 }
 
+// ==================== دالة الحصول على نوع التقرير ====================
 function getReportTypeText() {
     const reportTypeSelect = document.getElementById('reportType');
     const reportTypeInput = document.getElementById('reportTypeInput');
@@ -2438,18 +2319,20 @@ function getReportTypeText() {
     }
 }
 
+// ==================== دالة تحديث الأدوات المعروضة ====================
 function updateToolsDisplay() {
     const toolsListBox = document.getElementById('toolsListBox');
     toolsListBox.innerHTML = '';
     
     const selectedTools = [];
     
-    for (let i = 1; i <= 10; i++) {
-        const toolCheckbox = document.getElementById(`tool${i}`);
-        if (toolCheckbox && toolCheckbox.checked) {
-            selectedTools.push(toolCheckbox.value);
+    // جمع الأدوات المحددة
+    const toolCheckboxes = document.querySelectorAll('.tool-checkbox input[type="checkbox"]');
+    toolCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            selectedTools.push(checkbox.value);
         }
-    }
+    });
     
     selectedTools.forEach(tool => {
         const toolElement = document.createElement('div');
@@ -2469,6 +2352,7 @@ function updateToolsDisplay() {
     }
 }
 
+// ==================== دالة تفعيل/إلغاء تفعيل الأداة ====================
 function toggleTool(element) {
     const checkbox = element.querySelector('input[type="checkbox"]');
     checkbox.checked = !checkbox.checked;
@@ -2482,6 +2366,7 @@ function toggleTool(element) {
     updateReport();
 }
 
+// ==================== دالة تحميل الصور ====================
 function loadImage(input, target) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -2500,7 +2385,7 @@ function loadImage(input, target) {
     }
 }
 
-// دالة جديدة لحفظ بيانات المعلم فقط
+// ==================== دالة حفظ بيانات المعلم ====================
 function saveTeacherData(){
     const teacherData = {
         education: document.getElementById('education').value,
@@ -2522,12 +2407,13 @@ function saveTeacherData(){
         tools: []
     };
     
-    for (let i = 1; i <= 10; i++) {
-        const toolCheckbox = document.getElementById(`tool${i}`);
-        if (toolCheckbox && toolCheckbox.checked) {
-            teacherData.tools.push(toolCheckbox.value);
+    // جمع الأدوات المحددة
+    const toolCheckboxes = document.querySelectorAll('.tool-checkbox input[type="checkbox"]');
+    toolCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            teacherData.tools.push(checkbox.value);
         }
-    }
+    });
     
     const textFields = ['goal', 'summary', 'steps', 'strategies', 'strengths', 'improve', 'recomm'];
     textFields.forEach(field => {
@@ -2538,7 +2424,7 @@ function saveTeacherData(){
     showNotification('تم حفظ بيانات المعلم بنجاح!');
 }
 
-// دالة لعرض الإشعارات
+// ==================== دالة عرض الإشعارات ====================
 function showNotification(message) {
     const notification = document.getElementById('saveNotification');
     notification.querySelector('span').textContent = message;
@@ -2549,7 +2435,7 @@ function showNotification(message) {
     }, 3000);
 }
 
-// دالة لتحميل بيانات المعلم المحفوظة عند تشغيل الصفحة
+// ==================== دالة تحميل بيانات المعلم المحفوظة ====================
 function loadTeacherData() {
     const savedData = localStorage.getItem('teacherData');
     
@@ -2589,19 +2475,17 @@ function loadTeacherData() {
         });
         
         if (teacherData.tools && Array.isArray(teacherData.tools)) {
-            for (let i = 1; i <= 10; i++) {
-                const toolCheckbox = document.getElementById(`tool${i}`);
-                if (toolCheckbox) {
-                    const toolElement = toolCheckbox.closest('.tool-checkbox');
-                    const isChecked = teacherData.tools.includes(toolCheckbox.value);
-                    toolCheckbox.checked = isChecked;
-                    if (isChecked) {
-                        toolElement.classList.add('checked');
-                    } else {
-                        toolElement.classList.remove('checked');
-                    }
+            const toolCheckboxes = document.querySelectorAll('.tool-checkbox input[type="checkbox"]');
+            toolCheckboxes.forEach(checkbox => {
+                const toolElement = checkbox.closest('.tool-checkbox');
+                const isChecked = teacherData.tools.includes(checkbox.value);
+                checkbox.checked = isChecked;
+                if (isChecked) {
+                    toolElement.classList.add('checked');
+                } else {
+                    toolElement.classList.remove('checked');
                 }
-            }
+            });
         }
         
         updateReport();
@@ -2609,7 +2493,7 @@ function loadTeacherData() {
     }
 }
 
-// دالة الذكاء الاصطناعي
+// ==================== دالة الذكاء الاصطناعي (تستخدم الباك إند) ====================
 async function fillWithAI() {
     // التحقق من التفعيل أولاً
     const token = localStorage.getItem("AI_TOKEN");
@@ -2632,13 +2516,16 @@ async function fillWithAI() {
         return;
     }
     
-    // الحصول على معلومات إضافية
-    const subject = document.getElementById('subject').value || '';
-    const lesson = document.getElementById('lesson').value || '';
-    const grade = document.getElementById('grade').value || '';
-    const target = document.getElementById('target').value || '';
-    const place = document.getElementById('place').value || '';
-    const count = document.getElementById('count').value || '';
+    // جمع البيانات المطلوبة
+    const reportData = {
+        reportType: reportType,
+        subject: document.getElementById('subject').value || '',
+        lesson: document.getElementById('lesson').value || '',
+        grade: document.getElementById('grade').value || '',
+        target: document.getElementById('target').value || '',
+        place: document.getElementById('place').value || '',
+        count: document.getElementById('count').value || ''
+    };
     
     // عرض مؤشر التحميل
     const aiButton = document.getElementById('aiFillBtn');
@@ -2659,63 +2546,13 @@ async function fillWithAI() {
     aiButton.disabled = true;
     
     try {
-        const prompt = `أنت خبير تربوي تعليمي محترف تمتلك خبرة ميدانية واسعة في التعليم العام.  
-اعتمد منظورًا تربويًا مهنيًا احترافيًا يركّز على تحسين جودة التعليم، ودعم المعلم، وتعزيز بيئة التعلّم، وخدمة القيادة المدرسية.  
-
-التقرير المطلوب: "${reportType}"
-${subject ? `المادة: ${subject}` : ''}
-${lesson ? `الدرس: ${lesson}` : ''}
-${grade ? `الصف: ${grade}` : ''}
-${target ? `المستهدفون: ${target}` : ''}
-${place ? `مكان التنفيذ: ${place}` : ''}
-${count ? `عدد الحضور: ${count}` : ''}
-
-**توجيهات مهنية:**
-- كن موضوعيًا ومتزنًا وبنّاءً  
-- قدّم الملاحظات بصيغة تطويرية غير نقدية  
-- راعِ واقع الميدان التعليمي وسياق المدرسة  
-- اربط بين المعلم والطالب والمنهج والبيئة الصفية والقيادة المدرسية  
-- ركّز على جودة التعليم وأثر الممارسات على تعلم الطلاب  
-- التزم بلغة عربية فصيحة سليمة وخالية من الأخطاء  
-
-**شروط المحتوى:**اكتب محتوى كل حقل بصيغة تقريرية مهنية وكأنه صادر عن المعلم.
-لا تكتب أبداً عنوان الحقل داخل المحتوى ولا تعِد صياغته بصيغة مباشرة (مثل: الهدف التربوي هو، النبذة المختصرة).
-يجب أن يحتوي كل حقل على ما يقارب 25 كلمة.
-ابدأ بالمضمون مباشرة دون تمهيد أو عبارات إنشائية.
-يمكن الاستفادة من معنى العنوان أو أحد مفاهيمه بشكل غير مباشر فقط عند الحاجة وبما يخدم الفكرة دون تكرار أو حشو.
-احرص على وجود ترابط منطقي بين الأهداف، النبذة المختصرة، الاستراتيجيات، إجراءات التنفيذ، نقاط القوة، نقاط التحسين، والتوصيات.
-اربط المحتوى بالمادة الدراسية وعنوان الدرس إن وُجد، وكذلك بمكان التنفيذ، بأسلوب مهني متوازن يجمع بين الإشارة المباشرة وغير المباشرة دون تكلف.
-اجعل الهدف النهائي للمحتوى تحسين الممارسة التعليمية ودعم التطوير المهني المستدام.
-راعِ الوضوح والترابط، واجعل كل جملة تضيف قيمة تعليمية فعلية.
-الحقول المطلوبة:**
-1. الهدف التربوي
-2. نبذة مختصرة  
-3. إجراءات التنفيذ
-4. الاستراتيجيات
-5. نقاط القوة
-6. نقاط التحسين
-7. التوصيات
-
-يرجى تقديم الإجابة باللغة العربية الفصحى، وتنظيمها بحيث يكون كل حقل في سطر منفصل يبدأ برقمه فقط دون ذكر العنوان.`;
-
-        const response = await fetch(backendAIUrl, {
+        const response = await fetch(`${BACKEND_URL}/generate/report`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Token': token
             },
-            body: JSON.stringify({
-                prompt: prompt,
-                reportData: {
-                    reportType: reportType,
-                    subject: subject,
-                    lesson: lesson,
-                    grade: grade,
-                    target: target,
-                    place: place,
-                    count: count
-                }
-            })
+            body: JSON.stringify(reportData)
         });
 
         if (!response.ok) {
@@ -2724,12 +2561,21 @@ ${count ? `عدد الحضور: ${count}` : ''}
 
         const data = await response.json();
 
-        if (!data || !data.answer) {
+        if (!data || !data.parsed_fields) {
             throw new Error('فشل التوليد من السيرفر');
         }
 
-        const aiResponse = data.answer;
-        parseAIResponseProfessional(aiResponse);
+        // تعبئة الحقول بالبيانات المستلمة
+        const fields = data.parsed_fields;
+        document.getElementById('goal').value = fields.goal || '';
+        document.getElementById('summary').value = fields.summary || '';
+        document.getElementById('steps').value = fields.steps || '';
+        document.getElementById('strategies').value = fields.strategies || '';
+        document.getElementById('strengths').value = fields.strengths || '';
+        document.getElementById('improve').value = fields.improve || '';
+        document.getElementById('recomm').value = fields.recomm || '';
+        
+        updateReport();
         showNotification('تم تعبئة الحقول باستخدام الذكاء الاصطناعي بنجاح! ✓');
         
     } catch (error) {
@@ -2747,172 +2593,7 @@ ${count ? `عدد الحضور: ${count}` : ''}
     }
 }
 
-// دالة محسنة لتحليل استجابة الذكاء الاصطناعي المهنية
-function parseAIResponseProfessional(response) {
-    const lines = response.split('\n').filter(line => line.trim());
-    
-    const fieldMapping = {
-        '1': 'goal',
-        '2': 'summary', 
-        '3': 'steps',
-        '4': 'strategies',
-        '5': 'strengths',
-        '6': 'improve',
-        '7': 'recomm'
-    };
-    
-    let foundFields = 0;
-    
-    lines.forEach(line => {
-        const match = line.match(/^(\d+)[\.\-]\s*(.+)/);
-        if (match) {
-            const fieldNumber = match[1];
-            let content = match[2].trim();
-            
-            content = removeFieldTitles(content);
-            
-            if (fieldMapping[fieldNumber]) {
-                const fieldId = fieldMapping[fieldNumber];
-                content = ensureWordCount(content, 25);
-                content = addProfessionalTouch(content, fieldId);
-                
-                document.getElementById(fieldId).value = content;
-                foundFields++;
-            }
-        }
-    });
-    
-    if (foundFields < 3) {
-        fallbackProfessionalAIParsing(response);
-    }
-    
-    updateReport();
-}
-
-// دالة لإزالة عناوين الحقول من النص
-function removeFieldTitles(content) {
-    const fieldTitles = [
-        'الهدف التربوي', 'الهدف التربوي', ,
-        'نبذة مختصرة', 'نبذة مختصرة', ,
-        'إجراءات التنفيذ', 'إجراءات التنفيذ', ,
-        'الاستراتيجيات', 'الاستراتيجيات',
-        'نقاط القوة', 'نقاط القوة',
-        'نقاط التحسين', 'نقاط تحسين',
-        'التوصيات', 'التوصيات',
-        'هو:', 'تشمل:', 'تشمل', 'يتضمن:', 'يتضمن',
-        'يتمثل في', 'يتمثل', 'يمثل', 'يتم',
-        'يشمل', 'تحتوي', 'تتضمن'
-    ];
-    
-    let cleanedContent = content;
-    
-    fieldTitles.forEach(title => {
-        const regex = new RegExp(`^${title}[:\\.\\-]?\\s*`, 'i');
-        cleanedContent = cleanedContent.replace(regex, '');
-        
-        const regex2 = new RegExp(`\\s*${title}[:\\.\\-]?\\s*`, 'gi');
-        cleanedContent = cleanedContent.replace(regex2, ' ');
-    });
-    
-    cleanedContent = cleanedContent.trim().replace(/\s+/g, ' ');
-    
-    return cleanedContent || content;
-}
-
-// دالة لتأكيد عدد الكلمات مع لمسة مهنية
-function ensureWordCount(content, targetWords) {
-    const words = content.split(' ');
-    
-    if (words.length >= targetWords - 5 && words.length <= targetWords + 5) {
-        return content;
-    }
-    
-    if (words.length < targetWords - 5) {
-        const professionalPhrases = [
-            'مع التركيز على تحقيق أهداف التعلم وتنمية المهارات الأساسية',
-            'بما يسهم في رفع مستوى التحصيل الدراسي وتحسين المخرجات التعليمية',
-            'وذلك لتحقيق التكامل بين الجوانب المعرفية والمهارية والوجدانية',
-            'مع مراعاة الفروق الفردية وتنويع أساليب التدريس لتناسب جميع الطلاب',
-            'لضمان تحقيق رؤية التعليم وتطوير العملية التعليمية بصورة شاملة',
-            'مع الاستفادة من أفضل الممارسات التربوية والتقنيات التعليمية الحديثة',
-            'بما يعزز من دور المعلم كميسر للتعلم وموجه للطالب نحو التميز'
-        ];
-        
-        let extendedContent = content;
-        while (extendedContent.split(' ').length < targetWords) {
-            const randomPhrase = professionalPhrases[Math.floor(Math.random() * professionalPhrases.length)];
-            extendedContent += ' ' + randomPhrase;
-        }
-        
-        const extendedWords = extendedContent.split(' ');
-        if (extendedWords.length > targetWords + 5) {
-            return extendedWords.slice(0, targetWords).join(' ');
-        }
-        
-        return extendedContent;
-    }
-    
-    if (words.length > targetWords + 5) {
-        return words.slice(0, targetWords).join(' ');
-    }
-    
-    return content;
-}
-
-// دالة لإضافة لمسة مهنية للمحتوى
-function addProfessionalTouch(content, fieldId) {
-    const words = content.split(' ');
-    if (words.length >= 20) return content;
-    
-    const professionalAdditions = {
-        'goal': ' بما يعزز من جودة التعليم ويدعم تحقيق رؤية المدرسة التعليمية',
-        'summary': ' مع التركيز على الأثر الإيجابي في تحسين الممارسات التعليمية',
-        'steps': ' ومراعاة الجوانب التربوية والنفسية للطلاب في جميع المراحل',
-        'strategies': ' بما يناسب البيئة الصفية ويحقق أقصى استفادة تعليمية',
-        'strengths': ' مما يسهم في تحقيق بيئة تعلم إيجابية ومنتجة',
-        'improve': ' مع وضع خطط تطويرية قابلة للتنفيذ في الفصول القادمة',
-        'recomm': ' بما يدعم التطوير المهني المستمر ويعزز جودة التعليم'
-    };
-    
-    if (professionalAdditions[fieldId]) {
-        return content + professionalAdditions[fieldId];
-    }
-    
-    return content;
-}
-
-// نهج بديل محسن لتحليل الاستجابة المهنية
-function fallbackProfessionalAIParsing(response) {
-    const sentences = response.split(/[\.\n]/).filter(s => {
-        const trimmed = s.trim();
-        return trimmed.length > 20 && 
-               !trimmed.match(/الهدف التربوي|نبذة مختصرة|إجراءات التنفيذ|الاستراتيجيات|نقاط القوة|نقاط التحسين|التوصيات|الحقل|المطلوب|يجب|يرجى/i);
-    });
-    
-    const fields = ['goal', 'summary', 'steps', 'strategies', 'strengths', 'improve', 'recomm'];
-    
-    let sentenceIndex = 0;
-    fields.forEach((field, index) => {
-        if (sentenceIndex < sentences.length) {
-            let content = sentences[sentenceIndex].trim();
-            content = removeFieldTitles(content);
-            content = ensureWordCount(content, 25);
-            content = addProfessionalTouch(content, field);
-            
-            document.getElementById(field).value = content;
-            sentenceIndex++;
-        } else if (sentenceIndex > 0) {
-            const previousContent = document.getElementById(fields[sentenceIndex-1]).value;
-            if (previousContent) {
-                const words = previousContent.split(' ');
-                const modifiedContent = words.slice(5).join(' ') + ' مع التركيز على تطوير الممارسات التعليمية وتحسين جودة التعلم';
-                document.getElementById(field).value = ensureWordCount(modifiedContent, 25);
-            }
-        }
-    });
-}
-
-// وظائف الدعم الفني
+// ==================== وظائف الدعم الفني ====================
 function openSupportModal() {
     document.getElementById('supportModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -2952,6 +2633,7 @@ function sendWhatsAppSupport() {
     setTimeout(closeSupportModal, 500);
 }
 
+// ==================== دالة مسح البيانات ====================
 function clearData(){
     if(confirm("هل أنت متأكد من مسح جميع البيانات؟")){
         localStorage.clear();
@@ -2959,6 +2641,94 @@ function clearData(){
     }
 }
 
+// ==================== دوال تحميل التواريخ ====================
+let currentHijriDate = '';
+let currentGregorianDate = '';
+
+async function loadDates(){
+    const savedData = localStorage.getItem('teacherData');
+    if (savedData) {
+        const teacherData = JSON.parse(savedData);
+        if (teacherData.manualHijriDate) {
+            currentHijriDate = teacherData.manualHijriDate;
+            currentGregorianDate = teacherData.manualGregorianDate || '';
+            document.getElementById('manualDateInput').value = currentHijriDate;
+            document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
+            document.getElementById('hDate').innerHTML = currentHijriDate + " هـ";
+            document.getElementById('gDate').innerHTML = currentGregorianDate ? currentGregorianDate + " م" : currentHijriDate + " هـ";
+            return;
+        }
+    }
+    
+    let g = new Date();
+    currentGregorianDate = `${g.getDate()}/${g.getMonth()+1}/${g.getFullYear()}`;
+    
+    try {
+        let r = await fetch(`https://api.aladhan.com/v1/gToH?date=${g.getDate()}-${g.getMonth()+1}-${g.getFullYear()}`);
+        let j = await r.json();
+        let h = j.data.hijri;
+        
+        const englishToArabic = {
+            '0': '٠', '1': '١', '2': '٢', '3': '٣', '4': '٤',
+            '5': '٥', '6': '٦', '7': '٧', '8': '٨', '9': '٩'
+        };
+        
+        let arabicDay = h.day.toString();
+        let arabicMonth = h.month.number.toString();
+        let arabicYear = h.year.toString();
+        
+        for (let english in englishToArabic) {
+            arabicDay = arabicDay.replace(new RegExp(english, 'g'), englishToArabic[english]);
+            arabicMonth = arabicMonth.replace(new RegExp(english, 'g'), englishToArabic[english]);
+            arabicYear = arabicYear.replace(new RegExp(english, 'g'), englishToArabic[english]);
+        }
+        
+        currentHijriDate = `${arabicYear}/${arabicMonth}/${arabicDay}`;
+        
+        document.getElementById('manualDateInput').value = currentHijriDate;
+        document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
+        
+        document.getElementById('gDate').innerHTML = currentGregorianDate + " م";
+        document.getElementById('hDate').innerHTML = currentHijriDate + " هـ";
+    } catch {
+        currentHijriDate = "١٤٤٦/٠٦/٠١";
+        document.getElementById('currentDateDisplay').textContent = "تعذر تحميل التاريخ";
+        document.getElementById('manualDateInput').value = currentHijriDate;
+        document.getElementById('gDate').innerHTML = currentGregorianDate + " م";
+        document.getElementById('hDate').innerHTML = currentHijriDate + " هجري";
+    }
+}
+
+// ==================== دالة تحديث التاريخ اليدوي ====================
+function updateManualDate() {
+    const manualDateInput = document.getElementById('manualDateInput');
+    const hijriDate = manualDateInput.value.trim();
+    
+    if (hijriDate) {
+        currentHijriDate = hijriDate;
+        document.getElementById('currentDateDisplay').textContent = `هجري: ${hijriDate}`;
+        
+        document.getElementById('hDate').innerHTML = hijriDate + " هـ";
+        document.getElementById('gDate').innerHTML = hijriDate + " هـ";
+    }
+}
+
+// ==================== دالة معالجة نوع التقرير ====================
+function handleReportType() {
+    const reportTypeSelect = document.getElementById('reportType');
+    const reportTypeInput = document.getElementById('reportTypeInput');
+    const manualTitleInput = document.getElementById('manualReportTitle');
+    
+    if (reportTypeSelect.value) {
+        manualTitleInput.value = reportTypeSelect.value;
+        updateReport();
+    } else if (reportTypeInput.value) {
+        manualTitleInput.value = reportTypeInput.value;
+        updateReport();
+    }
+}
+
+// ==================== دوال PDF ====================
 async function downloadPDF(){
     document.querySelector('.control-bar').style.visibility = 'hidden';
     document.querySelector('.top-marquee').style.visibility = 'hidden';
@@ -3062,101 +2832,14 @@ async function sharePDFWhatsApp(){
     });
 }
 
-// دالة تحميل التواريخ
-async function loadDates(){
-    const savedData = localStorage.getItem('teacherData');
-    if (savedData) {
-        const teacherData = JSON.parse(savedData);
-        if (teacherData.manualHijriDate) {
-            currentHijriDate = teacherData.manualHijriDate;
-            currentGregorianDate = teacherData.manualGregorianDate || '';
-            document.getElementById('manualDateInput').value = currentHijriDate;
-            document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
-            document.getElementById('hDate').innerHTML = currentHijriDate + " هـ";
-            document.getElementById('gDate').innerHTML = currentGregorianDate ? currentGregorianDate + " م" : currentHijriDate + " هـ";
-            return;
-        }
-    }
-    
-    let g = new Date();
-    currentGregorianDate = `${g.getDate()}/${g.getMonth()+1}/${g.getFullYear()}`;
-    
-    try {
-        let r = await fetch(`https://api.aladhan.com/v1/gToH?date=${g.getDate()}-${g.getMonth()+1}-${g.getFullYear()}`);
-        let j = await r.json();
-        let h = j.data.hijri;
-        
-        const englishToArabic = {
-            '0': '٠', '1': '١', '2': '٢', '3': '٣', '4': '٤',
-            '5': '٥', '6': '٦', '7': '٧', '8': '٨', '9': '٩'
-        };
-        
-        let arabicDay = h.day.toString();
-        let arabicMonth = h.month.number.toString();
-        let arabicYear = h.year.toString();
-        
-        for (let english in englishToArabic) {
-            arabicDay = arabicDay.replace(new RegExp(english, 'g'), englishToArabic[english]);
-            arabicMonth = arabicMonth.replace(new RegExp(english, 'g'), englishToArabic[english]);
-            arabicYear = arabicYear.replace(new RegExp(english, 'g'), englishToArabic[english]);
-        }
-        
-        currentHijriDate = `${arabicYear}/${arabicMonth}/${arabicDay}`;
-        
-        document.getElementById('manualDateInput').value = currentHijriDate;
-        document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
-        
-        document.getElementById('gDate').innerHTML = currentGregorianDate + " م";
-        document.getElementById('hDate').innerHTML = currentHijriDate + " هـ";
-    } catch {
-        currentHijriDate = "١٤٤٦/٠٦/٠١";
-        document.getElementById('currentDateDisplay').textContent = "تعذر تحميل التاريخ";
-        document.getElementById('manualDateInput').value = currentHijriDate;
-        document.getElementById('gDate').innerHTML = currentGregorianDate + " م";
-        document.getElementById('hDate').innerHTML = currentHijriDate + " هجري";
-    }
-}
-
-// دالة تحديث التاريخ اليدوي
-function updateManualDate() {
-    const manualDateInput = document.getElementById('manualDateInput');
-    const hijriDate = manualDateInput.value.trim();
-    
-    if (hijriDate) {
-        currentHijriDate = hijriDate;
-        document.getElementById('currentDateDisplay').textContent = `هجري: ${hijriDate}`;
-        
-        convertHijriToGregorian(hijriDate).then(gregorianDate => {
-            currentGregorianDate = gregorianDate;
-            document.getElementById('hDate').innerHTML = hijriDate + " هـ";
-            document.getElementById('gDate').innerHTML = gregorianDate ? gregorianDate + " م" : hijriDate + " هـ";
-        });
-    }
-}
-
-// دالة معالجة نوع التقرير
-function handleReportType() {
-    const reportTypeSelect = document.getElementById('reportType');
-    const reportTypeInput = document.getElementById('reportTypeInput');
-    const manualTitleInput = document.getElementById('manualReportTitle');
-    
-    if (reportTypeSelect.value) {
-        // إذا تم اختيار تقرير من القائمة
-        manualTitleInput.value = reportTypeSelect.value;
-        updateReport();
-    } else if (reportTypeInput.value) {
-        // إذا تم إدخال تقرير يدوياً
-        manualTitleInput.value = reportTypeInput.value;
-        updateReport();
-    }
-}
-
-// دالة تهيئة التطبيق
+// ==================== دالة تهيئة التطبيق ====================
 function initializeApp() {
     loadDates();
     loadTeacherData();
+    loadDataFromBackend();
     updateReport();
 
+    // إضافة المستمعين للأحداث
     document.getElementById('reportSearch').addEventListener('input', handleReportSearch);
 
     document.addEventListener('click', function(event) {
@@ -3184,17 +2867,24 @@ function initializeApp() {
 // ==================== عند تحميل الصفحة ====================
 document.addEventListener("DOMContentLoaded", function() {
     const token = localStorage.getItem("AI_TOKEN");
+    const expiresAt = localStorage.getItem("AI_EXPIRES_AT");
     
-    if (token) {
+    if (token && expiresAt) {
         // المستخدم مفعل سابقًا - عرض التطبيق مباشرة
         document.getElementById("activationScreen").style.display = "none";
         initializeApp();
+        startSubscriptionCountdown();
     } else {
         // المستخدم غير مفعل - عرض شاشة التفعيل
         document.getElementById("activationScreen").style.display = "flex";
+        // إظهار رسالة في العداد
+        const timerEl = document.getElementById("subscriptionTimer");
+        if (timerEl) {
+            timerEl.textContent = "⏳ الاشتراك غير مفعل";
+        }
     }
 });
 </script>
 
 </body>
-</html> 
+</html>
