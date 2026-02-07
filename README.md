@@ -1877,7 +1877,7 @@ font-family:Cairo;
 
 <script>
 // ==================== تكوين API ====================
-const BACKEND_URL = "https://nassrbackend.onrender.com";
+const BACKEND_URL = "https://tarafbackend.onrender.com";
 
 // ==================== وظائف التفعيل ====================
 async function activateTool() {
