@@ -221,9 +221,6 @@ background:#ffffff;transform:translateY(-3px);
 }
 textarea{height:120px;resize:none;overflow:hidden;line-height:1.7;font-size:17px;}
 
-/* تم إزالة أزرار التعبئة الذكية تحت الحقول */
-.auto-buttons{display:none;}
-
 .form-row{
 display:grid;grid-template-columns:1fr 1fr;gap:20px;
 }
@@ -733,11 +730,6 @@ font-size: 13px;
 padding: 5px;
 }
 
-.auto-btn {
-padding: 10px;
-font-size: 12px;
-}
-
 .tool-checkbox {
 padding: 6px;
 }
@@ -890,11 +882,6 @@ padding: 10px;
 font-size: 14px;
 }
 
-.auto-btn {
-padding: 8px;
-font-size: 12px;
-}
-
 #subscriptionTimer {
     bottom: 5px;
 }
@@ -954,7 +941,7 @@ font-size: 16px !important;
 }
 
 /* تحسين تجربة اللمس */
-button, .auto-btn, .tool-checkbox {
+button, .tool-checkbox {
 -webkit-touch-callout: none;
 -webkit-user-select: none;
 user-select: none;
@@ -1548,7 +1535,19 @@ font-family:Cairo;
     <!-- التصنيف العام -->
     <select id="reportCategory" oninput="handleReportCategory()" style="margin-bottom:10px;">
         <option value="">اختر تصنيف التقرير</option>
-        <!-- سيتم ملؤها من الباك إند -->
+        <option value="التقارير التعليمية الصفية">أولا: التقارير التعليمية الصفية</option>
+        <option value="التقارير العلاجية والدعم الفردي">ثانيا: التقارير العلاجية والدعم الفردي</option>
+        <option value="التقارير التحفيزية والسلوكية">ثالثا: التقارير التحفيزية والسلوكية</option>
+        <option value="تقارير الأنشطة غير الصفية">رابعا: تقارير الأنشطة غير الصفية</option>
+        <option value="تقارير التواصل مع أولياء الأمور والمجتمع">سادسا: تقارير التواصل مع أولياء الأمور والمجتمع</option>
+        <option value="التقارير التخطيطية والتنظيمية">سادسا: التقارير التخطيطية والتنظيمية</option>
+        <option value="تقارير التقييم والمتابعة">سابعا: تقارير التقييم والمتابعة</option>
+        <option value="تقارير التدريب والتطوير المهني">ثامنا: تقارير التدريب والتطوير المهني</option>
+        <option value="تقارير توظيف التكنولوجيا">تاسعا: تقارير توظيف التكنولوجيا</option>
+        <option value="تقارير البحث والتطوير المناهجي">عاشرا: تقارير البحث والتطوير المناهجي</option>
+        <option value="تقارير الجودة واللجان">حادي عشر: تقارير الجودة واللجان</option>
+        <option value="تقارير الأمن والسلامة">ثاني عشر: تقارير الأمن والسلامة</option>
+        <option value="أخرى">تقارير أخرى (إدخال يدوي)</option>
     </select>
     
     <!-- حقل البحث -->
@@ -1575,7 +1574,22 @@ font-family:Cairo;
   <div class="form-group">
     <label><i class="fas fa-university"></i>إدارة التعليم</label>
     <select id="education" oninput="updateReport()">
-      <!-- سيتم ملؤها من الباك إند -->
+      <option>الإدارة العامة للتعليم بمنطقة مكة المكرمة</option>
+      <option>الإدارة العامة للتعليم بمنطقة الرياض</option>
+      <option>الإدارة العامة للتعليم بمنطقة المدينة المنورة</option>
+      <option>الإدارة العامة للتعليم بالمنطقة الشرقية</option>
+      <option>الإدارة العامة للتعليم بمنطقة القصيم</option>
+      <option>الإدارة العامة للتعليم بمنطقة عسير</option>
+      <option>الإدارة العامة للتعليم بمنطقة تبوك</option>
+      <option>الإدارة العامة للتعليم بمنطقة حائل</option>
+      <option>الإدارة العامة للتعليم بمنطقة الحدود الشمالية</option>
+      <option>الإدارة العامة للتعليم بمنطقة جازان</option>
+      <option>الإدارة العامة للتعليم بمنطقة نجران</option>
+      <option>الإدارة العامة للتعليم بمنطقة الباحة</option>
+      <option>الإدارة العامة للتعليم بمنطقة الجوف</option>
+      <option>الإدارة العامة للتعليم بمحافظة الأحساء</option>
+      <option>الإدارة العامة للتعليم بمحافظة الطائف</option>
+      <option>الإدارة العامة للتعليم بمحافظة جدة</option>
     </select>
   </div>
   
@@ -1699,8 +1713,57 @@ font-family:Cairo;
   <div class="form-group">
     <label><i class="fas fa-tools"></i>الأدوات والوسائل التعليمية</label>
     <div class="tools-section">
-      <div class="tools-grid" id="toolsContainer">
-        <!-- سيتم ملؤها من الباك إند -->
+      <div class="tools-grid">
+        <label class="tool-checkbox" onclick="toggleTool(this)">
+          <input type="checkbox" id="tool1" value="سبورة" style="display:none;">
+          <span>سبورة</span>
+          <span class="checkmark">✅</span>
+        </label>
+        <label class="tool-checkbox" onclick="toggleTool(this)">
+          <input type="checkbox" id="tool2" value="سبورة ذكية" style="display:none;">
+          <span>سبورة ذكية</span>
+          <span class="checkmark">✅</span>
+        </label>
+        <label class="tool-checkbox" onclick="toggleTool(this)">
+          <input type="checkbox" id="tool3" value="جهاز عرض" style="display:none;">
+          <span>جهاز عرض</span>
+          <span class="checkmark">✅</span>
+        </label>
+        <label class="tool-checkbox" onclick="toggleTool(this)">
+          <input type="checkbox" id="tool4" value="أوراق عمل" style="display:none;">
+          <span>أوراق عمل</span>
+          <span class="checkmark">✅</span>
+        </label>
+        <label class="tool-checkbox" onclick="toggleTool(this)">
+          <input type="checkbox" id="tool5" value="حاسب" style="display:none;">
+          <span>حاسب</span>
+          <span class="checkmark">✅</span>
+        </label>
+        <label class="tool-checkbox" onclick="toggleTool(this)">
+          <input type="checkbox" id="tool6" value="عرض تقديمي" style="display:none;">
+          <span>عرض تقديمي</span>
+          <span class="checkmark">✅</span>
+        </label>
+        <label class="tool-checkbox" onclick="toggleTool(this)">
+          <input type="checkbox" id="tool7" value="بطاقات تعليمية" style="display:none;">
+          <span>بطاقات تعليمية</span>
+          <span class="checkmark">✅</span>
+        </label>
+        <label class="tool-checkbox" onclick="toggleTool(this)">
+          <input type="checkbox" id="tool8" value="صور توضيحية" style="display:none;">
+          <span>صور توضيحية</span>
+          <span class="checkmark">✅</span>
+        </label>
+        <label class="tool-checkbox" onclick="toggleTool(this)">
+          <input type="checkbox" id="tool9" value="كتاب" style="display:none;">
+          <span>كتاب</span>
+          <span class="checkmark">✅</span>
+        </label>
+        <label class="tool-checkbox" onclick="toggleTool(this)">
+          <input type="checkbox" id="tool10" value="أدوات رياضية" style="display:none;">
+          <span>أدوات رياضية</span>
+          <span class="checkmark">✅</span>
+        </label>
       </div>
       <div style="text-align:center; margin-top:10px; font-size:11px; color:#666;">
         <i class="fas fa-info-circle"></i> اضغط على الأداة لتحديدها، ستظهر علامة ✅ عند التحديد
@@ -1813,11 +1876,8 @@ font-family:Cairo;
 </div>
 
 <script>
-// ==================== متغيرات أساسية ====================
-const BACKEND_URL = "https://nassrbackend.onrender.com"; // رابط الباك إند
-let allReportsByCategory = {};
-let educationAdministrations = [];
-let educationalTools = [];
+// ==================== تكوين API ====================
+const BACKEND_URL = "https://nassrbackend.onrender.com";
 
 // ==================== وظائف التفعيل ====================
 async function activateTool() {
@@ -1829,7 +1889,7 @@ async function activateTool() {
     }
 
     try {
-        const res = await fetch(`${BACKEND_URL}/activate`, {
+        const response = await fetch(`${BACKEND_URL}/activate`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -1839,16 +1899,14 @@ async function activateTool() {
             })
         });
 
-        if (!res.ok) {
+        if (!response.ok) {
             throw new Error("INVALID_CODE");
         }
 
-        const data = await res.json();
+        const data = await response.json();
 
         // حفظ التوكن النهائي
         localStorage.setItem("AI_TOKEN", data.token);
-        
-        // حفظ تاريخ انتهاء الصلاحية بتنسيق AI_EXPIRES_AT
         localStorage.setItem("AI_EXPIRES_AT", data.expires_at);
 
         // إخفاء شاشة التفعيل
@@ -1884,7 +1942,6 @@ function startSubscriptionCountdown() {
         if (diff <= 0) {
             timerEl.textContent = "⛔ انتهت صلاحية الاشتراك";
             localStorage.clear();
-            // إعادة تحميل الصفحة للعودة إلى شاشة التفعيل
             setTimeout(() => {
                 location.reload();
             }, 2000);
@@ -1900,7 +1957,6 @@ function startSubscriptionCountdown() {
         const minutes = Math.floor(diff / (1000 * 60));
         const seconds = Math.floor((diff / 1000) % 60);
 
-        // تنسيق الرسالة
         let message = `⏳ ينتهي الاشتراك بعد `;
         
         if (days > 0) {
@@ -1924,133 +1980,58 @@ function startSubscriptionCountdown() {
     setInterval(updateCountdown, 1000);
 }
 
-// ==================== جلب البيانات من الباك إند ====================
-async function loadDataFromBackend() {
-    try {
-        // جلب تصنيفات التقارير
-        const reportsRes = await fetch(`${BACKEND_URL}/reports/categories`);
-        if (reportsRes.ok) {
-            const reportsData = await reportsRes.json();
-            allReportsByCategory = reportsData.reports_by_category;
-            populateReportCategories();
-        }
-        
-        // جلب إدارات التعليم
-        const eduRes = await fetch(`${BACKEND_URL}/education/administrations`);
-        if (eduRes.ok) {
-            const eduData = await eduRes.json();
-            educationAdministrations = eduData.administrations;
-            populateEducationAdministrations();
-        }
-        
-        // جلب الأدوات التعليمية
-        const toolsRes = await fetch(`${BACKEND_URL}/education/tools`);
-        if (toolsRes.ok) {
-            const toolsData = await toolsRes.json();
-            educationalTools = toolsData.tools;
-            populateEducationalTools();
-        }
-        
-    } catch (error) {
-        console.error("خطأ في جلب البيانات من الباك إند:", error);
-        showNotification("⚠️ تعذر تحميل بعض البيانات، جارٍ استخدام البيانات المحلية");
-        
-        // استخدام بيانات افتراضية احتياطية
-        useFallbackData();
-    }
-}
-
-// ==================== تعبئة البيانات في الفرونت ====================
-function populateReportCategories() {
-    const categorySelect = document.getElementById('reportCategory');
-    categorySelect.innerHTML = '<option value="">اختر تصنيف التقرير</option>';
-    
-    for (const category in allReportsByCategory) {
-        const option = document.createElement('option');
-        option.value = category;
-        option.textContent = category;
-        categorySelect.appendChild(option);
-    }
-}
-
-function populateEducationAdministrations() {
-    const educationSelect = document.getElementById('education');
-    educationSelect.innerHTML = '';
-    
-    educationAdministrations.forEach(admin => {
-        const option = document.createElement('option');
-        option.value = admin;
-        option.textContent = admin;
-        educationSelect.appendChild(option);
-    });
-    
-    // تحديد القيمة الافتراضية إذا كانت موجودة في localStorage
-    const savedData = localStorage.getItem('teacherData');
-    if (savedData) {
-        const teacherData = JSON.parse(savedData);
-        if (teacherData.education) {
-            educationSelect.value = teacherData.education;
-        }
-    }
-}
-
-function populateEducationalTools() {
-    const toolsContainer = document.getElementById('toolsContainer');
-    toolsContainer.innerHTML = '';
-    
-    educationalTools.forEach((tool, index) => {
-        const toolId = `tool${index + 1}`;
-        
-        const label = document.createElement('label');
-        label.className = 'tool-checkbox';
-        label.setAttribute('onclick', `toggleTool(this)`);
-        
-        const input = document.createElement('input');
-        input.type = 'checkbox';
-        input.id = toolId;
-        input.value = tool;
-        input.style.display = 'none';
-        
-        const span = document.createElement('span');
-        span.textContent = tool;
-        
-        const checkmark = document.createElement('span');
-        checkmark.className = 'checkmark';
-        checkmark.textContent = '✅';
-        
-        label.appendChild(input);
-        label.appendChild(span);
-        label.appendChild(checkmark);
-        
-        toolsContainer.appendChild(label);
-    });
-}
-
-// ==================== بيانات احتياطية ====================
-function useFallbackData() {
-    // بيانات احتياطية بسيطة
-    const fallbackCategories = {
-        "التقارير التعليمية": ["تقرير أنشطة صفية", "تقرير درس تم تنفيذ"],
-        "التقارير العلاجية": ["تقرير خطة علاجية", "تقرير دعم فردي"]
+// ==================== وظائف API الأساسية ====================
+async function callBackend(endpoint, method = 'GET', data = null, requiresAuth = true) {
+    const headers = {
+        'Content-Type': 'application/json'
     };
     
-    allReportsByCategory = fallbackCategories;
-    populateReportCategories();
+    if (requiresAuth) {
+        const token = localStorage.getItem("AI_TOKEN");
+        if (!token) {
+            throw new Error("يجب تفعيل الأداة أولاً");
+        }
+        headers['X-Token'] = token;
+    }
     
-    // إدارات تعليم افتراضية
-    educationAdministrations = [
-        "الإدارة العامة للتعليم بمنطقة مكة المكرمة",
-        "الإدارة العامة للتعليم بمنطقة الرياض"
-    ];
-    populateEducationAdministrations();
+    const options = {
+        method: method,
+        headers: headers
+    };
     
-    // أدوات افتراضية
-    educationalTools = ["سبورة", "سبورة ذكية", "جهاز عرض"];
-    populateEducationalTools();
+    if (data && (method === 'POST' || method === 'PUT')) {
+        options.body = JSON.stringify(data);
+    }
+    
+    try {
+        const response = await fetch(`${BACKEND_URL}${endpoint}`, options);
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                localStorage.removeItem("AI_TOKEN");
+                localStorage.removeItem("AI_EXPIRES_AT");
+                document.getElementById("activationScreen").style.display = "flex";
+                throw new Error("انتهت صلاحية الجلسة، يرجى إعادة التفعيل");
+            }
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || `خطأ ${response.status}: ${response.statusText}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('خطأ في الاتصال بالخادم:', error);
+        throw error;
+    }
 }
 
-// ==================== دالة معالجة اختيار التصنيف ====================
-function handleReportCategory() {
+// ==================== متغيرات عامة ====================
+let currentHijriDate = '';
+let currentGregorianDate = '';
+
+// ==================== وظائف واجهة المستخدم ====================
+
+// دالة معالجة اختيار التصنيف
+async function handleReportCategory() {
     const categorySelect = document.getElementById('reportCategory');
     const reportTypeSelect = document.getElementById('reportType');
     const reportTypeInput = document.getElementById('reportTypeInput');
@@ -2070,10 +2051,16 @@ function handleReportCategory() {
         reportTypeInput.style.display = 'none';
         reportSearchContainer.style.display = 'block';
         manualTitleContainer.style.display = 'block';
-        const reports = allReportsByCategory[categorySelect.value] || [];
-        updateReportTypeOptions(reports);
-        document.getElementById('reportSearch').value = '';
-        document.getElementById('searchResults').style.display = 'none';
+        
+        try {
+            const response = await callBackend('/reports/categories');
+            const reports = response.reports_by_category[categorySelect.value] || [];
+            updateReportTypeOptions(reports);
+            document.getElementById('reportSearch').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+        } catch (error) {
+            console.error('خطأ في تحميل التقارير:', error);
+        }
     } else {
         reportTypeSelect.style.display = 'none';
         reportTypeInput.style.display = 'none';
@@ -2083,7 +2070,7 @@ function handleReportCategory() {
     }
 }
 
-// ==================== دالة تحديث خيارات قائمة التقارير ====================
+// دالة تحديث خيارات قائمة التقارير
 function updateReportTypeOptions(reports) {
     const reportTypeSelect = document.getElementById('reportType');
     reportTypeSelect.innerHTML = '<option value="">اختر تقريرًا</option>';
@@ -2096,8 +2083,8 @@ function updateReportTypeOptions(reports) {
     });
 }
 
-// ==================== دالة البحث الفوري في التقارير ====================
-function handleReportSearch() {
+// دالة البحث الفوري في التقارير
+async function handleReportSearch() {
     const reportSearch = document.getElementById('reportSearch');
     const searchResults = document.getElementById('searchResults');
     const categorySelect = document.getElementById('reportCategory');
@@ -2111,82 +2098,63 @@ function handleReportSearch() {
         return;
     }
     
-    let filteredReports = [];
-    
-    if (categorySelect.value && categorySelect.value !== "أخرى") {
-        const reports = allReportsByCategory[categorySelect.value] || [];
-        filteredReports = reports.filter(report => 
-            report.toLowerCase().includes(searchTerm)
-        );
-    } else if (categorySelect.value === "أخرى") {
-        filteredReports = [];
-    } else {
-        // بحث في جميع التقارير
-        const allReports = [];
-        for (const category in allReportsByCategory) {
-            allReportsByCategory[category].forEach(report => {
-                allReports.push({name: report, category: category});
+    try {
+        const response = await callBackend(`/reports/search?query=${encodeURIComponent(searchTerm)}`, 'GET', null, false);
+        const filteredReports = response.results || [];
+        
+        if (filteredReports.length > 0) {
+            searchResults.innerHTML = '';
+            
+            filteredReports.forEach(item => {
+                const div = document.createElement('div');
+                div.textContent = item.name;
+                div.style.padding = '8px 12px';
+                div.style.cursor = 'pointer';
+                div.style.borderBottom = '1px solid #eee';
+                div.setAttribute('data-category', item.category);
+                div.setAttribute('data-report', item.name);
+                
+                div.onmouseover = () => div.style.backgroundColor = '#f0f9f6';
+                div.onmouseout = () => div.style.backgroundColor = 'white';
+                div.onclick = () => {
+                    const selectedReport = div.getAttribute('data-report');
+                    const selectedCategory = div.getAttribute('data-category');
+                    
+                    if (categorySelect.value !== selectedCategory && selectedCategory) {
+                        categorySelect.value = selectedCategory;
+                        const reports = filteredReports.filter(r => r.category === selectedCategory).map(r => r.name);
+                        updateReportTypeOptions(reports);
+                    }
+                    
+                    reportTypeSelect.value = selectedReport;
+                    reportSearch.value = '';
+                    searchResults.style.display = 'none';
+                    handleReportType();
+                    updateReport();
+                    reportTypeSelect.style.display = 'block';
+                    reportTypeSelect.style.borderColor = '#066d4d';
+                    setTimeout(() => {
+                        reportTypeSelect.style.borderColor = '#d4ebe2';
+                    }, 1000);
+                };
+                searchResults.appendChild(div);
             });
+            searchResults.style.display = 'block';
+        } else {
+            searchResults.innerHTML = '<div style="padding:12px; color:#666; text-align:center;">لا توجد نتائج</div>';
+            searchResults.style.display = 'block';
         }
-        
-        filteredReports = allReports.filter(item => 
-            item.name.toLowerCase().includes(searchTerm)
-        );
-    }
-    
-    if (filteredReports.length > 0) {
-        searchResults.innerHTML = '';
-        
-        filteredReports.forEach(item => {
-            const reportName = typeof item === 'string' ? item : item.name;
-            const reportCategory = typeof item === 'string' ? categorySelect.value : item.category;
-            
-            const div = document.createElement('div');
-            div.textContent = reportName;
-            div.style.padding = '8px 12px';
-            div.style.cursor = 'pointer';
-            div.style.borderBottom = '1px solid #eee';
-            div.setAttribute('data-category', reportCategory);
-            div.setAttribute('data-report', reportName);
-            
-            div.onmouseover = () => div.style.backgroundColor = '#f0f9f6';
-            div.onmouseout = () => div.style.backgroundColor = 'white';
-            div.onclick = () => {
-                const selectedReport = div.getAttribute('data-report');
-                const selectedCategory = div.getAttribute('data-category');
-                
-                if (categorySelect.value !== selectedCategory && selectedCategory) {
-                    categorySelect.value = selectedCategory;
-                    const reports = allReportsByCategory[selectedCategory] || [];
-                    updateReportTypeOptions(reports);
-                }
-                
-                reportTypeSelect.value = selectedReport;
-                reportSearch.value = '';
-                searchResults.style.display = 'none';
-                handleReportType();
-                updateReport();
-                reportTypeSelect.style.display = 'block';
-                reportTypeSelect.style.borderColor = '#066d4d';
-                setTimeout(() => {
-                    reportTypeSelect.style.borderColor = '#d4ebe2';
-                }, 1000);
-            };
-            searchResults.appendChild(div);
-        });
-        searchResults.style.display = 'block';
-    } else {
-        searchResults.innerHTML = '<div style="padding:12px; color:#666; text-align:center;">لا توجد نتائج</div>';
-        searchResults.style.display = 'block';
+    } catch (error) {
+        console.error('خطأ في البحث:', error);
     }
 }
 
-// ==================== دالة لتحديث عنوان التقرير اليدوي ====================
+// دالة لتحديث عنوان التقرير اليدوي
 function updateManualTitle() {
     updateReport();
 }
 
-// ==================== دالة تكيف الخطوط للمادة والدرس ====================
+// دالة تكيف الخطوط
 function adaptSubjectLessonFont() {
   const elements = [
     document.getElementById('subjectBox'),
@@ -2269,8 +2237,8 @@ function adaptSubjectLessonFontWithRetry() {
     setTimeout(adaptSubjectLessonFont, 100);
 }
 
-// ==================== دالة تحديث التقرير المعروض ====================
-function updateReport(){
+// تحديث التقرير في واجهة PDF
+function updateReport() {
     document.getElementById('educationBox').innerText = document.getElementById('education').value;
     document.getElementById('schoolBox').innerText = document.getElementById('school').value;
     
@@ -2297,11 +2265,14 @@ function updateReport(){
     document.getElementById('improveBox').innerText = document.getElementById('improve').value || 'لم يتم تحديد نقاط التحسين';
     document.getElementById('recommBox').innerText = document.getElementById('recomm').value || 'لم يتم تحديد التوصيات';
     
+    document.getElementById('hDate').innerHTML = currentHijriDate + " هـ";
+    document.getElementById('gDate').innerHTML = currentGregorianDate ? currentGregorianDate + " م" : currentHijriDate + " هـ";
+    
     updateToolsDisplay();
     setTimeout(adaptSubjectLessonFontWithRetry, 10);
 }
 
-// ==================== دالة الحصول على نوع التقرير ====================
+// الحصول على نص نوع التقرير
 function getReportTypeText() {
     const reportTypeSelect = document.getElementById('reportType');
     const reportTypeInput = document.getElementById('reportTypeInput');
@@ -2319,20 +2290,19 @@ function getReportTypeText() {
     }
 }
 
-// ==================== دالة تحديث الأدوات المعروضة ====================
+// تحديث عرض الأدوات
 function updateToolsDisplay() {
     const toolsListBox = document.getElementById('toolsListBox');
     toolsListBox.innerHTML = '';
     
     const selectedTools = [];
     
-    // جمع الأدوات المحددة
-    const toolCheckboxes = document.querySelectorAll('.tool-checkbox input[type="checkbox"]');
-    toolCheckboxes.forEach(checkbox => {
-        if (checkbox.checked) {
-            selectedTools.push(checkbox.value);
+    for (let i = 1; i <= 10; i++) {
+        const toolCheckbox = document.getElementById(`tool${i}`);
+        if (toolCheckbox && toolCheckbox.checked) {
+            selectedTools.push(toolCheckbox.value);
         }
-    });
+    }
     
     selectedTools.forEach(tool => {
         const toolElement = document.createElement('div');
@@ -2352,7 +2322,7 @@ function updateToolsDisplay() {
     }
 }
 
-// ==================== دالة تفعيل/إلغاء تفعيل الأداة ====================
+// تبديل اختيار الأداة
 function toggleTool(element) {
     const checkbox = element.querySelector('input[type="checkbox"]');
     checkbox.checked = !checkbox.checked;
@@ -2366,7 +2336,7 @@ function toggleTool(element) {
     updateReport();
 }
 
-// ==================== دالة تحميل الصور ====================
+// تحميل الصورة
 function loadImage(input, target) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -2385,8 +2355,10 @@ function loadImage(input, target) {
     }
 }
 
-// ==================== دالة حفظ بيانات المعلم ====================
-function saveTeacherData(){
+// ==================== وظائف API المتقدمة ====================
+
+// حفظ بيانات المعلم على الباك إند
+async function saveTeacherData() {
     const teacherData = {
         education: document.getElementById('education').value,
         school: document.getElementById('school').value,
@@ -2404,98 +2376,96 @@ function saveTeacherData(){
         manualTitle: document.getElementById('manualReportTitle').value,
         manualHijriDate: currentHijriDate,
         manualGregorianDate: currentGregorianDate,
-        tools: []
+        tools: [],
+        goal: document.getElementById('goal').value,
+        summary: document.getElementById('summary').value,
+        steps: document.getElementById('steps').value,
+        strategies: document.getElementById('strategies').value,
+        strengths: document.getElementById('strengths').value,
+        improve: document.getElementById('improve').value,
+        recomm: document.getElementById('recomm').value
     };
     
-    // جمع الأدوات المحددة
-    const toolCheckboxes = document.querySelectorAll('.tool-checkbox input[type="checkbox"]');
-    toolCheckboxes.forEach(checkbox => {
-        if (checkbox.checked) {
-            teacherData.tools.push(checkbox.value);
+    for (let i = 1; i <= 10; i++) {
+        const toolCheckbox = document.getElementById(`tool${i}`);
+        if (toolCheckbox && toolCheckbox.checked) {
+            teacherData.tools.push(toolCheckbox.value);
         }
-    });
+    }
     
-    const textFields = ['goal', 'summary', 'steps', 'strategies', 'strengths', 'improve', 'recomm'];
-    textFields.forEach(field => {
-        teacherData[field] = document.getElementById(field).value;
-    });
-    
-    localStorage.setItem('teacherData', JSON.stringify(teacherData));
-    showNotification('تم حفظ بيانات المعلم بنجاح!');
-}
-
-// ==================== دالة عرض الإشعارات ====================
-function showNotification(message) {
-    const notification = document.getElementById('saveNotification');
-    notification.querySelector('span').textContent = message;
-    notification.classList.add('show');
-    
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 3000);
-}
-
-// ==================== دالة تحميل بيانات المعلم المحفوظة ====================
-function loadTeacherData() {
-    const savedData = localStorage.getItem('teacherData');
-    
-    if (savedData) {
-        const teacherData = JSON.parse(savedData);
-        
-        document.getElementById('education').value = teacherData.education || '';
-        document.getElementById('school').value = teacherData.school || '';
-        document.getElementById('grade').value = teacherData.grade || '';
-        document.getElementById('subject').value = teacherData.subject || '';
-        document.getElementById('target').value = teacherData.target || '';
-        document.getElementById('place').value = teacherData.place || '';
-        document.getElementById('lesson').value = teacherData.lesson || '';
-        document.getElementById('teacher').value = teacherData.teacher || '';
-        document.getElementById('principal').value = teacherData.principal || '';
-        document.getElementById('teacherType').value = teacherData.teacherType || 'المعلم';
-        document.getElementById('principalType').value = teacherData.principalType || 'المدير';
-        document.getElementById('term').value = teacherData.term || '';
-        document.getElementById('count').value = teacherData.count || '';
-        document.getElementById('manualReportTitle').value = teacherData.manualTitle || '';
-        
-        if (teacherData.manualHijriDate) {
-            currentHijriDate = teacherData.manualHijriDate;
-            currentGregorianDate = teacherData.manualGregorianDate || '';
-            document.getElementById('manualDateInput').value = currentHijriDate;
-            document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
-            
-            document.getElementById('hDate').innerHTML = currentHijriDate + " هـ";
-            document.getElementById('gDate').innerHTML = currentGregorianDate ? currentGregorianDate + " م" : currentHijriDate + " هـ";
-        }
-        
-        const textFields = ['goal', 'summary', 'steps', 'strategies', 'strengths', 'improve', 'recomm'];
-        textFields.forEach(field => {
-            if (teacherData[field]) {
-                document.getElementById(field).value = teacherData[field];
-            }
-        });
-        
-        if (teacherData.tools && Array.isArray(teacherData.tools)) {
-            const toolCheckboxes = document.querySelectorAll('.tool-checkbox input[type="checkbox"]');
-            toolCheckboxes.forEach(checkbox => {
-                const toolElement = checkbox.closest('.tool-checkbox');
-                const isChecked = teacherData.tools.includes(checkbox.value);
-                checkbox.checked = isChecked;
-                if (isChecked) {
-                    toolElement.classList.add('checked');
-                } else {
-                    toolElement.classList.remove('checked');
-                }
-            });
-        }
-        
-        updateReport();
-        updateToolsDisplay();
+    try {
+        const response = await callBackend('/teacher/save', 'POST', teacherData);
+        showNotification(response.message || 'تم حفظ بيانات المعلم بنجاح!');
+    } catch (error) {
+        console.error('خطأ في حفظ البيانات:', error);
+        showNotification('خطأ في حفظ البيانات: ' + error.message);
     }
 }
 
-// ==================== دالة الذكاء الاصطناعي (تستخدم الباك إند) ====================
+// تحميل بيانات المعلم من الباك إند
+async function loadTeacherData() {
+    try {
+        const response = await callBackend('/teacher/load');
+        
+        if (response.success && response.data) {
+            const data = response.data;
+            
+            document.getElementById('education').value = data.education || '';
+            document.getElementById('school').value = data.school || '';
+            document.getElementById('grade').value = data.grade || '';
+            document.getElementById('subject').value = data.subject || '';
+            document.getElementById('target').value = data.target || '';
+            document.getElementById('place').value = data.place || '';
+            document.getElementById('lesson').value = data.lesson || '';
+            document.getElementById('teacher').value = data.teacher || '';
+            document.getElementById('principal').value = data.principal || '';
+            document.getElementById('teacherType').value = data.teacherType || 'المعلم';
+            document.getElementById('principalType').value = data.principalType || 'المدير';
+            document.getElementById('term').value = data.term || '';
+            document.getElementById('count').value = data.count || '';
+            document.getElementById('manualReportTitle').value = data.manualTitle || '';
+            
+            if (data.manualHijriDate) {
+                currentHijriDate = data.manualHijriDate;
+                currentGregorianDate = data.manualGregorianDate || '';
+                document.getElementById('manualDateInput').value = currentHijriDate;
+                document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
+            }
+            
+            const textFields = ['goal', 'summary', 'steps', 'strategies', 'strengths', 'improve', 'recomm'];
+            textFields.forEach(field => {
+                if (data[field]) {
+                    document.getElementById(field).value = data[field];
+                }
+            });
+            
+            if (data.tools && Array.isArray(data.tools)) {
+                for (let i = 1; i <= 10; i++) {
+                    const toolCheckbox = document.getElementById(`tool${i}`);
+                    if (toolCheckbox) {
+                        const toolElement = toolCheckbox.closest('.tool-checkbox');
+                        const isChecked = data.tools.includes(toolCheckbox.value);
+                        toolCheckbox.checked = isChecked;
+                        if (isChecked) {
+                            toolElement.classList.add('checked');
+                        } else {
+                            toolElement.classList.remove('checked');
+                        }
+                    }
+                }
+            }
+            
+            updateReport();
+            updateToolsDisplay();
+            showNotification('تم تحميل بيانات المعلم بنجاح!');
+        }
+    } catch (error) {
+        console.error('خطأ في تحميل البيانات:', error);
+    }
+}
+
+// التعبئة الذكية باستخدام الذكاء الاصطناعي
 async function fillWithAI() {
-    // التحقق من التفعيل أولاً
     const token = localStorage.getItem("AI_TOKEN");
     if (!token) {
         alert("يرجى تفعيل الأداة أولاً");
@@ -2503,29 +2473,23 @@ async function fillWithAI() {
         return;
     }
     
-    // التحقق من اتصال الإنترنت
     if (!navigator.onLine) {
         alert('لا يوجد اتصال بالإنترنت. الرجاء التأكد من الاتصال');
         return;
     }
     
-    // الحصول على نوع التقرير
     const reportType = getReportTypeText();
     if (!reportType || reportType === 'تقرير') {
         alert('الرجاء اختيار أو إدخال نوع التقرير أولاً');
         return;
     }
     
-    // جمع البيانات المطلوبة
-    const reportData = {
-        reportType: reportType,
-        subject: document.getElementById('subject').value || '',
-        lesson: document.getElementById('lesson').value || '',
-        grade: document.getElementById('grade').value || '',
-        target: document.getElementById('target').value || '',
-        place: document.getElementById('place').value || '',
-        count: document.getElementById('count').value || ''
-    };
+    const subject = document.getElementById('subject').value || '';
+    const lesson = document.getElementById('lesson').value || '';
+    const grade = document.getElementById('grade').value || '';
+    const target = document.getElementById('target').value || '';
+    const place = document.getElementById('place').value || '';
+    const count = document.getElementById('count').value || '';
     
     // عرض مؤشر التحميل
     const aiButton = document.getElementById('aiFillBtn');
@@ -2546,37 +2510,30 @@ async function fillWithAI() {
     aiButton.disabled = true;
     
     try {
-        const response = await fetch(`${BACKEND_URL}/generate/report`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Token': token
-            },
-            body: JSON.stringify(reportData)
+        const response = await callBackend('/generate/report', 'POST', {
+            reportType: reportType,
+            subject: subject,
+            lesson: lesson,
+            grade: grade,
+            target: target,
+            place: place,
+            count: count
         });
-
-        if (!response.ok) {
-            throw new Error(`خطأ في الاتصال بالخادم: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (!data || !data.parsed_fields) {
-            throw new Error('فشل التوليد من السيرفر');
-        }
-
-        // تعبئة الحقول بالبيانات المستلمة
-        const fields = data.parsed_fields;
-        document.getElementById('goal').value = fields.goal || '';
-        document.getElementById('summary').value = fields.summary || '';
-        document.getElementById('steps').value = fields.steps || '';
-        document.getElementById('strategies').value = fields.strategies || '';
-        document.getElementById('strengths').value = fields.strengths || '';
-        document.getElementById('improve').value = fields.improve || '';
-        document.getElementById('recomm').value = fields.recomm || '';
         
-        updateReport();
-        showNotification('تم تعبئة الحقول باستخدام الذكاء الاصطناعي بنجاح! ✓');
+        if (response.success && response.parsed_fields) {
+            const fields = response.parsed_fields;
+            
+            document.getElementById('goal').value = fields.goal || '';
+            document.getElementById('summary').value = fields.summary || '';
+            document.getElementById('steps').value = fields.steps || '';
+            document.getElementById('strategies').value = fields.strategies || '';
+            document.getElementById('strengths').value = fields.strengths || '';
+            document.getElementById('improve').value = fields.improve || '';
+            document.getElementById('recomm').value = fields.recomm || '';
+            
+            updateReport();
+            showNotification('تم تعبئة الحقول باستخدام الذكاء الاصطناعي بنجاح! ✓');
+        }
         
     } catch (error) {
         console.error('خطأ في الذكاء الاصطناعي:', error);
@@ -2593,7 +2550,69 @@ async function fillWithAI() {
     }
 }
 
+// ==================== وظائف التواريخ ====================
+
+// تحميل التواريخ الحالية
+async function loadDates() {
+    try {
+        const savedDataResponse = await callBackend('/teacher/load');
+        
+        if (savedDataResponse.success && savedDataResponse.data) {
+            const teacherData = savedDataResponse.data;
+            if (teacherData.manualHijriDate) {
+                currentHijriDate = teacherData.manualHijriDate;
+                currentGregorianDate = teacherData.manualGregorianDate || '';
+                document.getElementById('manualDateInput').value = currentHijriDate;
+                document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
+                return;
+            }
+        }
+        
+        const response = await fetch(`${BACKEND_URL}/dates/current`);
+        if (response.ok) {
+            const data = await response.json();
+            currentHijriDate = data.hijri_date;
+            currentGregorianDate = data.gregorian_date;
+            document.getElementById('manualDateInput').value = currentHijriDate;
+            document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
+        }
+    } catch (error) {
+        console.error('خطأ في تحميل التواريخ:', error);
+        currentHijriDate = "١٤٤٦/٠٦/٠١";
+        currentGregorianDate = "2024/12/01";
+        document.getElementById('currentDateDisplay').textContent = "تعذر تحميل التاريخ";
+        document.getElementById('manualDateInput').value = currentHijriDate;
+    }
+}
+
+// تحديث التاريخ اليدوي
+async function updateManualDate() {
+    const manualDateInput = document.getElementById('manualDateInput');
+    const hijriDate = manualDateInput.value.trim();
+    
+    if (hijriDate) {
+        try {
+            const response = await fetch(`${BACKEND_URL}/convert/hijri-to-gregorian?hijri_date=${encodeURIComponent(hijriDate)}`);
+            if (response.ok) {
+                const data = await response.json();
+                currentHijriDate = data.hijri_date;
+                currentGregorianDate = data.gregorian_date;
+                document.getElementById('currentDateDisplay').textContent = `هجري: ${hijriDate}`;
+            } else {
+                currentHijriDate = hijriDate;
+                currentGregorianDate = hijriDate;
+            }
+        } catch (error) {
+            currentHijriDate = hijriDate;
+            currentGregorianDate = hijriDate;
+        }
+        
+        updateReport();
+    }
+}
+
 // ==================== وظائف الدعم الفني ====================
+
 function openSupportModal() {
     document.getElementById('supportModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -2610,126 +2629,53 @@ document.getElementById('supportModal').addEventListener('click', function(e) {
     }
 });
 
-function sendEmailSupport() {
+async function sendEmailSupport() {
     const name = document.getElementById('supportName').value || 'مستخدم بدون اسم';
     const phone = document.getElementById('supportPhone').value || 'لم يتم تقديمه';
     const issue = document.getElementById('supportIssue').value || 'لا توجد تفاصيل';
-    
-    const subject = encodeURIComponent('طلب دعم فني - أداة إصدار التقارير');
-    const body = encodeURIComponent(`الاسم: ${name}\nرقم التواصل: ${phone}\n\nتفاصيل المشكلة:\n${issue}\n\n---\nتم الإرسال من أداة إصدار التقارير`);
-    
-    window.location.href = `mailto:iFahadenglish@gmail.com?subject=${subject}&body=${body}`;
-    setTimeout(closeSupportModal, 500);
-}
-
-function sendWhatsAppSupport() {
-    const name = document.getElementById('supportName').value || 'مستخدم بدون اسم';
-    const phone = document.getElementById('supportPhone').value || 'لم يتم تقديمه';
-    const issue = document.getElementById('supportIssue').value || 'لا توجد تفاصيل';
-    
-    const message = encodeURIComponent(`طلب دعم فني - أداة إصدار التقارير\n\nالاسم: ${name}\nرقم التواصل: ${phone}\n\nتفاصيل المشكلة:\n${issue}\n\n---\nتم الإرسال من أداة إصدار التقارير`);
-    
-    window.open(`https://wa.me/966597077245?text=${message}`, '_blank');
-    setTimeout(closeSupportModal, 500);
-}
-
-// ==================== دالة مسح البيانات ====================
-function clearData(){
-    if(confirm("هل أنت متأكد من مسح جميع البيانات؟")){
-        localStorage.clear();
-        location.reload();
-    }
-}
-
-// ==================== دوال تحميل التواريخ ====================
-let currentHijriDate = '';
-let currentGregorianDate = '';
-
-async function loadDates(){
-    const savedData = localStorage.getItem('teacherData');
-    if (savedData) {
-        const teacherData = JSON.parse(savedData);
-        if (teacherData.manualHijriDate) {
-            currentHijriDate = teacherData.manualHijriDate;
-            currentGregorianDate = teacherData.manualGregorianDate || '';
-            document.getElementById('manualDateInput').value = currentHijriDate;
-            document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
-            document.getElementById('hDate').innerHTML = currentHijriDate + " هـ";
-            document.getElementById('gDate').innerHTML = currentGregorianDate ? currentGregorianDate + " م" : currentHijriDate + " هـ";
-            return;
-        }
-    }
-    
-    let g = new Date();
-    currentGregorianDate = `${g.getDate()}/${g.getMonth()+1}/${g.getFullYear()}`;
     
     try {
-        let r = await fetch(`https://api.aladhan.com/v1/gToH?date=${g.getDate()}-${g.getMonth()+1}-${g.getFullYear()}`);
-        let j = await r.json();
-        let h = j.data.hijri;
+        const response = await callBackend('/support/send', 'POST', {
+            name: name,
+            phone: phone,
+            issue: issue
+        });
         
-        const englishToArabic = {
-            '0': '٠', '1': '١', '2': '٢', '3': '٣', '4': '٤',
-            '5': '٥', '6': '٦', '7': '٧', '8': '٨', '9': '٩'
-        };
-        
-        let arabicDay = h.day.toString();
-        let arabicMonth = h.month.number.toString();
-        let arabicYear = h.year.toString();
-        
-        for (let english in englishToArabic) {
-            arabicDay = arabicDay.replace(new RegExp(english, 'g'), englishToArabic[english]);
-            arabicMonth = arabicMonth.replace(new RegExp(english, 'g'), englishToArabic[english]);
-            arabicYear = arabicYear.replace(new RegExp(english, 'g'), englishToArabic[english]);
+        if (response.success) {
+            window.location.href = response.email_url;
+            setTimeout(closeSupportModal, 500);
         }
-        
-        currentHijriDate = `${arabicYear}/${arabicMonth}/${arabicDay}`;
-        
-        document.getElementById('manualDateInput').value = currentHijriDate;
-        document.getElementById('currentDateDisplay').textContent = `هجري: ${currentHijriDate}`;
-        
-        document.getElementById('gDate').innerHTML = currentGregorianDate + " م";
-        document.getElementById('hDate').innerHTML = currentHijriDate + " هـ";
-    } catch {
-        currentHijriDate = "١٤٤٦/٠٦/٠١";
-        document.getElementById('currentDateDisplay').textContent = "تعذر تحميل التاريخ";
-        document.getElementById('manualDateInput').value = currentHijriDate;
-        document.getElementById('gDate').innerHTML = currentGregorianDate + " م";
-        document.getElementById('hDate').innerHTML = currentHijriDate + " هجري";
+    } catch (error) {
+        console.error('خطأ في إرسال الدعم:', error);
+        alert('خطأ في إرسال طلب الدعم: ' + error.message);
     }
 }
 
-// ==================== دالة تحديث التاريخ اليدوي ====================
-function updateManualDate() {
-    const manualDateInput = document.getElementById('manualDateInput');
-    const hijriDate = manualDateInput.value.trim();
+async function sendWhatsAppSupport() {
+    const name = document.getElementById('supportName').value || 'مستخدم بدون اسم';
+    const phone = document.getElementById('supportPhone').value || 'لم يتم تقديمه';
+    const issue = document.getElementById('supportIssue').value || 'لا توجد تفاصيل';
     
-    if (hijriDate) {
-        currentHijriDate = hijriDate;
-        document.getElementById('currentDateDisplay').textContent = `هجري: ${hijriDate}`;
+    try {
+        const response = await callBackend('/support/send', 'POST', {
+            name: name,
+            phone: phone,
+            issue: issue
+        });
         
-        document.getElementById('hDate').innerHTML = hijriDate + " هـ";
-        document.getElementById('gDate').innerHTML = hijriDate + " هـ";
+        if (response.success) {
+            window.open(response.whatsapp_url, '_blank');
+            setTimeout(closeSupportModal, 500);
+        }
+    } catch (error) {
+        console.error('خطأ في إرسال الدعم:', error);
+        alert('خطأ في إرسال طلب الدعم: ' + error.message);
     }
 }
 
-// ==================== دالة معالجة نوع التقرير ====================
-function handleReportType() {
-    const reportTypeSelect = document.getElementById('reportType');
-    const reportTypeInput = document.getElementById('reportTypeInput');
-    const manualTitleInput = document.getElementById('manualReportTitle');
-    
-    if (reportTypeSelect.value) {
-        manualTitleInput.value = reportTypeSelect.value;
-        updateReport();
-    } else if (reportTypeInput.value) {
-        manualTitleInput.value = reportTypeInput.value;
-        updateReport();
-    }
-}
+// ==================== وظائف PDF ====================
 
-// ==================== دوال PDF ====================
-async function downloadPDF(){
+async function downloadPDF() {
     document.querySelector('.control-bar').style.visibility = 'hidden';
     document.querySelector('.top-marquee').style.visibility = 'hidden';
     document.body.style.margin = "0";
@@ -2776,7 +2722,7 @@ async function downloadPDF(){
     });
 }
 
-async function sharePDFWhatsApp(){
+async function sharePDFWhatsApp() {
     document.querySelector('.control-bar').style.visibility = 'hidden';
     document.querySelector('.top-marquee').style.visibility = 'visible';
     document.body.style.margin = "0";
@@ -2832,14 +2778,46 @@ async function sharePDFWhatsApp(){
     });
 }
 
-// ==================== دالة تهيئة التطبيق ====================
-function initializeApp() {
-    loadDates();
-    loadTeacherData();
-    loadDataFromBackend();
+// دالة معالجة نوع التقرير
+function handleReportType() {
+    const reportTypeSelect = document.getElementById('reportType');
+    const reportTypeInput = document.getElementById('reportTypeInput');
+    const manualTitleInput = document.getElementById('manualReportTitle');
+    
+    if (reportTypeSelect.value) {
+        manualTitleInput.value = reportTypeSelect.value;
+        updateReport();
+    } else if (reportTypeInput.value) {
+        manualTitleInput.value = reportTypeInput.value;
+        updateReport();
+    }
+}
+
+// دالة لعرض الإشعارات
+function showNotification(message) {
+    const notification = document.getElementById('saveNotification');
+    notification.querySelector('span').textContent = message;
+    notification.classList.add('show');
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+// دالة مسح البيانات
+function clearData() {
+    if(confirm("هل أنت متأكد من مسح جميع البيانات؟")){
+        localStorage.clear();
+        location.reload();
+    }
+}
+
+// ==================== تهيئة التطبيق ====================
+async function initializeApp() {
+    await loadDates();
+    await loadTeacherData();
     updateReport();
 
-    // إضافة المستمعين للأحداث
     document.getElementById('reportSearch').addEventListener('input', handleReportSearch);
 
     document.addEventListener('click', function(event) {
@@ -2870,14 +2848,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const expiresAt = localStorage.getItem("AI_EXPIRES_AT");
     
     if (token && expiresAt) {
-        // المستخدم مفعل سابقًا - عرض التطبيق مباشرة
         document.getElementById("activationScreen").style.display = "none";
         initializeApp();
         startSubscriptionCountdown();
     } else {
-        // المستخدم غير مفعل - عرض شاشة التفعيل
         document.getElementById("activationScreen").style.display = "flex";
-        // إظهار رسالة في العداد
         const timerEl = document.getElementById("subscriptionTimer");
         if (timerEl) {
             timerEl.textContent = "⏳ الاشتراك غير مفعل";
