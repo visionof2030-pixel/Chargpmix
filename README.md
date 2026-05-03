@@ -1661,7 +1661,7 @@ button[title]:hover::before {
     text-align: center;
     color: var(--main);
     font-weight: 800;
-    font-size: 8px;
+    font-size: 14px;
     margin-bottom: 4px;
 }
 
