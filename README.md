@@ -130,7 +130,7 @@ html, body {
     display: flex;
     gap: 8px;
     width: 100%;
-    max-width: 600px;
+    max-width: 750px;
     justify-content: center;
 }
 
@@ -182,6 +182,12 @@ html, body {
     background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
     color: white;
     border-color: #4a5568;
+}
+
+#logoutBtn {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    color: white;
+    border-color: #c53030;
 }
 
 .small-btn-icon {
@@ -1481,7 +1487,7 @@ button[title]:hover::before {
     background: linear-gradient(135deg, #27ae60 0%, #2ecc71 25%, #3498db 50%, #9b59b6 100%) !important;
 }
 
-/* ========== أنماط PDF المحسنة (مأخوذة من الملف الثاني) ========== */
+/* ========== أنماط PDF المحسنة (تاريخ بدون خلفية داكنة) ========== */
 @page {
     size: A4;
     margin: 10mm;
@@ -1554,12 +1560,44 @@ button[title]:hover::before {
     width: 100%;
 }
 
+/* تحسين مظهر التاريخ: بدون خلفية داكنة، كتابة مباشرة على الهيدر، مرتبة */
 .header-date {
     position: absolute;
     left: 12px;
-    top: 10px;
-    font-size: 12px;
-    text-align: right;
+    top: 12px;
+    font-size: 11px;
+    text-align: center;
+    direction: rtl;
+    background: transparent; /* إزالة الخلفية الداكنة */
+    padding: 0;
+    border-radius: 0;
+    font-weight: bold;
+    line-height: 1.4;
+    white-space: normal;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: white;
+    text-shadow: 0 0 2px rgba(0,0,0,0.5);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+/* عند وجود سطرين، نجعل العرض تلقائياً */
+.header-date br {
+    display: block;
+}
+/* تنسيق خاص للهواتف في PDF */
+@media print {
+    .header-date {
+        font-size: 9pt;
+        white-space: normal;
+        line-height: 1.3;
+        top: 8px;
+        left: 8px;
+        background: transparent !important;
+        box-shadow: none !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
 }
 
 /* الصف العلوي بخمس خانات */
@@ -1829,14 +1867,15 @@ button[title]:hover::before {
     font-size: 11px;
     padding: 3px 4px;
     border-radius: 6px;
+    line-height: 1.5;
 }
 
 /* خارج الصف - تصميم محدث */
 #report-content-outside .info-grid {
-    grid-template-columns: repeat(4, 1fr); /* الفصل الدراسي, مكان التنفيذ, المستهدفون, العدد */
+    grid-template-columns: repeat(4, 1fr);
 }
 #report-content-outside .info-grid2 {
-    grid-template-columns: 1fr; /* نوع التقرير فقط */
+    grid-template-columns: 1fr;
     max-width: 100%;
 }
 #report-content-outside .info-grid2 .info-box {
@@ -2215,6 +2254,11 @@ button[title]:hover::before {
             <i class="fas fa-cog small-btn-icon"></i>
             <span class="small-btn-text">الضبط</span>
         </button>
+        <!-- زر تسجيل الخروج الجديد -->
+        <button class="small-btn" id="logoutBtn" onclick="logout()" title="تسجيل الخروج من الأداة (سيتم طلب كود التفعيل مرة أخرى)">
+            <i class="fas fa-sign-out-alt small-btn-icon"></i>
+            <span class="small-btn-text">تسجيل الخروج</span>
+        </button>
     </div>
 </div>
 
@@ -2493,17 +2537,14 @@ button[title]:hover::before {
 
 <!-- ========== قوالب PDF السبعة (تم تحديث قالب الداخل والخارج) ========== -->
 
-<!-- 1. تقرير داخل الصف (معلم) - نسخة محسنة من الملف الثاني -->
+<!-- 1. تقرير داخل الصف (معلم) -->
 <div id="report-content" class="pdf-export" style="display:none;">
 <div class="header">
   <img src="https://i.ibb.co/zH7k1s8c/IMG-2987.png" alt="شعار وزارة التعليم">
   <div class="header-school-title">اسم المدرسة</div>
   <div class="header-school" id="schoolBox"></div>
   <div class="header-education" id="educationBox"></div>
-  <div class="header-date">
-    <span id="hDate"></span><br>
-    <span id="gDate"></span>
-  </div>
+  <div class="header-date" id="combinedDateInside"></div>
 </div>
 
 <!-- الصف العلوي بخمس خانات -->
@@ -2575,17 +2616,14 @@ button[title]:hover::before {
 </div>
 </div>
 
-<!-- 2. تقرير خارج الصف (معلم) - نسخة محسنة من الملف الثاني -->
+<!-- 2. تقرير خارج الصف (معلم) -->
 <div id="report-content-outside" class="pdf-export" style="display:none;">
 <div class="header">
   <img src="https://i.ibb.co/zH7k1s8c/IMG-2987.png" alt="شعار وزارة التعليم">
   <div class="header-school-title">اسم المدرسة</div>
   <div class="header-school" id="outsideSchoolBox"></div>
   <div class="header-education" id="outsideEducationBox"></div>
-  <div class="header-date">
-    <span id="outsideHDate"></span><br>
-    <span id="outsideGDate"></span>
-  </div>
+  <div class="header-date" id="combinedDateOutside"></div>
 </div>
 
 <!-- الصف العلوي: الفصل الدراسي, مكان التنفيذ (التفاصيل), المستهدفون, العدد -->
@@ -2649,16 +2687,13 @@ button[title]:hover::before {
 </div>
 </div>
 
-<!-- 3. تقرير إداري (مدير/وكيل) - يبقى كما هو من الملف الأول -->
+<!-- 3. تقرير إداري (مدير/وكيل) -->
 <div id="report-content-admin" class="pdf-export" style="display:none;">
 <div class="header">
   <img src="https://i.ibb.co/zH7k1s8c/IMG-2987.png">
   <div class="header-school" id="adminSchoolBox"></div>
   <div class="header-education" id="adminEducationBox"></div>
-  <div class="header-date">
-    <span id="adminHDate"></span><br>
-    <span id="adminGDate"></span>
-  </div>
+  <div class="header-date" id="combinedDateAdmin"></div>
 </div>
 
 <div class="info-grid">
@@ -2718,16 +2753,13 @@ button[title]:hover::before {
 </div>
 </div>
 
-<!-- 4. تقرير إشرافي (مشرف تربوي) - يبقى كما هو -->
+<!-- 4. تقرير إشرافي (مشرف تربوي) -->
 <div id="report-content-supervisor" class="pdf-export" style="display:none;">
 <div class="header">
   <img src="https://i.ibb.co/zH7k1s8c/IMG-2987.png">
   <div class="header-school" id="supervisorSchoolBox">مكتب الإشراف</div>
   <div class="header-education" id="supervisorEducationBox"></div>
-  <div class="header-date">
-    <span id="supervisorHDate"></span><br>
-    <span id="supervisorGDate"></span>
-  </div>
+  <div class="header-date" id="combinedDateSupervisor"></div>
 </div>
 
 <div class="info-grid">
@@ -2787,16 +2819,13 @@ button[title]:hover::before {
 </div>
 </div>
 
-<!-- 5. تقرير نشاط (رائد النشاط) - يبقى كما هو -->
+<!-- 5. تقرير نشاط (رائد النشاط) -->
 <div id="report-content-activity" class="pdf-export" style="display:none;">
 <div class="header">
   <img src="https://i.ibb.co/zH7k1s8c/IMG-2987.png">
   <div class="header-school" id="activitySchoolBox">مدرسة ................</div>
   <div class="header-education" id="activityEducationBox"></div>
-  <div class="header-date">
-    <span id="activityHDate"></span><br>
-    <span id="activityGDate"></span>
-  </div>
+  <div class="header-date" id="combinedDateActivity"></div>
 </div>
 
 <div class="info-grid">
@@ -2856,16 +2885,13 @@ button[title]:hover::before {
 </div>
 </div>
 
-<!-- 6. تقرير التوجيه الطلابي (موجه طلابي) - يبقى كما هو -->
+<!-- 6. تقرير التوجيه الطلابي (موجه طلابي) -->
 <div id="report-content-student" class="pdf-export" style="display:none;">
 <div class="header">
   <img src="https://i.ibb.co/zH7k1s8c/IMG-2987.png">
   <div class="header-school" id="studentSchoolBox">اسم المدرسة</div>
   <div class="header-education" id="studentEducationBox"></div>
-  <div class="header-date">
-    <span id="studentHDate"></span><br>
-    <span id="studentGDate"></span>
-  </div>
+  <div class="header-date" id="combinedDateStudent"></div>
 </div>
 
 <div class="info-grid">
@@ -2925,16 +2951,13 @@ button[title]:hover::before {
 </div>
 </div>
 
-<!-- 7. تقرير صحي (موجه صحي) - يبقى كما هو -->
+<!-- 7. تقرير صحي (موجه صحي) -->
 <div id="report-content-health" class="pdf-export" style="display:none;">
 <div class="header">
   <img src="https://i.ibb.co/zH7k1s8c/IMG-2987.png">
   <div class="header-school" id="healthSchoolBox">اسم المدرسة</div>
   <div class="header-education" id="healthEducationBox"></div>
-  <div class="header-date">
-    <span id="healthHDate"></span><br>
-    <span id="healthGDate"></span>
-  </div>
+  <div class="header-date" id="combinedDateHealth"></div>
 </div>
 
 <div class="info-grid">
@@ -3068,7 +3091,7 @@ button[title]:hover::before {
 </div>
 
 <script>
-// ==================== متغيرات عامة (نفس الكود الأصلي من الملف الأول مع جميع الدوال) ====================
+// ==================== متغيرات عامة ====================
 window.__ACTIVATED__ = false;
 window.allCriteria = [];
 window.subcategoriesByCriterion = {};
@@ -3130,6 +3153,9 @@ async function activateTool() {
         window.__ACTIVATED__ = true;
         hideActivationScreen();
         showNotification("تم تفعيل الأداة بنجاح! ✓");
+        const currentRole = document.getElementById('role').value || 'teacher';
+        const backendRole = getBackendRole(currentRole);
+        loadDataFromBackend(backendRole);
     } catch {
         showActivationError();
     }
@@ -3138,6 +3164,19 @@ async function activateTool() {
 function contactForTrial() {
     const message = encodeURIComponent("أرغب في تجربة أداة إصدار التقارير التربوية أو الاشتراك فيها.\n\nيرجى التواصل معي للمزيد من المعلومات.");
     window.open(`https://wa.me/966597077245?text=${message}`, '_blank');
+}
+
+// ==================== دالة تسجيل الخروج ====================
+function logout() {
+    if (confirm("هل أنت متأكد من تسجيل الخروج؟ سيتم إلغاء التفعيل وستحتاج إلى إدخال كود التفعيل مرة أخرى للمتابعة.\nجميع بياناتك وتقاريرك المحفوظة ستبقى كما هي.")) {
+        localStorage.removeItem(ACTIVATION_KEY_NAME);
+        window.__ACTIVATED__ = false;
+        document.getElementById("activationScreen").style.display = "flex";
+        document.body.style.overflow = "hidden";
+        document.getElementById("activationError").style.display = "none";
+        document.getElementById("activationCodeInput").value = "";
+        showNotification("تم تسجيل الخروج بنجاح. أدخل كود التفعيل لإعادة استخدام الأداة.");
+    }
 }
 
 // ==================== التاريخ ====================
@@ -3154,19 +3193,27 @@ async function loadDates() {
         const data = await response.json();
         const hijri = data.data.hijri;
         const toArabic = n => n.toString().replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
-        currentHijriDate = `${toArabic(hijri.year)}/${toArabic(hijri.month.number)}/${toArabic(hijri.day)}`;
-
-        const dateElements = ['hDate','gDate','outsideHDate','outsideGDate','adminHDate','adminGDate','supervisorHDate','supervisorGDate','activityHDate','activityGDate','studentHDate','studentGDate','healthHDate','healthGDate'];
+        // ترتيب التاريخ الهجري: يوم / شهر / سنة (من اليمين لليسار)
+        currentHijriDate = `${toArabic(hijri.day)} / ${toArabic(hijri.month.number)} / ${toArabic(hijri.year)} هـ`;
+        // عرض التاريخ الهجري فوق الميلادي بدون خلفية داكنة
+        const combinedDate = `${currentHijriDate}<br>${currentGregorianDate} م`;
+        
+        const dateElements = ['combinedDateInside', 'combinedDateOutside', 'combinedDateAdmin', 'combinedDateSupervisor', 'combinedDateActivity', 'combinedDateStudent', 'combinedDateHealth'];
         for (let id of dateElements) {
             let el = document.getElementById(id);
-            if (el) {
-                if (id.includes('H')) el.innerHTML = currentHijriDate + " هـ";
-                else el.innerHTML = currentGregorianDate + " م";
-            }
+            if (el) el.innerHTML = combinedDate;
         }
+
     } catch (error) {
         console.error("خطأ في تحميل التاريخ:", error);
-        currentHijriDate = "١٤٤٦/٠٦/٠١";
+        currentHijriDate = "١ / ٦ / ١٤٤٦ هـ";
+        currentGregorianDate = "١/١/٢٠٢٤";
+        const combinedDate = `${currentHijriDate}<br>${currentGregorianDate} م`;
+        const dateElements = ['combinedDateInside', 'combinedDateOutside', 'combinedDateAdmin', 'combinedDateSupervisor', 'combinedDateActivity', 'combinedDateStudent', 'combinedDateHealth'];
+        for (let id of dateElements) {
+            let el = document.getElementById(id);
+            if (el) el.innerHTML = combinedDate;
+        }
     }
 }
 
@@ -3249,7 +3296,6 @@ function togglePlaceFields() {
         insideTools.style.display = 'block';
         outsideTools.style.display = 'none';
     }
-    // إظهار أو إخفاء حقول المعلم حسب المكان والدور
     const teacherFields = document.getElementById('teacherFields');
     if (role === 'teacher') {
         teacherFields.style.display = place === 'داخل الصف' ? 'block' : 'none';
@@ -3284,12 +3330,9 @@ function getDetailedPlaceValue() {
 
 // ==================== تحديث الحقول الخاصة بالدور ====================
 function updateRoleSpecificFields(role) {
-    // الحقول الصغيرة (تظهر في الأعلى)
     const smallContainer = document.getElementById('smallRoleFields');
     smallContainer.innerHTML = '';
     smallContainer.style.display = 'none';
-
-    // الحقول الكبيرة الإضافية (تظهر في الأسفل)
     const largeContainer = document.getElementById('largeExtraFields');
     largeContainer.innerHTML = '<h4><i class="fas fa-list"></i> تفاصيل إضافية</h4>';
     largeContainer.style.display = 'none';
@@ -3374,7 +3417,6 @@ function updateRoleSpecificFields(role) {
             </div>
         `;
     } else if (role === 'student_guide') {
-        // التوجيه الطلابي: حقول صغيرة (مبادرة، مدة) + حقول كبيرة
         smallHtml = `
             <div class="form-row">
                 <div class="form-group">
@@ -3565,7 +3607,6 @@ function updateReporterFields(backendRole) {
     updateFieldLabelsByRole(backendRole);
     updateRoleSpecificFields(backendRole);
     
-    // إظهار أو إخفاء حقول المعلم حسب الدور
     const teacherFields = document.getElementById('teacherFields');
     if (backendRole === 'teacher') {
         teacherFields.style.display = document.getElementById('place').value === 'داخل الصف' ? 'block' : 'none';
@@ -3664,9 +3705,8 @@ function updateOutsideToolsList() {
     }
 }
 
-// ==================== تحديثات PDF (مع فحص وجود العناصر) ====================
+// ==================== تحديثات PDF ====================
 function updateReport() {
-    // تحديث القالب الرئيسي للمعلم (داخل الصف) - مع فحص وجود العناصر
     const role = document.getElementById('role').value;
     const place = document.getElementById('place').value;
     
@@ -3677,10 +3717,7 @@ function updateReport() {
     if (schoolBox) schoolBox.innerText = document.getElementById('school').value || 'غير محدد';
     
     const termBox = document.getElementById('termBox');
-    if (termBox) {
-        const termValue = document.getElementById('term').value;
-        termBox.innerText = termValue ? `الفصل الدراسي ${termValue}` : 'غير محدد';
-    }
+    if (termBox) termBox.innerText = document.getElementById('term').value ? `الفصل الدراسي ${document.getElementById('term').value}` : 'غير محدد';
     
     const gradeBox = document.getElementById('gradeBox');
     if (gradeBox) gradeBox.innerText = document.getElementById('grade')?.value || 'غير محدد';
@@ -3695,10 +3732,7 @@ function updateReport() {
     if (targetBox) targetBox.innerText = document.getElementById('target').value || 'غير محدد';
     
     const placeBox = document.getElementById('placeBox');
-    if (placeBox) {
-        const placeValue = document.getElementById('place').value;
-        placeBox.innerText = placeValue === 'داخل الصف' ? 'داخل الصف' : (getDetailedPlaceValue() || 'خارج الصف');
-    }
+    if (placeBox) placeBox.innerText = document.getElementById('place').value === 'داخل الصف' ? 'داخل الصف' : (getDetailedPlaceValue() || 'خارج الصف');
     
     const subjectBox = document.getElementById('subjectBox');
     if (subjectBox) subjectBox.innerText = document.getElementById('subject')?.value || 'غير محدد';
@@ -3741,7 +3775,6 @@ function updateReport() {
     
     updateToolsDisplay();
     
-    // تحديث القوالب الأخرى
     updateOutsideReport();
     updateAdminReport();
     updateSupervisorReport();
@@ -3751,7 +3784,6 @@ function updateReport() {
 }
 
 function updateOutsideReport() {
-    // تحديث قالب خارج الصف - مع فحص وجود العناصر
     const place = document.getElementById('place').value;
     if (place !== 'خارج الصف') return;
     
