@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-<title>تقاريرك - النظام المتكامل (7 أدوار)</title>
+<title>إنجاز - النظام المتكامل (7 أدوار)</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -2230,7 +2230,7 @@ button[title]:hover::before {
 <div class="top-marquee">
 <div class="marquee-inner">
 <i class="fas fa-star" style="margin-left:8px;"></i> 
-✨ نظام تقاريرك المتكامل: أنشئ تقارير تربوية احترافية بسهولة - حفظ تلقائي - تعبئة ذكية بالذكاء الاصطناعي - معايير أداء محدثة - مشاركة PDF وواتساب - دعم كامل للهواتف - تقارير غير محدودة للمشتركين ✨
+✨ إنجاز: أنشئ تقارير تربوية احترافية بسهولة - حفظ تلقائي - تعبئة ذكية بالذكاء الاصطناعي - معايير أداء محدثة - مشاركة PDF وواتساب - دعم كامل للهواتف - تقارير غير محدودة للمشتركين ✨
 <i class="fas fa-gem" style="margin-right:8px;"></i>
 </div>
 </div>
@@ -2280,7 +2280,7 @@ button[title]:hover::before {
 <div class="wrapper">
 <div class="input-section">
   
-  <h2><i class="fas fa-tools" style="margin-left:10px;"></i>تقاريرك - النظام المتكامل</h2>
+  <h2><i class="fas fa-tools" style="margin-left:10px;"></i>إنجاز - النظام المتكامل</h2>
   
   <!-- ========== اختيار مقدم التقرير (الدور) ========== -->
   <!-- تم تعديل القائمة: إضافة disabled و (قريباً 🔒) لجميع الأدوار باستثناء المعلم -->
