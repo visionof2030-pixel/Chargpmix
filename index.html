@@ -904,6 +904,46 @@ button[title]:hover::before {
     counter-reset: tool-counter;
 }
 
+/* أكورديون قسم الأدوات والوسائل التعليمية */
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 12px 14px;
+    background: #f8fdfa;
+    border: 1px solid #d4ebe2;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #066d4d;
+    user-select: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.accordion-header:hover {
+    background: #f0f9f6;
+}
+
+.accordion-icon {
+    transition: transform 0.25s ease;
+    color: #066d4d;
+}
+
+.accordion-icon.rotated {
+    transform: rotate(180deg);
+}
+
+.accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+}
+
+.accordion-body.open {
+    max-height: 3000px;
+}
+
 .tools-grid {
     display: grid;
     gap: 12px;
@@ -2555,11 +2595,19 @@ button[title]:hover::before {
   
   <!-- قسم الأدوات والوسائل التعليمية - داخل الصف -->
   <div id="insideToolsSection" class="form-group">
-    <label><i class="fas fa-tools"></i> الأدوات والوسائل التعليمية (داخل الصف)</label>
-    <div class="tools-section" id="toolsSection">
+    <div class="accordion-header" onclick="toggleToolsAccordion('toolsSection')">
+      <span><i class="fas fa-tools"></i> الأدوات والوسائل التعليمية (داخل الصف)</span>
+      <i class="fas fa-chevron-down accordion-icon rotated" id="toolsSectionIcon"></i>
+    </div>
+    <div class="tools-section accordion-body open" id="toolsSection">
       <div class="tools-grid" id="toolsGrid">
         <p style="text-align:center;color:#666;">جارٍ تحميل الأدوات التعليمية...</p>
       </div>
+      <div class="other-tool-container">
+        <input type="text" id="otherToolInputInside" placeholder="أداة أخرى غير موجودة بالقائمة...">
+        <button type="button" onclick="addOtherToolInside()">إضافة</button>
+      </div>
+      <div class="other-tools-list" id="otherToolsListInside"></div>
       <div style="text-align:center; margin-top:10px; font-size:11px; color:#666;">
         <i class="fas fa-info-circle"></i> اضغط على الأداة لتحديدها
       </div>
@@ -2568,8 +2616,11 @@ button[title]:hover::before {
 
   <!-- قسم الأدوات والوسائل التعليمية - خارج الصف -->
   <div id="outsideToolsSection" class="form-group" style="display: none;">
-    <label><i class="fas fa-tools"></i> الأدوات والوسائل (خارج الصف)</label>
-    <div class="tools-section">
+    <div class="accordion-header" onclick="toggleToolsAccordion('outsideToolsSection2')">
+      <span><i class="fas fa-tools"></i> الأدوات والوسائل (خارج الصف)</span>
+      <i class="fas fa-chevron-down accordion-icon rotated" id="outsideToolsSection2Icon"></i>
+    </div>
+    <div class="tools-section accordion-body open" id="outsideToolsSection2">
       <div class="tools-outside-grid" id="outsideToolsGrid"></div>
       <div class="other-tool-container">
         <input type="text" id="otherToolInput" placeholder="أداة أخرى...">
@@ -3156,6 +3207,7 @@ window.subcategoriesByCriterion = {};
 window.reportsBySubcategory = {};
 window.allReportsList = [];
 window.otherTools = [];
+window.otherToolsInside = [];
 window.currentRole = 'teacher';
 window.guideTimerInterval = null;
 
@@ -3547,7 +3599,7 @@ function updateReporterFields(backendRole) {
     const reporterTypeLabel = document.getElementById('reporterTypeLabel');
     const reporterNameLabel = document.getElementById('reporterNameLabel');
     // بما أن الدور teacher
-    reporterTypeLabel.textContent = 'صفة المعلّم';
+    reporterTypeLabel.textContent = 'صفة مقدم التقرير';
     reporterNameLabel.textContent = 'اسم المعلّم';
     const typeOptions = ['المعلم', 'المعلمة'];
     const defaultType = 'المعلم';
@@ -3566,10 +3618,11 @@ function updateReporterFields(backendRole) {
     
     updateFieldLabelsByRole(backendRole);
     updateRoleSpecificFields(backendRole);
-    
-    const teacherFields = document.getElementById('teacherFields');
-    teacherFields.style.display = document.getElementById('place').value === 'داخل الصف' ? 'block' : 'none';
-    
+
+    // يضبط ظهور حقول المعلم وحقل "حدد المكان بالضبط" معاً حسب مكان التنفيذ الحالي
+    // (بدون هذا الاستدعاء، كان الحقل يظهر افتراضياً عند التحميل الأول حتى مع اختيار داخل الصف)
+    togglePlaceFields();
+
     updateReport();
 }
 
@@ -3635,6 +3688,46 @@ function updateOtherToolsList() {
         tag.innerHTML = `${tool} <i class="fas fa-times" onclick="removeOtherTool(${index})"></i>`;
         listContainer.appendChild(tag);
     });
+}
+
+// نفس آلية "أداة أخرى" أعلاه لكن لقسم داخل الصف (كانت متاحة فقط لخارج الصف سابقاً)
+function addOtherToolInside() {
+    const input = document.getElementById('otherToolInputInside');
+    const toolName = input.value.trim();
+    if (toolName === '') return;
+    window.otherToolsInside.push(toolName);
+    input.value = '';
+    updateOtherToolsListInside();
+    updateToolsDisplay();
+    updateReport();
+}
+
+function removeOtherToolInside(index) {
+    window.otherToolsInside.splice(index, 1);
+    updateOtherToolsListInside();
+    updateToolsDisplay();
+    updateReport();
+}
+
+function updateOtherToolsListInside() {
+    const listContainer = document.getElementById('otherToolsListInside');
+    if (!listContainer) return;
+    listContainer.innerHTML = '';
+    window.otherToolsInside.forEach((tool, index) => {
+        const tag = document.createElement('span');
+        tag.className = 'other-tag';
+        tag.innerHTML = `${tool} <i class="fas fa-times" onclick="removeOtherToolInside(${index})"></i>`;
+        listContainer.appendChild(tag);
+    });
+}
+
+// فتح/طي قسم الأدوات والوسائل التعليمية (أكورديون)
+function toggleToolsAccordion(bodyId) {
+    const body = document.getElementById(bodyId);
+    const icon = document.getElementById(bodyId + 'Icon');
+    if (!body) return;
+    const isOpen = body.classList.toggle('open');
+    if (icon) icon.classList.toggle('rotated', isOpen);
 }
 
 function updateOutsideToolsList() {
@@ -3820,6 +3913,7 @@ function updateToolsDisplay() {
     toolsListBox.innerHTML = '';
     const selectedTools = [];
     document.querySelectorAll('#toolsGrid .tool-checkbox input[type="checkbox"]').forEach(cb => { if (cb.checked) selectedTools.push(cb.value); });
+    selectedTools.push(...window.otherToolsInside);
     selectedTools.forEach(tool => {
         const toolElement = document.createElement('div');
         toolElement.className = 'tool';
@@ -3938,12 +4032,16 @@ function saveCurrentReport() {
     const criterionWeight = document.getElementById('selectedCriterionWeight')?.textContent || '0%';
     const savedReports = JSON.parse(localStorage.getItem(REPORTS_STORAGE_KEY)) || {};
     let tools = [];
+    let otherToolsForSave = [];
     const place = document.getElementById('place').value;
     if (place === 'خارج الصف') {
         document.querySelectorAll('#outsideToolsGrid .tool-checkbox input[type="checkbox"]').forEach(cb => { if (cb.checked) tools.push(cb.value); });
         tools = tools.concat(window.otherTools);
+        otherToolsForSave = window.otherTools;
     } else {
         document.querySelectorAll('#toolsGrid .tool-checkbox input[type="checkbox"]').forEach(cb => { if (cb.checked) tools.push(cb.value); });
+        tools = tools.concat(window.otherToolsInside);
+        otherToolsForSave = window.otherToolsInside;
     }
     const uiRole = document.getElementById('role').value;
 
@@ -3974,7 +4072,7 @@ function saveCurrentReport() {
             strengths: document.getElementById('strengths').value,
             improve: document.getElementById('improve').value,
             recomm: document.getElementById('recomm').value,
-            tools, otherTools: window.otherTools,
+            tools, otherTools: otherToolsForSave,
             field: document.getElementById('fieldInput')?.value,
             initiative: document.getElementById('initiativeInput')?.value,
             duration: document.getElementById('durationInput')?.value,
@@ -4075,8 +4173,16 @@ function loadSavedReport(criterionId) {
         detailedPlaceInput.value = detailedPlace;
     }
 
-    window.otherTools = report.data.otherTools || [];
+    // otherTools محفوظة حسب مكان التنفيذ وقت الحفظ (انظر saveCurrentReport)
+    if (report.data.place === 'خارج الصف') {
+        window.otherTools = report.data.otherTools || [];
+        window.otherToolsInside = [];
+    } else {
+        window.otherToolsInside = report.data.otherTools || [];
+        window.otherTools = [];
+    }
     updateOtherToolsList();
+    updateOtherToolsListInside();
     togglePlaceFields();
     if (report.data.place === 'خارج الصف') {
         document.querySelectorAll('#outsideToolsGrid .tool-checkbox').forEach(toolElement => {
@@ -4441,7 +4547,9 @@ function saveTeacherData() {
         subcategory: document.getElementById('subcategorySelect').value,
         report: document.getElementById('reportSelect').value,
         role: document.getElementById('role').value,
-        tools: []
+        tools: [],
+        otherTools: window.otherTools,
+        otherToolsInside: window.otherToolsInside
     };
     const place = document.getElementById('place').value;
     if (place === 'خارج الصف') {
@@ -4449,6 +4557,7 @@ function saveTeacherData() {
         teacherData.tools = teacherData.tools.concat(window.otherTools);
     } else {
         document.querySelectorAll('#toolsGrid .tool-checkbox input[type="checkbox"]').forEach(cb => { if (cb.checked) teacherData.tools.push(cb.value); });
+        teacherData.tools = teacherData.tools.concat(window.otherToolsInside);
     }
     ['goal','summary','steps','strategies','strengths','improve','recomm'].forEach(f => teacherData[f] = document.getElementById(f).value);
     if (document.getElementById('fieldInput')) teacherData.field = document.getElementById('fieldInput').value;
@@ -4518,8 +4627,16 @@ function loadTeacherData() {
             }
         }
         ['goal','summary','steps','strategies','strengths','improve','recomm'].forEach(f => { if (teacherData[f]) document.getElementById(f).value = teacherData[f]; });
-        window.otherTools = teacherData.tools ? teacherData.tools.filter(t => !['مكبر صوت متنقل','أقماع تنظيم','صدريات فرق','بطاقات تعريف','أدوات رسم','حقيبة إسعافات أولية','جهاز لوحي للتوثيق'].includes(t)) : [];
+        if (teacherData.otherTools !== undefined || teacherData.otherToolsInside !== undefined) {
+            window.otherTools = teacherData.otherTools || [];
+            window.otherToolsInside = teacherData.otherToolsInside || [];
+        } else {
+            // بيانات محفوظة قديمة لا تحتوي الحقلين الجديدين: نعتمد الآلية التقريبية السابقة (كانت خاصة بخارج الصف فقط)
+            window.otherTools = teacherData.tools ? teacherData.tools.filter(t => !['مكبر صوت متنقل','أقماع تنظيم','صدريات فرق','بطاقات تعريف','أدوات رسم','حقيبة إسعافات أولية','جهاز لوحي للتوثيق'].includes(t)) : [];
+            window.otherToolsInside = [];
+        }
         updateOtherToolsList();
+        updateOtherToolsListInside();
         togglePlaceFields();
         if (teacherData.place === 'خارج الصف') {
             document.querySelectorAll('#outsideToolsGrid .tool-checkbox').forEach(toolElement => {
@@ -4560,7 +4677,9 @@ function clearData() {
         document.querySelectorAll('#toolsGrid .tool-checkbox input[type="checkbox"]').forEach(cb => { cb.checked = false; cb.closest('.tool-checkbox')?.classList.remove('checked'); });
         document.querySelectorAll('#outsideToolsGrid .tool-checkbox input[type="checkbox"]').forEach(cb => { cb.checked = false; cb.closest('.tool-checkbox')?.classList.remove('checked'); });
         window.otherTools = [];
+        window.otherToolsInside = [];
         updateOtherToolsList();
+        updateOtherToolsListInside();
         document.getElementById('criterionSelect').value = '';
         document.getElementById('subcategorySelect').innerHTML = '<option value="">اختر التصنيف الفرعي</option>';
         document.getElementById('subcategorySelect').disabled = true;
@@ -4675,10 +4794,24 @@ async function sharePDFWhatsApp() {
 
         let file = new File([pdfBlob], reportName + ".pdf", { type: "application/pdf" });
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            // المسار المثالي: قائمة مشاركة الجهاز الأصلية، يرفق الملف تلقائياً ويمكن اختيار واتساب منها
             navigator.share({ files: [file], title: reportName, text: "تقرير: " + reportName });
         } else {
-            let url = URL.createObjectURL(pdfBlob);
-            window.open(`https://wa.me/?text=${encodeURIComponent("تقرير: " + reportName + "\n\n" + url)}`, "_blank");
+            // لا توجد طريقة تقنية لفتح واتساب مع إرفاق ملف تلقائياً بدون قائمة مشاركة الجهاز
+            // (قيد من واتساب/أندرويد/iOS نفسها). كحل بديل: ننزّل الملف فعلياً على الجهاز
+            // ثم نفتح واتساب مباشرة برسالة جاهزة توضح للمستخدم إرفاق الملف يدوياً.
+            const downloadUrl = URL.createObjectURL(pdfBlob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = downloadUrl;
+            downloadLink.download = reportName + ".pdf";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            setTimeout(() => URL.revokeObjectURL(downloadUrl), 60000);
+
+            const waText = "تقرير: " + reportName + "\n\nتم تنزيل ملف PDF على جهازك، الرجاء إرفاقه هنا يدوياً 📎";
+            window.open(`https://wa.me/?text=${encodeURIComponent(waText)}`, "_blank");
+            showNotification("تم تنزيل التقرير — افتح مرفقات واتساب وأرفقه يدوياً 📎");
         }
     });
 }
