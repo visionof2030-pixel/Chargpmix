@@ -401,73 +401,124 @@ html, body {
 #activationScreen {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(135deg, #022e22, #044a35);
+    background: linear-gradient(160deg, var(--primary-dark) 0%, #033024 60%, #021d17 100%);
     z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Cairo', sans-serif;
+    padding: 20px;
+    overflow-y: auto;
 }
 
 #activationScreen .activation-box {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    width: 90%;
+    background: var(--white);
+    padding: 32px 28px;
+    border-radius: 20px;
+    width: 100%;
     max-width: 400px;
     text-align: center;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-    border: 3px solid #ffd166;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+    border-top: 4px solid var(--secondary);
+    margin: auto;
 }
 
-#activationScreen h3 {
-    color: #044a35; 
-    margin-bottom: 20px; 
-    font-size: 22px;
+#activationScreen .auth-logo {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 14px auto;
+    background: var(--gray-light);
+    border: 1px solid var(--border);
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    overflow: hidden;
+}
+
+#activationScreen .auth-logo img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+#activationScreen h3 {
+    color: var(--text-dark);
+    margin-bottom: 6px;
+    font-size: 22px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+#activationScreen h3 i {
+    display: none;
+}
+
+#activationScreen .auth-subtitle {
+    color: var(--text-light);
+    font-size: 14px;
+    margin-bottom: 22px;
 }
 
 #activationScreen p {
-    color: #666; 
-    font-size: 14px; 
+    color: #666;
+    font-size: 14px;
     margin-bottom: 20px;
 }
 
 #activationScreen button {
     width: 100%;
     padding: 15px;
-    background: linear-gradient(135deg, #066d4d 0%, #05553d 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     font-weight: 700;
     cursor: pointer;
     font-size: 16px;
-    transition: all 0.3s;
+    transition: all 0.2s;
     font-family: 'Cairo', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 #activationScreen button:hover {
-    background: linear-gradient(135deg, #05553d 0%, #044a35 100%);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #033024 100%);
     filter: brightness(1.05);
+}
+
+#activationScreen button:active {
+    transform: translateY(1px);
+}
+
+#activationScreen button:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#activationScreen button .fa-spinner {
+    animation: magicalSpin 0.8s linear infinite;
 }
 
 #contactForTrialBtn {
     width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, #5a67d8 0%, #4c51bf 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
+    padding: 14px;
+    background: var(--gray-light);
+    color: var(--text-dark);
+    border: 2px solid var(--border);
+    border-radius: 12px;
     font-weight: 700;
     cursor: pointer;
-    font-size: 16px;
-    transition: all 0.3s;
+    font-size: 15px;
+    transition: all 0.2s;
     font-family: 'Cairo', sans-serif;
-    margin-top: 10px;
+    margin-top: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -475,61 +526,128 @@ html, body {
 }
 
 #contactForTrialBtn:hover {
-    background: linear-gradient(135deg, #4c51bf 0%, #434190 100%);
-    filter: brightness(1.05);
+    background: var(--gray);
+    border-color: var(--primary-light);
 }
 
 /* حقول تسجيل الدخول / إنشاء الحساب (Supabase Auth) */
+#activationScreen .auth-input-wrapper {
+    position: relative;
+    margin-bottom: 14px;
+}
+
 #activationScreen .auth-input {
     width: 100%;
-    padding: 15px;
-    border: 2px solid #d4ebe2;
-    border-radius: 10px;
+    padding: 14px 15px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
     font-size: 16px;
-    text-align: center;
-    margin-bottom: 15px;
+    text-align: right;
     font-family: 'Cairo', sans-serif;
-    transition: all 0.3s;
+    transition: all 0.2s;
+    background: var(--white);
+    color: var(--text-dark);
+    margin-bottom: 14px;
+}
+
+#activationScreen .auth-input-wrapper .auth-input {
+    margin-bottom: 0;
+    padding-left: 44px;
 }
 
 #activationScreen .auth-input:focus {
     outline: none;
-    border-color: #066d4d;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(6, 109, 77, 0.15);
+}
+
+#activationScreen .password-toggle-btn {
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-light);
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+#activationScreen .password-toggle-btn:hover {
+    background: var(--gray-light);
+    color: var(--text-dark);
+}
+
+#activationScreen .auth-forgot-link {
+    display: block;
+    text-align: left;
+    font-size: 13px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    margin: -4px 0 16px 2px;
+    background: none;
+    border: none;
+    font-family: 'Cairo', sans-serif;
+    width: auto;
+    padding: 4px;
+}
+
+#activationScreen .auth-forgot-link:hover {
+    text-decoration: underline;
+    background: none;
 }
 
 #authTabs {
     display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
+    gap: 6px;
+    margin-bottom: 22px;
+    background: var(--gray-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
 }
 
 .auth-tab {
     flex: 1;
-    padding: 12px 8px;
-    border: 2px solid #d4ebe2;
-    background: #f8fdfa;
-    color: #044a35;
-    border-radius: 10px;
+    padding: 11px 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    border-radius: 9px;
     font-weight: 700;
     cursor: pointer;
     font-family: 'Cairo', sans-serif;
-    font-size: 14px;
-    transition: all 0.3s;
+    font-size: 13px;
+    transition: all 0.2s;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.2;
 }
 
 .auth-tab.active {
-    background: linear-gradient(135deg, #066d4d 0%, #05553d 100%);
-    color: white;
-    border-color: #05553d;
+    background: var(--white);
+    color: var(--primary-dark);
+    box-shadow: 0 2px 8px rgba(4, 74, 53, 0.15);
 }
 
 #authMessage {
     font-size: 13px;
     margin-top: 15px;
-    padding: 10px;
+    padding: 10px 12px;
     border-radius: 8px;
     display: none;
+    text-align: right;
 }
 
 #authMessage.error {
@@ -543,6 +661,13 @@ html, body {
     color: #1a7f4b;
     background: #e6f7ee;
     border-right: 4px solid #25D366;
+    display: block;
+}
+
+#authMessage.info {
+    color: var(--primary-dark);
+    background: var(--gray-light);
+    border-right: 4px solid var(--primary-light);
     display: block;
 }
 
@@ -942,6 +1067,166 @@ button[title]:hover::before {
 
 .accordion-body.open {
     max-height: 3000px;
+}
+
+/* ========== نظام الأقسام القابلة للطي في الصفحة الرئيسية (تنظيم عرض فقط) ========== */
+.main-progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+}
+
+.main-progress-bar .main-progress-track {
+    flex: 1;
+    height: 8px;
+    background: var(--gray);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.main-progress-bar .main-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-light), var(--primary));
+    border-radius: 999px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.main-progress-bar .main-progress-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    white-space: nowrap;
+}
+
+.main-accordion-section {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    background: var(--white);
+}
+
+.main-accordion-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--white);
+    border: none;
+    cursor: pointer;
+    text-align: right;
+    font-family: 'Cairo', sans-serif;
+    user-select: none;
+}
+
+.main-accordion-header:hover {
+    background: var(--gray-light);
+}
+
+.main-accordion-number {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--gray-light);
+    border: 1px solid var(--border);
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.main-accordion-titlewrap {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: right;
+}
+
+.main-accordion-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.main-accordion-title i {
+    color: var(--primary);
+}
+
+.main-accordion-desc {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.main-accordion-status {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: var(--gray-light);
+    color: var(--text-light);
+    white-space: nowrap;
+}
+
+.main-accordion-status.filled {
+    background: #e6f7ee;
+    color: #1a7f4b;
+}
+
+.main-accordion-status i {
+    font-size: 8px;
+}
+
+.main-accordion-chevron {
+    flex-shrink: 0;
+    color: var(--primary);
+    transition: transform 0.25s ease;
+}
+
+.main-accordion-chevron.rotated {
+    transform: rotate(180deg);
+}
+
+.main-accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+    padding: 0 16px;
+}
+
+.main-accordion-body.open {
+    max-height: 6000px;
+    padding: 4px 16px 18px 16px;
+}
+
+@media (max-width: 480px) {
+    .main-accordion-header { padding: 14px 12px; }
+    .main-accordion-body.open { padding: 4px 12px 16px 12px; }
+    .main-accordion-desc { display: none; }
+}
+
+@media (max-width: 400px) {
+    #activationScreen .activation-box { padding: 26px 18px; }
+    .auth-tab { font-size: 12px; padding: 10px 4px; }
 }
 
 .tools-grid {
@@ -2293,33 +2578,42 @@ button[title]:hover::before {
 <!-- شاشة تسجيل الدخول / إنشاء حساب (Supabase Auth) -->
 <div id="activationScreen">
     <div class="activation-box">
-        <h3><i class="fas fa-lock"></i> <span id="authTitle">تسجيل الدخول</span></h3>
+        <div class="auth-logo"><img src="https://i.ibb.co/zH7k1s8c/IMG-2987.png" alt="إنجاز"></div>
+        <h3><i class="fas fa-lock"></i> <span id="authTitle">مرحبًا بك في إنجاز</span></h3>
+        <div class="auth-subtitle" id="authSubtitle">سجّل دخولك للمتابعة</div>
 
         <div id="authTabs">
             <button type="button" id="authTabLogin" class="auth-tab active" onclick="switchAuthTab('login')">تسجيل الدخول</button>
-            <button type="button" id="authTabSignup" class="auth-tab" onclick="switchAuthTab('signup')">حساب جديد</button>
+            <button type="button" id="authTabSignup" class="auth-tab" onclick="switchAuthTab('signup')">إنشاء حساب جديد</button>
         </div>
 
         <!-- نموذج تسجيل الدخول: بريد إلكتروني أو اسم مستخدم + كلمة مرور -->
         <div id="loginForm">
             <input id="loginIdentifierInput" class="auth-input" placeholder="البريد الإلكتروني أو اسم المستخدم" autocomplete="username">
-            <input id="loginPasswordInput" class="auth-input" type="password" placeholder="كلمة المرور" autocomplete="current-password">
-            <button onclick="handleLogin()">دخول</button>
+            <div class="auth-input-wrapper">
+                <input id="loginPasswordInput" class="auth-input" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+                <button type="button" class="password-toggle-btn" tabindex="-1" onclick="togglePasswordVisibility('loginPasswordInput', this)" aria-label="إظهار/إخفاء كلمة المرور"><i class="fas fa-eye"></i></button>
+            </div>
+            <button type="button" class="auth-forgot-link" onclick="handleForgotPassword()">نسيت كلمة المرور؟</button>
+            <button id="loginSubmitBtn" onclick="handleLogin()">تسجيل الدخول</button>
         </div>
 
         <!-- نموذج إنشاء حساب: بريد إلكتروني + اسم مستخدم + كلمة مرور -->
         <div id="signupForm" style="display:none;">
             <input id="signupEmailInput" class="auth-input" type="email" placeholder="البريد الإلكتروني" autocomplete="email">
             <input id="signupUsernameInput" class="auth-input" placeholder="اسم المستخدم" autocomplete="username">
-            <input id="signupPasswordInput" class="auth-input" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="new-password">
-            <button onclick="handleSignup()">إنشاء الحساب</button>
+            <div class="auth-input-wrapper" style="margin-bottom:16px;">
+                <input id="signupPasswordInput" class="auth-input" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="new-password">
+                <button type="button" class="password-toggle-btn" tabindex="-1" onclick="togglePasswordVisibility('signupPasswordInput', this)" aria-label="إظهار/إخفاء كلمة المرور"><i class="fas fa-eye"></i></button>
+            </div>
+            <button id="signupSubmitBtn" onclick="handleSignup()">إنشاء حساب جديد</button>
         </div>
 
         <button id="contactForTrialBtn" onclick="contactForTrial()">
             <i class="fas fa-comments"></i>
             تواصل للدعم أو الاستفسار
         </button>
-        <div id="authMessage"></div>
+        <div id="authMessage" role="alert" aria-live="polite"></div>
     </div>
 </div>
 
@@ -2376,268 +2670,385 @@ button[title]:hover::before {
 <!-- المحتوى الرئيسي -->
 <div class="wrapper">
 <div class="input-section">
-  
+
   <h2><i class="fas fa-tools" style="margin-left:10px;"></i>إنجاز - النظام المتكامل</h2>
-  
-  <!-- ========== اختيار مقدم التقرير (الدور) ========== -->
-  <!-- تم تعديل القائمة: إضافة disabled و (قريباً 🔒) لجميع الأدوار باستثناء المعلم -->
-  <div class="form-group">
-    <label for="role"><i class="fas fa-user-tie"></i> مقدم التقرير</label>
-    <select id="role" name="role" required onchange="handleRoleChange()">
-      <option value="">اختر الصفة المهنية</option>
-      <option value="teacher" selected>معلم / معلمة</option>
-      <option value="school_principal" disabled>مدير المدرسة / مديرة المدرسة (قريباً 🔒)</option>
-      <option value="vice_principal" disabled>وكيل المدرسة / وكيلة المدرسة (قريباً 🔒)</option>
-      <option value="student_guide" disabled>الموجه الطلابي / الموجهة الطلابية (قريباً 🔒)</option>
-      <option value="health_guide" disabled>الموجه الصحي / الموجهة الصحية (قريباً 🔒)</option>
-      <option value="activity_leader" disabled>رائد النشاط / رائدة النشاط (قريباً 🔒)</option>
-      <option value="educational_supervisor" disabled>المشرف التربوي / المشرفة التربوية (قريباً 🔒)</option>
-    </select>
-  </div>
-  
-  <!-- ========== القوائم المتتالية (اختيارية) ========== -->
-  <div class="levels-container">
-    <div class="level-indicator">
-      <span>اختر المعايير والتصنيفات (اختياري)</span>
-      <span><i class="fas fa-layer-group"></i> للمساعدة</span>
-    </div>
-    
-    <!-- المستوى الأول: المعايير التربوية -->
-    <div class="level-select">
-      <label><i class="fas fa-star"></i> معيار الاداء الوظيفي</label>
-      <select id="criterionSelect" onchange="loadSubcategories()">
-        <option value="">اختر معيار الاداء الوظيفي</option>
-      </select>
-    </div>
-    
-    <!-- معلومات المعيار المحدد (تظهر دائماً مع الوزن) -->
-    <div id="criterionInfo" class="criterion-info" style="display: none;">
-      <span id="selectedCriterionName" class="criterion-name"></span>
-      <span id="selectedCriterionWeight" class="criterion-weight"></span>
-    </div>
-    
-    <!-- المستوى الثاني: التصنيفات الفرعية -->
-    <div class="level-select">
-      <label><i class="fas fa-list-ul"></i> التصنيف الفرعي</label>
-      <select id="subcategorySelect" onchange="loadReports()" disabled>
-        <option value="">اختر التصنيف الفرعي</option>
-      </select>
-    </div>
-    
-    <!-- المستوى الثالث: التقارير -->
-    <div class="level-select">
-      <label><i class="fas fa-file-alt"></i> التقرير</label>
-      <select id="reportSelect" onchange="updateReportFromSelection()" disabled>
-        <option value="">اختر التقرير</option>
-      </select>
-    </div>
-    
-    <!-- البحث المتقدم -->
-    <div id="reportSearchContainer">
-        <input type="text" id="reportSearch" placeholder="ابحث عن تقرير (اختياري)..." style="width:100%; padding:12px; border:2px solid #d4ebe2; border-radius:8px; font-size:14px;">
-        <div id="searchResults"></div>
-    </div>
-    
-    <!-- خانة عنوان التقرير اليدوية (إلزامي) -->
-    <div class="manual-title-container">
-        <label><i class="fas fa-heading"></i> عنوان التقرير <span style="color:#ff6b6b;">*</span></label>
-        <input type="text" id="manualReportTitle" placeholder="أدخل عنوان التقرير (مثال: تقرير زيارة صفية)" oninput="updateReport()" required>
-    </div>
-  </div>
-  
-  <!-- حقول أساسية مشتركة -->
-  <div class="form-group">
-    <label for="education"><i class="fas fa-university"></i> إدارة التعليم</label>
-    <select id="education" oninput="updateReport()">
-      <option value="">اختر إدارة التعليم</option>
-    </select>
-  </div>
-  
-  <div class="form-group">
-    <label for="school"><i class="fas fa-school"></i> اسم المدرسة / المكتب</label>
-    <input id="school" placeholder="اسم المدرسة أو المكتب" oninput="updateReport()">
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label for="reporterType"><i class="fas fa-chalkboard-teacher"></i> <span id="reporterTypeLabel">صفة مقدم التقرير</span></label>
-      <select id="reporterType" oninput="updateReporterGender()"></select>
-    </div>
-    <div class="form-group">
-      <label for="reporterName"><i class="fas fa-user"></i> <span id="reporterNameLabel">اسم مقدم التقرير</span></label>
-      <input id="reporterName" placeholder="اسم مقدم التقرير" oninput="updateReport()">
-    </div>
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label for="principalTypeDisplay"><i class="fas fa-user-cog"></i> صفة المدير (تلقائي)</label>
-      <input type="text" id="principalTypeDisplay" readonly style="background:#f0f0f0;" value="المدير">
-    </div>
-    <div class="form-group">
-      <label for="principal"><i class="fas fa-user-cog"></i> اسم المدير / المسؤول</label>
-      <input id="principal" placeholder="اسم المدير" oninput="updateReport()">
-    </div>
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label for="place"><i class="fas fa-map-marker-alt"></i> مكان التنفيذ</label>
-      <select id="place" onchange="togglePlaceFields()" oninput="updateReport()">
-        <option value="داخل الصف">داخل الصف</option>
-        <option value="خارج الصف">خارج الصف</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="term"><i class="fas fa-calendar-alt"></i> الفصل الدراسي</label>
-      <select id="term" oninput="updateReport()">
-        <option value="">اختر الفصل</option>
-        <option value="الأول">الأول</option>
-        <option value="الثاني">الثاني</option>
-        <option value="الثالث">الثالث</option>
-      </select>
-    </div>
+
+  <!-- مؤشر تقدم عام (عرض فقط - لا يمثل قاعدة عمل جديدة) -->
+  <div class="main-progress-bar">
+    <span class="main-progress-label" id="mainProgressLabel">0 من 7 أقسام</span>
+    <div class="main-progress-track"><div class="main-progress-fill" id="mainProgressFill"></div></div>
   </div>
 
-  <!-- تفاصيل المكان (يتم إخفاؤها داخل الصف) -->
-  <div class="form-group" id="detailedPlaceGroup">
-    <label><i class="fas fa-location-dot"></i> حدد المكان بالضبط</label>
-    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-      <select id="detailedPlaceSelect" style="flex: 2;" onchange="toggleDetailedPlaceInput()">
-        <option value="">اختر موقعاً محدداً</option>
-        <option value="الفناء المدرسي">الفناء المدرسي</option>
-        <option value="غرفة المدير">غرفة المدير</option>
-        <option value="غرفة الاجتماعات">غرفة الاجتماعات</option>
-        <option value="رحلة خارج المدرسة">رحلة خارج المدرسة</option>
-        <option value="أخرى">أخرى (اكتب)</option>
-      </select>
-      <input type="text" id="detailedPlaceInput" placeholder="اكتب موقعاً آخر" style="flex: 3; display: none;" oninput="updateReport()">
-    </div>
-  </div>
+  <!-- ===== القسم 1: بيانات التقرير الأساسية ===== -->
+  <div class="main-accordion-section" data-section="1">
+    <button type="button" class="main-accordion-header" onclick="toggleMainSection(1)">
+      <span class="main-accordion-number">1</span>
+      <span class="main-accordion-titlewrap">
+        <span class="main-accordion-title"><i class="fas fa-id-card"></i> بيانات التقرير الأساسية</span>
+        <span class="main-accordion-desc">مقدّم التقرير، المدرسة، المكان والزمن</span>
+      </span>
+      <span class="main-accordion-status" id="mainSection1Status"><i class="fas fa-circle"></i> يحتاج إكمال</span>
+      <i class="fas fa-chevron-down main-accordion-chevron rotated" id="mainSection1Chevron"></i>
+    </button>
+    <div class="main-accordion-body open" id="mainSection1">
 
-  <!-- الحقول الخاصة بالمعلم (تظهر فقط إذا كان الدور teacher والمكان داخل الصف) -->
-  <div id="teacherFields" style="display: none;">
-    <div class="form-row">
+      <!-- ========== اختيار مقدم التقرير (الدور) ========== -->
+      <!-- تم تعديل القائمة: إضافة disabled و (قريباً 🔒) لجميع الأدوار باستثناء المعلم -->
       <div class="form-group">
-        <label for="grade"><i class="fas fa-users-class"></i> الصف</label>
-        <input id="grade" placeholder="مثال: ٥/٣" oninput="updateReport()">
+        <label for="role"><i class="fas fa-user-tie"></i> مقدم التقرير</label>
+        <select id="role" name="role" required onchange="handleRoleChange()">
+          <option value="">اختر الصفة المهنية</option>
+          <option value="teacher" selected>معلم / معلمة</option>
+          <option value="school_principal" disabled>مدير المدرسة / مديرة المدرسة (قريباً 🔒)</option>
+          <option value="vice_principal" disabled>وكيل المدرسة / وكيلة المدرسة (قريباً 🔒)</option>
+          <option value="student_guide" disabled>الموجه الطلابي / الموجهة الطلابية (قريباً 🔒)</option>
+          <option value="health_guide" disabled>الموجه الصحي / الموجهة الصحية (قريباً 🔒)</option>
+          <option value="activity_leader" disabled>رائد النشاط / رائدة النشاط (قريباً 🔒)</option>
+          <option value="educational_supervisor" disabled>المشرف التربوي / المشرفة التربوية (قريباً 🔒)</option>
+        </select>
       </div>
-    </div>
-    <div class="form-row">
+
+      <!-- حقول أساسية مشتركة -->
       <div class="form-group">
-        <label for="subject"><i class="fas fa-book"></i> المادة / البرنامج</label>
-        <input id="subject" placeholder="مثال: لغتي" oninput="updateReport()">
+        <label for="education"><i class="fas fa-university"></i> إدارة التعليم</label>
+        <select id="education" oninput="updateReport()">
+          <option value="">اختر إدارة التعليم</option>
+        </select>
       </div>
+
       <div class="form-group">
-        <label for="lesson"><i class="fas fa-book-open"></i> الدرس / النشاط</label>
-        <input id="lesson" placeholder="مثال: درس الضرب" oninput="updateReport()">
+        <label for="school"><i class="fas fa-school"></i> اسم المدرسة / المكتب</label>
+        <input id="school" placeholder="اسم المدرسة أو المكتب" oninput="updateReport()">
       </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="reporterType"><i class="fas fa-chalkboard-teacher"></i> <span id="reporterTypeLabel">صفة مقدم التقرير</span></label>
+          <select id="reporterType" oninput="updateReporterGender()"></select>
+        </div>
+        <div class="form-group">
+          <label for="reporterName"><i class="fas fa-user"></i> <span id="reporterNameLabel">اسم مقدم التقرير</span></label>
+          <input id="reporterName" placeholder="اسم مقدم التقرير" oninput="updateReport()">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="principalTypeDisplay"><i class="fas fa-user-cog"></i> صفة المدير (تلقائي)</label>
+          <input type="text" id="principalTypeDisplay" readonly style="background:#f0f0f0;" value="المدير">
+        </div>
+        <div class="form-group">
+          <label for="principal"><i class="fas fa-user-cog"></i> اسم المدير / المسؤول</label>
+          <input id="principal" placeholder="اسم المدير" oninput="updateReport()">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="place"><i class="fas fa-map-marker-alt"></i> مكان التنفيذ</label>
+          <select id="place" onchange="togglePlaceFields()" oninput="updateReport()">
+            <option value="داخل الصف">داخل الصف</option>
+            <option value="خارج الصف">خارج الصف</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="term"><i class="fas fa-calendar-alt"></i> الفصل الدراسي</label>
+          <select id="term" oninput="updateReport()">
+            <option value="">اختر الفصل</option>
+            <option value="الأول">الأول</option>
+            <option value="الثاني">الثاني</option>
+            <option value="الثالث">الثالث</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- تفاصيل المكان (يتم إخفاؤها داخل الصف) -->
+      <div class="form-group" id="detailedPlaceGroup">
+        <label><i class="fas fa-location-dot"></i> حدد المكان بالضبط</label>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <select id="detailedPlaceSelect" style="flex: 2;" onchange="toggleDetailedPlaceInput()">
+            <option value="">اختر موقعاً محدداً</option>
+            <option value="الفناء المدرسي">الفناء المدرسي</option>
+            <option value="غرفة المدير">غرفة المدير</option>
+            <option value="غرفة الاجتماعات">غرفة الاجتماعات</option>
+            <option value="رحلة خارج المدرسة">رحلة خارج المدرسة</option>
+            <option value="أخرى">أخرى (اكتب)</option>
+          </select>
+          <input type="text" id="detailedPlaceInput" placeholder="اكتب موقعاً آخر" style="flex: 3; display: none;" oninput="updateReport()">
+        </div>
+      </div>
+
+      <!-- الحقول الخاصة بالمعلم (تظهر فقط إذا كان الدور teacher والمكان داخل الصف) -->
+      <div id="teacherFields" style="display: none;">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="grade"><i class="fas fa-users-class"></i> الصف</label>
+            <input id="grade" placeholder="مثال: ٥/٣" oninput="updateReport()">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="subject"><i class="fas fa-book"></i> المادة / البرنامج</label>
+            <input id="subject" placeholder="مثال: لغتي" oninput="updateReport()">
+          </div>
+          <div class="form-group">
+            <label for="lesson"><i class="fas fa-book-open"></i> الدرس / النشاط</label>
+            <input id="lesson" placeholder="مثال: درس الضرب" oninput="updateReport()">
+          </div>
+        </div>
+      </div>
+
+      <!-- الحقول الصغيرة الخاصة بالدور (تظهر في الأعلى) -->
+      <div id="smallRoleFields" class="small-fields" style="display: none;"></div>
+
     </div>
   </div>
 
-  <!-- الحقول الصغيرة الخاصة بالدور (تظهر في الأعلى) -->
-  <div id="smallRoleFields" class="small-fields" style="display: none;"></div>
+  <!-- ===== القسم 2: محتوى النشاط / الدرس ===== -->
+  <div class="main-accordion-section" data-section="2">
+    <button type="button" class="main-accordion-header" onclick="toggleMainSection(2)">
+      <span class="main-accordion-number">2</span>
+      <span class="main-accordion-titlewrap">
+        <span class="main-accordion-title"><i class="fas fa-clipboard-list"></i> محتوى النشاط / الدرس</span>
+        <span class="main-accordion-desc">عنوان التقرير، المعايير، والمستهدفون</span>
+      </span>
+      <span class="main-accordion-status" id="mainSection2Status"><i class="fas fa-circle"></i> يحتاج إكمال</span>
+      <i class="fas fa-chevron-down main-accordion-chevron rotated" id="mainSection2Chevron"></i>
+    </button>
+    <div class="main-accordion-body open" id="mainSection2">
 
-  <!-- المستهدفون والعدد (حقول مشتركة) -->
-  <div class="form-row">
-    <div class="form-group">
-      <label for="target"><i class="fas fa-bullseye"></i> المستهدفون / الفئة</label>
-      <input id="target" placeholder="مثال: جميع طلاب الصف" oninput="updateReport()">
-    </div>
-    <div class="form-group">
-      <label for="count"><i class="fas fa-user-check"></i> العدد / الحضور</label>
-      <input id="count" placeholder="مثال: ٢٥" oninput="updateReport()">
+      <!-- ========== القوائم المتتالية (اختيارية) ========== -->
+      <div class="levels-container">
+        <div class="level-indicator">
+          <span>اختر المعايير والتصنيفات (اختياري)</span>
+          <span><i class="fas fa-layer-group"></i> للمساعدة</span>
+        </div>
+
+        <!-- المستوى الأول: المعايير التربوية -->
+        <div class="level-select">
+          <label><i class="fas fa-star"></i> معيار الاداء الوظيفي</label>
+          <select id="criterionSelect" onchange="loadSubcategories()">
+            <option value="">اختر معيار الاداء الوظيفي</option>
+          </select>
+        </div>
+
+        <!-- معلومات المعيار المحدد (تظهر دائماً مع الوزن) -->
+        <div id="criterionInfo" class="criterion-info" style="display: none;">
+          <span id="selectedCriterionName" class="criterion-name"></span>
+          <span id="selectedCriterionWeight" class="criterion-weight"></span>
+        </div>
+
+        <!-- المستوى الثاني: التصنيفات الفرعية -->
+        <div class="level-select">
+          <label><i class="fas fa-list-ul"></i> التصنيف الفرعي</label>
+          <select id="subcategorySelect" onchange="loadReports()" disabled>
+            <option value="">اختر التصنيف الفرعي</option>
+          </select>
+        </div>
+
+        <!-- المستوى الثالث: التقارير -->
+        <div class="level-select">
+          <label><i class="fas fa-file-alt"></i> التقرير</label>
+          <select id="reportSelect" onchange="updateReportFromSelection()" disabled>
+            <option value="">اختر التقرير</option>
+          </select>
+        </div>
+
+        <!-- البحث المتقدم -->
+        <div id="reportSearchContainer">
+            <input type="text" id="reportSearch" placeholder="ابحث عن تقرير (اختياري)..." style="width:100%; padding:12px; border:2px solid #d4ebe2; border-radius:8px; font-size:14px;">
+            <div id="searchResults"></div>
+        </div>
+
+        <!-- خانة عنوان التقرير اليدوية (إلزامي) -->
+        <div class="manual-title-container">
+            <label><i class="fas fa-heading"></i> عنوان التقرير <span style="color:#ff6b6b;">*</span></label>
+            <input type="text" id="manualReportTitle" placeholder="أدخل عنوان التقرير (مثال: تقرير زيارة صفية)" oninput="updateReport()" required>
+        </div>
+      </div>
+
+      <!-- المستهدفون والعدد (حقول مشتركة) -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="target"><i class="fas fa-bullseye"></i> المستهدفون / الفئة</label>
+          <input id="target" placeholder="مثال: جميع طلاب الصف" oninput="updateReport()">
+        </div>
+        <div class="form-group">
+          <label for="count"><i class="fas fa-user-check"></i> العدد / الحضور</label>
+          <input id="count" placeholder="مثال: ٢٥" oninput="updateReport()">
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- ========== الحقول النصية الكبيرة ========== -->
-  <div class="form-group">
-    <label for="goal"><i class="fas fa-flag"></i> <span id="goalLabel">الهدف التربوي</span></label>
-    <textarea id="goal" placeholder="أدخل الهدف" oninput="updateReport()"></textarea>
-  </div>
-  
-  <div class="form-group">
-    <label for="summary"><i class="fas fa-file-signature"></i> <span id="summaryLabel">نبذة مختصرة</span></label>
-    <textarea id="summary" placeholder="أدخل نبذة مختصرة" oninput="updateReport()"></textarea>
-  </div>
-  
-  <div class="form-group">
-    <label for="steps"><i class="fas fa-tasks"></i> <span id="stepsLabel">إجراءات التنفيذ</span></label>
-    <textarea id="steps" placeholder="كيف تم تنفيذ النشاط؟" oninput="updateReport()"></textarea>
-  </div>
-  
-  <div class="form-group">
-    <label for="strategies"><i class="fas fa-chess-board"></i> <span id="strategiesLabel">الاستراتيجيات</span></label>
-    <textarea id="strategies" placeholder="ما هي الاستراتيجيات المستخدمة" oninput="updateReport()"></textarea>
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label for="strengths"><i class="fas fa-thumbs-up"></i> <span id="strengthsLabel">نقاط القوة</span></label>
-      <textarea id="strengths" placeholder="نقاط القوة" oninput="updateReport()"></textarea>
-    </div>
-    <div class="form-group">
-      <label for="improve"><i class="fas fa-tools"></i> <span id="improveLabel">نقاط التحسين</span></label>
-      <textarea id="improve" placeholder="نقاط تحتاج تطوير" oninput="updateReport()"></textarea>
-    </div>
-  </div>
-  
-  <!-- حقل التوصيات/خطة المتابعة -->
-  <div class="form-group">
-    <label for="recomm"><i class="fas fa-lightbulb"></i> <span id="recommLabel">التوصيات</span></label>
-    <textarea id="recomm" placeholder="أدخل النص" oninput="updateReport()"></textarea>
-  </div>
+  <!-- ===== القسم 3: المحتوى التربوي ===== -->
+  <div class="main-accordion-section" data-section="3">
+    <button type="button" class="main-accordion-header" onclick="toggleMainSection(3)">
+      <span class="main-accordion-number">3</span>
+      <span class="main-accordion-titlewrap">
+        <span class="main-accordion-title"><i class="fas fa-flag"></i> المحتوى التربوي</span>
+        <span class="main-accordion-desc">الهدف التربوي والنبذة المختصرة</span>
+      </span>
+      <span class="main-accordion-status" id="mainSection3Status"><i class="fas fa-circle"></i> يحتاج إكمال</span>
+      <i class="fas fa-chevron-down main-accordion-chevron rotated" id="mainSection3Chevron"></i>
+    </button>
+    <div class="main-accordion-body open" id="mainSection3">
 
-  <!-- الحقول الكبيرة الإضافية (للتوجيه الطلابي) -->
-  <div id="largeExtraFields" class="large-extra-fields" style="display: none;">
-    <h4><i class="fas fa-list"></i> تفاصيل إضافية</h4>
-  </div>
-  
-  <!-- قسم الأدوات والوسائل التعليمية - داخل الصف -->
-  <div id="insideToolsSection" class="form-group">
-    <div class="accordion-header" onclick="toggleToolsAccordion('toolsSection')">
-      <span><i class="fas fa-tools"></i> الأدوات والوسائل التعليمية (داخل الصف)</span>
-      <i class="fas fa-chevron-down accordion-icon rotated" id="toolsSectionIcon"></i>
-    </div>
-    <div class="tools-section accordion-body open" id="toolsSection">
-      <div class="tools-grid" id="toolsGrid">
-        <p style="text-align:center;color:#666;">جارٍ تحميل الأدوات التعليمية...</p>
+      <div class="form-group">
+        <label for="goal"><i class="fas fa-flag"></i> <span id="goalLabel">الهدف التربوي</span></label>
+        <textarea id="goal" placeholder="أدخل الهدف" oninput="updateReport()"></textarea>
       </div>
-      <div class="other-tool-container">
-        <input type="text" id="otherToolInputInside" placeholder="أداة أخرى غير موجودة بالقائمة...">
-        <button type="button" onclick="addOtherToolInside()">إضافة</button>
+
+      <div class="form-group">
+        <label for="summary"><i class="fas fa-file-signature"></i> <span id="summaryLabel">نبذة مختصرة</span></label>
+        <textarea id="summary" placeholder="أدخل نبذة مختصرة" oninput="updateReport()"></textarea>
       </div>
-      <div class="other-tools-list" id="otherToolsListInside"></div>
-      <div style="text-align:center; margin-top:10px; font-size:11px; color:#666;">
-        <i class="fas fa-info-circle"></i> اضغط على الأداة لتحديدها
-      </div>
+
     </div>
   </div>
 
-  <!-- قسم الأدوات والوسائل التعليمية - خارج الصف -->
-  <div id="outsideToolsSection" class="form-group" style="display: none;">
-    <div class="accordion-header" onclick="toggleToolsAccordion('outsideToolsSection2')">
-      <span><i class="fas fa-tools"></i> الأدوات والوسائل (خارج الصف)</span>
-      <i class="fas fa-chevron-down accordion-icon rotated" id="outsideToolsSection2Icon"></i>
-    </div>
-    <div class="tools-section accordion-body open" id="outsideToolsSection2">
-      <div class="tools-outside-grid" id="outsideToolsGrid"></div>
-      <div class="other-tool-container">
-        <input type="text" id="otherToolInput" placeholder="أداة أخرى...">
-        <button onclick="addOtherTool()">إضافة</button>
+  <!-- ===== القسم 4: التنفيذ والاستراتيجيات ===== -->
+  <div class="main-accordion-section" data-section="4">
+    <button type="button" class="main-accordion-header" onclick="toggleMainSection(4)">
+      <span class="main-accordion-number">4</span>
+      <span class="main-accordion-titlewrap">
+        <span class="main-accordion-title"><i class="fas fa-tasks"></i> التنفيذ والاستراتيجيات</span>
+        <span class="main-accordion-desc">إجراءات التنفيذ والاستراتيجيات المستخدمة</span>
+      </span>
+      <span class="main-accordion-status" id="mainSection4Status"><i class="fas fa-circle"></i> يحتاج إكمال</span>
+      <i class="fas fa-chevron-down main-accordion-chevron rotated" id="mainSection4Chevron"></i>
+    </button>
+    <div class="main-accordion-body open" id="mainSection4">
+
+      <div class="form-group">
+        <label for="steps"><i class="fas fa-tasks"></i> <span id="stepsLabel">إجراءات التنفيذ</span></label>
+        <textarea id="steps" placeholder="كيف تم تنفيذ النشاط؟" oninput="updateReport()"></textarea>
       </div>
-      <div class="other-tools-list" id="otherToolsList"></div>
+
+      <div class="form-group">
+        <label for="strategies"><i class="fas fa-chess-board"></i> <span id="strategiesLabel">الاستراتيجيات</span></label>
+        <textarea id="strategies" placeholder="ما هي الاستراتيجيات المستخدمة" oninput="updateReport()"></textarea>
+      </div>
+
     </div>
   </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label><i class="fas fa-camera"></i> الصورة 1</label>
-      <input type="file" accept="image/*" onchange="loadImage(this,'imgBox1','outsideImgBox1','adminImgBox1','supervisorImgBox1','activityImgBox1','studentImgBox1','healthImgBox1')">
+
+  <!-- ===== القسم 5: التقييم والتوصيات ===== -->
+  <div class="main-accordion-section" data-section="5">
+    <button type="button" class="main-accordion-header" onclick="toggleMainSection(5)">
+      <span class="main-accordion-number">5</span>
+      <span class="main-accordion-titlewrap">
+        <span class="main-accordion-title"><i class="fas fa-lightbulb"></i> التقييم والتوصيات</span>
+        <span class="main-accordion-desc">نقاط القوة، التحسين، والتوصيات</span>
+      </span>
+      <span class="main-accordion-status" id="mainSection5Status"><i class="fas fa-circle"></i> يحتاج إكمال</span>
+      <i class="fas fa-chevron-down main-accordion-chevron rotated" id="mainSection5Chevron"></i>
+    </button>
+    <div class="main-accordion-body open" id="mainSection5">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="strengths"><i class="fas fa-thumbs-up"></i> <span id="strengthsLabel">نقاط القوة</span></label>
+          <textarea id="strengths" placeholder="نقاط القوة" oninput="updateReport()"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="improve"><i class="fas fa-tools"></i> <span id="improveLabel">نقاط التحسين</span></label>
+          <textarea id="improve" placeholder="نقاط تحتاج تطوير" oninput="updateReport()"></textarea>
+        </div>
+      </div>
+
+      <!-- حقل التوصيات/خطة المتابعة -->
+      <div class="form-group">
+        <label for="recomm"><i class="fas fa-lightbulb"></i> <span id="recommLabel">التوصيات</span></label>
+        <textarea id="recomm" placeholder="أدخل النص" oninput="updateReport()"></textarea>
+      </div>
+
+      <!-- الحقول الكبيرة الإضافية (للتوجيه الطلابي) -->
+      <div id="largeExtraFields" class="large-extra-fields" style="display: none;">
+        <h4><i class="fas fa-list"></i> تفاصيل إضافية</h4>
+      </div>
+
     </div>
-    <div class="form-group">
-      <label><i class="fas fa-camera"></i> الصورة 2</label>
-      <input type="file" accept="image/*" onchange="loadImage(this,'imgBox2','outsideImgBox2','adminImgBox2','supervisorImgBox2','activityImgBox2','studentImgBox2','healthImgBox2')">
+  </div>
+
+  <!-- ===== القسم 6: الأدوات والوسائل التعليمية ===== -->
+  <div class="main-accordion-section" data-section="6">
+    <button type="button" class="main-accordion-header" onclick="toggleMainSection(6)">
+      <span class="main-accordion-number">6</span>
+      <span class="main-accordion-titlewrap">
+        <span class="main-accordion-title"><i class="fas fa-toolbox"></i> الأدوات والوسائل التعليمية</span>
+        <span class="main-accordion-desc">اختر الأدوات المستخدمة في التنفيذ</span>
+      </span>
+      <span class="main-accordion-status" id="mainSection6Status"><i class="fas fa-circle"></i> يحتاج إكمال</span>
+      <i class="fas fa-chevron-down main-accordion-chevron rotated" id="mainSection6Chevron"></i>
+    </button>
+    <div class="main-accordion-body open" id="mainSection6">
+
+      <!-- قسم الأدوات والوسائل التعليمية - داخل الصف -->
+      <div id="insideToolsSection" class="form-group">
+        <div class="accordion-header" onclick="toggleToolsAccordion('toolsSection')">
+          <span><i class="fas fa-tools"></i> الأدوات والوسائل التعليمية (داخل الصف)</span>
+          <i class="fas fa-chevron-down accordion-icon rotated" id="toolsSectionIcon"></i>
+        </div>
+        <div class="tools-section accordion-body open" id="toolsSection">
+          <div class="tools-grid" id="toolsGrid">
+            <p style="text-align:center;color:#666;">جارٍ تحميل الأدوات التعليمية...</p>
+          </div>
+          <div class="other-tool-container">
+            <input type="text" id="otherToolInputInside" placeholder="أداة أخرى غير موجودة بالقائمة...">
+            <button type="button" onclick="addOtherToolInside()">إضافة</button>
+          </div>
+          <div class="other-tools-list" id="otherToolsListInside"></div>
+          <div style="text-align:center; margin-top:10px; font-size:11px; color:#666;">
+            <i class="fas fa-info-circle"></i> اضغط على الأداة لتحديدها
+          </div>
+        </div>
+      </div>
+
+      <!-- قسم الأدوات والوسائل التعليمية - خارج الصف -->
+      <div id="outsideToolsSection" class="form-group" style="display: none;">
+        <div class="accordion-header" onclick="toggleToolsAccordion('outsideToolsSection2')">
+          <span><i class="fas fa-tools"></i> الأدوات والوسائل (خارج الصف)</span>
+          <i class="fas fa-chevron-down accordion-icon rotated" id="outsideToolsSection2Icon"></i>
+        </div>
+        <div class="tools-section accordion-body open" id="outsideToolsSection2">
+          <div class="tools-outside-grid" id="outsideToolsGrid"></div>
+          <div class="other-tool-container">
+            <input type="text" id="otherToolInput" placeholder="أداة أخرى...">
+            <button onclick="addOtherTool()">إضافة</button>
+          </div>
+          <div class="other-tools-list" id="otherToolsList"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== القسم 7: المرفقات والصور ===== -->
+  <div class="main-accordion-section" data-section="7">
+    <button type="button" class="main-accordion-header" onclick="toggleMainSection(7)">
+      <span class="main-accordion-number">7</span>
+      <span class="main-accordion-titlewrap">
+        <span class="main-accordion-title"><i class="fas fa-images"></i> المرفقات والصور</span>
+        <span class="main-accordion-desc">صور داعمة للتقرير (اختياري)</span>
+      </span>
+      <span class="main-accordion-status" id="mainSection7Status"><i class="fas fa-circle"></i> يحتاج إكمال</span>
+      <i class="fas fa-chevron-down main-accordion-chevron rotated" id="mainSection7Chevron"></i>
+    </button>
+    <div class="main-accordion-body open" id="mainSection7">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label><i class="fas fa-camera"></i> الصورة 1</label>
+          <input type="file" accept="image/*" onchange="loadImage(this,'imgBox1','outsideImgBox1','adminImgBox1','supervisorImgBox1','activityImgBox1','studentImgBox1','healthImgBox1')">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-camera"></i> الصورة 2</label>
+          <input type="file" accept="image/*" onchange="loadImage(this,'imgBox2','outsideImgBox2','adminImgBox2','supervisorImgBox2','activityImgBox2','studentImgBox2','healthImgBox2')">
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -3306,8 +3717,24 @@ function switchAuthTab(tab) {
     document.getElementById('authTabSignup').classList.toggle('active', !isLogin);
     document.getElementById('loginForm').style.display = isLogin ? 'block' : 'none';
     document.getElementById('signupForm').style.display = isLogin ? 'none' : 'block';
-    document.getElementById('authTitle').textContent = isLogin ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
+    const subtitleEl = document.getElementById('authSubtitle');
+    if (subtitleEl) subtitleEl.textContent = isLogin ? 'سجّل دخولك للمتابعة' : 'أنشئ حسابًا جديدًا للبدء';
     clearAuthMessage();
+}
+
+// إظهار/إخفاء كلمة المرور - تغيير عرض فقط، لا يغيّر أي منطق تحقق أو إرسال
+function togglePasswordVisibility(inputId, btnEl) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const showing = input.type === 'text';
+    input.type = showing ? 'password' : 'text';
+    const icon = btnEl.querySelector('i');
+    if (icon) icon.className = showing ? 'fas fa-eye' : 'fas fa-eye-slash';
+}
+
+// عنصر نائب مؤقت: خاصية استرجاع كلمة المرور الفعلية ستُضاف لاحقًا (Supabase reset password)
+function handleForgotPassword() {
+    showAuthMessage('ميزة استعادة كلمة المرور قيد التطوير حاليًا وستُضاف قريبًا. للمساعدة الفورية تواصل معنا عبر زر "تواصل للدعم" أدناه.', 'info');
 }
 
 function showAuthMessage(text, type) {
@@ -3337,18 +3764,25 @@ async function handleLogin() {
     const password = document.getElementById('loginPasswordInput').value;
     if (!identifier || !password) { showAuthMessage('الرجاء إدخال البريد الإلكتروني أو اسم المستخدم وكلمة المرور', 'error'); return; }
     clearAuthMessage();
-    const email = await resolveLoginEmail(identifier);
-    if (!email) {
-        // لا نكشف أبداً إن كانت المشكلة في اسم المستخدم أو كلمة المرور
-        showAuthMessage('بيانات الدخول غير صحيحة', 'error');
-        return;
+    const btn = document.getElementById('loginSubmitBtn');
+    const originalBtnHTML = btn ? btn.innerHTML : null;
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner"></i> جارٍ تسجيل الدخول...'; }
+    try {
+        const email = await resolveLoginEmail(identifier);
+        if (!email) {
+            // لا نكشف أبداً إن كانت المشكلة في اسم المستخدم أو كلمة المرور
+            showAuthMessage('بيانات الدخول غير صحيحة', 'error');
+            return;
+        }
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error || !data?.session) {
+            showAuthMessage('بيانات الدخول غير صحيحة', 'error');
+            return;
+        }
+        onAuthenticated();
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = originalBtnHTML; }
     }
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    if (error || !data?.session) {
-        showAuthMessage('بيانات الدخول غير صحيحة', 'error');
-        return;
-    }
-    onAuthenticated();
 }
 
 async function handleSignup() {
@@ -3358,25 +3792,32 @@ async function handleSignup() {
     if (!email || !username || !password) { showAuthMessage('الرجاء تعبئة جميع الحقول', 'error'); return; }
     if (password.length < 6) { showAuthMessage('كلمة المرور يجب ألا تقل عن 6 أحرف', 'error'); return; }
     clearAuthMessage();
-    const { data, error } = await supabaseClient.auth.signUp({
-        email,
-        password,
-        options: { data: { username } }
-    });
-    if (error) {
-        const msg = /already|exists|مسجل/i.test(error.message)
-            ? 'هذا البريد الإلكتروني مستخدم بالفعل'
-            : (/username|اسم المستخدم/i.test(error.message)
-                ? 'اسم المستخدم هذا مستخدم بالفعل، الرجاء اختيار اسم آخر'
-                : 'تعذر إنشاء الحساب: ' + error.message);
-        showAuthMessage(msg, 'error');
-        return;
-    }
-    if (data?.session) {
-        onAuthenticated();
-    } else {
-        showAuthMessage('تم إنشاء الحساب بنجاح. إذا طُلب منك تأكيد البريد الإلكتروني، افتح الرابط المُرسل إليك ثم سجّل الدخول.', 'success');
-        switchAuthTab('login');
+    const btn = document.getElementById('signupSubmitBtn');
+    const originalBtnHTML = btn ? btn.innerHTML : null;
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner"></i> جارٍ إنشاء الحساب...'; }
+    try {
+        const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: { data: { username } }
+        });
+        if (error) {
+            const msg = /already|exists|مسجل/i.test(error.message)
+                ? 'هذا البريد الإلكتروني مستخدم بالفعل'
+                : (/username|اسم المستخدم/i.test(error.message)
+                    ? 'اسم المستخدم هذا مستخدم بالفعل، الرجاء اختيار اسم آخر'
+                    : 'تعذر إنشاء الحساب: ' + error.message);
+            showAuthMessage(msg, 'error');
+            return;
+        }
+        if (data?.session) {
+            onAuthenticated();
+        } else {
+            showAuthMessage('تم إنشاء الحساب بنجاح. إذا طُلب منك تأكيد البريد الإلكتروني، افتح الرابط المُرسل إليك ثم سجّل الدخول.', 'success');
+            switchAuthTab('login');
+        }
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = originalBtnHTML; }
     }
 }
 
@@ -3730,6 +4171,69 @@ function toggleToolsAccordion(bodyId) {
     if (icon) icon.classList.toggle('rotated', isOpen);
 }
 
+// ==================== أقسام الصفحة الرئيسية (accordion حرّ - عرض/تنظيم فقط) ====================
+// كل قسم مستقل تماماً: يمكن فتح/إغلاق أي قسم في أي وقت دون أي ترتيب إلزامي،
+// ولا يوجد "حفظ" منفصل لكل قسم - جميع الحقول تبقى حيّة ومتصلة بنفس منطق التطبيق كما هي.
+function toggleMainSection(n) {
+    const body = document.getElementById('mainSection' + n);
+    const chevron = document.getElementById('mainSection' + n + 'Chevron');
+    if (!body) return;
+    const isOpen = body.classList.toggle('open');
+    if (chevron) chevron.classList.toggle('rotated', isOpen);
+}
+
+// فحص عرضي بسيط: هل تحتوي حقول هذا القسم على أي محتوى؟ (لا يمثل قاعدة تحقق أو عمل جديدة)
+function isMainSectionFilled(fieldIds) {
+    return fieldIds.some(id => {
+        const el = document.getElementById(id);
+        if (!el) return false;
+        if (el.tagName === 'SELECT') return !!el.value;
+        return !!(el.value && el.value.trim());
+    });
+}
+
+function updateMainSectionsProgress() {
+    const sections = {
+        1: ['role', 'education', 'school', 'reporterName', 'principal', 'place', 'term', 'grade', 'subject', 'lesson'],
+        2: ['manualReportTitle', 'reportSearch', 'target', 'count'],
+        3: ['goal', 'summary'],
+        4: ['steps', 'strategies'],
+        5: ['strengths', 'improve', 'recomm'],
+        6: [], // الأدوات تُحتسب بشكل خاص أدناه
+        7: [], // الصور تُحتسب بشكل خاص أدناه
+    };
+
+    let filledCount = 0;
+    for (let n = 1; n <= 7; n++) {
+        let filled;
+        if (n === 6) {
+            const insideChecked = document.querySelectorAll('#toolsGrid .tool-checkbox input[type="checkbox"]:checked').length > 0;
+            const outsideChecked = document.querySelectorAll('#outsideToolsGrid .tool-checkbox input[type="checkbox"]:checked').length > 0;
+            const hasCustomInside = !!(window.otherToolsInside && window.otherToolsInside.length);
+            const hasCustomOutside = !!(window.otherTools && window.otherTools.length);
+            filled = insideChecked || outsideChecked || hasCustomInside || hasCustomOutside;
+        } else if (n === 7) {
+            const img1 = document.getElementById('imgBox1');
+            const img2 = document.getElementById('imgBox2');
+            filled = !!((img1 && img1.querySelector('img')) || (img2 && img2.querySelector('img')));
+        } else {
+            filled = isMainSectionFilled(sections[n]);
+        }
+
+        const statusEl = document.getElementById('mainSection' + n + 'Status');
+        if (statusEl) {
+            statusEl.classList.toggle('filled', filled);
+            statusEl.innerHTML = filled ? '<i class="fas fa-circle"></i> مكتمل' : '<i class="fas fa-circle"></i> يحتاج إكمال';
+        }
+        if (filled) filledCount++;
+    }
+
+    const label = document.getElementById('mainProgressLabel');
+    const fill = document.getElementById('mainProgressFill');
+    if (label) label.textContent = filledCount + ' من 7 أقسام';
+    if (fill) fill.style.width = Math.round((filledCount / 7) * 100) + '%';
+}
+
 function updateOutsideToolsList() {
     const toolsListBox = document.getElementById('outsideToolsListBox');
     if (!toolsListBox) return;
@@ -3830,6 +4334,9 @@ function updateReport() {
     updateActivityReport();
     updateStudentReport();
     updateHealthReport();
+
+    // مؤشر تقدم عرضي فقط للأقسام السبعة في الصفحة الرئيسية - لا يغيّر أي منطق أو بيانات
+    if (typeof updateMainSectionsProgress === 'function') updateMainSectionsProgress();
 }
 
 function updateOutsideReport() {
@@ -3905,6 +4412,7 @@ function toggleTool(element) {
     checkbox.checked = !checkbox.checked;
     if (checkbox.checked) element.classList.add('checked'); else element.classList.remove('checked');
     updateToolsDisplay();
+    if (typeof updateMainSectionsProgress === 'function') updateMainSectionsProgress();
 }
 
 function updateToolsDisplay() {
@@ -3944,6 +4452,7 @@ function loadImage(input, ...targetIds) {
                     imgBox.appendChild(img);
                 }
             });
+            if (typeof updateMainSectionsProgress === 'function') updateMainSectionsProgress();
         };
         reader.readAsDataURL(input.files[0]);
     }
