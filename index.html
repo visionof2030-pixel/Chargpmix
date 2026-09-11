@@ -442,6 +442,20 @@ html, body {
     object-fit: contain;
 }
 
+#activationScreen .auth-brand-name {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--primary-dark);
+    margin-bottom: 2px;
+}
+
+#activationScreen .auth-brand-tagline {
+    font-size: 12.5px;
+    color: var(--text-light);
+    margin-bottom: 18px;
+    font-weight: 600;
+}
+
 #activationScreen h3 {
     color: var(--text-dark);
     margin-bottom: 6px;
@@ -720,6 +734,36 @@ html, body {
 .form-group {
     margin-bottom: 25px;
     position: relative;
+}
+
+/* واجهة بديلة (زرين) لنفس قائمة "صفة مقدم التقرير" المخفية - بدون أي منطق جديد */
+.gender-toggle-group {
+    display: flex;
+    gap: 8px;
+}
+
+.gender-toggle-btn {
+    flex: 1;
+    padding: 14px 8px;
+    border: 2px solid var(--border);
+    background: var(--white);
+    color: var(--text-dark);
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    font-family: 'Cairo', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.gender-toggle-btn:hover {
+    background: var(--gray-light);
+}
+
+.gender-toggle-btn.active {
+    background: var(--primary);
+    border-color: var(--primary-dark);
+    color: var(--white);
 }
 
 .form-group label {
@@ -1195,6 +1239,16 @@ button[title]:hover::before {
 .main-accordion-status.incomplete {
     background: #fff4e5;
     color: #b06a00;
+}
+
+.main-accordion-status.ai-pending {
+    background: #f1ecfb;
+    color: #6b46c1;
+}
+
+.main-accordion-status.optional {
+    background: var(--gray-light);
+    color: var(--text-light);
 }
 
 .main-accordion-status i {
@@ -2584,6 +2638,8 @@ button[title]:hover::before {
 <div id="activationScreen">
     <div class="activation-box">
         <div class="auth-logo"><img src="https://i.ibb.co/zH7k1s8c/IMG-2987.png" alt="إنجاز"></div>
+        <div class="auth-brand-name">إنجاز</div>
+        <div class="auth-brand-tagline">أداة إصدار التقارير التربوية</div>
         <h3><i class="fas fa-lock"></i> <span id="authTitle">مرحبًا بك في إنجاز</span></h3>
         <div class="auth-subtitle" id="authSubtitle">سجّل دخولك للمتابعة</div>
 
@@ -2729,7 +2785,11 @@ button[title]:hover::before {
       <div class="form-row">
         <div class="form-group">
           <label for="reporterType"><i class="fas fa-chalkboard-teacher"></i> <span id="reporterTypeLabel">صفة مقدم التقرير</span></label>
-          <select id="reporterType" oninput="updateReporterGender()"></select>
+          <select id="reporterType" oninput="updateReporterGender()" style="display:none;"></select>
+          <div class="gender-toggle-group" id="reporterTypeToggle" role="group" aria-label="صفة مقدم التقرير">
+            <button type="button" class="gender-toggle-btn" data-value="المعلم" onclick="setReporterType('المعلم')">👨‍🏫 معلم</button>
+            <button type="button" class="gender-toggle-btn" data-value="المعلمة" onclick="setReporterType('المعلمة')">👩‍🏫 معلمة</button>
+          </div>
         </div>
         <div class="form-group">
           <label for="reporterName"><i class="fas fa-user"></i> <span id="reporterNameLabel">اسم مقدم التقرير</span></label>
@@ -2814,8 +2874,8 @@ button[title]:hover::before {
     <button type="button" class="main-accordion-header" onclick="toggleMainSection(2)">
       <span class="main-accordion-number">2</span>
       <span class="main-accordion-titlewrap">
-        <span class="main-accordion-title"><i class="fas fa-clipboard-list"></i> محتوى النشاط / الدرس</span>
-        <span class="main-accordion-desc">عنوان التقرير، المعايير، والمستهدفون</span>
+        <span class="main-accordion-title"><i class="fas fa-clipboard-list"></i> المعايير والفئة المستهدفة</span>
+        <span class="main-accordion-desc">عنوان التقرير، معيار الأداء، والمستهدفون</span>
       </span>
       <span class="main-accordion-status" id="mainSection2Status"><i class="fas fa-circle"></i> يحتاج إكمال</span>
       <i class="fas fa-chevron-down main-accordion-chevron" id="mainSection2Chevron"></i>
@@ -2893,9 +2953,9 @@ button[title]:hover::before {
       <span class="main-accordion-number">3</span>
       <span class="main-accordion-titlewrap">
         <span class="main-accordion-title"><i class="fas fa-flag"></i> المحتوى التربوي</span>
-        <span class="main-accordion-desc">الهدف التربوي والنبذة المختصرة</span>
+        <span class="main-accordion-desc" id="mainSection3Desc">✨ سيتم تعبئته تلقائيًا بالذكاء الاصطناعي - لا حاجة لتعبئته يدويًا</span>
       </span>
-      <span class="main-accordion-status" id="mainSection3Status"><i class="fas fa-circle"></i> لم يبدأ</span>
+      <span class="main-accordion-status ai-pending" id="mainSection3Status"><i class="fas fa-wand-magic-sparkles"></i> يُنشأ تلقائيًا</span>
       <i class="fas fa-chevron-down main-accordion-chevron" id="mainSection3Chevron"></i>
     </button>
     <div class="main-accordion-body" id="mainSection3">
@@ -2919,9 +2979,9 @@ button[title]:hover::before {
       <span class="main-accordion-number">4</span>
       <span class="main-accordion-titlewrap">
         <span class="main-accordion-title"><i class="fas fa-tasks"></i> التنفيذ والاستراتيجيات</span>
-        <span class="main-accordion-desc">إجراءات التنفيذ والاستراتيجيات المستخدمة</span>
+        <span class="main-accordion-desc" id="mainSection4Desc">✨ سيتم تعبئته تلقائيًا بالذكاء الاصطناعي - لا حاجة لتعبئته يدويًا</span>
       </span>
-      <span class="main-accordion-status" id="mainSection4Status"><i class="fas fa-circle"></i> لم يبدأ</span>
+      <span class="main-accordion-status ai-pending" id="mainSection4Status"><i class="fas fa-wand-magic-sparkles"></i> يُنشأ تلقائيًا</span>
       <i class="fas fa-chevron-down main-accordion-chevron" id="mainSection4Chevron"></i>
     </button>
     <div class="main-accordion-body" id="mainSection4">
@@ -2945,9 +3005,9 @@ button[title]:hover::before {
       <span class="main-accordion-number">5</span>
       <span class="main-accordion-titlewrap">
         <span class="main-accordion-title"><i class="fas fa-lightbulb"></i> التقييم والتوصيات</span>
-        <span class="main-accordion-desc">نقاط القوة، التحسين، والتوصيات</span>
+        <span class="main-accordion-desc" id="mainSection5Desc">✨ سيتم تعبئته تلقائيًا بالذكاء الاصطناعي - لا حاجة لتعبئته يدويًا</span>
       </span>
-      <span class="main-accordion-status" id="mainSection5Status"><i class="fas fa-circle"></i> لم يبدأ</span>
+      <span class="main-accordion-status ai-pending" id="mainSection5Status"><i class="fas fa-wand-magic-sparkles"></i> يُنشأ تلقائيًا</span>
       <i class="fas fa-chevron-down main-accordion-chevron" id="mainSection5Chevron"></i>
     </button>
     <div class="main-accordion-body" id="mainSection5">
@@ -2983,9 +3043,9 @@ button[title]:hover::before {
       <span class="main-accordion-number">6</span>
       <span class="main-accordion-titlewrap">
         <span class="main-accordion-title"><i class="fas fa-toolbox"></i> الأدوات والوسائل التعليمية</span>
-        <span class="main-accordion-desc">اختر الأدوات المستخدمة في التنفيذ</span>
+        <span class="main-accordion-desc">اختياري - اختر الأدوات المستخدمة في التنفيذ</span>
       </span>
-      <span class="main-accordion-status" id="mainSection6Status"><i class="fas fa-circle"></i> لم يبدأ</span>
+      <span class="main-accordion-status optional" id="mainSection6Status"><i class="fas fa-circle"></i> اختياري</span>
       <i class="fas fa-chevron-down main-accordion-chevron" id="mainSection6Chevron"></i>
     </button>
     <div class="main-accordion-body" id="mainSection6">
@@ -3038,7 +3098,7 @@ button[title]:hover::before {
         <span class="main-accordion-title"><i class="fas fa-images"></i> المرفقات والصور</span>
         <span class="main-accordion-desc">صور داعمة للتقرير (اختياري)</span>
       </span>
-      <span class="main-accordion-status" id="mainSection7Status"><i class="fas fa-circle"></i> لم يبدأ</span>
+      <span class="main-accordion-status optional" id="mainSection7Status"><i class="fas fa-circle"></i> اختياري</span>
       <i class="fas fa-chevron-down main-accordion-chevron" id="mainSection7Chevron"></i>
     </button>
     <div class="main-accordion-body" id="mainSection7">
@@ -3826,13 +3886,78 @@ async function handleSignup() {
     }
 }
 
-function onAuthenticated() {
+async function onAuthenticated() {
     window.__ACTIVATED__ = true;
     hideActivationScreen();
     showNotification("تم تسجيل الدخول بنجاح! ✓");
     const currentRole = document.getElementById('role').value || 'teacher';
     const backendRole = getBackendRole(currentRole);
-    loadDataFromBackend(backendRole);
+    // ننتظر انتهاء إعادة بناء قوائم الاختيار (مثل "إدارة التعليم") قبل تعبئة بيانات
+    // الحساب، وإلا فإن إعادة البناء قد تمسح القيمة التي عبّأناها للتو من الحساب.
+    await loadDataFromBackend(backendRole);
+    loadAccountProfile();
+}
+
+// ==================== بيانات الحساب الدائمة (بيانات التقرير الأساسية) ====================
+// تُقرأ من جدول profiles (المرتبط بحساب Supabase للمستخدم) وتُستخدم فقط لتعبئة
+// الحقول الفارغة تلقائياً - لا تُستبدل أي قيمة موجودة بالفعل (سواء أُدخلت يدوياً
+// الآن أو استُعيدت من الحفظ المحلي عبر loadTeacherData). المستخدم يبقى قادراً على
+// تعديل أي حقل كالمعتاد، وحفظها لاحقاً عبر "حفظ البيانات" الموجود مسبقاً.
+async function loadAccountProfile() {
+    try {
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const userId = sessionData?.session?.user?.id;
+        if (!userId) return;
+
+        const { data, error } = await supabaseClient
+            .from('profiles')
+            .select('reporter_name, reporter_type, education, school, principal')
+            .eq('id', userId)
+            .single();
+        if (error || !data) return;
+
+        const fillIfEmpty = (id, value) => {
+            if (!value) return;
+            const el = document.getElementById(id);
+            if (el && !el.value) el.value = value;
+        };
+
+        fillIfEmpty('reporterName', data.reporter_name);
+        fillIfEmpty('education', data.education);
+        fillIfEmpty('school', data.school);
+        fillIfEmpty('principal', data.principal);
+        if (data.reporter_type) {
+            const typeSelect = document.getElementById('reporterType');
+            if (typeSelect && !typeSelect.value) typeSelect.value = data.reporter_type;
+        }
+
+        updatePrincipalType();
+        updateReport();
+    } catch (e) {
+        // لا نمنع تسجيل الدخول أو استخدام التطبيق إن تعذّرت قراءة بيانات الحساب
+        console.error('تعذر تحميل بيانات الحساب:', e);
+    }
+}
+
+// حفظ حقول الهوية الأساسية إلى حساب المستخدم في Supabase (بالإضافة إلى الحفظ المحلي
+// الموجود في saveTeacherData) - بحيث تتوفر تلقائياً عند الدخول من أي جهاز آخر.
+async function saveAccountProfile() {
+    try {
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const userId = sessionData?.session?.user?.id;
+        if (!userId) return;
+
+        await supabaseClient.from('profiles').update({
+            reporter_name: document.getElementById('reporterName').value || null,
+            reporter_type: document.getElementById('reporterType').value || null,
+            education: document.getElementById('education').value || null,
+            school: document.getElementById('school').value || null,
+            principal: document.getElementById('principal').value || null,
+        }).eq('id', userId);
+    } catch (e) {
+        // حفظ بيانات الحساب هو تحسين إضافي - لا يجب أن يمنع نجاح الحفظ المحلي
+        console.error('تعذر حفظ بيانات الحساب:', e);
+    }
 }
 
 function contactForTrial() {
@@ -4083,6 +4208,24 @@ function updateReporterGender() {
     updateReport();
 }
 
+// زرا "معلم / معلمة" هما فقط واجهة بديلة لنفس القائمة المخفية #reporterType -
+// لا يوجد منطق أو حقل بيانات جديد، فقط طريقة أسرع لتعيين نفس القيمة.
+function setReporterType(value) {
+    const select = document.getElementById('reporterType');
+    if (!select) return;
+    select.value = value;
+    updateReporterGender();
+}
+
+function syncReporterTypeToggle() {
+    const select = document.getElementById('reporterType');
+    const group = document.getElementById('reporterTypeToggle');
+    if (!select || !group) return;
+    group.querySelectorAll('.gender-toggle-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === select.value);
+    });
+}
+
 // ==================== الأدوات الخارجية ====================
 function initOutsideTools() {
     const outsideToolsGrid = document.getElementById('outsideToolsGrid');
@@ -4220,69 +4363,83 @@ function isMainSectionFilled(fieldIds) {
     });
 }
 
-// حالة القسم مبنية على منطق التحقق الموجود فعلياً في التطبيق فقط:
-// - الحقل الحقيقي الوحيد المطلوب (required) في كامل النموذج هو "عنوان التقرير" (manualReportTitle)
-//   وهو نفس الشرط المستخدم بالفعل قبل الحفظ (saveCurrentReport). لذلك فقط القسم الذي يحتويه
-//   يمكن أن يظهر بحالة "يحتاج إكمال" الحقيقية.
-// - باقي الأقسام لا تحتوي أي حقل مطلوب فعلياً في التطبيق، لذلك حالتها إما "لم يبدأ" (لا يوجد محتوى)
-//   أو "مكتمل" (تم إدخال شيء) - دون افتراض قاعدة عمل جديدة لم تكن موجودة.
+// حالة القسم مبنية على منطق التحقق الموجود فعلياً في التطبيق فقط، مع تصنيف كل قسم
+// حسب طبيعته الحقيقية بدل قاعدة واحدة للجميع:
+// - قسم 2: الحقل الحقيقي الوحيد المطلوب (required) في كامل النموذج هو "عنوان التقرير"
+//   (نفس شرط saveCurrentReport تماماً) - فقط هذا القسم يمكن أن يظهر "يحتاج إكمال" حقيقية.
+// - أقسام 3/4/5: تُعبّأ بالذكاء الاصطناعي (تعبئة ذكية) دفعة واحدة عبر fillWithAI/
+//   parseAIResponseProfessional في نفس هذه الحقول تحديداً - قبل التوليد لا يوجد شيء لتفعله
+//   يدوياً، وبعده يبقى النص قابلاً للتعديل كأي حقل نصي عادي (لا يوجد قفل أو نسخة منفصلة).
+// - أقسام 6/7: اختيارية بالكامل ولا تمثل أي متطلب حقيقي في النموذج.
+// - قسم 1: لا حقل مطلوب فعلياً فيه (role/place لهما قيمة افتراضية دائماً وتم استبعادهما)،
+//   لذلك حالته "لم يبدأ" أو "مكتمل" حسب وجود محتوى فعلي أدخله المستخدم.
 function getMainSectionState(n) {
     const OPTIONAL_ONLY_FIELDS = {
         1: ['education', 'school', 'reporterName', 'principal', 'term', 'grade', 'subject', 'lesson'],
+    };
+    const AI_FIELDS = {
         3: ['goal', 'summary'],
         4: ['steps', 'strategies'],
         5: ['strengths', 'improve', 'recomm'],
     };
 
     if (n === 2) {
-        // الحقل الفعلي المطلوب (required) في كامل النموذج - نفس شرط saveCurrentReport تماماً
         const titleFilled = !!document.getElementById('manualReportTitle')?.value.trim();
-        if (!titleFilled) return 'incomplete';
-        return 'complete';
+        return titleFilled ? 'complete' : 'incomplete';
     }
 
-    let hasContent;
-    if (n === 6) {
-        const insideChecked = document.querySelectorAll('#toolsGrid .tool-checkbox input[type="checkbox"]:checked').length > 0;
-        const outsideChecked = document.querySelectorAll('#outsideToolsGrid .tool-checkbox input[type="checkbox"]:checked').length > 0;
-        const hasCustomInside = !!(window.otherToolsInside && window.otherToolsInside.length);
-        const hasCustomOutside = !!(window.otherTools && window.otherTools.length);
-        hasContent = insideChecked || outsideChecked || hasCustomInside || hasCustomOutside;
-    } else if (n === 7) {
-        const img1 = document.getElementById('imgBox1');
-        const img2 = document.getElementById('imgBox2');
-        hasContent = !!((img1 && img1.querySelector('img')) || (img2 && img2.querySelector('img')));
-    } else {
-        hasContent = isMainSectionFilled(OPTIONAL_ONLY_FIELDS[n] || []);
+    if (n === 3 || n === 4 || n === 5) {
+        const hasContent = isMainSectionFilled(AI_FIELDS[n]);
+        return hasContent ? 'ai_done' : 'ai_pending';
     }
 
+    if (n === 6 || n === 7) {
+        return 'optional';
+    }
+
+    // قسم 1
+    const hasContent = isMainSectionFilled(OPTIONAL_ONLY_FIELDS[n] || []);
     return hasContent ? 'complete' : 'not_started';
 }
 
+const MAIN_SECTION_STATUS_LABELS = {
+    complete: { cls: 'filled', html: '<i class="fas fa-circle"></i> مكتمل' },
+    incomplete: { cls: 'incomplete', html: '<i class="fas fa-circle"></i> يحتاج إكمال' },
+    not_started: { cls: '', html: '<i class="fas fa-circle"></i> لم يبدأ' },
+    ai_pending: { cls: 'ai-pending', html: '<i class="fas fa-wand-magic-sparkles"></i> يُنشأ تلقائيًا' },
+    ai_done: { cls: 'filled', html: '<i class="fas fa-check"></i> تم الإنشاء — قابل للتعديل' },
+    optional: { cls: 'optional', html: '<i class="fas fa-circle"></i> اختياري' },
+};
+
 function updateMainSectionsProgress() {
-    let completeCount = 0;
+    // شريط التقدم العام يعكس فقط الأقسام التي تمثل مسؤولية حقيقية على المستخدم
+    // (١ و٢) أو ناتج ذكاء اصطناعي ينتظر أو تم إنشاؤه (٣/٤/٥) - الأقسام الاختيارية
+    // بالكامل (٦/٧) لا تُحتسب ضمن العدد حتى لا يشعر المستخدم بأنه "لم يُكمل" شيئاً
+    // لا يخصه أصلاً.
+    let doneCount = 0;
+    let trackedCount = 0;
+
     for (let n = 1; n <= 7; n++) {
         const state = getMainSectionState(n);
-        if (state === 'complete') completeCount++;
+        const info = MAIN_SECTION_STATUS_LABELS[state];
+
+        if (state !== 'optional') {
+            trackedCount++;
+            if (state === 'complete' || state === 'ai_done') doneCount++;
+        }
 
         const statusEl = document.getElementById('mainSection' + n + 'Status');
-        if (statusEl) {
-            statusEl.classList.toggle('filled', state === 'complete');
-            statusEl.classList.toggle('incomplete', state === 'incomplete');
-            if (state === 'complete') {
-                statusEl.innerHTML = '<i class="fas fa-circle"></i> مكتمل';
-            } else if (state === 'incomplete') {
-                statusEl.innerHTML = '<i class="fas fa-circle"></i> يحتاج إكمال';
-            } else {
-                statusEl.innerHTML = '<i class="fas fa-circle"></i> لم يبدأ';
-            }
+        if (statusEl && info) {
+            statusEl.classList.remove('filled', 'incomplete', 'ai-pending', 'optional');
+            if (info.cls) statusEl.classList.add(info.cls);
+            statusEl.innerHTML = info.html;
         }
     }
 
     const label = document.getElementById('mainProgressLabel');
     const fill = document.getElementById('mainProgressFill');
-    if (label) label.textContent = completeCount + ' من 7 أقسام مكتملة';
-    if (fill) fill.style.width = Math.round((completeCount / 7) * 100) + '%';
+    if (label) label.textContent = doneCount + ' من ' + trackedCount + ' أقسام مكتملة';
+    if (fill) fill.style.width = Math.round((doneCount / (trackedCount || 1)) * 100) + '%';
 }
 
 function updateOutsideToolsList() {
@@ -4313,7 +4470,9 @@ function updateOutsideToolsList() {
 function updateReport() {
     const role = document.getElementById('role').value;
     const place = document.getElementById('place').value;
-    
+
+    syncReporterTypeToggle();
+
     const educationBox = document.getElementById('educationBox');
     if (educationBox) educationBox.innerText = document.getElementById('education').value || 'غير محدد';
     
@@ -5088,6 +5247,7 @@ function showGuideBox() {
 
 function saveTeacherData() {
     saveCurrentReport();
+    saveAccountProfile(); // حفظ إضافي إلى الحساب (لا يوقف أو يغيّر الحفظ المحلي أدناه)
     const teacherData = {
         education: document.getElementById('education').value,
         school: document.getElementById('school').value,
