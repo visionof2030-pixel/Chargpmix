@@ -5024,6 +5024,555 @@ body.theme-dark .dsw-welcome-card { background: rgba(17, 24, 39, 0.78); }
     }
 }
 </style>
+<style id="modern-ui-v2">
+/* =====================================================================
+   الإصدار الثاني من المظهر: هوية "زمردي وذهبي" (Emerald & Gold)
+   ---------------------------------------------------------------------
+   تُحمَّل بعد كل الأنماط السابقة. مظهر فقط: لا تغيّر أي وظيفة أو سلوك أو
+   بنية HTML/JS، ولا تمسّ قوالب تصدير PDF (#report-content*).
+   ===================================================================== */
+
+:root {
+    --em-950: #011f18;
+    --em-900: #022c22;
+    --em-800: #053d2f;
+    --em-700: #065f46;
+    --em-600: #047857;
+    --em-500: #059669;
+    --em-100: #e3f1ec;
+    --em-50:  #f1f8f5;
+    --gold-700: #9a6b12;
+    --gold-600: #b8861f;
+    --gold-500: #d4a32c;
+    --gold-400: #e8bf55;
+    --gold-300: #f3d68a;
+    --gold-100: #fbf1d6;
+    --ivory: #f7f5ef;
+    --ivory-2: #fbfaf6;
+    --line-warm: #e8e2d2;
+    --ui-ring: 0 0 0 4px rgba(212, 163, 44, 0.22);
+    --grad-emerald: linear-gradient(140deg, #065f46 0%, #053d2f 55%, #022c22 100%);
+    --grad-gold: linear-gradient(135deg, #f3d68a 0%, #e8bf55 40%, #c9952a 100%);
+}
+
+.input-section, .dashboard-left-col, #accountPage, #feedbackPage, #adminPage,
+.drawer-modal-box, #settingsModal > div, #savedReportsModal > div,
+.side-drawer, .voice-mode-sheet, .main-buttons-bar, #activationScreen {
+    --border: var(--line-warm);
+    --gray-light: var(--ivory-2);
+    --gray: var(--em-100);
+}
+
+/* ---------- الخلفية: عاجي دافئ مع نقش نقطي خفيف ---------- */
+html { background: var(--ivory); }
+body,
+body.theme-default {
+    background:
+        radial-gradient(900px 480px at 100% -6%, rgba(212, 163, 44, 0.16), transparent 60%),
+        radial-gradient(1000px 560px at -10% 30%, rgba(6, 95, 70, 0.10), transparent 60%),
+        radial-gradient(rgba(6, 95, 70, 0.07) 1px, transparent 1.4px) 0 0 / 22px 22px,
+        var(--ivory);
+    background-attachment: fixed;
+}
+
+/* ---------- رأس التطبيق ---------- */
+.app-header {
+    background:
+        radial-gradient(420px 120px at 12% 0%, rgba(232, 191, 85, 0.22), transparent 70%),
+        var(--grad-emerald);
+    border-bottom: 2px solid var(--gold-500);
+    box-shadow: 0 12px 30px -16px rgba(1, 31, 24, 0.75);
+}
+.app-header-avatar {
+    background: var(--grad-gold);
+    color: var(--em-900);
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 0 0 3px rgba(232, 191, 85, 0.25), 0 6px 14px rgba(0, 0, 0, 0.25);
+    font-weight: 900;
+}
+.app-header-greeting { font-size: 14px; }
+.app-header-role { color: var(--gold-300); font-weight: 700; }
+.app-header-icon-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(243, 214, 138, 0.35);
+    color: var(--gold-300);
+}
+.app-header-icon-btn:hover { background: rgba(243, 214, 138, 0.16); }
+
+/* ---------- شريط الأخبار: ذهبي ---------- */
+.top-marquee,
+body.theme-default .top-marquee {
+    background: var(--grad-gold);
+    border-bottom: 1px solid var(--gold-600);
+    box-shadow: 0 10px 22px -14px rgba(154, 107, 18, 0.7);
+}
+.marquee-inner { color: var(--em-900); font-weight: 800; }
+
+/* ---------- شريط أزرار PDF / واتساب ---------- */
+.main-buttons-bar {
+    background: rgba(247, 245, 239, 0.86);
+    border-bottom: 1px solid var(--line-warm);
+}
+.main-btn { border-radius: 999px; border: none; min-height: 42px; }
+#pdfBtn {
+    background: var(--grad-gold);
+    color: var(--em-900);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 10px 20px -10px rgba(154, 107, 18, 0.8);
+}
+#pdfBtn .main-btn-icon, #pdfBtn .main-btn-text { color: var(--em-900); }
+#whatsappBtn {
+    background: var(--grad-emerald);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 10px 20px -10px rgba(2, 44, 34, 0.8);
+}
+#whatsappBtn .main-btn-icon { color: var(--gold-300); }
+
+/* ---------- لغة الأوامر الصوتية ---------- */
+.voice-lang-pill {
+    background: #fff;
+    border: 1px solid var(--line-warm);
+    color: var(--em-800);
+}
+.voice-lang-pill.active,
+.voice-lang-toggle-row--wizard .voice-lang-pill.active {
+    background: var(--em-800);
+    border-color: var(--em-800);
+    color: var(--gold-300);
+    box-shadow: 0 6px 14px -8px rgba(2, 44, 34, 0.8);
+}
+.voice-lang-toggle-hint { color: var(--em-700); }
+
+/* ---------- لافتة الأمر الصوتي ---------- */
+.voice-cta-banner {
+    background:
+        radial-gradient(260px 160px at 8% 50%, rgba(232, 191, 85, 0.28), transparent 70%),
+        var(--grad-emerald);
+    border: 1px solid rgba(232, 191, 85, 0.45);
+    box-shadow: 0 18px 36px -18px rgba(1, 31, 24, 0.85);
+    padding: 16px 18px;
+}
+.voice-cta-banner::after {
+    content: '';
+    position: absolute;
+    left: -40px; bottom: -60px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 18px solid rgba(232, 191, 85, 0.10);
+    pointer-events: none;
+}
+.voice-cta-icon {
+    background: var(--grad-gold);
+    color: var(--em-900);
+    box-shadow: 0 0 0 6px rgba(232, 191, 85, 0.18), 0 8px 18px rgba(0, 0, 0, 0.3);
+}
+.voice-cta-title { color: #fff; font-size: 15px; }
+.voice-cta-subtitle { color: var(--gold-300); opacity: 1; }
+.voice-cta-banner.listening {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+/* ---------- بطاقة الترويج ---------- */
+.brand-promo-card {
+    border: 1px solid rgba(212, 163, 44, 0.45);
+    box-shadow: 0 18px 40px -22px rgba(6, 95, 70, 0.55);
+}
+
+/* ---------- البطاقة الرئيسية ---------- */
+.input-section,
+body.theme-default .input-section {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--line-warm);
+    border-radius: 28px;
+    box-shadow: 0 1px 0 #fff inset, 0 24px 50px -28px rgba(6, 95, 70, 0.45);
+}
+.input-section::before {
+    height: 4px;
+    background: var(--grad-gold);
+    opacity: 1;
+}
+.input-section h2 { color: var(--em-800); }
+
+/* مبدّل القالب: مسار زمردي داكن وحبة ذهبية */
+.template-switch-label, .short-variant-label { color: var(--em-800); }
+.template-switch-pills,
+.template-switch--sheet .template-switch-pills {
+    background: var(--em-900);
+    border: 1px solid var(--em-800);
+    padding: 5px;
+    border-radius: 18px;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.template-pill,
+.template-switch--sheet .template-pill { color: rgba(255, 255, 255, 0.75); border-radius: 14px; }
+.template-pill:not(.active):hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+.template-pill.active,
+.template-switch--sheet .template-pill.active {
+    background: var(--grad-gold);
+    color: var(--em-900);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.55) inset, 0 8px 18px -8px rgba(232, 191, 85, 0.75);
+}
+.short-variant-pills { background: var(--em-50); border: 1px solid var(--line-warm); }
+.short-variant-pill { color: var(--em-800); }
+.short-variant-pill.active { background: var(--em-800); color: var(--gold-300); }
+
+/* شريط التقدم: ذهبي */
+.main-progress-bar {
+    background: var(--ivory-2);
+    border: 1px solid var(--line-warm);
+    padding: 10px 16px;
+}
+.main-progress-bar .main-progress-track { background: var(--em-100); height: 10px; }
+.main-progress-bar .main-progress-fill {
+    background: var(--grad-gold);
+    box-shadow: 0 0 14px rgba(232, 191, 85, 0.65);
+}
+.main-progress-bar .main-progress-label { color: var(--em-800); font-weight: 900; }
+
+/* تنبيه الذكاء الاصطناعي: عاجي بحد ذهبي */
+.ai-sections-notice {
+    background: linear-gradient(135deg, var(--gold-100) 0%, #fdf8ea 100%);
+    border: 1px solid rgba(212, 163, 44, 0.35);
+    border-inline-start: 4px solid var(--gold-500);
+    color: #5b4310;
+}
+.ai-sections-notice-icon { color: var(--gold-600); }
+
+/* أقسام الأكورديون: بطاقات منفصلة، والمفتوح منها برأس زمردي */
+.main-accordion-section {
+    border: 1px solid var(--line-warm);
+    border-radius: 20px;
+    margin-bottom: 10px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 16px -10px rgba(6, 95, 70, 0.25);
+}
+.main-accordion-section:hover {
+    border-color: rgba(212, 163, 44, 0.6);
+    box-shadow: 0 10px 24px -14px rgba(6, 95, 70, 0.4);
+}
+.main-accordion-header { padding-top: 9px; padding-bottom: 9px; }
+.main-accordion-header:hover { background: linear-gradient(to left, rgba(212, 163, 44, 0.08), transparent); }
+.main-accordion-number {
+    width: 30px; height: 30px;
+    border-radius: 10px;
+    background: var(--grad-emerald);
+    border: 1px solid var(--em-700);
+    color: var(--gold-300);
+    font-weight: 900;
+    font-size: 14px;
+    box-shadow: 0 6px 12px -6px rgba(2, 44, 34, 0.7);
+}
+.main-accordion-title { color: var(--em-900); font-weight: 800; }
+.main-accordion-title i { color: var(--gold-600); }
+.main-accordion-chevron { color: var(--gold-600); }
+
+.main-accordion-section:has(.main-accordion-body.open) {
+    border-color: var(--gold-500);
+    box-shadow: 0 0 0 4px rgba(212, 163, 44, 0.14), 0 22px 44px -22px rgba(6, 95, 70, 0.55);
+}
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header {
+    background:
+        radial-gradient(300px 100px at 10% 0%, rgba(232, 191, 85, 0.2), transparent 70%),
+        var(--grad-emerald);
+}
+.main-accordion-section:has(.main-accordion-body.open) .main-accordion-number {
+    background: var(--grad-gold);
+    color: var(--em-900);
+    border-color: transparent;
+}
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header .main-accordion-title { color: #fff; }
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header .main-accordion-title i,
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header .main-accordion-chevron { color: var(--gold-300); }
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header .main-accordion-desc { color: rgba(255, 255, 255, 0.72); }
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header .main-accordion-status {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(243, 214, 138, 0.4);
+    color: var(--gold-300);
+}
+.main-accordion-body.open { padding-top: 14px; }
+
+/* شارات الحالة */
+.main-accordion-status.filled { background: var(--em-100); color: var(--em-700); border-color: rgba(4, 120, 87, 0.2); }
+.main-accordion-status.ai-pending { background: var(--gold-100); color: var(--gold-700); border-color: rgba(184, 134, 31, 0.25); }
+.main-accordion-status.incomplete { background: #fff1e6; color: #b4460a; border-color: rgba(180, 70, 10, 0.2); }
+
+.main-accordion-close-btn {
+    background: var(--em-50);
+    border: 1px solid var(--line-warm);
+    color: var(--em-800);
+}
+.main-accordion-close-btn:hover { background: var(--em-100); }
+
+.criteria-collapse { border-color: var(--line-warm); }
+.criteria-collapse.open { border-color: var(--gold-500); }
+.criteria-collapse-title i { color: var(--gold-600); }
+.criterion-suggest-btn {
+    background: var(--grad-emerald);
+    color: var(--gold-300);
+    border: none;
+}
+
+/* ---------- الحقول ---------- */
+input, select, textarea { background-color: var(--ivory-2); }
+input:hover, select:hover, textarea:hover { border-color: rgba(212, 163, 44, 0.6); }
+input:focus, select:focus, textarea:focus {
+    border-color: var(--em-600);
+    background-color: #fff;
+    box-shadow: var(--ui-ring);
+}
+.form-group label { color: var(--em-900); }
+.form-group label i, .level-select label i { color: var(--gold-600); }
+
+.gender-toggle-btn.active,
+.feedback-choice-btn.active {
+    background: var(--em-800);
+    border-color: var(--em-800);
+    color: var(--gold-300);
+}
+
+.tool-checkbox.checked {
+    border-color: var(--gold-500);
+    background: linear-gradient(135deg, #fffaf0 0%, var(--gold-100) 100%);
+    box-shadow: 0 8px 18px -10px rgba(184, 134, 31, 0.6);
+}
+.other-tool-container button { background: var(--em-800); color: var(--gold-300); }
+.other-tag { background: var(--em-50); border: 1px solid var(--line-warm); color: var(--em-800); }
+
+/* ---------- الشريط السفلي (جوال): زمردي داكن ---------- */
+.bottom-nav {
+    background:
+        radial-gradient(260px 80px at 50% 0%, rgba(232, 191, 85, 0.16), transparent 70%),
+        rgba(2, 44, 34, 0.96);
+    border-top: 1px solid rgba(232, 191, 85, 0.45);
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -14px 30px -16px rgba(1, 31, 24, 0.7);
+}
+.bottom-nav-item { color: rgba(255, 255, 255, 0.6); }
+.bottom-nav-item:hover { color: #fff; }
+.bottom-nav-item.active { color: var(--gold-400); }
+.bottom-nav-item.active:not(.bottom-nav-fab)::after { background: var(--gold-400); top: 1px; }
+.bottom-nav-fab, .floating-ai-text { color: #fff; }
+#aiFillFloatingBtn .floating-ai-text { color: var(--gold-300) !important; font-weight: 800; }
+#aiFillFloatingBtn .fab-icon-circle {
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 5px rgba(2, 44, 34, 0.96), 0 12px 24px -6px rgba(232, 191, 85, 0.6) !important;
+}
+body.theme-default #aiFillFloatingBtn .fab-icon-circle { background: var(--grad-gold) !important; }
+body.theme-default #aiFillFloatingBtn .floating-ai-icon { color: var(--em-900) !important; }
+
+/* ---------- القائمة الجانبية (جوال) ---------- */
+.side-drawer { background: var(--ivory); }
+.drawer-profile {
+    background:
+        radial-gradient(200px 90px at 0% 0%, rgba(232, 191, 85, 0.25), transparent 70%),
+        var(--grad-emerald);
+    border: 1px solid rgba(232, 191, 85, 0.4);
+}
+.drawer-profile-name { color: #fff; }
+.drawer-profile-role { color: var(--gold-300); }
+.drawer-profile i { color: var(--gold-300); }
+.drawer-profile-avatar,
+.account-summary-avatar {
+    background: var(--grad-gold);
+    color: var(--em-900);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85), 0 8px 18px -6px rgba(0, 0, 0, 0.4);
+}
+.drawer-nav button { color: var(--em-900); }
+.drawer-nav button i { color: var(--gold-600); }
+.drawer-nav button:hover { background: #fff; box-shadow: 0 4px 12px -8px rgba(6, 95, 70, 0.5); }
+.drawer-footer p { color: var(--em-800); }
+
+/* ---------- النوافذ ---------- */
+.drawer-modal-box,
+#settingsModal > div,
+#savedReportsModal > div {
+    background: #fff;
+    border: 1px solid var(--line-warm);
+    border-top: 4px solid var(--gold-500);
+}
+.drawer-modal-box h3, #settingsModal h3, #savedReportsModal h3 { color: var(--em-800); }
+.drawer-modal-box button,
+#settingsModal button,
+.account-edit-btn, .account-save-btn,
+.basic-data-alert-btn {
+    background: var(--grad-emerald);
+    color: #fff;
+}
+#settingsModal #saveTeacherBtn { background: var(--grad-emerald); color: #fff; border-color: transparent; }
+#settingsModal #clearBtn { background: var(--grad-gold); color: var(--em-900); border-color: transparent; }
+#settingsModal .btn-secondary { background: var(--ivory); color: var(--em-800); border: 1px solid var(--line-warm); }
+#settingsModal input[type="date"] { border-color: var(--line-warm); }
+
+.voice-mode-sheet { background: var(--ivory); }
+.voice-mode-sheet-title { color: var(--em-900); }
+.voice-mode-option--progressive .voice-mode-option-icon { background: var(--grad-emerald); color: var(--gold-300); }
+.voice-mode-option--progressive .voice-mode-option-title { color: var(--em-700); }
+.voice-mode-sheet-cancel { background: #fff; border: 1px solid var(--line-warm); color: var(--em-800); }
+
+.report-card { border-color: var(--line-warm); border-inline-start: 4px solid var(--gold-500); }
+.report-card .report-title { color: var(--em-900); }
+.close-reports-btn { background: var(--grad-emerald); color: #fff; }
+.empty-reports i { color: var(--gold-500); }
+
+/* ---------- حسابي / الرأي / الإدارة ---------- */
+.account-page-title h2 { color: var(--em-900); }
+.account-summary-card {
+    background:
+        radial-gradient(260px 140px at 10% 0%, rgba(232, 191, 85, 0.25), transparent 70%),
+        var(--grad-emerald);
+    border: 1px solid rgba(232, 191, 85, 0.45);
+    box-shadow: 0 24px 44px -24px rgba(1, 31, 24, 0.8);
+}
+.account-summary-name { color: #fff; }
+.account-summary-role { color: var(--gold-300); }
+.account-card, .admin-stat-card, .admin-feedback-card { border-color: var(--line-warm); }
+.account-card-header h3 { color: var(--em-800); }
+.account-row i, .account-link-row i:first-child { color: var(--gold-600); }
+.star-rating .star-rating-icon.filled { color: var(--gold-500); }
+.admin-stat-card .admin-stat-value { color: var(--em-800); }
+.font-choice-row.active { border-color: var(--gold-500); box-shadow: var(--ui-ring); }
+.font-choice-row.active .font-choice-check { color: var(--gold-600); }
+
+/* ---------- شاشة الدخول ---------- */
+#activationScreen {
+    background:
+        radial-gradient(600px 380px at 100% 0%, rgba(232, 191, 85, 0.22), transparent 60%),
+        radial-gradient(700px 500px at 0% 100%, rgba(5, 150, 105, 0.25), transparent 60%),
+        radial-gradient(rgba(243, 214, 138, 0.08) 1px, transparent 1.4px) 0 0 / 22px 22px,
+        linear-gradient(160deg, #053d2f 0%, #022c22 55%, #011f18 100%);
+}
+#activationScreen .activation-box {
+    background: var(--ivory-2);
+    border: 1px solid rgba(232, 191, 85, 0.5);
+}
+#activationScreen .activation-box::before { height: 5px; background: var(--grad-gold); }
+#activationScreen h3 { color: var(--em-900); font-size: 21px; }
+#activationScreen .auth-subtitle { color: var(--gold-700); font-weight: 700; }
+#activationScreen .auth-input { background: #fff; border-color: var(--line-warm); }
+#activationScreen .auth-input:focus { border-color: var(--em-600); box-shadow: var(--ui-ring); }
+#activationScreen #loginSubmitBtn,
+#activationScreen #signupSubmitBtn {
+    background: var(--grad-emerald);
+    color: var(--gold-300);
+    font-size: 15.5px;
+    font-weight: 800;
+    border: 1px solid var(--em-700);
+}
+#activationScreen #googleSignInBtn,
+#activationScreen #authSwitchBtn,
+#activationScreen #contactForTrialBtn {
+    background: #fff;
+    border: 1.5px solid var(--line-warm);
+    color: var(--em-900);
+}
+#activationScreen #googleSignInBtn:hover,
+#activationScreen #authSwitchBtn:hover,
+#activationScreen #contactForTrialBtn:hover { border-color: var(--gold-500); background: #fffdf6; }
+#activationScreen .auth-forgot-link { color: var(--gold-700); }
+#activationScreen .auth-footer-tagline { color: var(--gold-300); }
+#activationScreen .auth-footer-underline { background: var(--gold-400); }
+
+@media (min-width: 1024px) {
+    #activationScreen {
+        background:
+            radial-gradient(rgba(6, 95, 70, 0.06) 1px, transparent 1.4px) 0 0 / 22px 22px,
+            var(--ivory);
+    }
+    #activationScreen .activation-box { border: none; background: transparent; }
+    #activationScreen .auth-lang-switch { background: #fff; border-color: var(--line-warm); color: var(--em-800); }
+    .auth-illustration-panel { border: 1px solid rgba(232, 191, 85, 0.5); }
+}
+
+/* ---------- الحاسوب ---------- */
+@media (min-width: 1024px) {
+    /* الشريط الجانبي: زمردي داكن */
+    .desktop-sidebar {
+        background:
+            radial-gradient(300px 200px at 50% 0%, rgba(232, 191, 85, 0.16), transparent 70%),
+            linear-gradient(180deg, #053d2f 0%, #022c22 60%, #011f18 100%);
+        border-left: 1px solid rgba(232, 191, 85, 0.35);
+        box-shadow: -18px 0 40px -24px rgba(1, 31, 24, 0.8);
+    }
+    .desktop-sidebar-logo { border-bottom-color: rgba(255, 255, 255, 0.08); }
+    .desktop-sidebar-logo-title {
+        background: var(--grad-gold);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 26px;
+    }
+    .desktop-sidebar-logo-title i { color: var(--gold-400); -webkit-text-fill-color: var(--gold-400); }
+    .desktop-sidebar-logo-sub { color: rgba(255, 255, 255, 0.6); }
+    .desktop-sidebar-item { color: rgba(255, 255, 255, 0.82); }
+    .desktop-sidebar-item i { color: var(--gold-400); opacity: 0.85; }
+    .desktop-sidebar-item:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
+    .desktop-sidebar-item:hover i { color: var(--gold-300); }
+    .desktop-sidebar-item.active {
+        background: var(--grad-gold);
+        color: var(--em-900);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 10px 22px -10px rgba(232, 191, 85, 0.7);
+    }
+    .desktop-sidebar-item.active i { color: var(--em-900); opacity: 1; }
+    .desktop-sidebar-logout { color: #fca5a5; border-top-color: rgba(255, 255, 255, 0.08); }
+    .desktop-sidebar-logout i { color: #fca5a5; }
+    .desktop-sidebar-logout:hover { background: rgba(252, 165, 165, 0.1); color: #fecaca; }
+    .desktop-sidebar-footer { color: rgba(255, 255, 255, 0.5); border-top-color: rgba(255, 255, 255, 0.08); }
+    .desktop-sidebar-footer p { color: var(--gold-300); }
+
+    .app-header { border: 1px solid rgba(232, 191, 85, 0.45); border-bottom-width: 2px; }
+
+    .main-buttons-bar { background: rgba(255, 255, 255, 0.85); border: 1px solid var(--line-warm); }
+
+    /* زر توليد التقرير العائم */
+    .bottom-nav { background: none; border: none; border-radius: 0; box-shadow: none; }
+    .bottom-nav-fab {
+        background: var(--grad-emerald);
+        border: 1px solid rgba(232, 191, 85, 0.55);
+        box-shadow: 0 20px 40px -14px rgba(1, 31, 24, 0.75);
+    }
+    #aiFillFloatingBtn .fab-icon-circle { box-shadow: 0 6px 14px -4px rgba(232, 191, 85, 0.7) !important; }
+
+    /* بطاقات العمود الجانبي */
+    .dsw-card {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line-warm);
+        box-shadow: 0 14px 30px -22px rgba(6, 95, 70, 0.55);
+    }
+    .dsw-date-icon, .dsw-welcome-icon {
+        background: var(--grad-emerald);
+        color: var(--gold-300);
+    }
+    .dsw-welcome-card {
+        background:
+            radial-gradient(240px 140px at 0% 0%, rgba(232, 191, 85, 0.22), transparent 70%),
+            var(--grad-emerald);
+        border-color: rgba(232, 191, 85, 0.45);
+    }
+    .dsw-welcome-card .dsw-welcome-icon { background: var(--grad-gold); color: var(--em-900); }
+    .dsw-welcome-card h4 { color: #fff; }
+    .dsw-welcome-card p { color: rgba(255, 255, 255, 0.75); }
+    .dsw-card-title { color: var(--em-800); }
+    .dsw-card-title i { color: var(--gold-600); }
+    .dsw-stat-tile { background: var(--ivory-2); border-color: var(--line-warm); }
+    .dsw-stat-tile i { color: var(--gold-600); }
+    .dsw-stat-value { color: var(--em-800); }
+    .dsw-tip-card {
+        background: linear-gradient(135deg, var(--gold-100) 0%, #fffdf6 100%);
+        border-color: rgba(212, 163, 44, 0.35);
+        border-inline-start: 4px solid var(--gold-500);
+    }
+}
+
+/* الثيم الداكن يحتفظ بأسطحه الداكنة */
+body.theme-dark {
+    background:
+        radial-gradient(900px 480px at 100% -6%, rgba(212, 163, 44, 0.12), transparent 60%),
+        #0b1220;
+}
+body.theme-dark .input-section { background: #1e293b; }
+body.theme-dark .main-accordion-section { background: #24344a; }
+body.theme-dark .main-accordion-title { color: #e2e8f0; }
+body.theme-dark .main-progress-bar { background: #24344a; }
+body.theme-dark input, body.theme-dark select, body.theme-dark textarea { background-color: #1e293b; }
+</style>
 </head>
 
 <body class="theme-default">
