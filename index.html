@@ -5912,6 +5912,642 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
 .report-actions .img-btn:hover { background: #d9ebff; }
 .report-hint-small { font-size: 10.5px; color: #6b7f78; margin: -8px 0 10px; line-height: 1.6; }
 </style>
+<style id="modern-ui-v3">
+/* =====================================================================
+   الإصدار الثالث من المظهر: أسلوب "تطبيق نظيف ومسطّح"
+   ---------------------------------------------------------------------
+   مستوحى من أسلوب تطبيقات الجوال الحديثة: خلفية هادئة، بطاقات بيضاء
+   بحدود رفيعة دون ظلال ثقيلة أو تدرجات، مربعات أيقونات ملوّنة خفيفة،
+   عناوين عريضة واضحة، أزرار مسطحة، وشريط سفلي بمؤشر "كبسولة".
+   الألوان: الأخضر الزمردي والذهبي (هوية الأداة).
+   مظهر فقط: لا يغيّر أي وظيفة أو JS أو بنية HTML أو قوالب PDF.
+   ===================================================================== */
+
+:root {
+    --f-bg: #f4f6f5;
+    --f-surface: #ffffff;
+    --f-surface-2: #f7f9f8;
+    --f-line: #e3e8e6;
+    --f-line-2: #d5ddd9;
+    --f-text: #0d1f19;
+    --f-muted: #5d6e68;
+    --f-em: #0a6b4f;
+    --f-em-strong: #075a42;
+    --f-em-soft: #e5f2ed;
+    --f-em-soft-2: #d3e9e0;
+    --f-gold: #c99a2e;
+    --f-gold-strong: #a87b17;
+    --f-gold-soft: #fbf4e2;
+    --f-gold-line: #ecd9a8;
+    --f-radius-card: 24px;
+    --f-radius-tile: 14px;
+    --f-shadow: 0 1px 2px rgba(13, 31, 25, 0.04);
+    --f-ring: 0 0 0 3px rgba(10, 107, 79, 0.16);
+}
+
+.input-section, .dashboard-left-col, #accountPage, #feedbackPage, #adminPage,
+.drawer-modal-box, #settingsModal > div, #savedReportsModal > div,
+.side-drawer, .voice-mode-sheet, .main-buttons-bar, #activationScreen {
+    --border: var(--f-line);
+    --gray-light: var(--f-surface-2);
+    --gray: var(--f-em-soft);
+}
+
+/* ---------- الأساس ---------- */
+html { background: var(--f-bg); }
+body,
+body.theme-default {
+    background: var(--f-bg);
+    background-attachment: scroll;
+    color: var(--f-text);
+}
+
+/* ---------- رأس التطبيق: مسطّح أبيض ---------- */
+.app-header {
+    background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--f-line);
+    box-shadow: none;
+}
+.app-header-avatar {
+    background: var(--f-em-soft);
+    color: var(--f-em);
+    border: none;
+    box-shadow: none;
+    font-weight: 900;
+    width: 40px; height: 40px;
+}
+.app-header-greeting { color: var(--f-text); font-weight: 900; font-size: 15px; }
+.app-header-role { color: var(--f-muted); font-weight: 600; }
+.app-header-icon-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--f-surface-2);
+    border: 1px solid var(--f-line);
+    color: var(--f-text);
+}
+.app-header-icon-btn:hover { background: var(--f-em-soft); color: var(--f-em); transform: none; }
+
+/* ---------- شريط الأخبار: هادئ ---------- */
+.top-marquee,
+body.theme-default .top-marquee {
+    background: var(--f-gold-soft);
+    border-bottom: 1px solid var(--f-gold-line);
+    box-shadow: none;
+}
+.marquee-inner { color: #6b4e10; font-weight: 700; }
+
+/* ---------- شريط أزرار PDF / واتساب ---------- */
+.main-buttons-bar {
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid var(--f-line);
+    box-shadow: none;
+}
+.main-btn {
+    border-radius: 14px;
+    border: none;
+    box-shadow: none !important;
+    min-height: 44px;
+}
+.main-btn:hover { transform: none; filter: brightness(1.05); }
+#whatsappBtn { background: var(--f-em); box-shadow: none; }
+#whatsappBtn .main-btn-icon { color: #fff; }
+#pdfBtn { background: var(--f-gold); color: #fff; box-shadow: none; }
+#pdfBtn .main-btn-icon, #pdfBtn .main-btn-text { color: #fff; }
+
+/* ---------- لغة الأوامر الصوتية: تبويبات بسيطة ---------- */
+.voice-lang-pill {
+    background: var(--f-surface);
+    border: 1px solid var(--f-line);
+    color: var(--f-muted);
+    box-shadow: none;
+}
+.voice-lang-pill.active,
+.voice-lang-toggle-row--wizard .voice-lang-pill.active {
+    background: var(--f-em-soft);
+    border-color: var(--f-em-soft-2);
+    color: var(--f-em);
+    box-shadow: none;
+}
+.voice-lang-toggle-hint { color: var(--f-muted); }
+
+/* ---------- لافتة الأمر الصوتي: بطاقة رئيسية مسطّحة ---------- */
+.voice-cta-banner {
+    background: var(--f-em);
+    border: none;
+    border-radius: var(--f-radius-card);
+    box-shadow: 0 10px 24px -16px rgba(10, 107, 79, 0.7);
+    padding: 18px 20px;
+}
+.voice-cta-banner::after {
+    left: -30px; bottom: -70px;
+    width: 170px; height: 170px;
+    border: 22px solid rgba(255, 255, 255, 0.08);
+}
+.voice-cta-banner:hover { transform: none; box-shadow: 0 10px 24px -16px rgba(10, 107, 79, 0.7); }
+.voice-cta-icon {
+    width: 50px; height: 50px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    box-shadow: none;
+}
+.voice-cta-title { color: #fff; font-size: 16px; font-weight: 900; }
+.voice-cta-subtitle { color: rgba(255, 255, 255, 0.82); }
+
+/* ---------- تنبيه البيانات الأساسية: بطاقة "الخطوة التالية" ---------- */
+.basic-data-alert {
+    background: var(--f-gold-soft);
+    color: var(--f-text);
+    border: 1px solid var(--f-gold-line);
+    border-right: 1px solid var(--f-gold-line);
+    border-radius: 20px;
+    box-shadow: none;
+    padding: 12px 14px;
+}
+.basic-data-alert i.basic-data-alert-icon {
+    width: 44px; height: 44px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--f-radius-tile);
+    background: #f5e6bd;
+    color: var(--f-gold-strong);
+    font-size: 18px;
+}
+.basic-data-alert-text, .basic-data-alert-text strong { color: var(--f-text); }
+.basic-data-alert-text { color: var(--f-muted); }
+.basic-data-alert-btn {
+    background: var(--f-em);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-weight: 800;
+}
+
+/* ---------- بطاقة الترويج ---------- */
+.brand-promo-card {
+    border-radius: var(--f-radius-card);
+    border: 1px solid var(--f-line);
+    box-shadow: none;
+}
+
+/* ---------- البطاقة الرئيسية ---------- */
+.input-section,
+body.theme-default .input-section {
+    background: var(--f-surface);
+    border: 1px solid var(--f-line);
+    border-radius: var(--f-radius-card);
+    box-shadow: var(--f-shadow);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+.input-section::before { display: none; }
+.input-section h2 { color: var(--f-text); }
+
+/* مبدّل القالب: تبويبات مسطحة */
+.template-switch-label, .short-variant-label { color: var(--f-text); font-weight: 800; }
+.template-switch-pills,
+.template-switch--sheet .template-switch-pills {
+    background: var(--f-surface-2);
+    border: 1px solid var(--f-line);
+    box-shadow: none;
+    padding: 4px;
+    border-radius: 16px;
+}
+.template-pill,
+.template-switch--sheet .template-pill { color: var(--f-muted); border-radius: 12px; }
+.template-pill:not(.active):hover { background: var(--f-surface); color: var(--f-text); }
+.template-pill.active,
+.template-switch--sheet .template-pill.active {
+    background: var(--f-em);
+    color: #fff;
+    box-shadow: none;
+}
+
+/* أنواع القالب القصير */
+.short-variant-pills { background: var(--f-surface-2); border: 1px solid var(--f-line); }
+.short-variant-pill {
+    background: var(--f-surface);
+    border: 1px solid var(--f-line);
+    color: var(--f-text);
+    box-shadow: none;
+}
+.short-variant-pill i { color: var(--f-em); }
+.short-variant-pill:not(.active):hover { border-color: var(--f-em); background: var(--f-surface); }
+.short-variant-pill.active {
+    background: var(--f-em);
+    border-color: var(--f-em);
+    color: #fff;
+    box-shadow: none;
+}
+.short-variant-pill.active i { color: #fff; }
+
+/* شريط التقدم */
+.main-progress-bar {
+    background: var(--f-surface);
+    border: 1px solid var(--f-line);
+    border-radius: 18px;
+    box-shadow: none;
+    padding: 12px 16px;
+}
+.main-progress-bar .main-progress-track { background: var(--f-em-soft); height: 8px; box-shadow: none; }
+.main-progress-bar .main-progress-fill { background: var(--f-em); box-shadow: none; }
+.main-progress-bar .main-progress-label { color: var(--f-text); font-weight: 900; }
+
+/* تنبيه الذكاء الاصطناعي */
+.ai-sections-notice {
+    background: var(--f-gold-soft);
+    border: 1px solid var(--f-gold-line);
+    border-inline-start: 1px solid var(--f-gold-line);
+    border-radius: 16px;
+    color: #5b4310;
+}
+.ai-sections-notice-icon { color: var(--f-gold-strong); }
+
+/* أقسام الأكورديون: صفوف بطاقات بمربع رقم وسهم */
+.main-accordion-section {
+    background: var(--f-surface);
+    border: 1px solid var(--f-line);
+    border-radius: 20px;
+    box-shadow: none;
+    margin-bottom: 10px;
+}
+.main-accordion-section:hover { border-color: var(--f-line-2); box-shadow: none; }
+.main-accordion-header { padding-top: 12px; padding-bottom: 12px; }
+.main-accordion-header:hover { background: transparent; }
+.main-accordion-number {
+    width: 44px; height: 44px;
+    border-radius: var(--f-radius-tile);
+    background: var(--f-em-soft);
+    border: none;
+    color: var(--f-em);
+    font-size: 16px;
+    font-weight: 900;
+    box-shadow: none;
+}
+.main-accordion-title { color: var(--f-text); font-weight: 900; }
+.main-accordion-title i { color: var(--f-em); }
+.main-accordion-desc { color: var(--f-muted); }
+.main-accordion-chevron { color: var(--f-muted); }
+
+.main-accordion-section:has(.main-accordion-body.open) {
+    border-color: var(--f-em);
+    box-shadow: 0 0 0 3px rgba(10, 107, 79, 0.08);
+}
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header { background: transparent; }
+.main-accordion-section:has(.main-accordion-body.open) .main-accordion-number {
+    background: var(--f-em);
+    color: #fff;
+}
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header .main-accordion-title { color: var(--f-text); }
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header .main-accordion-title i { color: var(--f-em); }
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header .main-accordion-chevron { color: var(--f-em); }
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header .main-accordion-desc { color: var(--f-muted); }
+.main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header .main-accordion-status {
+    background: var(--f-em-soft);
+    border-color: transparent;
+    color: var(--f-em);
+}
+.main-accordion-body.open { border-top: 1px solid var(--f-line); }
+
+/* شارات الحالة: مسطحة */
+.main-accordion-status { border: none; padding: 5px 10px; }
+.main-accordion-status.filled { background: var(--f-em-soft); color: var(--f-em); }
+.main-accordion-status.ai-pending { background: var(--f-gold-soft); color: var(--f-gold-strong); }
+.main-accordion-status.incomplete { background: #fdeee4; color: #b4460a; }
+.main-accordion-status.optional { background: var(--f-surface-2); color: var(--f-muted); }
+
+.main-accordion-close-btn {
+    background: var(--f-surface-2);
+    border: 1px solid var(--f-line);
+    color: var(--f-text);
+}
+
+.criteria-collapse {
+    border: 1px solid var(--f-line);
+    border-radius: 18px;
+    box-shadow: none;
+    background: var(--f-surface);
+}
+.criteria-collapse.open { border-color: var(--f-em); }
+.criteria-collapse-title i { color: var(--f-em); }
+.criterion-suggest-btn {
+    background: var(--f-em);
+    color: #fff;
+    border-radius: 14px;
+    box-shadow: none;
+}
+.criterion-suggest-btn:hover:not(:disabled) { transform: none; box-shadow: none; filter: brightness(1.06); }
+
+/* ---------- الحقول ---------- */
+input, select, textarea {
+    background-color: var(--f-surface);
+    border-width: 1px;
+    box-shadow: none;
+}
+input:hover, select:hover, textarea:hover { border-color: var(--f-line-2); }
+input:focus, select:focus, textarea:focus {
+    border-color: var(--f-em);
+    background-color: #fff;
+    box-shadow: var(--f-ring);
+}
+.form-group label { color: var(--f-text); font-weight: 800; }
+.form-group label i, .level-select label i { color: var(--f-em); }
+
+.gender-toggle-btn.active,
+.feedback-choice-btn.active {
+    background: var(--f-em);
+    border-color: var(--f-em);
+    color: #fff;
+}
+.tool-checkbox { box-shadow: none; }
+.tool-checkbox:hover { transform: none; box-shadow: none; border-color: var(--f-line-2); }
+.tool-checkbox.checked {
+    border-color: var(--f-em);
+    background: var(--f-em-soft);
+    box-shadow: none;
+}
+.other-tool-container button { background: var(--f-em); color: #fff; }
+.other-tag { background: var(--f-em-soft); border: none; color: var(--f-em); }
+
+/* ---------- الشريط السفلي (جوال): أبيض بمؤشر كبسولة ---------- */
+.bottom-nav {
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid var(--f-line);
+    border-radius: 0;
+    box-shadow: none;
+}
+.bottom-nav-item { color: var(--f-muted); font-weight: 700; }
+.bottom-nav-item:hover { color: var(--f-text); }
+.bottom-nav-item.active { color: var(--f-em); }
+.bottom-nav-item.active:not(.bottom-nav-fab)::after { display: none; }
+.bottom-nav-item:not(.bottom-nav-fab) i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 28px;
+    border-radius: 999px;
+    transition: background 0.2s ease;
+}
+.bottom-nav-item.active:not(.bottom-nav-fab) i { background: var(--f-em-soft); }
+
+#aiFillFloatingBtn .fab-icon-circle {
+    border: none;
+    box-shadow: 0 0 0 6px var(--f-bg), 0 10px 22px -8px rgba(10, 107, 79, 0.7) !important;
+}
+body.theme-default #aiFillFloatingBtn .fab-icon-circle { background: var(--f-em) !important; }
+body.theme-default #aiFillFloatingBtn .floating-ai-icon { color: #fff !important; }
+#aiFillFloatingBtn .floating-ai-text { color: var(--f-em) !important; font-weight: 800; }
+
+/* ---------- القائمة الجانبية (جوال) ---------- */
+.side-drawer { background: var(--f-surface); box-shadow: -20px 0 50px -24px rgba(13, 31, 25, 0.35); }
+.drawer-profile {
+    background: var(--f-surface-2);
+    border: 1px solid var(--f-line);
+}
+.drawer-profile-name { color: var(--f-text); }
+.drawer-profile-role { color: var(--f-muted); }
+.drawer-profile i { color: var(--f-muted); }
+.drawer-profile-avatar,
+.account-summary-avatar {
+    background: var(--f-em-soft);
+    color: var(--f-em);
+    box-shadow: none;
+}
+.drawer-nav button { color: var(--f-text); font-weight: 700; }
+.drawer-nav button i {
+    color: var(--f-em);
+    width: 36px; height: 36px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 12px;
+    background: var(--f-em-soft);
+}
+.drawer-nav button:hover { background: var(--f-surface-2); box-shadow: none; transform: none; }
+.drawer-footer p { color: var(--f-text); }
+
+/* ---------- النوافذ ---------- */
+.drawer-modal-base, #settingsModal, #savedReportsModal, .voice-mode-sheet-backdrop {
+    background: rgba(13, 31, 25, 0.45);
+}
+.drawer-modal-box,
+#settingsModal > div,
+#savedReportsModal > div {
+    background: var(--f-surface);
+    border: 1px solid var(--f-line);
+    border-top: 1px solid var(--f-line);
+    border-radius: var(--f-radius-card);
+    box-shadow: 0 30px 60px -24px rgba(13, 31, 25, 0.35);
+}
+.drawer-modal-box h3, #settingsModal h3, #savedReportsModal h3 { color: var(--f-text); font-weight: 900; }
+.drawer-modal-box button,
+#settingsModal button,
+.account-edit-btn, .account-save-btn,
+.close-reports-btn {
+    background: var(--f-em);
+    color: #fff;
+    box-shadow: none;
+}
+#settingsModal #saveTeacherBtn { background: var(--f-em); color: #fff; }
+#settingsModal #clearBtn { background: var(--f-gold-soft); color: var(--f-gold-strong); border: 1px solid var(--f-gold-line); }
+#settingsModal .btn-secondary { background: var(--f-surface-2); color: var(--f-text); border: 1px solid var(--f-line); }
+
+.voice-mode-sheet { background: var(--f-surface); }
+.voice-mode-sheet-title { color: var(--f-text); font-weight: 900; }
+.voice-mode-option--progressive .voice-mode-option-icon { background: var(--f-em); color: #fff; }
+.voice-mode-option--progressive .voice-mode-option-title { color: var(--f-em); }
+.voice-mode-sheet-cancel { background: var(--f-surface-2); border: 1px solid var(--f-line); color: var(--f-text); }
+
+.report-card {
+    border: 1px solid var(--f-line);
+    border-inline-start: 1px solid var(--f-line);
+    border-radius: 20px;
+    box-shadow: none;
+}
+.report-card:hover { transform: none; border-color: var(--f-line-2); box-shadow: none; }
+.report-card .report-title { color: var(--f-text); }
+.empty-reports i { color: var(--f-em); }
+
+/* ---------- حسابي ---------- */
+.account-page-title h2 { color: var(--f-text); font-weight: 900; }
+.account-summary-card {
+    background: var(--f-em);
+    border: none;
+    border-radius: var(--f-radius-card);
+    box-shadow: 0 12px 26px -18px rgba(10, 107, 79, 0.8);
+}
+.account-summary-card .account-summary-avatar { background: rgba(255, 255, 255, 0.16); color: #fff; }
+.account-summary-name { color: #fff; }
+.account-summary-role { color: rgba(255, 255, 255, 0.8); }
+.account-card, .admin-stat-card, .admin-feedback-card {
+    border: 1px solid var(--f-line);
+    border-radius: var(--f-radius-card);
+    box-shadow: none;
+}
+.account-card-header h3 { color: var(--f-text); font-weight: 900; }
+.account-row, .account-link-row { border-bottom-color: var(--f-line); }
+.account-row i, .account-link-row i:first-child { color: var(--f-em); }
+.star-rating .star-rating-icon.filled { color: var(--f-gold); }
+.admin-stat-card .admin-stat-value { color: var(--f-text); }
+.font-choice-row.active { border-color: var(--f-em); box-shadow: var(--f-ring); }
+.font-choice-row.active .font-choice-check { color: var(--f-em); }
+
+/* ---------- شاشة الدخول ---------- */
+#activationScreen { background: var(--f-bg); }
+#activationScreen .activation-box {
+    background: var(--f-surface);
+    border: 1px solid var(--f-line);
+    border-radius: var(--f-radius-card);
+    box-shadow: 0 24px 50px -30px rgba(13, 31, 25, 0.35);
+}
+#activationScreen .activation-box::before { display: none; }
+#activationScreen h3 { color: var(--f-text); font-weight: 900; }
+#activationScreen .auth-subtitle { color: var(--f-muted); font-weight: 600; }
+#activationScreen .auth-input { background: var(--f-surface); border: 1px solid var(--f-line); }
+#activationScreen .auth-input:focus { border-color: var(--f-em); box-shadow: var(--f-ring); }
+#activationScreen #loginSubmitBtn,
+#activationScreen #signupSubmitBtn {
+    background: var(--f-em);
+    color: #fff;
+    border: none;
+    box-shadow: none;
+}
+#activationScreen #loginSubmitBtn:hover,
+#activationScreen #signupSubmitBtn:hover { transform: none; filter: brightness(1.06); }
+#activationScreen #googleSignInBtn,
+#activationScreen #authSwitchBtn,
+#activationScreen #contactForTrialBtn {
+    background: var(--f-surface);
+    border: 1px solid var(--f-line);
+    color: var(--f-text);
+    box-shadow: none;
+}
+#activationScreen #googleSignInBtn:hover,
+#activationScreen #authSwitchBtn:hover,
+#activationScreen #contactForTrialBtn:hover { border-color: var(--f-line-2); background: var(--f-surface-2); box-shadow: none; }
+#activationScreen .auth-forgot-link { color: var(--f-em); }
+#activationScreen .auth-footer-tagline { color: var(--f-muted); }
+#activationScreen .auth-footer-underline { background: var(--f-gold); }
+
+@media (min-width: 1024px) {
+    #activationScreen { background: var(--f-bg); }
+    #activationScreen .activation-box { border: none; background: transparent; box-shadow: none; }
+    #activationScreen .auth-lang-switch { background: var(--f-surface); border-color: var(--f-line); color: var(--f-text); }
+    .auth-illustration-panel { border: none; box-shadow: none; }
+}
+
+/* ---------- الحاسوب ---------- */
+@media (min-width: 1024px) {
+    .desktop-sidebar {
+        background: var(--f-surface);
+        border-left: 1px solid var(--f-line);
+        box-shadow: none;
+    }
+    .desktop-sidebar-logo { border-bottom-color: var(--f-line); }
+    .desktop-sidebar-logo-title {
+        background: none;
+        -webkit-background-clip: border-box;
+        background-clip: border-box;
+        color: var(--f-em);
+        -webkit-text-fill-color: var(--f-em);
+        font-weight: 900;
+    }
+    .desktop-sidebar-logo-title i { color: var(--f-em); -webkit-text-fill-color: var(--f-em); }
+    .desktop-sidebar-logo-sub { color: var(--f-muted); }
+    .desktop-sidebar-item { color: var(--f-muted); font-weight: 700; }
+    .desktop-sidebar-item i { color: var(--f-muted); opacity: 1; }
+    .desktop-sidebar-item:hover { background: var(--f-surface-2); color: var(--f-text); transform: none; }
+    .desktop-sidebar-item:hover i { color: var(--f-text); }
+    .desktop-sidebar-item.active {
+        background: var(--f-em-soft);
+        color: var(--f-em);
+        box-shadow: none;
+    }
+    .desktop-sidebar-item.active i { color: var(--f-em); }
+    .desktop-sidebar-logout { color: #c2410c; border-top-color: var(--f-line); }
+    .desktop-sidebar-logout i { color: #c2410c; }
+    .desktop-sidebar-logout:hover { background: #fdeee4; color: #c2410c; }
+    .desktop-sidebar-footer { color: var(--f-muted); border-top-color: var(--f-line); }
+    .desktop-sidebar-footer p { color: var(--f-text); }
+
+    .app-header {
+        background: var(--f-surface);
+        border: 1px solid var(--f-line);
+        border-radius: 20px;
+        box-shadow: none;
+    }
+
+    .main-buttons-bar {
+        background: var(--f-surface);
+        border: 1px solid var(--f-line);
+        border-radius: 20px;
+        box-shadow: none;
+    }
+
+    .bottom-nav { background: none; border: none; }
+    .bottom-nav-fab {
+        background: var(--f-surface);
+        border: 1px solid var(--f-line);
+        box-shadow: 0 16px 34px -18px rgba(13, 31, 25, 0.45);
+    }
+    .bottom-nav-fab:hover { box-shadow: 0 16px 34px -14px rgba(13, 31, 25, 0.5); }
+    #aiFillFloatingBtn .fab-icon-circle { box-shadow: none !important; }
+
+    .dsw-card {
+        background: var(--f-surface);
+        border: 1px solid var(--f-line);
+        border-radius: var(--f-radius-card);
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+    .dsw-card:hover { transform: none; box-shadow: none; }
+    .dsw-date-icon, .dsw-welcome-icon {
+        border-radius: var(--f-radius-tile);
+        background: var(--f-em-soft);
+        color: var(--f-em);
+    }
+    .dsw-welcome-card { background: var(--f-em); border: none; }
+    .dsw-welcome-card .dsw-welcome-icon { background: rgba(255, 255, 255, 0.16); color: #fff; }
+    .dsw-welcome-card h4 { color: #fff; }
+    .dsw-welcome-card p { color: rgba(255, 255, 255, 0.82); }
+    .dsw-card-title { color: var(--f-text); font-weight: 900; }
+    .dsw-card-title i { color: var(--f-em); }
+    .dsw-stat-tile {
+        background: var(--f-surface-2);
+        border: 1px solid var(--f-line);
+        border-radius: 18px;
+    }
+    .dsw-stat-tile:hover { transform: none; box-shadow: none; }
+    .dsw-stat-tile i { color: var(--f-em); }
+    .dsw-stat-value { color: var(--f-text); }
+    .dsw-tip-card {
+        background: var(--f-gold-soft);
+        border: 1px solid var(--f-gold-line);
+        border-inline-start: 1px solid var(--f-gold-line);
+    }
+    .dsw-tip-card .dsw-card-title i { color: var(--f-gold-strong); }
+}
+
+/* الثيم الداكن يحتفظ بأسطحه الداكنة */
+body.theme-dark { background: #0b1220; }
+body.theme-dark .app-header,
+body.theme-dark .bottom-nav,
+body.theme-dark .main-buttons-bar,
+body.theme-dark .desktop-sidebar,
+body.theme-dark .dsw-card,
+body.theme-dark .side-drawer { background: #111827; border-color: rgba(255, 255, 255, 0.08); }
+body.theme-dark .app-header-greeting,
+body.theme-dark .main-accordion-title,
+body.theme-dark .main-accordion-section:has(.main-accordion-body.open) > .main-accordion-header .main-accordion-title { color: #e2e8f0; }
+body.theme-dark .input-section { background: #1e293b; border-color: #334155; }
+body.theme-dark .main-accordion-section,
+body.theme-dark .main-progress-bar,
+body.theme-dark .criteria-collapse { background: #24344a; border-color: rgba(255, 255, 255, 0.08); }
+body.theme-dark input, body.theme-dark select, body.theme-dark textarea { background-color: #1e293b; }
+</style>
 </head>
 
 <body class="theme-default">
