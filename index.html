@@ -2332,6 +2332,12 @@ button[title]:hover::before {
 .dash-row .t { flex: 1; font-size: 13.5px; font-weight: 700; line-height: 1.4; }
 .dash-row .t small { display: block; font-weight: 500; opacity: .65; font-size: 11.5px; }
 .dash-row .dash-btn { padding: 6px 14px; font-size: 12.5px; }
+.dash-row.on .n { background: #065f46; color: #fff; font-size: 12px; }
+.dash-row .t small { margin-top: 2px; }
+.dash-crit-sum { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin: -2px 0 8px; }
+.dash-crit-sum > b { color: #065f46; font-size: 15px; }
+.dash-crit-bar { height: 7px; border-radius: 999px; background: #e5efeb; overflow: hidden; margin-bottom: 12px; }
+.dash-crit-bar i { display: block; height: 100%; border-radius: 999px; background: #065f46; }
 .dash-done { text-align: center; font-weight: 800; color: #065f46; padding: 10px; }
 
 
@@ -7066,8 +7072,8 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
     <div class="template-switch template-switch--sheet" id="templateSwitchSheet">
       <span class="template-switch-label">القالب:</span>
       <div class="template-switch-pills">
-        <button type="button" class="template-pill" data-template-style="short" onclick="setReportTemplateStyle('short')">قصير</button>
-        <button type="button" class="template-pill active" data-template-style="long" onclick="setReportTemplateStyle('long')">طويل</button>
+        <button type="button" class="template-pill active" data-template-style="short" onclick="setReportTemplateStyle('short')">قصير</button>
+        <button type="button" class="template-pill" data-template-style="long" onclick="setReportTemplateStyle('long')">طويل</button>
       </div>
     </div>
 
@@ -7224,13 +7230,13 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
   <div class="template-switch" id="templateSwitchMain">
     <span class="template-switch-label"><i class="fas fa-file-lines"></i> القالب:</span>
     <div class="template-switch-pills">
-      <button type="button" class="template-pill" data-template-style="short" onclick="setReportTemplateStyle('short')">قالب قصير<small>صفحة واحدة مختصرة</small></button>
-      <button type="button" class="template-pill active" data-template-style="long" onclick="setReportTemplateStyle('long')">قالب طويل<small>تقرير مفصّل بكل أقسامه</small></button>
+      <button type="button" class="template-pill active" data-template-style="short" onclick="setReportTemplateStyle('short')">قالب قصير<small>صفحة واحدة مختصرة</small></button>
+      <button type="button" class="template-pill" data-template-style="long" onclick="setReportTemplateStyle('long')">قالب طويل<small>تقرير مفصّل بكل أقسامه</small></button>
     </div>
   </div>
 
   <!-- ================= نموذج القالب الطويل (القالب الأصلي كما هو) ================= -->
-  <div id="longTemplateForm">
+  <div id="longTemplateForm" style="display:none;">
 
   <!-- مؤشر تقدم عام (عرض فقط - لا يمثل قاعدة عمل جديدة) -->
   <div class="main-progress-bar">
@@ -7673,7 +7679,7 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
   <!-- ================= نهاية نموذج القالب الطويل ================= -->
 
   <!-- ================= نموذج القالب القصير ================= -->
-  <div id="shortTemplateForm" style="display:none;">
+  <div id="shortTemplateForm">
 
     <!-- نوع القالب القصير: تقرير عام، أو استمارة تبادل الزيارات بين المعلمين (تُفعَّل تلقائياً أيضاً عند ذكر تبادل الزيارات بالصوت أو في العنوان) -->
     <div class="short-variant-switch" id="shortVariantSwitch">
@@ -10438,7 +10444,7 @@ function updateHealthReport() { /* لن تُستخدم */ }
 // الاصطناعي (خطوات التنفيذ/الوصف، الأهداف) + شاهدان. القالب المختار محفوظ في
 // localStorage، وكل الخصائص (الصوت، التوليد، الحفظ، PDF) تتبعه عبر isShortTemplate().
 const REPORT_TEMPLATE_STYLE_KEY = 'reportTemplateStyle';
-window.__reportTemplateStyle = 'long';
+window.__reportTemplateStyle = 'short';
 function isShortTemplate() { return window.__reportTemplateStyle === 'short'; }
 
 // البنود الصغيرة في القالب القصير. key هو اسم البند لدى الخادم (التوليد
@@ -10490,9 +10496,18 @@ function setReportTemplateStyle(style, opts = {}) {
     if (typeof updateReport === 'function') updateReport();
 }
 
+// القالب القصير هو الافتراضي. من حفظ جهازه "الطويل" سابقاً (قبل أن يصبح القصير افتراضياً)
+// يُنقل إلى القصير مرة واحدة فقط، ثم يُحترم أي اختيار يقوم به بعد ذلك.
+const REPORT_TEMPLATE_DEFAULT_MIGRATED_KEY = 'reportTemplateStyleShortDefault';
 function loadReportTemplateStyle() {
-    let saved = 'long';
-    try { saved = localStorage.getItem(REPORT_TEMPLATE_STYLE_KEY) || 'long'; } catch (_) { /* تجاهل */ }
+    let saved = 'short';
+    try {
+        if (localStorage.getItem(REPORT_TEMPLATE_DEFAULT_MIGRATED_KEY) !== '1') {
+            localStorage.setItem(REPORT_TEMPLATE_DEFAULT_MIGRATED_KEY, '1');
+            localStorage.setItem(REPORT_TEMPLATE_STYLE_KEY, 'short');
+        }
+        saved = localStorage.getItem(REPORT_TEMPLATE_STYLE_KEY) || 'short';
+    } catch (_) { /* تجاهل */ }
     setReportTemplateStyle(saved, { skipSave: true });
 }
 
@@ -13448,9 +13463,9 @@ document.addEventListener('enjaz-reports-ready', () => { if (document.getElement
 // صفحة الدخول الأولى: تغطية المعايير، الخطوة التالية، تحليل النتائج، والمعايير التي تحتاج شواهد.
 // تقرأ من التقارير المحفوظة محلياً (pfCollect) ولا ترسل شيئاً لأي خادم. نموذج إنشاء التقرير نفسه (homePage) لم يتغير.
 function dashNextCriteria(data) {
-    // غير المغطاة، الأعلى وزناً أولاً (مع بقاء ترتيب المعايير الأصلي عند التساوي).
+    // غير المغطاة، بترتيب أرقام المعايير الأصلي (١، ٢، ٣ ...).
     return data.crits.map((c, i) => ({ c, i })).filter(x => !x.c.reports.length)
-        .sort((a, b) => (parseFloat(b.c.weight) || 0) - (parseFloat(a.c.weight) || 0) || a.i - b.i);
+        .sort((a, b) => a.i - b.i);
 }
 function dashRender() {
     const box = document.getElementById('dashPage');
@@ -13479,10 +13494,13 @@ function dashRender() {
     }
     const analysis = `<div class="dash-card"><div class="dash-analysis"><i class="fas fa-chart-column"></i><div><h3 style="margin:0"> تحليل نتائج طلابك</h3><small>ارفع كشف الدرجات (PDF أو صورة) واحصل على نموذج تحليل جاهز للطباعة</small></div><button type="button" class="dash-btn" onclick="openResultsAnalysis()">ابدأ</button></div></div>`;
     const goal = `<div class="dash-card dash-goal"><q>أصدر تقريراً على الأقل لكل معيار</q><div class="dash-goal-stats"><div><b>${pfNum(T.evidence)}</b>تقرير محفوظ</div><div><b>${pfNum(T.images)}</b>صورة مرفقة</div><div><b>${pfNum(T.covered)}/${pfNum(T.total)}</b>معيار مغطّى</div></div></div>`;
+    // كل المعايير بترتيب أرقامها: الوزن، عدد الشواهد، والبنود الموثّقة؛ والموثّق منها بعلامة صح.
     let list = '';
-    if (T.total && missing.length) {
-        const showAll = !!window.__dashShowAll, rows = showAll ? missing : missing.slice(0, 5);
-        list = `<div class="dash-card"><h3><i class="fas fa-list-check"></i> معايير تحتاج إلى شواهد</h3><ul class="dash-list">${rows.map(x => `<li class="dash-row"><span class="n">${pfNum(x.i + 1)}</span><span class="t">${pfEsc(x.c.name)}<small>${pfEsc(w(x.c))}</small></span><button type="button" class="dash-btn ghost" data-dash-add="${pfEsc(x.c.id)}"><i class="fas fa-plus"></i> إضافة</button></li>`).join('')}</ul>${missing.length > 5 ? `<button type="button" class="dash-btn ghost wide" style="margin-top:10px" onclick="window.__dashShowAll=!window.__dashShowAll;dashRender()">${showAll ? 'عرض أقل' : 'عرض الكل (' + pfNum(missing.length) + ')'}</button>` : ''}</div>`;
+    if (T.total) {
+        const all = data.crits.map((c, i) => ({ c, i }));
+        const showAll = !!window.__dashShowAll, rows = showAll ? all : all.slice(0, 6);
+        const meta = c => [`الوزن ${pfEsc(pfNum(w(c)))}`, `عدد الشواهد: ${pfNum(c.reports.length)}`, (c.reports.length && c.subs) ? `بنود موثّقة: ${pfNum(c.subsCovered)} من ${pfNum(c.subs)}` : ''].filter(Boolean).join(' · ');
+        list = `<div class="dash-card"><h3><i class="fas fa-list-check"></i> المعايير وأوزانها</h3><div class="dash-crit-sum"><span>معايير فيها شواهد: <b>${pfNum(T.covered)} من ${pfNum(T.total)}</b></span><b>${pfNum(pct)}٪</b></div><div class="dash-crit-bar"><i style="width:${pct}%"></i></div><ul class="dash-list">${rows.map(x => { const on = x.c.reports.length > 0; return `<li class="dash-row${on ? ' on' : ''}"><span class="n">${on ? '<i class="fas fa-check"></i>' : pfNum(x.i + 1)}</span><span class="t">${pfEsc(x.c.name)}<small>${meta(x.c)}</small></span><button type="button" class="dash-btn ghost" data-dash-add="${pfEsc(x.c.id)}"><i class="fas fa-plus"></i> إضافة</button></li>`; }).join('')}</ul>${all.length > 6 ? `<button type="button" class="dash-btn ghost wide" style="margin-top:10px" onclick="window.__dashShowAll=!window.__dashShowAll;dashRender()">${showAll ? 'عرض أقل' : 'عرض كل المعايير (' + pfNum(all.length) + ')'}</button>` : ''}</div>`;
     }
     const portfolio = `<button type="button" class="dash-btn wide" onclick="openPortfolio()"><i class="fas fa-award"></i> ملف الإنجاز</button>`;
     box.innerHTML = hero + cov + next + analysis + goal + list + portfolio;
