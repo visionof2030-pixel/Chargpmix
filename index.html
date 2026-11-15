@@ -7095,6 +7095,55 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
 .pf-v-geo .pf-close2 { padding: 0 64px 280px; }
 .pf-v-geo .pf-close2 .pf-goldbar { width: 90px; height: 6px; border-radius: 0; }
 </style>
+<style id="pf-share-css">
+/* رمز QR بجانب كل تقرير في غلاف المعيار (ملف الإنجاز) */
+.pf-rep.has-qr { padding-top: 8px; padding-bottom: 8px; }
+.pf-rep b small.pf-qr-hint { display: block; font-size: 10.5px; font-weight: 600; color: var(--pf-mut, #7a7466); margin-top: 2px; }
+.pf-qr-box { flex: none; width: 70px; height: 70px; padding: 5px; background: #fff; border: 1px solid var(--pf-line, #e9e2d1); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.pf-qr { display: block; width: 60px; height: 60px; image-rendering: pixelated; }
+.pf-replist2.dense .pf-qr-box { width: 54px; height: 54px; padding: 4px; }
+.pf-replist2.dense .pf-qr { width: 46px; height: 46px; }
+.pf-v-geo .pf-qr-box, .pf-v-formal .pf-qr-box { border-radius: 3px; }
+
+/* صفحة عرض التقرير المشارَك (?r=...) */
+body.sr-mode { overflow: hidden; }
+#sharedReportView {
+    position: fixed; inset: 0; z-index: 30000; overflow-y: auto;
+    background: #f4f6f5; color: #0d1f19; direction: rtl; font-family: var(--app-font);
+    -webkit-overflow-scrolling: touch;
+}
+.sr-loading { display: flex; align-items: center; justify-content: center; gap: 10px; height: 100%; font-size: 16px; color: #5d6e68; }
+.sr-wrap { max-width: 760px; margin: 0 auto; padding: 20px 16px 40px; display: flex; flex-direction: column; gap: 12px; }
+.sr-head { background: #0a6b4f; color: #fff; border-radius: 24px; padding: 22px 22px 24px; position: relative; overflow: hidden; }
+.sr-head::after { content: ''; position: absolute; left: -40px; bottom: -70px; width: 180px; height: 180px; border-radius: 50%; border: 24px solid rgba(255,255,255,.08); }
+.sr-brand { font-size: 12.5px; font-weight: 700; color: rgba(255,255,255,.8); }
+.sr-brand i { color: #e8bf55; margin-left: 4px; }
+.sr-crit { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; background: rgba(255,255,255,.14); border-radius: 999px; padding: 5px 14px 5px 6px; font-size: 13px; font-weight: 700; }
+.sr-crit span { background: #e8bf55; color: #3b2a05; border-radius: 999px; padding: 2px 10px; font-size: 11.5px; font-weight: 800; }
+.sr-head h1 { margin: 12px 0 0; font-size: 24px; font-weight: 900; line-height: 1.45; position: relative; z-index: 1; }
+.sr-date { margin-top: 8px; font-size: 13px; color: rgba(255,255,255,.85); }
+.sr-card { background: #fff; border: 1px solid #e3e8e6; border-radius: 20px; padding: 16px 18px; }
+.sr-info, .sr-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 16px; }
+.sr-info small, .sr-meta small { display: block; font-size: 11.5px; color: #5d6e68; }
+.sr-info b, .sr-meta b { font-size: 14.5px; font-weight: 800; }
+.sr-sec h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font-size: 16px; font-weight: 900; color: #0a6b4f; }
+.sr-sec h2 i { width: 4px; height: 16px; border-radius: 3px; background: #c99a2e; display: inline-block; }
+.sr-sec p { margin: 0; font-size: 15px; line-height: 1.9; white-space: pre-line; }
+.sr-imgs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.sr-imgs img { width: 100%; border-radius: 16px; border: 1px solid #e3e8e6; background: #fff; }
+.sr-empty { text-align: center; padding: 40px 20px; margin-top: 30vh; }
+.sr-empty i { font-size: 40px; color: #c99a2e; }
+.sr-empty h2 { margin: 12px 0 4px; font-size: 20px; }
+.sr-empty p { margin: 0; color: #5d6e68; }
+.sr-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 6px; font-size: 12px; color: #5d6e68; }
+.sr-foot button { border: none; background: #0a6b4f; color: #fff; font-family: inherit; font-weight: 800; font-size: 14px; border-radius: 14px; padding: 10px 20px; cursor: pointer; }
+@media (max-width: 480px) { .sr-info, .sr-meta { grid-template-columns: 1fr 1fr; } .sr-head h1 { font-size: 21px; } }
+@media print {
+    body.sr-mode > *:not(#sharedReportView) { display: none !important; }
+    body.sr-mode #sharedReportView { position: static; overflow: visible; background: #fff; }
+    .sr-foot button { display: none; }
+}
+</style>
 </head>
 
 <body class="theme-default">
@@ -13531,7 +13580,8 @@ function pfLbl(t) { return `<div class="pf-lbl"><i></i>${pfEsc(t)}</div>`; }
 function pfRepLink(ctx, r, pageNo) {
     const k = pfEsc(r.key || '');
     const t = pfEsc(r.title);
-    return `<li class="pf-rep"><span class="pf-rep-ic"><i class="fas fa-link"></i></span><b>${ctx.interactive ? `<a class="pf-link" data-pfkey="${k}">${t}</a>` : t}</b><em>${pfEsc(r.date || '')}</em><span class="pf-pg">ص ${pfNum(pageNo || '')}</span></li>`;
+    const qr = ctx.qr && ctx.qr[r.key] ? pfQrImg(ctx.qr[r.key], 60) : '';
+    return `<li class="pf-rep${qr ? ' has-qr' : ''}"><span class="pf-rep-ic"><i class="fas fa-link"></i></span><b>${ctx.interactive ? `<a class="pf-link" data-pfkey="${k}">${t}</a>` : t}${qr ? '<small class="pf-qr-hint">امسح الرمز لعرض التقرير</small>' : ''}</b><em>${pfEsc(r.date || '')}</em><span class="pf-pg">ص ${pfNum(pageNo || '')}</span>${qr ? `<span class="pf-qr-box">${qr}</span>` : ''}</li>`;
 }
 function pfRing2(pct, size, pal) {
     const r = size / 2 - 6, c = 2 * Math.PI * r, v = Math.max(0, Math.min(100, pct));
@@ -13631,10 +13681,162 @@ function pfRenderPage(p, ctx) {
     if (st === 'formal') return wrap(`<div class="pf-close2">${pfEmblem(pal)}<h1>ختاماً</h1>${pfOrn(pal, 220)}${closeTxt}${sigs}</div>${pfFoot(ctx, p.no)}`);
     return wrap(`${pfStar(pal, 'pf-star pf-star-tl')}${pfBlob(pal, 'c' + p.no, true)}<div class="pf-close2"><u class="pf-goldbar"></u><h1>ختاماً</h1><p>هذا الملف توثيقٌ لجزءٍ من رحلةٍ تعليميةٍ مستمرة، ويضمّ ${pfNum(T.evidence)} شاهداً موثّقاً${T.images ? ` و${pfNum(T.images)} صورة مرفقة` : ''} تغطي ${pfNum(T.covered)} من ${pfNum(T.total)} معياراً من معايير الأداء الوظيفي. ويبقى الأثر الحقيقي فيما تعلّمه الطلبة ونما لديهم من مهارات وقيم.</p><div class="pf-sig2">${sig('المعلّم', prof.name)}${sig('مدير المدرسة', prof.principal)}${sig('التوقيع', '')}${sig('التاريخ', '')}</div></div>${pfFoot(ctx, p.no)}`);
 }
+// ==================== مشاركة التقارير برمز QR (ملف الإنجاز) ====================
+// عند تنزيل ملف الإنجاز أو طباعته تُرفع نسخة من كل تقرير (نصّه وصورتان مصغّرتان) إلى جدول
+// shared_reports في Supabase، ويحصل على رابط عام ...?r=رمز يظهر كرمز QR تحت معياره في الملف.
+// من يمسح الرمز يرى التقرير دون تسجيل دخول (pfSharedView). لا يمكن سرد التقارير: القراءة
+// العامة فقط برمز التقرير عبر الدالة get_shared_report.
+const PF_SHARE_KEY = 'enjaz_share_ids_v1';
+const PF_SHARE_HASH_KEY = 'enjaz_share_hash_v1';
+const PF_QR_LIB = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+function pfJsonGet(k) { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch (_) { return {}; } }
+function pfJsonSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) { /* تجاهل */ } }
+function pfShareUrl(id) { return location.origin + location.pathname + '?r=' + encodeURIComponent(id); }
+function pfNewShareId() {
+    const abc = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789', a = new Uint8Array(16);
+    crypto.getRandomValues(a);
+    return Array.from(a, b => abc[b % abc.length]).join('');
+}
+function pfHashStr(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return String(h >>> 0) + ':' + s.length; }
+async function pfEnsureQr() {
+    if (typeof qrcode === 'undefined') await pfLoadScript(PF_QR_LIB);
+    return typeof qrcode !== 'undefined';
+}
+function pfQrImg(url, size) {
+    if (typeof qrcode === 'undefined' || !url) return '';
+    try {
+        const q = qrcode(0, 'M'); q.addData(url); q.make();
+        const svg = q.createSvgTag(4, 0);
+        return `<img class="pf-qr" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}" width="${size}" height="${size}" alt="">`;
+    } catch (_) { return ''; }
+}
+// روابط التقارير المعروفة على هذا الجهاز (التي رُفعت بنجاح من قبل).
+function pfShareUrls() {
+    const ids = pfJsonGet(PF_SHARE_KEY), out = {};
+    Object.keys(ids).forEach(k => { out[k] = pfShareUrl(ids[k]); });
+    return out;
+}
+function pfShrinkImage(src, max, q) {
+    return new Promise(resolve => {
+        const im = new Image();
+        im.onload = () => {
+            const k = Math.min(1, max / Math.max(im.width, im.height));
+            const c = document.createElement('canvas');
+            c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+            c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+            try { resolve(c.toDataURL('image/jpeg', q)); } catch (_) { resolve(''); }
+        };
+        im.onerror = () => resolve('');
+        im.src = src;
+    });
+}
+async function pfShareContent(r, crit, critNo, prof, data) {
+    const { meta, secs } = pfEvidenceContent(r);
+    const imgs = [];
+    for (const s of data.imgsOf(r).slice(0, 2)) { const x = await pfShrinkImage(s, 1100, 0.72); if (x) imgs.push(x); }
+    return {
+        v: 1, title: r.title || 'تقرير', date: r.date || '', criterion: crit ? crit.name : '', criterionNo: critNo || 0,
+        teacher: prof.name || '', role: prof.role || '', school: prof.school || '', subject: prof.subject || '', education: prof.education || '',
+        meta, secs, images: imgs,
+    };
+}
+// يرفع التقارير المرتبطة بالمعايير (وغير المرتبطة) ويحدّث خريطة الروابط. يُرجع { ok, reason }.
+async function pfPrepareShares(onStep) {
+    if (typeof supabaseClient === 'undefined' || !navigator.onLine) return { ok: false, reason: 'offline' };
+    let session = null;
+    try { session = (await supabaseClient.auth.getSession()).data.session; } catch (_) { session = null; }
+    if (!session) return { ok: false, reason: 'auth' };
+    const data = pfCollect(), prof = pfProfile();
+    const items = [];
+    data.crits.forEach((c, i) => c.reports.forEach(r => items.push({ r, c, no: i + 1 })));
+    data.others.forEach(r => items.push({ r, c: null, no: 0 }));
+    if (!items.length) return { ok: true };
+    const ids = pfJsonGet(PF_SHARE_KEY), hashes = pfJsonGet(PF_SHARE_HASH_KEY);
+    // رموز سابقة محفوظة في الخادم (مثلاً من جهاز آخر) حتى لا يتغير رابط تقرير طُبع رمزه من قبل.
+    const missing = items.map(x => x.r.key).filter(k => !ids[k]);
+    if (missing.length) {
+        try {
+            const { data: rows } = await supabaseClient.from('shared_reports').select('id, report_key').in('report_key', missing);
+            (rows || []).forEach(row => { ids[row.report_key] = row.id; });
+        } catch (_) { /* تجاهل */ }
+    }
+    const rows = [];
+    for (let i = 0; i < items.length; i++) {
+        const { r, c, no } = items[i];
+        if (onStep) onStep(i + 1, items.length);
+        const content = await pfShareContent(r, c, no, prof, data);
+        const h = pfHashStr(JSON.stringify(content));
+        if (ids[r.key] && hashes[r.key] === h) continue;
+        rows.push({ id: ids[r.key] || pfNewShareId(), report_key: r.key, content, updated_at: new Date().toISOString(), _h: h });
+    }
+    let failed = 0;
+    for (let i = 0; i < rows.length; i += 4) {
+        const batch = rows.slice(i, i + 4);
+        const { error } = await supabaseClient.from('shared_reports').upsert(batch.map(({ _h, ...x }) => x), { onConflict: 'id' });
+        if (error) { failed += batch.length; console.error('pfPrepareShares:', error); continue; }
+        batch.forEach(x => { ids[x.report_key] = x.id; hashes[x.report_key] = x._h; });
+    }
+    pfJsonSet(PF_SHARE_KEY, ids); pfJsonSet(PF_SHARE_HASH_KEY, hashes);
+    return failed ? { ok: false, reason: 'upload' } : { ok: true };
+}
+// تجهيز الروابط ورموز QR قبل التنزيل أو الطباعة، مع رسالة واضحة إن تعذّر ذلك (يستمر التصدير بدونها).
+async function pfPrepareQrForExport(btn) {
+    const label = btn ? btn.innerHTML : '';
+    try { await pfEnsureQr(); } catch (_) { /* بدون رموز */ }
+    let res;
+    try { res = await pfPrepareShares((i, n) => { if (btn) btn.innerHTML = `<i class="fas fa-qrcode"></i> ${pfNum(i)} / ${pfNum(n)}`; }); }
+    catch (e) { console.error('pfPrepareShares:', e); res = { ok: false, reason: 'upload' }; }
+    finally { if (btn) btn.innerHTML = label; }
+    if (!res.ok) {
+        const msg = res.reason === 'auth' ? 'سجّل دخولك لإنشاء رموز QR للتقارير؛ سيُصدَّر الملف بدونها.'
+            : res.reason === 'offline' ? 'لا يوجد اتصال بالإنترنت؛ سيُصدَّر الملف بدون رموز QR الجديدة.'
+            : 'تعذّر رفع بعض التقارير؛ قد لا تظهر رموز QR لها.';
+        showNotification(msg, 'warning');
+    }
+}
+
+// صفحة عرض التقرير لمن يمسح الرمز: تظهر فوق كل شيء ولا تحتاج تسجيل دخول.
+async function pfSharedView(id) {
+    const box = document.createElement('div');
+    box.id = 'sharedReportView';
+    box.innerHTML = '<div class="sr-loading"><i class="fas fa-spinner fa-spin"></i> جارٍ تحميل التقرير…</div>';
+    document.body.appendChild(box);
+    document.body.classList.add('sr-mode');
+    let rep = null;
+    try {
+        const { data, error } = await supabaseClient.rpc('get_shared_report', { p_id: id });
+        if (!error) rep = data;
+    } catch (_) { rep = null; }
+    if (!rep) {
+        box.innerHTML = '<div class="sr-wrap"><div class="sr-card sr-empty"><i class="fas fa-file-circle-question"></i><h2>لم يُعثر على التقرير</h2><p>قد يكون الرابط غير صحيح أو حُذف التقرير.</p></div></div>';
+        return;
+    }
+    const e = pfEsc;
+    const info = [['المعلم', rep.teacher], ['الصفة', rep.role], ['المدرسة', rep.school], ['المادة', rep.subject], ['إدارة التعليم', rep.education]].filter(x => x[1]);
+    box.innerHTML = `<div class="sr-wrap">
+        <header class="sr-head">
+            <div class="sr-brand"><i class="fas fa-award"></i> ملف شواهد الأداء الوظيفي</div>
+            ${rep.criterion ? `<div class="sr-crit"><span>المعيار ${rep.criterionNo ? e(String(rep.criterionNo)) : ''}</span>${e(rep.criterion)}</div>` : ''}
+            <h1>${e(rep.title)}</h1>
+            ${rep.date ? `<div class="sr-date"><i class="fas fa-calendar-days"></i> ${e(rep.date)}</div>` : ''}
+        </header>
+        ${info.length ? `<section class="sr-card sr-info">${info.map(([l, v]) => `<div><small>${l}</small><b>${e(v)}</b></div>`).join('')}</section>` : ''}
+        ${(rep.meta || []).length ? `<section class="sr-card sr-meta">${rep.meta.map(([l, v]) => `<div><small>${e(l)}</small><b>${e(v)}</b></div>`).join('')}</section>` : ''}
+        ${(rep.secs || []).map(([l, v]) => `<section class="sr-card sr-sec"><h2><i></i>${e(l)}</h2><p>${e(v)}</p></section>`).join('')}
+        ${(rep.images || []).length ? `<section class="sr-imgs">${rep.images.map(s => `<img src="${s}" alt="">`).join('')}</section>` : ''}
+        <footer class="sr-foot"><button type="button" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button><span>صادر من أداة إنجاز للتقارير التربوية</span></footer>
+    </div>`;
+}
+(function () {
+    try {
+        const id = new URLSearchParams(location.search).get('r');
+        if (id && /^[A-Za-z0-9_-]{12,40}$/.test(id)) pfSharedView(id);
+    } catch (_) { /* تجاهل */ }
+})();
 function pfBuild(interactive) {
     const cfg = pfCfg(), data = pfCollect(), plan = pfPlan(data), pageOf = { crit: {}, ev: {}, others: 0 };
     plan.forEach(p => { if (p.t === 'crit') pageOf.crit[p.c.id] = p.no; else if (p.t === 'ev') pageOf.ev[p.r.key] = p.no; else if (p.t === 'others') pageOf.others = p.no; });
-    const ctx = { cfg, prof: pfProfile(), data, plan, pageOf, interactive };
+    const ctx = { cfg, prof: pfProfile(), data, plan, pageOf, interactive, qr: typeof qrcode !== 'undefined' ? pfShareUrls() : {} };
     return { html: plan.map(p => pfRenderPage(p, ctx)), count: plan.length, data };
 }
 // ضبط حجم الخط في صفحات الشواهد الطويلة حتى لا يقتطع النص.
@@ -13654,6 +13856,10 @@ function pfRender() {
     const box = document.getElementById('pfPreview');
     if (!box) return;
     const cfg = pfCfg(), b = pfBuild(true);
+    if (typeof qrcode === 'undefined' && !window.__pfQrLoading && Object.keys(pfJsonGet(PF_SHARE_KEY)).length) {
+        window.__pfQrLoading = true;
+        pfEnsureQr().then(ok => { if (ok) pfRender(); }).catch(() => { /* تجاهل */ });
+    }
     box.innerHTML = b.html.map(h => `<div class="pf-wrap">${h}</div>`).join('');
     pfScale(); pfFit(box);
     const stl = document.getElementById('pfStyles');
@@ -13664,7 +13870,7 @@ function pfRender() {
     if (hint) {
         const T = b.data.totals;
         hint.innerHTML = T.evidence
-            ? `${pfNum(b.count)} صفحة • ${pfNum(T.evidence)} شاهد • ${pfNum(T.covered)} من ${pfNum(T.total)} معياراً — اضغط على عنوان تقرير في غلاف المعيار لفتحه.`
+            ? `${pfNum(b.count)} صفحة • ${pfNum(T.evidence)} شاهد • ${pfNum(T.covered)} من ${pfNum(T.total)} معياراً — اضغط على عنوان تقرير في غلاف المعيار لفتحه. تُنشأ رموز QR للتقارير تحت كل معيار عند التنزيل أو الطباعة.`
             : 'لا توجد شواهد بعد. أصدر تقريراً واحفظه وسيظهر هنا تلقائياً ضمن معياره.';
     }
 }
@@ -14040,6 +14246,7 @@ async function pfDownloadPdf(pages, fileName, btnId) {
     const btn = document.getElementById(btnId || 'pfPdfBtn'), label = btn ? btn.innerHTML : '';
     let host = null;
     try {
+        if (!Array.isArray(pages)) await pfPrepareQrForExport(btn);
         host = pfMakeHost(Array.isArray(pages) ? pages : null);
         await pfWaitImages(host); pfFit(host);
         const pgEls = Array.from(host.querySelectorAll('.pf-page'));
@@ -14064,6 +14271,7 @@ async function pfDownloadPdf(pages, fileName, btnId) {
     }
 }
 async function pfPrint(pages) {
+    if (!Array.isArray(pages)) await pfPrepareQrForExport(document.getElementById('pfPrintBtn'));
     const host = pfMakeHost(Array.isArray(pages) ? pages : null);
     await pfWaitImages(host); pfFit(host);
     document.body.classList.add('pf-printing');
