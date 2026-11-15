@@ -6548,6 +6548,213 @@ body.theme-dark .main-progress-bar,
 body.theme-dark .criteria-collapse { background: #24344a; border-color: rgba(255, 255, 255, 0.08); }
 body.theme-dark input, body.theme-dark select, body.theme-dark textarea { background-color: #1e293b; }
 </style>
+<style id="pf-pro-css">
+/* =====================================================================
+   تصميم صفحات ملف الإنجاز (PDF) - نسخة احترافية
+   ورق عاجي بنقش هندسي خفيف، ترويسة جارية، عناوين بخط ذهبي، بطاقات بيضاء
+   بحدود رفيعة، فهرس زمني، أغلفة معايير برقم مائي وموجة سفلية.
+   الألوان من ثيم الملف المختار (--pf-p / --pf-a / --pf-s).
+   ===================================================================== */
+.pf-page.pf-pro {
+    background: #faf7ef;
+    color: #1f2a27;
+    --pf-ink: #1f2a27;
+    --pf-mut: #7a7466;
+    --pf-line: #e9e2d1;
+}
+.pf-pro > * { position: relative; z-index: 1; }
+.pf-pro > .pf-pat {
+    position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23b3a173' stroke-opacity='.17' stroke-width='1'%3E%3Crect x='20' y='20' width='24' height='24'/%3E%3Crect x='20' y='20' width='24' height='24' transform='rotate(45 32 32)'/%3E%3Cpath d='M0 32h7M57 32h7M32 0v7M32 57v7'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 64px 64px;
+}
+.pf-pro > .pf-corner, .pf-pro > .pf-star, .pf-pro > .pf-blob, .pf-pro > .pf-wave, .pf-pro > .pf-wm { position: absolute; z-index: 0; }
+.pf-corner-tl { top: 0; left: 0; }
+.pf-corner-br { bottom: 0; right: 0; transform: rotate(180deg); }
+
+/* ترويسة جارية */
+.pf-run { flex: none; display: flex; justify-content: space-between; align-items: center; margin: 34px 56px 0; padding-bottom: 10px; border-bottom: 1px solid var(--pf-line); font-size: 11.5px; color: var(--pf-mut); }
+.pf-run-l { display: flex; align-items: center; gap: 8px; color: var(--pf-p); font-weight: 800; max-width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pf-run-l i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--pf-p); display: inline-block; }
+
+/* عنوان الصفحة */
+.pf-ttl { flex: none; padding: 26px 56px 0; }
+.pf-ttl small { display: block; font-size: 12.5px; font-weight: 700; color: var(--pf-a); margin-bottom: 4px; }
+.pf-ttl h2 { margin: 0; font-size: 34px; font-weight: 900; color: var(--pf-ink); line-height: 1.35; }
+.pf-ttl u, .pf-goldbar { display: block; width: 64px; height: 4px; border-radius: 4px; background: var(--pf-a); margin-top: 10px; text-decoration: none; }
+
+.pf-pro .pf-body { padding: 22px 56px 8px; gap: 12px; }
+
+/* تذييل */
+.pf-pro .pf-foot { flex: none; display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 10px 56px 28px; border: none; font-size: 11.5px; color: var(--pf-mut); }
+.pf-pro .pf-foot.inv { color: rgba(255,255,255,.85); }
+.pf-hex { display: block; }
+
+/* عناصر عامة */
+.pf-lbl { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: var(--pf-p); margin-top: 4px; }
+.pf-lbl i { flex: none; width: 4px; height: 16px; border-radius: 3px; background: var(--pf-a); display: inline-block; }
+.pf-box { background: #fff; border: 1px solid var(--pf-line); border-radius: 14px; padding: 12px 18px; }
+.pf-kv { display: grid; grid-template-columns: 1fr 1fr; column-gap: 34px; padding-top: 4px; padding-bottom: 4px; }
+.pf-kv div { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--pf-line); font-size: 14px; }
+.pf-kv small { color: var(--pf-mut); font-size: 12px; white-space: nowrap; }
+.pf-kv b { font-weight: 800; text-align: left; }
+.pf-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pf-2col > div { display: flex; flex-direction: column; gap: 12px; }
+.pf-nlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; }
+.pf-nlist li { display: flex; align-items: center; gap: 10px; padding-bottom: 7px; border-bottom: 1px dashed var(--pf-line); }
+.pf-nlist li:last-child { border-bottom: none; padding-bottom: 0; }
+.pf-nlist span { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--pf-a); color: #fff; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }
+.pf-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; font-size: 14px; }
+.pf-steps li { display: flex; align-items: center; gap: 10px; }
+.pf-steps i { flex: none; width: 10px; height: 10px; border-radius: 50%; border: 2.5px solid var(--pf-p); display: inline-block; }
+.pf-pro .pf-cv-skills span { background: var(--pf-s); border: none; color: var(--pf-p); padding: 4px 12px; font-size: 12.5px; }
+.pf-quote { background: #fff; border: 1px solid var(--pf-line); border-right: 4px solid var(--pf-a); border-radius: 14px; padding: 14px 20px; font-size: 15.5px; line-height: 1.9; white-space: pre-line; color: var(--pf-ink); }
+.pf-intro { background: #fff; border: 1px solid var(--pf-line); border-left: 4px solid var(--pf-a); border-radius: 14px; padding: 14px 20px; font-size: 14px; line-height: 1.9; }
+.pf-pro .pf-empty { background: rgba(255,255,255,.7); border: 1.5px dashed #d8cfb9; color: var(--pf-mut); }
+
+/* الغلاف (أ) */
+.pf-blob { top: 0; left: 0; }
+.pf-blob-flip { top: auto; bottom: 0; }
+.pf-star-bl { bottom: -120px; left: -110px; }
+.pf-star-tl { top: -130px; left: -120px; }
+.pf-star-ml { top: 330px; left: -230px; }
+.pf-cover2 { flex: 1; display: flex; flex-direction: column; padding: 0 64px 56px; }
+.pf-kick2 { font-size: 12.5px; font-weight: 800; color: var(--pf-p); margin-top: 72px; }
+.pf-ctitle-wrap { margin-top: 300px; }
+.pf-year2 { display: inline-block; margin-top: 16px; background: var(--pf-s); color: var(--pf-p); font-weight: 800; font-size: 13px; padding: 4px 14px; border-radius: 999px; }
+.pf-ctitle2 { margin: 14px 0 0; font-size: 56px; font-weight: 900; line-height: 1.22; color: var(--pf-ink); }
+.pf-ctitle2 span { color: var(--pf-p); }
+.pf-cdesc { margin: 16px 0 0; font-size: 15px; line-height: 1.8; color: var(--pf-mut); max-width: 470px; }
+.pf-ccard { margin-top: 40px; margin-left: 70px; background: #fff; border: 1px solid var(--pf-line); border-right: 5px solid var(--pf-a); border-radius: 16px; padding: 20px 26px; }
+.pf-ccard small { display: block; font-size: 11.5px; color: var(--pf-mut); margin-bottom: 3px; }
+.pf-ccard small i { color: var(--pf-a); margin-left: 4px; font-size: 11px; }
+.pf-cc-name { font-size: 26px; font-weight: 900; color: var(--pf-p); line-height: 1.3; }
+.pf-cc-role { font-size: 13px; color: var(--pf-mut); margin-top: 2px; }
+.pf-cc-sep { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--pf-line); }
+.pf-cc-val { font-size: 15.5px; font-weight: 800; color: var(--pf-ink); }
+.pf-cc-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+.pf-cstats { display: flex; margin-top: 26px; }
+.pf-cstats div { flex: 1; padding: 0 16px; border-left: 1px solid var(--pf-line); }
+.pf-cstats div:first-child { padding-right: 0; }
+.pf-cstats div:last-child { border-left: none; }
+.pf-cstats b { display: block; font-size: 30px; font-weight: 900; color: var(--pf-p); line-height: 1.2; }
+.pf-cstats b small, .pf-kpis b small { font-size: 15px; font-weight: 700; opacity: .7; }
+.pf-cstats span { font-size: 12px; color: var(--pf-mut); }
+
+/* الغلاف (ب): داكن بإطار ذهبي */
+.pf-pro.pf-dark { background: var(--pf-p); color: #fff; }
+.pf-pro.pf-dark > .pf-pat { opacity: .9; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.08' stroke-width='1'%3E%3Crect x='20' y='20' width='24' height='24'/%3E%3Crect x='20' y='20' width='24' height='24' transform='rotate(45 32 32)'/%3E%3Cpath d='M0 32h7M57 32h7M32 0v7M32 57v7'/%3E%3C/g%3E%3C/svg%3E"); }
+.pf-cover-b2 { flex: 1; display: flex; padding: 34px; }
+.pf-frame2 { flex: 1; border: 2px solid var(--pf-a); border-radius: 26px; padding: 50px 46px 40px; display: flex; flex-direction: column; }
+.pf-dark .pf-kick2 { margin-top: 0; color: rgba(255,255,255,.8); }
+.pf-dark .pf-goldbar { margin-top: 150px; }
+.pf-dark .pf-year2 { background: rgba(255,255,255,.14); color: #fff; align-self: flex-start; }
+.pf-dark .pf-ctitle2 { color: #fff; }
+.pf-dark .pf-ctitle2 span { color: var(--pf-a); }
+.pf-dark .pf-cdesc { color: rgba(255,255,255,.78); }
+.pf-dark .pf-ccard { margin-left: 0; color: var(--pf-ink); }
+.pf-dark .pf-cstats div { border-color: rgba(255,255,255,.2); }
+.pf-dark .pf-cstats b { color: #fff; }
+.pf-dark .pf-cstats span { color: rgba(255,255,255,.75); }
+
+/* الأهداف */
+.pf-goals { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pf-goal { display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 1px solid var(--pf-line); border-left: 4px solid var(--pf-p); border-radius: 12px; padding: 14px 16px; min-height: 84px; }
+.pf-goal b { flex: none; font-size: 17px; font-weight: 900; color: var(--pf-a); line-height: 1.6; }
+.pf-goal p { margin: 0; font-size: 13.5px; line-height: 1.75; }
+.pf-goals.dense .pf-goal { min-height: 0; padding: 10px 14px; }
+.pf-goals.dense .pf-goal p { font-size: 12px; }
+
+/* الفهرس: مخطط زمني */
+.pf-tl { position: relative; display: flex; flex-direction: column; }
+.pf-tl-rail { position: absolute; top: 34px; bottom: 34px; right: 89px; width: 2px; background: var(--pf-line); }
+.pf-tl-row { display: grid; grid-template-columns: 62px 56px 1fr 64px; align-items: center; column-gap: 14px; min-height: 68px; position: relative; }
+.pf-tl-no { font-size: 28px; font-weight: 900; color: #e7dfcc; text-align: center; }
+.pf-tl-row.on .pf-tl-no { color: var(--pf-a); }
+.pf-tl-ic { width: 46px; height: 46px; border-radius: 50%; background: #efe8d7; color: #9a8f74; display: flex; align-items: center; justify-content: center; font-size: 17px; border: 4px solid #faf7ef; justify-self: center; }
+.pf-tl-row.on .pf-tl-ic { background: var(--pf-p); color: #fff; }
+.pf-tl-tx { padding: 12px 0; border-bottom: 1px solid var(--pf-line); }
+.pf-tl-tx b { display: block; font-size: 15px; font-weight: 800; color: var(--pf-ink); }
+.pf-tl-row:not(.on) .pf-tl-tx b { color: #6d675a; }
+.pf-tl-tx small { display: block; font-size: 11.5px; color: var(--pf-mut); margin-top: 2px; }
+.pf-tl-pg { justify-self: center; min-width: 46px; text-align: center; font-size: 13px; font-weight: 800; color: #b9b09a; padding: 4px 10px; border-radius: 999px; }
+.pf-tl-row.on .pf-tl-pg { background: var(--pf-s); color: var(--pf-p); }
+.pf-tl.dense .pf-tl-row { min-height: 54px; }
+.pf-tl.dense .pf-tl-tx { padding: 7px 0; }
+.pf-tl.dense .pf-tl-ic { width: 38px; height: 38px; font-size: 14px; }
+.pf-tl.dense .pf-tl-no { font-size: 22px; }
+
+/* الإحصاءات */
+.pf-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.pf-kpis div { background: #fff; border: 1px solid var(--pf-line); border-radius: 16px; padding: 16px 18px; }
+.pf-kpis div.on { background: var(--pf-p); border-color: var(--pf-p); color: #fff; }
+.pf-kpis b { display: block; font-size: 32px; font-weight: 900; color: var(--pf-p); line-height: 1.15; }
+.pf-kpis div.on b { color: #fff; }
+.pf-kpis span { font-size: 12px; color: var(--pf-mut); }
+.pf-kpis div.on span { color: rgba(255,255,255,.82); }
+.pf-rings2 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px 8px; }
+.pf-rings2 div { text-align: center; font-size: 10.5px; line-height: 1.4; color: var(--pf-ink); }
+.pf-rings2 img { display: block; margin: 0 auto 5px; }
+.pf-note { font-size: 10.5px; color: var(--pf-mut); }
+.pf-bars2 { display: flex; flex-direction: column; gap: 7px; }
+.pf-bar2 { display: grid; grid-template-columns: 240px 1fr 24px; gap: 12px; align-items: center; font-size: 12px; }
+.pf-bar2 i { display: block; height: 10px; border-radius: 6px; background: #ece5d4; position: relative; overflow: hidden; }
+.pf-bar2 i u { position: absolute; top: 0; bottom: 0; left: 0; background: var(--pf-p); border-radius: 6px; }
+.pf-bar2 b { font-size: 12px; color: var(--pf-mut); text-align: center; }
+.pf-bar2.on b { color: var(--pf-p); }
+
+/* غلاف المعيار */
+.pf-wm { top: 60px; left: 44px; font-size: 230px; font-weight: 900; line-height: 1; letter-spacing: -4px; }
+.pf-cc2 { flex: 1; display: flex; flex-direction: column; padding: 230px 56px 0; }
+.pf-cc2-ic { width: 76px; height: 76px; border-radius: 20px; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+.pf-cc2-k { display: block; margin-top: 26px; font-size: 13px; font-weight: 800; color: var(--pf-a); }
+.pf-cc2 h2 { margin: 6px 0 0; font-size: 38px; font-weight: 900; line-height: 1.3; color: var(--pf-p); }
+.pf-cc2-d { margin: 10px 0 0; font-size: 14.5px; line-height: 1.8; color: var(--pf-mut); }
+.pf-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.pf-chips span { background: #fff; border: 1px solid var(--pf-line); border-radius: 999px; padding: 6px 14px; font-size: 12px; color: var(--pf-mut); }
+.pf-chips i { color: var(--pf-a); margin-left: 4px; }
+.pf-chips b { color: var(--pf-ink); }
+.pf-cc2 hr { border: none; border-top: 1px solid var(--pf-line); margin: 22px 0 16px; width: 100%; }
+.pf-replist2 { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pf-rep { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--pf-line); border-radius: 12px; padding: 9px 14px; font-size: 14px; }
+.pf-rep-ic { flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--pf-s); color: var(--pf-p); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+.pf-rep b { flex: 1; min-width: 0; font-weight: 800; }
+.pf-rep em { font-style: normal; font-size: 11.5px; color: var(--pf-mut); white-space: nowrap; }
+.pf-pg { flex: none; font-size: 11.5px; font-weight: 800; color: var(--pf-p); background: var(--pf-s); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+.pf-pro .pf-link { color: var(--pf-ink); text-decoration-color: var(--pf-a); }
+.pf-replist2.dense { gap: 5px; }
+.pf-replist2.dense .pf-rep { padding: 6px 12px; font-size: 12.5px; }
+.pf-wave { bottom: 0; left: 0; }
+.pf-has-wave .pf-foot { padding-top: 60px; }
+
+/* صفحة الشاهد */
+.pf-evh { flex: none; display: flex; align-items: center; gap: 14px; padding: 24px 56px 0; }
+.pf-evh-ic { flex: none; width: 48px; height: 48px; border-radius: 14px; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.pf-evh small { display: block; font-size: 12px; font-weight: 700; color: var(--pf-a); }
+.pf-evh h2 { margin: 2px 0 0; font-size: 25px; font-weight: 900; line-height: 1.35; color: var(--pf-ink); }
+.pf-meta2 { display: grid; grid-template-columns: repeat(3, 1fr); padding: 4px 0; }
+.pf-meta2 div { padding: 9px 18px; border-left: 1px solid var(--pf-line); border-bottom: 1px solid var(--pf-line); }
+.pf-meta2 div:nth-child(3n) { border-left: none; }
+.pf-meta2 small { display: block; font-size: 11px; color: var(--pf-mut); }
+.pf-meta2 b { font-size: 13.5px; font-weight: 800; }
+.pf-pro .pf-fit { background: #fff; border: 1px solid var(--pf-line); border-radius: 14px; padding: 16px 20px; gap: .85em; }
+.pf-pro .pf-sec h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 .25em; font-size: 1.02em; font-weight: 800; color: var(--pf-p); }
+.pf-pro .pf-sec h4 i { flex: none; width: 4px; height: 1em; border-radius: 3px; background: var(--pf-a); display: inline-block; }
+.pf-pro .pf-sec div { color: #2f3a37; line-height: 1.8; }
+.pf-imgs2 { flex: none; display: flex; gap: 14px; justify-content: center; }
+.pf-imgs2 figure { margin: 0; flex: 1; height: 270px; max-width: 50%; background: #fff; border: 1px solid var(--pf-line); border-radius: 14px; padding: 6px; display: flex; align-items: center; justify-content: center; }
+.pf-imgs2.one figure { max-width: 72%; }
+.pf-imgs2 img { display: block; max-width: 100%; max-height: 256px; object-fit: contain; border-radius: 9px; }
+
+/* الختام */
+.pf-close2 { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 64px 220px 64px; }
+.pf-close2 h1 { margin: 14px 0 0; font-size: 54px; font-weight: 900; color: var(--pf-p); }
+.pf-close2 p { margin: 14px 0 0; font-size: 15.5px; line-height: 1.95; color: #3a4441; max-width: 560px; }
+.pf-sig2 { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 40px; margin-top: 54px; max-width: 470px; }
+.pf-sig2 small { display: block; font-size: 11.5px; color: var(--pf-mut); }
+.pf-sig2 b { display: block; font-size: 15px; font-weight: 800; margin-top: 4px; min-height: 22px; }
+.pf-sig2 i { display: block; height: 1px; background: #b9b09a; margin-top: 10px; }
+</style>
 </head>
 
 <body class="theme-default">
@@ -12858,73 +13065,142 @@ function pfEvidenceContent(r) {
     }
     return { meta, secs };
 }
-function pfFoot(ctx, no) {
-    return `<div class="pf-foot"><span>ملف شواهد الأداء الوظيفي${ctx.prof.name ? ' — ' + pfEsc(ctx.prof.name) : ''}</span><b>${pfNum(no)}</b></div>`;
+// ---- تصميم صفحات الملف (A4): ورق عاجي بنقش هندسي خفيف، ترويسة جارية، عنوان بخط ذهبي،
+// بطاقات بيضاء بحدود رفيعة، وزخارف SVG تُلوَّن بلون الثيم المختار (تُمرَّر الألوان كقيم
+// صريحة لأن الـSVG يُرسم كصورة في html2canvas ولا يرى متغيرات CSS).
+function pfHex(h) { h = String(h || '#000000').replace('#', ''); if (h.length === 3) h = h.split('').map(x => x + x).join(''); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); }
+function pfMix(a, b, t) { const x = pfHex(a), y = pfHex(b); return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join(''); }
+function pfPal(theme) {
+    const t = PF_THEMES[theme] || PF_THEMES.emerald;
+    return { p: t.p, a: t.a, d: pfMix(t.p, '#000000', 0.32), s: pfMix(t.p, '#ffffff', 0.86), s2: pfMix(t.p, '#ffffff', 0.72), a2: pfMix(t.a, '#ffffff', 0.45), wm: pfMix(t.p, '#faf7ef', 0.9) };
 }
-function pfHead(title, sub) { return `<div class="pf-head"><h2>${pfEsc(title)}</h2>${sub ? `<p>${pfEsc(sub)}</p>` : ''}</div>`; }
+const PF_ORD = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس', 'السابع', 'الثامن', 'التاسع', 'العاشر', 'الحادي عشر', 'الثاني عشر', 'الثالث عشر', 'الرابع عشر', 'الخامس عشر'];
+function pfOrd(i) { return PF_ORD[i] || pfNum(i + 1); }
+function pfNn(i) { return String(i).padStart(2, '0'); }
+// أيقونة مناسبة لكل معيار بحسب كلمات اسمه (الترتيب مهم: "تحليل نتائج" قبل "نتائج").
+const PF_ICONS = [
+    [/الواجبات/, 'fa-circle-check'], [/المجتمع المهني/, 'fa-users'], [/أولياء/, 'fa-handshake'],
+    [/استراتيجي/, 'fa-lightbulb'], [/تحليل/, 'fa-chart-column'], [/نتائج/, 'fa-arrow-trend-up'],
+    [/خطة/, 'fa-clipboard-list'], [/تقنيات|وسائل/, 'fa-laptop'], [/بيئة/, 'fa-seedling'],
+    [/الإدارة الصفية|الصفية/, 'fa-chalkboard-user'], [/التقويم/, 'fa-clipboard-check'],
+];
+function pfIcon(name) { const m = PF_ICONS.find(([re]) => re.test(String(name || ''))); return m ? m[1] : 'fa-award'; }
+// الزخارف تُضمَّن كصور SVG (img) لا كعناصر svg مباشرة: html2canvas يتجاهل أحياناً عناصر svg
+// المضمّنة المثبّتة بأسفل الصفحة، بينما يرسم الصور دائماً وبدقة كاملة.
+function pfImg(svg, cls) {
+    const m = svg.match(/^<svg([^>]*)>/), wm = svg.match(/ width="(\d+)"/), hm = svg.match(/ height="(\d+)"/);
+    const src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"').replace(/ class="[^"]*"/, ''));
+    const c = cls || ((m && m[1].match(/class="([^"]*)"/)) || [])[1] || '';
+    return `<img class="${c}" src="${src}" width="${wm ? wm[1] : ''}" height="${hm ? hm[1] : ''}" alt="">`;
+}
+function pfHexBadge(no, fill, color) {
+    return pfImg(`<svg class="pf-hex" width="34" height="38" viewBox="0 0 34 38"><path d="M17 1.5 L31.5 9.75 V28.25 L17 36.5 L2.5 28.25 V9.75 Z" fill="${fill}"/><text x="17" y="19.5" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="700" font-family="Arial, sans-serif" fill="${color}">${pfNum(no)}</text></svg>`);
+}
+function pfCorner(pal, pos) {
+    const dots = []; for (let y = 0; y < 4; y++) for (let x = 0; x < 6 - y; x++) dots.push(`<circle cx="${10 + x * 9}" cy="${10 + y * 9}" r="1.6"/>`);
+    return pfImg(`<svg class="pf-corner pf-corner-${pos}" width="70" height="70" viewBox="0 0 70 70"><path d="M0 62 A62 62 0 0 0 62 0" fill="none" stroke="${pal.a}" stroke-opacity=".55" stroke-width="1.2"/><g fill="${pal.a}" fill-opacity=".6">${dots.join('')}</g></svg>`);
+}
+function pfStar(pal, cls) {
+    const sq = (r, rot) => `<rect x="${200 - r}" y="${200 - r}" width="${2 * r}" height="${2 * r}" transform="rotate(${rot} 200 200)"/>`;
+    return pfImg(`<svg class="${cls}" width="400" height="400" viewBox="0 0 400 400"><g fill="none" stroke="${pal.a}" stroke-opacity=".38" stroke-width="1.4"><circle cx="200" cy="200" r="190"/><circle cx="200" cy="200" r="150"/>${sq(120, 0)}${sq(120, 45)}${sq(70, 22.5)}${sq(70, 67.5)}<circle cx="200" cy="200" r="34"/><path d="M200 10 L200 390 M10 200 L390 200 M66 66 L334 334 M334 66 L66 334" stroke-opacity=".22"/></g></svg>`);
+}
+function pfBlob(pal, uid, flip) {
+    return pfImg(`<svg class="pf-blob${flip ? ' pf-blob-flip' : ''}" width="500" height="520" viewBox="0 0 500 520"><g${flip ? ' transform="translate(0 520) scale(1 -1)"' : ''}><defs><linearGradient id="pfg${uid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${pal.a2}"/><stop offset="1" stop-color="${pal.a}"/></linearGradient><pattern id="pfd${uid}" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="2.1" fill="#ffffff" fill-opacity=".55"/></pattern></defs><path d="M0 0 H486 C500 120 452 262 346 344 C242 424 108 470 0 482 Z" fill="${pal.s}"/><path d="M0 0 H392 C414 118 372 236 278 318 C188 396 84 428 0 438 Z" fill="${pal.p}"/><rect x="0" y="0" width="236" height="214" fill="url(#pfd${uid})"/><path d="M226 158 C292 140 360 176 368 248 C376 320 326 380 252 384 C180 388 132 344 128 284 C124 220 162 174 226 158 Z" fill="url(#pfg${uid})"/><circle cx="410" cy="58" r="17" fill="${pal.a}"/><circle cx="128" cy="500" r="10" fill="${pal.p}"/></g></svg>`);
+}
+function pfWave(pal) {
+    return pfImg(`<svg class="pf-wave" width="794" height="220" viewBox="0 0 794 220" preserveAspectRatio="none"><path d="M0 80 C180 20 380 150 560 92 C660 60 730 40 794 52 V220 H0 Z" fill="${pal.s2}"/><path d="M0 132 C200 78 420 190 600 132 C690 104 750 96 794 104 V220 H0 Z" fill="${pal.p}"/></svg>`);
+}
+function pfRun(label) {
+    return `<div class="pf-run"><span class="pf-run-l"><i></i>${pfEsc(label)}</span><span>ملف شواهد الأداء الوظيفي</span></div>`;
+}
+function pfFoot(ctx, no, inv) {
+    const pal = pfPal(ctx.cfg.theme);
+    return `<div class="pf-foot${inv ? ' inv' : ''}">${pfHexBadge(no, inv ? '#ffffff' : pal.p, inv ? pal.p : '#ffffff')}<span>${pfEsc(ctx.prof.name || '')}</span></div>`;
+}
+function pfHead(title, sub, run) {
+    return `${pfRun(run || title)}<div class="pf-ttl">${sub ? `<small>${pfEsc(sub)}</small>` : ''}<h2>${pfEsc(title)}</h2><u></u></div>`;
+}
+function pfLbl(t) { return `<div class="pf-lbl"><i></i>${pfEsc(t)}</div>`; }
 function pfRepLink(ctx, r, pageNo) {
     const k = pfEsc(r.key || '');
     const t = pfEsc(r.title);
-    return `<li class="pf-rep"><b>${ctx.interactive ? `<a class="pf-link" data-pfkey="${k}">${t}</a>` : t}</b><em>${pfEsc(r.date || '')}</em><em>ص ${pfNum(pageNo || '')}</em></li>`;
+    return `<li class="pf-rep"><span class="pf-rep-ic"><i class="fas fa-link"></i></span><b>${ctx.interactive ? `<a class="pf-link" data-pfkey="${k}">${t}</a>` : t}</b><em>${pfEsc(r.date || '')}</em><span class="pf-pg">ص ${pfNum(pageNo || '')}</span></li>`;
+}
+function pfRing2(pct, size, pal) {
+    const r = size / 2 - 6, c = 2 * Math.PI * r, v = Math.max(0, Math.min(100, pct));
+    return pfImg(`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="#ffffff" stroke="#ece5d4" stroke-width="6"/>${v ? `<circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${pal.p}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${(c * v / 100).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/>` : ''}<text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-size="${Math.round(size / 4.6)}" font-weight="700" font-family="Arial, sans-serif" fill="${v ? pal.p : '#9a917c'}">${pfNum(Math.round(v))}٪</text></svg>`);
 }
 function pfRenderPage(p, ctx) {
     const { prof, cfg, data, pageOf } = ctx;
+    const pal = pfPal(cfg.theme);
     const th = 'pf-t-' + cfg.theme;
-    const wrap = (inner, extra) => `<section class="pf-page ${th}${extra ? ' ' + extra : ''}" data-no="${p.no}">${inner}</section>`;
+    const deco = `<div class="pf-pat"></div>`;
+    const wrap = (inner, extra) => `<section class="pf-page pf-pro ${th}${extra ? ' ' + extra : ''}" data-no="${p.no}">${deco}${inner}</section>`;
+    const corners = pfCorner(pal, 'tl') + pfCorner(pal, 'br');
     const T = data.totals;
-    const tiles3 = `<div class="pf-tiles"><div class="pf-tile"><b>${pfNum(T.evidence)}</b><span>شاهد موثّق</span></div><div class="pf-tile"><b>${pfNum(T.images)}</b><span>صورة مرفقة</span></div><div class="pf-tile"><b>${pfNum(T.covered)}/${pfNum(T.total)}</b><span>معيار مغطّى</span></div></div>`;
-    const info = [['اسم المعلم', prof.name], ['الصفة', prof.role], ['المادة', prof.subject], ['المدرسة', prof.school], ['إدارة التعليم', prof.education], ['الفصل الدراسي', prof.term]].filter(x => x[1]);
-    const infoHtml = `<div class="pf-cinfo">${info.map(([l, v]) => `<div><small>${l}</small>${pfEsc(v)}</div>`).join('')}</div>`;
+    const w = c => pfEsc(typeof formatWeight === 'function' ? formatWeight(c.weight) : c.weight);
     if (p.t === 'cover') {
+        const facts = [['fa-book-open', 'المادة / التخصص', prof.subject], ['fa-calendar-days', 'الفصل الدراسي', prof.term || prof.year], ['fa-building-columns', 'إدارة التعليم', prof.education]].filter(x => x[2]);
+        const stats = `<div class="pf-cstats"><div><b>${pfNum(T.evidence)}</b><span>الشواهد الموثّقة</span></div><div><b>${pfNum(T.images)}</b><span>الصور المرفقة</span></div><div><b>${pfNum(T.covered)}<small>/${pfNum(T.total)}</small></b><span>المعايير المغطّاة</span></div></div>`;
+        const card = `<div class="pf-ccard"><div class="pf-cc-row"><small><i class="fas fa-user"></i> اسم المعلّم</small><div class="pf-cc-name">${pfEsc(prof.name || 'اسم المعلم')}</div>${prof.role ? `<div class="pf-cc-role">${pfEsc(prof.role)}</div>` : ''}</div>${prof.school ? `<div class="pf-cc-row pf-cc-sep"><small><i class="fas fa-school"></i> المدرسة</small><div class="pf-cc-val">${pfEsc(prof.school)}</div></div>` : ''}${facts.length ? `<div class="pf-cc-facts">${facts.map(([ic, l, v]) => `<div><small><i class="fas ${ic}"></i> ${l}</small><div class="pf-cc-val">${pfEsc(v)}</div></div>`).join('')}</div>` : ''}</div>`;
         if (cfg.cover === 'b') {
-            return wrap(`<div class="pf-cover pf-cover-b"><div class="pf-frame"><div class="pf-kicker">المملكة العربية السعودية • وزارة التعليم</div>${prof.year ? `<span class="pf-year">${pfEsc(prof.year)}</span>` : ''}<h1 class="pf-ctitle">ملف شواهد<br>الأداء الوظيفي</h1><div class="pf-cname">${pfEsc(prof.name || 'اسم المعلم')}</div>${infoHtml}${tiles3}</div></div>`);
+            return wrap(`<div class="pf-cover-b2"><div class="pf-frame2"><div class="pf-kick2">المملكة العربية السعودية • وزارة التعليم</div>${prof.year ? `<span class="pf-year2">${pfEsc(prof.year)}</span>` : ''}<u class="pf-goldbar"></u><h1 class="pf-ctitle2">ملف شواهد<br><span>الأداء الوظيفي</span></h1><p class="pf-cdesc">توثيقٌ منظّم لممارسات المعلّم وإنجازاته، مرتّبٌ وفق معايير الأداء المهني.</p>${card}${stats}</div></div>`, 'pf-dark');
         }
-        return wrap(`<div class="pf-cover pf-cover-a"><div class="pf-ctop"><div class="pf-kicker">المملكة العربية السعودية • وزارة التعليم</div>${prof.year ? `<span class="pf-year">${pfEsc(prof.year)}</span>` : ''}<h1 class="pf-ctitle">ملف شواهد<br>الأداء الوظيفي</h1><div class="pf-csub">${pfEsc([prof.role, prof.subject].filter(Boolean).join(' • '))}</div></div><div class="pf-cbody"><div class="pf-cname">${pfEsc(prof.name || 'اسم المعلم')}</div>${infoHtml}${tiles3}</div></div>`);
+        return wrap(`${pfBlob(pal, p.no)}${pfStar(pal, 'pf-star pf-star-bl')}<div class="pf-cover2"><div class="pf-kick2">المملكة العربية السعودية • وزارة التعليم</div><div class="pf-ctitle-wrap"><u class="pf-goldbar"></u>${prof.year ? `<span class="pf-year2">${pfEsc(prof.year)}</span>` : ''}<h1 class="pf-ctitle2">ملف شواهد<br><span>الأداء الوظيفي</span></h1><p class="pf-cdesc">توثيقٌ منظّم لممارسات المعلّم وإنجازاته، مرتّبٌ وفق معايير الأداء المهني.</p></div>${card}${stats}</div>`);
     }
     if (p.t === 'cv') {
         const skills = pfLines(prof.skills), courses = pfLines(prof.courses), career = pfLines(prof.career);
-        const personal = [['الاسم', prof.name], ['الصفة', prof.role], ['التخصص / المادة', prof.subject], ['المؤهل العلمي', prof.qualification], ['سنوات الخبرة', prof.experience], ['جهة العمل', prof.school]].filter(x => x[1]);
-        return wrap(`${pfHead('السيرة المهنية', prof.name)}<div class="pf-body"><div class="pf-card"><h3>البيانات الشخصية والمهنية</h3><div class="pf-grid2">${personal.map(([l, v]) => `<p><b>${l}:</b> ${pfEsc(v)}</p>`).join('')}</div></div>${career.length ? `<div class="pf-card"><h3>المسار الوظيفي</h3><ul>${career.map(x => `<li>${pfEsc(x)}</li>`).join('')}</ul></div>` : ''}${skills.length ? `<div class="pf-card"><h3>المهارات</h3><div class="pf-cv-skills">${skills.map(x => `<span>${pfEsc(x)}</span>`).join('')}</div></div>` : ''}${courses.length ? `<div class="pf-card"><h3>الدورات التدريبية</h3><ul>${courses.map(x => `<li>${pfEsc(x)}</li>`).join('')}</ul></div>` : ''}${prof.message ? `<div class="pf-card"><h3>الرسالة المهنية</h3><p style="font-size:16px;white-space:pre-line">${pfEsc(prof.message)}</p></div>` : ''}</div>${pfFoot(ctx, p.no)}`);
+        const kv = rows => `<div class="pf-box pf-kv">${rows.map(([l, v]) => `<div><small>${l}</small><b>${pfEsc(v || '')}</b></div>`).join('')}</div>`;
+        const personal = [['الاسم', prof.name], ['الصفة', prof.role], ['التخصص / المادة', prof.subject], ['جهة العمل', prof.school]].filter(x => x[1]);
+        const pro = [['المؤهل العلمي', prof.qualification], ['سنوات الخبرة', prof.experience], ['إدارة التعليم', prof.education]].filter(x => x[1]);
+        const nlist = arr => `<div class="pf-box"><ol class="pf-nlist">${arr.map((x, i) => `<li><span>${pfNum(i + 1)}</span>${pfEsc(x)}</li>`).join('')}</ol></div>`;
+        return wrap(`${corners}${pfHead('السيرة المهنية', 'البيانات الشخصية والمهنية', 'السيرة المهنية')}<div class="pf-body">${personal.length ? pfLbl('البيانات الشخصية') + kv(personal) : ''}${pro.length ? pfLbl('المؤهلات والخبرة') + kv(pro) : ''}${career.length ? pfLbl('المسار الوظيفي') + `<div class="pf-box"><ul class="pf-steps">${career.map(x => `<li><i></i>${pfEsc(x)}</li>`).join('')}</ul></div>` : ''}${(skills.length || courses.length) ? `<div class="pf-2col">${skills.length ? `<div>${pfLbl('المهارات')}<div class="pf-box"><div class="pf-cv-skills">${skills.map(x => `<span>${pfEsc(x)}</span>`).join('')}</div></div></div>` : ''}${courses.length ? `<div>${pfLbl('الدورات التدريبية')}${nlist(courses)}</div>` : ''}</div>` : ''}${prof.message ? pfLbl('رسالتي المهنية') + `<div class="pf-quote">${pfEsc(prof.message)}</div>` : ''}</div>${pfFoot(ctx, p.no)}`);
     }
     if (p.t === 'goals') {
         const goals = pfLines(cfg.goals);
-        return wrap(`${pfHead('أهداف التعليم في المملكة', 'المنطلقات التي ترتكز عليها شواهد الأداء')}<div class="pf-body"><div class="pf-card"><ol style="margin:0;padding-right:24px;display:flex;flex-direction:column;gap:16px">${goals.map(g => `<li style="font-size:19px;line-height:1.8">${pfEsc(g)}</li>`).join('')}</ol></div></div>${pfFoot(ctx, p.no)}`);
+        const dense = goals.length > 12 ? ' dense' : '';
+        return wrap(`${corners}${pfHead('أهداف التعليم في المملكة', 'من وثيقة سياسة التعليم', 'أهداف التعليم')}<div class="pf-body"><div class="pf-intro">المنطلقات التي ترتكز عليها شواهد الأداء الوظيفي في هذا الملف.</div><div class="pf-goals${dense}">${goals.map((g, i) => `<div class="pf-goal"><b>${pfNn(i + 1)}</b><p>${pfEsc(g)}</p></div>`).join('')}</div></div>${pfFoot(ctx, p.no)}`);
     }
     if (p.t === 'toc') {
+        const list = data.crits.filter(c => !(cfg.show.hideEmpty && !pageOf.crit[c.id]));
+        const dense = list.length > 11 ? ' dense' : '';
         const rows = data.crits.map((c, i) => {
             const pg = pageOf.crit[c.id];
             if (!pg && cfg.show.hideEmpty) return '';
-            return `<tr class="${c.reports.length ? '' : 'empty'}"><td><span class="pf-num">${pfNum(i + 1)}</span></td><td>${pfEsc(c.name)}${c.reports.length ? '' : '<br><small>لم تُوثّق شواهد لهذا المعيار بعد</small>'}</td><td>${pfEsc(typeof formatWeight === 'function' ? formatWeight(c.weight) : c.weight)}</td><td>${pfNum(c.reports.length)}</td><td>${c.reports.length ? `<span class="pf-chip ok">موثّق</span>` : `<span class="pf-chip no">بانتظار شواهد</span>`}</td><td>${pg ? pfNum(pg) : '—'}</td></tr>`;
+            const on = c.reports.length > 0;
+            return `<div class="pf-tl-row${on ? ' on' : ''}"><span class="pf-tl-no">${pfNn(i + 1)}</span><span class="pf-tl-ic"><i class="fas ${pfIcon(c.name)}"></i></span><div class="pf-tl-tx"><b>${pfEsc(c.name)}</b><small>${on ? `عدد الشواهد: ${pfNum(c.reports.length)}` : 'لم تُوثّق شواهد لهذا المعيار بعد'} • الوزن: ${w(c)}</small></div><span class="pf-tl-pg">${pg ? pfNum(pg) : '—'}</span></div>`;
         }).join('');
-        const extra = data.others.length ? `<tr><td></td><td>شواهد إضافية (غير مرتبطة بمعيار)</td><td>—</td><td>${pfNum(data.others.length)}</td><td></td><td>${pageOf.others ? pfNum(pageOf.others) : '—'}</td></tr>` : '';
-        return wrap(`${pfHead('فهرس المعايير', 'معايير الأداء الوظيفي وشواهدها')}<div class="pf-body"><table class="pf-toc"><thead><tr><th></th><th>المعيار</th><th>الوزن</th><th>الشواهد</th><th>الحالة</th><th>الصفحة</th></tr></thead><tbody>${rows}${extra}</tbody></table>${data.crits.length ? '' : '<div class="pf-empty">لم تُحمَّل معايير الأداء بعد، افتح الصفحة الرئيسية ثم ارجع.</div>'}</div>${pfFoot(ctx, p.no)}`);
+        const extra = data.others.length ? `<div class="pf-tl-row on"><span class="pf-tl-no">+</span><span class="pf-tl-ic"><i class="fas fa-paperclip"></i></span><div class="pf-tl-tx"><b>شواهد إضافية</b><small>غير مرتبطة بمعيار • عدد الشواهد: ${pfNum(data.others.length)}</small></div><span class="pf-tl-pg">${pageOf.others ? pfNum(pageOf.others) : '—'}</span></div>` : '';
+        return wrap(`${corners}${pfHead('الفهرس', 'محتويات الملف', 'الفهرس')}<div class="pf-body"><div class="pf-tl${dense}"><div class="pf-tl-rail"></div>${rows}${extra}</div>${data.crits.length ? '' : '<div class="pf-empty">لم تُحمَّل معايير الأداء بعد، افتح الصفحة الرئيسية ثم ارجع.</div>'}</div>${pfFoot(ctx, p.no)}`);
     }
     if (p.t === 'stats') {
         const pct = T.total ? Math.round(T.covered / T.total * 100) : 0;
         const max = Math.max(1, ...data.crits.map(c => c.reports.length));
         const ringPct = c => c.subsCovered && c.subs ? Math.min(100, Math.round(c.subsCovered / c.subs * 100)) : (c.reports.length ? 100 : 0);
-        const th2 = PF_THEMES[cfg.theme];
-        return wrap(`${pfHead('الملخص الإحصائي', 'نظرة سريعة على اكتمال ملف الشواهد')}<div class="pf-body"><div class="pf-tiles"><div class="pf-tile"><b>${pfNum(T.evidence)}</b><span>شاهد</span></div><div class="pf-tile"><b>${pfNum(T.images)}</b><span>صورة</span></div><div class="pf-tile"><b>${pfNum(T.covered)}/${pfNum(T.total)}</b><span>معيار مغطّى</span></div><div class="pf-tile"><b>${pfNum(pct)}٪</b><span>نسبة التغطية</span></div></div><div class="pf-card"><h3>اكتمال كل معيار</h3><div class="pf-rings">${data.crits.map((c, i) => `<div class="pf-ring">${pfRing(ringPct(c), 78, th2.p)}<b>${pfNum(i + 1)}</b> ${pfEsc(c.name.length > 26 ? c.name.slice(0, 25) + '…' : c.name)}</div>`).join('')}</div></div><div class="pf-card"><h3>توزيع الشواهد على المعايير</h3><div class="pf-bars">${data.crits.map((c, i) => `<div class="pf-bar"><span>${pfNum(i + 1)}. ${pfEsc(c.name.length > 30 ? c.name.slice(0, 29) + '…' : c.name)}</span><i><u style="width:${Math.round(c.reports.length / max * 100)}%"></u></i><b>${pfNum(c.reports.length)}</b></div>`).join('')}</div></div></div>${pfFoot(ctx, p.no)}`);
+        const short = (s, n) => s.length > n ? s.slice(0, n - 1) + '…' : s;
+        return wrap(`${corners}${pfHead('الملخص الإحصائي', 'نظرة شاملة', 'الملخص الإحصائي')}<div class="pf-body"><div class="pf-kpis"><div class="on"><b>${pfNum(T.evidence)}</b><span>إجمالي الشواهد</span></div><div><b>${pfNum(T.images)}</b><span>الصور المرفقة</span></div><div><b>${pfNum(T.covered)}<small>/${pfNum(T.total)}</small></b><span>المعايير المكتملة</span></div><div><b>${pfNum(pct)}٪</b><span>نسبة التغطية</span></div></div>${pfLbl('نسبة اكتمال كل معيار')}<div class="pf-rings2">${data.crits.map((c, i) => `<div>${pfRing2(ringPct(c), 66, pal)}<span>${pfEsc(short(c.name, 34))}</span></div>`).join('')}</div><div class="pf-note">يُعدّ المعيار مكتملاً عند توثيق شاهد واحد له على الأقل، وتُحسب النسبة من بنود المتابعة المغطّاة إن وُجدت.</div>${pfLbl('توزيع الشواهد على المعايير')}<div class="pf-bars2">${data.crits.map(c => `<div class="pf-bar2${c.reports.length ? ' on' : ''}"><span>${pfEsc(short(c.name, 40))}</span><i><u style="width:${Math.round(c.reports.length / max * 100)}%"></u></i><b>${pfNum(c.reports.length)}</b></div>`).join('')}</div></div>${pfFoot(ctx, p.no)}`);
     }
-    if (p.t === 'crit') {
-        const c = p.c;
-        const w = typeof formatWeight === 'function' ? formatWeight(c.weight) : c.weight;
-        const tiles = `<div class="pf-tiles" style="grid-template-columns:repeat(${c.subsCovered ? 3 : 2},1fr)"><div class="pf-tile"><b>${pfNum(c.reports.length)}</b><span>شاهد</span></div><div class="pf-tile"><b>${pfNum(c.images)}</b><span>صورة</span></div>${c.subsCovered ? `<div class="pf-tile"><b>${pfNum(c.subsCovered)}/${pfNum(c.subs)}</b><span>بنود متابعة مغطّاة</span></div>` : ''}</div>`;
-        const list = c.reports.length
-            ? `<div class="pf-card"><h3>الشواهد المرتبطة بالمعيار</h3><ul class="pf-replist">${c.reports.map(r => pfRepLink(ctx, r, pageOf.ev[r.key])).join('')}</ul></div>`
+    if (p.t === 'crit' || p.t === 'others') {
+        const isC = p.t === 'crit', c = p.c;
+        const reps = isC ? c.reports : data.others;
+        const chips = isC
+            ? `<span><i class="fas fa-copy"></i> عدد الشواهد: <b>${pfNum(c.reports.length)}</b></span><span><i class="fas fa-image"></i> الصور: <b>${pfNum(c.images)}</b></span>${c.subsCovered ? `<span><i class="fas fa-list-check"></i> البنود المغطّاة: <b>${pfNum(c.subsCovered)}/${pfNum(c.subs)}</b></span>` : ''}<span><i class="fas fa-scale-balanced"></i> الوزن: <b>${w(c)}</b></span>`
+            : `<span><i class="fas fa-copy"></i> عدد الشواهد: <b>${pfNum(reps.length)}</b></span>`;
+        const list = reps.length
+            ? `${pfLbl(isC ? 'الشواهد المرتبطة بالمعيار' : 'الشواهد')}<ul class="pf-replist2${reps.length > 7 ? ' dense' : ''}">${reps.map(r => pfRepLink(ctx, r, pageOf.ev[r.key])).join('')}</ul>`
             : `<div class="pf-empty">لم تُوثّق شواهد لهذا المعيار بعد</div>`;
-        return wrap(`<div class="pf-ccover"><div class="pf-ctop2"><div class="pf-bignum">${pfNum(p.i + 1)}</div><div><h2>${pfEsc(c.name)}</h2><p>الوزن: ${pfEsc(w)}</p></div></div><div class="pf-cbody">${c.desc ? `<div class="pf-card"><p>${pfEsc(c.desc)}</p></div>` : ''}${tiles}${list}</div></div>${pfFoot(ctx, p.no)}`);
-    }
-    if (p.t === 'others') {
-        return wrap(`<div class="pf-ccover"><div class="pf-ctop2"><div class="pf-bignum"><i class="fas fa-paperclip" style="font-size:44px"></i></div><div><h2>شواهد إضافية</h2><p>تقارير لم تُربط بمعيار محدد</p></div></div><div class="pf-cbody"><div class="pf-card"><h3>الشواهد</h3><ul class="pf-replist">${data.others.map(r => pfRepLink(ctx, r, pageOf.ev[r.key])).join('')}</ul></div></div></div>${pfFoot(ctx, p.no)}`);
+        const title = isC ? c.name : 'شواهد إضافية';
+        return wrap(`${pfStar(pal, 'pf-star pf-star-ml')}<div class="pf-wm" style="color:${pal.wm}">${isC ? pfNn(p.i + 1) : '+'}</div>${pfRun(title)}<div class="pf-cc2"><span class="pf-cc2-ic" style="background:${pal.p}"><i class="fas ${isC ? pfIcon(c.name) : 'fa-paperclip'}"></i></span><small class="pf-cc2-k">${isC ? 'المعيار ' + pfOrd(p.i) : 'خارج المعايير'}</small><h2>${pfEsc(title)}</h2>${isC ? (c.desc ? `<p class="pf-cc2-d">${pfEsc(c.desc)}</p>` : '') : '<p class="pf-cc2-d">تقارير موثّقة لم تُربط بمعيار محدد.</p>'}<div class="pf-chips">${chips}</div><hr>${list}</div>${pfWave(pal)}${pfFoot(ctx, p.no, true)}`, 'pf-has-wave');
     }
     if (p.t === 'ev') {
         const r = p.r, { meta, secs } = pfEvidenceContent(r), imgs = data.imgsOf(r).slice(0, 2);
-        const crumb = p.c ? `المعيار ${pfNum(data.crits.indexOf(p.c) + 1)}: ${p.c.name}` : 'شاهد إضافي';
-        return wrap(`${pfHead(r.title || 'تقرير', crumb)}<div class="pf-body"><div class="pf-meta">${meta.map(([l, v]) => `<div><small>${pfEsc(l)}</small>${pfEsc(v)}</div>`).join('')}</div><div class="pf-fit">${secs.map(([l, v]) => `<div class="pf-sec"><h4>${pfEsc(l)}</h4><div>${pfEsc(v)}</div></div>`).join('') || '<div class="pf-empty">لا توجد تفاصيل محفوظة لهذا التقرير</div>'}</div>${imgs.length ? `<div class="pf-imgs${imgs.length === 1 ? ' one' : ''}">${imgs.map(s => `<img src="${s}" alt="">`).join('')}</div>` : ''}</div>${pfFoot(ctx, p.no)}`);
+        const ci = p.c ? data.crits.indexOf(p.c) : -1;
+        const kicker = p.c ? `شواهد المعيار ${pfNn(ci + 1)}` : 'شاهد إضافي';
+        return wrap(`${corners}${pfRun(p.c ? p.c.name : 'شواهد إضافية')}<div class="pf-evh"><span class="pf-evh-ic" style="background:${pal.p}"><i class="fas ${p.c ? pfIcon(p.c.name) : 'fa-paperclip'}"></i></span><div><small>${pfEsc(kicker)}</small><h2>${pfEsc(r.title || 'تقرير')}</h2></div></div><div class="pf-body">${meta.length ? `<div class="pf-box pf-meta2">${meta.map(([l, v]) => `<div><small>${pfEsc(l)}</small><b>${pfEsc(v)}</b></div>`).join('')}</div>` : ''}<div class="pf-fit">${secs.map(([l, v]) => `<div class="pf-sec"><h4><i></i>${pfEsc(l)}</h4><div>${pfEsc(v)}</div></div>`).join('') || '<div class="pf-empty">لا توجد تفاصيل محفوظة لهذا التقرير</div>'}</div>${imgs.length ? `<div class="pf-imgs2${imgs.length === 1 ? ' one' : ''}">${imgs.map(s => `<figure><img src="${s}" alt=""></figure>`).join('')}</div>` : ''}</div>${pfFoot(ctx, p.no)}`);
     }
     // closing
-    return wrap(`${pfHead('ختام الملف', 'وبالله التوفيق')}<div class="pf-body"><div class="pf-card"><p style="font-size:16px">يتضمن هذا الملف ${pfNum(T.evidence)} شاهداً موثّقاً${T.images ? ` و${pfNum(T.images)} صورة مرفقة` : ''} تغطي ${pfNum(T.covered)} من ${pfNum(T.total)} معياراً من معايير الأداء الوظيفي، وقد أُعدّ ليكون مرجعاً لتوثيق الأداء المهني.</p></div><div class="pf-sign"><div>المعلم<br><b>${pfEsc(prof.name || '')}</b><small>التوقيع</small></div><div>مدير المدرسة<br><b>${pfEsc(prof.principal || '')}</b><small>التوقيع والختم</small></div><div>المشرف التربوي<br><b>&nbsp;</b><small>التوقيع</small></div></div></div>${pfFoot(ctx, p.no)}`);
+    const sig = (l, v) => `<div><small>${l}</small><b>${pfEsc(v || '')}&nbsp;</b><i></i></div>`;
+    return wrap(`${pfStar(pal, 'pf-star pf-star-tl')}${pfBlob(pal, 'c' + p.no, true)}<div class="pf-close2"><u class="pf-goldbar"></u><h1>ختاماً</h1><p>هذا الملف توثيقٌ لجزءٍ من رحلةٍ تعليميةٍ مستمرة، ويضمّ ${pfNum(T.evidence)} شاهداً موثّقاً${T.images ? ` و${pfNum(T.images)} صورة مرفقة` : ''} تغطي ${pfNum(T.covered)} من ${pfNum(T.total)} معياراً من معايير الأداء الوظيفي. ويبقى الأثر الحقيقي فيما تعلّمه الطلبة ونما لديهم من مهارات وقيم.</p><div class="pf-sig2">${sig('المعلّم', prof.name)}${sig('مدير المدرسة', prof.principal)}${sig('التوقيع', '')}${sig('التاريخ', '')}</div></div>${pfFoot(ctx, p.no)}`);
 }
 function pfBuild(interactive) {
     const cfg = pfCfg(), data = pfCollect(), plan = pfPlan(data), pageOf = { crit: {}, ev: {}, others: 0 };
@@ -13302,23 +13578,43 @@ async function pfWaitImages(root) {
     await Promise.all(imgs.map(im => im.complete ? 0 : new Promise(r => { im.onload = im.onerror = r; })));
     try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (_) { /* تجاهل */ }
 }
+// html2pdf.bundle لا يعرّف html2canvas ولا jsPDF كمتغيرات عامة، لذلك تُحمَّل نسختاهما المستقلتان
+// عند أول تنزيل فقط (مرة واحدة)، ثم تُستخدمان مباشرة لتصوير كل صفحة بدقة عالية.
+const PF_LIBS = {
+    h2c: 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+    jspdf: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+};
+function pfLoadScript(src) {
+    return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src; s.async = true; s.onload = resolve; s.onerror = () => reject(new Error('load ' + src));
+        document.head.appendChild(s);
+    });
+}
+async function pfEnsureLibs() {
+    if (typeof html2canvas === 'undefined') await pfLoadScript(PF_LIBS.h2c);
+    if (!(window.jspdf && window.jspdf.jsPDF)) await pfLoadScript(PF_LIBS.jspdf);
+    return !!(window.jspdf && window.jspdf.jsPDF) && typeof html2canvas !== 'undefined';
+}
 async function pfDownloadPdf(pages, fileName, btnId) {
     if (window.__pfBusy) return;
-    const J = window.jspdf && window.jspdf.jsPDF;
-    if (!J || typeof html2canvas === 'undefined') { showNotification('مكتبة PDF لم تُحمَّل بعد، حاول بعد لحظات.', 'warning'); return; }
+    let ok = false;
+    try { ok = await pfEnsureLibs(); } catch (_) { ok = false; }
+    if (!ok) { showNotification('تعذّر تحميل مكتبة PDF، تحقّق من الاتصال وحاول مجدداً.', 'warning'); return; }
+    const J = window.jspdf.jsPDF;
     window.__pfBusy = true;
     const btn = document.getElementById(btnId || 'pfPdfBtn'), label = btn ? btn.innerHTML : '';
     let host = null;
     try {
         host = pfMakeHost(Array.isArray(pages) ? pages : null);
-        await pfWaitImages(host);
+        await pfWaitImages(host); pfFit(host);
         const pgEls = Array.from(host.querySelectorAll('.pf-page'));
         const pdf = new J({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
         for (let i = 0; i < pgEls.length; i++) {
             if (btn) btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${pfNum(i + 1)} / ${pfNum(pgEls.length)}`;
-            const canvas = await html2canvas(pgEls[i], { scale: 2, backgroundColor: '#ffffff', useCORS: true, scrollX: 0, scrollY: 0, windowWidth: PF_W, windowHeight: PF_H, width: PF_W, height: PF_H, onclone: doc => { const h = doc.getElementById('pfPrintHost'); if (h) { h.style.opacity = '1'; h.style.left = '0'; h.style.top = '0'; h.style.zIndex = '0'; } } });
+            const canvas = await html2canvas(pgEls[i], { scale: 3, backgroundColor: '#faf7ef', useCORS: true, scrollX: 0, scrollY: 0, windowWidth: PF_W, windowHeight: PF_H, width: PF_W, height: PF_H, onclone: doc => { const h = doc.getElementById('pfPrintHost'); if (h) { h.style.opacity = '1'; h.style.left = '0'; h.style.top = '0'; h.style.zIndex = '0'; } } });
             if (i) pdf.addPage();
-            pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, 297);
+            pdf.addImage(canvas.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, 210, 297);
             canvas.width = canvas.height = 0;
             await new Promise(r => setTimeout(r, 0));
         }
@@ -13335,7 +13631,7 @@ async function pfDownloadPdf(pages, fileName, btnId) {
 }
 async function pfPrint(pages) {
     const host = pfMakeHost(Array.isArray(pages) ? pages : null);
-    await pfWaitImages(host);
+    await pfWaitImages(host); pfFit(host);
     document.body.classList.add('pf-printing');
     const done = () => { document.body.classList.remove('pf-printing'); host.remove(); window.removeEventListener('afterprint', done); };
     window.addEventListener('afterprint', done);
