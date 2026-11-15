@@ -6925,6 +6925,176 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
     #voiceModeSheet .vm-halo { animation: none; opacity: .6; transform: scale(1.12); }
 }
 </style>
+<style id="pf-variants-css">
+/* =====================================================================
+   أنماط تصميم ملف الإنجاز: هندسي عصري (pf-v-geo) ورسمي كلاسيكي (pf-v-formal).
+   النمط الزخرفي (pf-v-organic) هو التصميم الأساسي في pf-pro-css.
+   ===================================================================== */
+.pf-ttl u b { display: none; }
+
+/* منتقي التصميم في صفحة ملف الإنجاز */
+.pf-styles { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 8px 0 4px; }
+.pf-style-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 560px; }
+.pf-style { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 6px; border-radius: 14px; border: 1px solid #e3e8e6; background: #fff; cursor: pointer; font-family: inherit; color: #0d1f19; transition: border-color .2s ease, background .2s ease; }
+.pf-style i { font-size: 17px; color: #0a6b4f; margin-bottom: 2px; }
+.pf-style b { font-size: 13px; font-weight: 800; }
+.pf-style small { font-size: 10.5px; color: #5d6e68; line-height: 1.4; text-align: center; }
+.pf-style.on { border-color: #0a6b4f; background: #e5f2ed; box-shadow: 0 0 0 2px rgba(10, 107, 79, .15); }
+
+/* ================= النمط الهندسي العصري ================= */
+.pf-pro.pf-v-geo { background: #ffffff; }
+.pf-v-geo > .pf-pat { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1' fill='%23a9b7b1' fill-opacity='.28'/%3E%3C/svg%3E"); background-size: 24px 24px; }
+.pf-v-geo > .pf-band { position: absolute; z-index: 0; top: 0; bottom: 0; right: 0; width: 10px; background: var(--pf-p); }
+.pf-v-geo > .pf-gcorner { position: absolute; z-index: 0; top: 0; left: 0; }
+.pf-v-geo > .pf-gcorner2 { position: absolute; z-index: 0; bottom: 0; left: 0; transform: scaleX(-1); }
+.pf-v-geo > .pf-ghero, .pf-v-geo > .pf-gblock { position: absolute; z-index: 0; top: 0; left: 0; }
+.pf-v-geo > .pf-gfoot { position: absolute; z-index: 0; bottom: 0; left: 0; }
+.pf-v-geo .pf-run { margin: 30px 56px 0 56px; border-bottom: 2px solid var(--pf-p); }
+.pf-v-geo .pf-run-l i { border-radius: 2px; transform: rotate(45deg); }
+.pf-v-geo .pf-ttl small { color: var(--pf-p); }
+.pf-v-geo .pf-ttl h2 { font-size: 36px; }
+.pf-v-geo .pf-ttl u { width: 100%; height: 2px; background: var(--pf-line); border-radius: 0; position: relative; }
+.pf-v-geo .pf-ttl u b { display: block; position: absolute; top: -2px; right: 0; width: 90px; height: 6px; background: var(--pf-a); }
+.pf-v-geo .pf-lbl i { width: 12px; height: 12px; border-radius: 2px; background: var(--pf-p); }
+.pf-v-geo .pf-box, .pf-v-geo .pf-quote, .pf-v-geo .pf-intro, .pf-v-geo .pf-fit { border-radius: 4px; border-top: 3px solid var(--pf-p); }
+.pf-v-geo .pf-quote { border-right-width: 1px; border-right-color: var(--pf-line); background: var(--pf-s); }
+.pf-v-geo .pf-intro { border-left-width: 1px; border-left-color: var(--pf-line); }
+.pf-v-geo .pf-nlist span { border-radius: 3px; background: var(--pf-p); }
+.pf-v-geo .pf-steps i { border-radius: 2px; transform: rotate(45deg); }
+.pf-v-geo .pf-cv-skills span { border-radius: 3px; background: var(--pf-p); color: #fff; }
+.pf-v-geo .pf-goal { border-radius: 4px; border-left: 1px solid var(--pf-line); border-top: 3px solid var(--pf-p); flex-direction: column; gap: 6px; }
+.pf-v-geo .pf-goal b { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 4px; background: var(--pf-p); color: #fff; font-size: 14px; line-height: 1; }
+.pf-v-geo .pf-tl-rail { display: none; }
+.pf-v-geo .pf-tl-row { grid-template-columns: 54px 46px 1fr 60px; }
+.pf-v-geo .pf-tl-no { font-size: 15px; color: #fff; background: #d9e1de; border-radius: 4px; padding: 8px 0; }
+.pf-v-geo .pf-tl-row.on .pf-tl-no { background: var(--pf-p); color: #fff; }
+.pf-v-geo .pf-tl-ic { border-radius: 8px; border: none; width: 40px; height: 40px; background: #eef2f1; }
+.pf-v-geo .pf-tl-row.on .pf-tl-ic { background: var(--pf-s); color: var(--pf-p); }
+.pf-v-geo .pf-tl-pg { border-radius: 4px; }
+.pf-v-geo .pf-kpis div { border-radius: 4px; border-top: 3px solid var(--pf-p); }
+.pf-v-geo .pf-kpis div.on { border-top-color: var(--pf-a); }
+.pf-v-geo .pf-bar2 i, .pf-v-geo .pf-bar2 i u { border-radius: 2px; }
+.pf-v-geo .pf-meta2 { border-radius: 4px; }
+.pf-v-geo .pf-evh-ic { border-radius: 6px; }
+.pf-v-geo .pf-sec h4 i { width: 8px; height: 8px; border-radius: 2px; background: var(--pf-p); transform: rotate(45deg); }
+.pf-v-geo .pf-imgs2 figure { border-radius: 4px; }
+.pf-v-geo .pf-rep { border-radius: 4px; }
+.pf-v-geo .pf-rep-ic { border-radius: 4px; }
+.pf-v-geo .pf-chips span { border-radius: 4px; }
+
+/* الغلاف الهندسي */
+.pf-gcover { flex: 1; display: flex; flex-direction: column; padding: 0 64px 56px; }
+.pf-g-top { color: #fff; padding-top: 80px; min-height: 470px; }
+.pf-v-geo .pf-g-top .pf-kick2 { color: rgba(255,255,255,.82); margin-top: 0; }
+.pf-v-geo .pf-g-top .pf-year2 { background: var(--pf-a); color: #fff; border-radius: 4px; margin-top: 150px; }
+.pf-v-geo .pf-g-top .pf-ctitle2 { color: #fff; font-size: 60px; }
+.pf-v-geo .pf-g-top .pf-ctitle2 span { color: var(--pf-a); }
+.pf-v-geo .pf-g-top .pf-cdesc { color: rgba(255,255,255,.82); }
+.pf-v-geo .pf-ccard { margin-top: 70px; margin-left: 0; border-radius: 4px; border-right: 1px solid var(--pf-line); border-top: 5px solid var(--pf-a); }
+.pf-v-geo .pf-cstats div { border-left-color: var(--pf-line); }
+
+/* غلاف المعيار الهندسي */
+.pf-gcc { flex: 1; display: flex; flex-direction: column; }
+.pf-gcc-top { color: #fff; padding: 34px 56px 0; min-height: 400px; }
+.pf-gcc-run { font-size: 11.5px; color: rgba(255,255,255,.75); padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.25); }
+.pf-gcc-num { font-size: 120px; font-weight: 900; line-height: 1; margin-top: 46px; color: #fff; }
+.pf-gcc-top small { display: block; margin-top: 10px; font-size: 13px; font-weight: 800; color: var(--pf-a); }
+.pf-gcc-top h2 { margin: 6px 0 0; font-size: 36px; font-weight: 900; line-height: 1.3; max-width: 640px; }
+.pf-gcc-body { padding: 70px 56px 0; flex: 1; display: flex; flex-direction: column; }
+.pf-gcc-body .pf-cc2-d { margin-top: 0; }
+.pf-gcc-body hr { border: none; border-top: 1px solid var(--pf-line); margin: 20px 0 14px; width: 100%; }
+
+/* ================= النمط الرسمي الكلاسيكي ================= */
+.pf-pro.pf-v-formal { background: #fdfbf6; --pf-serif: 'Amiri', 'Noto Naskh Arabic', serif; }
+.pf-v-formal > .pf-pat { opacity: .55; }
+.pf-v-formal > .pf-frame3 { position: absolute; z-index: 0; top: 22px; right: 22px; bottom: 22px; left: 22px; border: 2px solid var(--pf-a); }
+.pf-v-formal > .pf-frame3 i { position: absolute; top: 6px; right: 6px; bottom: 6px; left: 6px; border: 1px solid var(--pf-a); opacity: .7; }
+.pf-v-formal .pf-run { margin: 46px 64px 0; justify-content: center; gap: 16px; border-bottom: 1px solid var(--pf-a); }
+.pf-v-formal .pf-run-l i { border-radius: 0; transform: rotate(45deg); background: var(--pf-a); width: 7px; height: 7px; }
+.pf-v-formal .pf-run-l { color: var(--pf-p); }
+.pf-v-formal .pf-ttl { text-align: center; padding: 22px 64px 0; }
+.pf-v-formal .pf-ttl small { color: var(--pf-a); font-size: 13px; }
+.pf-v-formal .pf-ttl h2 { font-family: var(--pf-serif); font-size: 38px; font-weight: 700; color: var(--pf-p); }
+.pf-v-formal .pf-ttl u { margin: 8px auto 0; width: 160px; height: 1px; border-radius: 0; position: relative; }
+.pf-v-formal .pf-ttl u b { display: block; position: absolute; top: -4px; left: 50%; margin-left: -4.5px; width: 9px; height: 9px; background: var(--pf-a); transform: rotate(45deg); }
+.pf-v-formal .pf-body { padding: 20px 64px 8px; }
+.pf-v-formal .pf-lbl { font-family: var(--pf-serif); font-size: 18px; font-weight: 700; }
+.pf-v-formal .pf-lbl i { width: 7px; height: 7px; border-radius: 0; transform: rotate(45deg); }
+.pf-v-formal .pf-box, .pf-v-formal .pf-fit, .pf-v-formal .pf-intro, .pf-v-formal .pf-quote { border-radius: 2px; background: rgba(255,255,255,.85); border-color: #e4d9bd; }
+.pf-v-formal .pf-quote { font-family: var(--pf-serif); font-size: 18px; text-align: center; border-right-width: 1px; border-top: 3px double var(--pf-a); border-bottom: 3px double var(--pf-a); }
+.pf-v-formal .pf-intro { text-align: center; border-left-width: 1px; font-family: var(--pf-serif); font-size: 16px; }
+.pf-v-formal .pf-nlist span { background: transparent; color: var(--pf-a); border: 1px solid var(--pf-a); }
+.pf-v-formal .pf-cv-skills span { background: transparent; border: 1px solid var(--pf-a); color: var(--pf-p); border-radius: 2px; }
+.pf-v-formal .pf-goal { border-radius: 2px; border-left: 1px solid #e4d9bd; border-color: #e4d9bd; background: rgba(255,255,255,.85); }
+.pf-v-formal .pf-goal b { font-family: var(--pf-serif); font-size: 22px; color: var(--pf-p); }
+.pf-v-formal .pf-tl-rail, .pf-v-formal .pf-tl-ic { display: none; }
+.pf-v-formal .pf-tl-row { grid-template-columns: 50px 1fr 50px; min-height: 58px; }
+.pf-v-formal .pf-tl-no { font-family: var(--pf-serif); font-size: 22px; color: #cbbd97; }
+.pf-v-formal .pf-tl-row.on .pf-tl-no { color: var(--pf-p); }
+.pf-v-formal .pf-tl-tx { border-bottom: 1px dotted #c9b98f; }
+.pf-v-formal .pf-tl-tx b { font-family: var(--pf-serif); font-size: 17px; font-weight: 700; }
+.pf-v-formal .pf-tl-pg { background: transparent !important; font-family: var(--pf-serif); font-size: 17px; }
+.pf-v-formal .pf-kpis div { border-radius: 2px; border-color: #e4d9bd; text-align: center; }
+.pf-v-formal .pf-kpis div.on { background: var(--pf-p); }
+.pf-v-formal .pf-kpis b { font-family: var(--pf-serif); }
+.pf-v-formal .pf-evh { justify-content: center; text-align: center; flex-direction: column; gap: 8px; padding: 20px 64px 0; }
+.pf-v-formal .pf-evh-ic { border-radius: 50%; width: 46px; height: 46px; }
+.pf-v-formal .pf-evh h2 { font-family: var(--pf-serif); font-weight: 700; font-size: 27px; color: var(--pf-p); }
+.pf-v-formal .pf-sec h4 { font-family: var(--pf-serif); font-size: 1.08em; font-weight: 700; }
+.pf-v-formal .pf-sec h4 i { width: .45em; height: .45em; border-radius: 0; transform: rotate(45deg); }
+.pf-v-formal .pf-imgs2 figure { border-radius: 2px; border-color: #e4d9bd; }
+.pf-v-formal .pf-rep { border-radius: 2px; border-color: #e4d9bd; }
+.pf-v-formal .pf-chips { justify-content: center; }
+.pf-v-formal .pf-chips span { border-radius: 2px; border-color: #e4d9bd; }
+.pf-v-formal .pf-foot { justify-content: space-between; padding: 10px 64px 40px; }
+.pf-fpg { font-family: 'Amiri', serif; font-size: 15px; color: var(--pf-p); }
+
+/* الغلاف الرسمي */
+.pf-fcover { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 86px 80px 70px; }
+.pf-fcover .pf-emblem { margin-bottom: 20px; }
+.pf-v-formal .pf-fcover .pf-kick2 { margin: 0 0 12px; color: var(--pf-p); font-size: 14px; }
+.pf-v-formal .pf-fcover .pf-ctitle2 { font-family: var(--pf-serif); font-weight: 700; font-size: 62px; line-height: 1.35; color: var(--pf-p); margin: 18px 0 0; }
+.pf-v-formal .pf-fcover .pf-ctitle2 span { color: var(--pf-a); }
+.pf-v-formal .pf-fcover .pf-cdesc { margin: 12px auto 18px; max-width: 460px; font-family: var(--pf-serif); font-size: 17px; }
+.pf-f-name { margin-top: 26px; font-family: var(--pf-serif); font-size: 34px; font-weight: 700; color: var(--pf-ink); line-height: 1.3; }
+.pf-f-name small { display: block; font-family: var(--app-font); font-size: 12px; font-weight: 700; color: var(--pf-a); margin-bottom: 2px; }
+.pf-f-name em { display: block; font-style: normal; font-family: var(--app-font); font-size: 13px; color: var(--pf-mut); }
+.pf-f-info { display: grid; grid-template-columns: 1fr 1fr; gap: 0; width: 100%; max-width: 560px; margin-top: 24px; border-top: 1px solid #e4d9bd; }
+.pf-f-info div { padding: 10px 12px; border-bottom: 1px solid #e4d9bd; }
+.pf-f-info div:nth-child(odd) { border-left: 1px solid #e4d9bd; }
+.pf-f-info small { display: block; font-size: 11px; color: var(--pf-mut); }
+.pf-f-info b { font-size: 14.5px; }
+.pf-v-formal .pf-fcover .pf-cstats { width: 100%; max-width: 520px; margin-top: 26px; }
+.pf-v-formal .pf-fcover .pf-cstats div { text-align: center; border-left-color: #e4d9bd; padding: 0 10px; }
+.pf-v-formal .pf-cstats b { font-family: var(--pf-serif); }
+.pf-f-year { margin-top: auto; font-family: var(--pf-serif); font-size: 18px; color: var(--pf-a); }
+
+/* غلاف المعيار الرسمي */
+.pf-fcc { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 110px 72px 0; }
+.pf-medal { width: 150px; height: 150px; border-radius: 50%; border: 2px solid var(--pf-a); padding: 7px; }
+.pf-medal > div { width: 100%; height: 100%; border-radius: 50%; background: var(--pf-p); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.pf-medal small { font-size: 12px; color: var(--pf-a2, #f3d68a); color: rgba(255,255,255,.75); }
+.pf-medal b { font-family: var(--pf-serif); font-size: 56px; line-height: 1; }
+.pf-fcc .pf-cc2-k { margin-top: 30px; }
+.pf-fcc h2 { margin: 6px 0 12px; font-family: var(--pf-serif); font-size: 40px; font-weight: 700; color: var(--pf-p); line-height: 1.35; }
+.pf-fcc .pf-cc2-d { max-width: 520px; font-family: var(--pf-serif); font-size: 17px; }
+.pf-fcc .pf-chips { margin: 18px 0 22px; }
+.pf-fcc .pf-lbl { justify-content: center; }
+.pf-fcc .pf-replist2 { width: 100%; text-align: right; }
+.pf-fcc .pf-empty { width: 100%; }
+
+/* ختام الرسمي */
+.pf-v-formal .pf-close2 { align-items: center; text-align: center; padding: 0 80px 40px; }
+.pf-v-formal .pf-close2 .pf-emblem { margin-bottom: 14px; }
+.pf-v-formal .pf-close2 h1 { font-family: var(--pf-serif); font-weight: 700; font-size: 58px; margin: 0 0 8px; }
+.pf-v-formal .pf-close2 p { font-family: var(--pf-serif); font-size: 18px; margin: 14px auto 0; }
+.pf-v-formal .pf-sig2 { margin: 46px auto 0; text-align: right; }
+.pf-v-formal .pf-sig2 i { background: var(--pf-a); }
+
+/* ختام الهندسي */
+.pf-v-geo .pf-close2 { padding: 0 64px 280px; }
+.pf-v-geo .pf-close2 .pf-goldbar { width: 90px; height: 6px; border-radius: 0; }
+</style>
 </head>
 
 <body class="theme-default">
@@ -7901,6 +8071,7 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
     <button type="button" class="pf-btn" onclick="pfOpenEditor()"><i class="fas fa-pen-to-square"></i> بياناتي والصفحات</button>
     <button type="button" class="pf-btn" onclick="openSavedReports()"><i class="fas fa-folder-open"></i> التقارير المحفوظة</button>
   </div>
+  <div class="pf-styles" id="pfStyles"></div>
   <div class="pf-swatches" id="pfSwatches"></div>
   <div class="pf-hint" id="pfHint"></div>
   <div id="pfPreview"></div>
@@ -7913,7 +8084,7 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
     <p style="font-size:12.5px;margin:0 0 6px;opacity:.75">تُحفظ هذه البيانات على جهازك فقط، وتظهر في الغلاف وصفحة السيرة والختام.</p>
     <div id="pfEditorFields"></div>
     <h4>شكل الملف</h4>
-    <div class="pf-field"><label>تصميم الغلاف</label>
+    <div class="pf-field"><label>تصميم الغلاف (للتصميم الزخرفي)</label>
       <select id="pfCoverSel" onchange="pfSetOpt('cover', this.value)"><option value="a">كلاسيكي (شريط علوي)</option><option value="b">عصري (إطار كامل)</option></select></div>
     <h4>الصفحات المضمّنة</h4>
     <div class="pf-checks" id="pfChecks"></div>
@@ -13118,6 +13289,13 @@ const PF_THEMES = {
     teal:    { name: 'تركوازي وبرتقالي', p: '#0f766e', a: '#ea8a2b' },
     plum:    { name: 'بنفسجي وذهبي', p: '#5b3a8c', a: '#d4a017' },
 };
+// أنماط تصميم الملف: كل نمط يغيّر الغلاف وأغلفة المعايير والختام والزخارف وتنسيق الصفحات الداخلية،
+// مع بقاء النصوص والمحتوى نفسه في كل الأنماط.
+const PF_STYLES = {
+    organic: { name: 'زخرفي', desc: 'أشكال عضوية ونقش هندسي', ic: 'fa-leaf' },
+    geo:     { name: 'هندسي عصري', desc: 'كتل لونية وزوايا حادة', ic: 'fa-shapes' },
+    formal:  { name: 'رسمي كلاسيكي', desc: 'إطار مزدوج وخط نسخي', ic: 'fa-landmark' },
+};
 const PF_FIELDS = [
     { k: 'name', label: 'اسم المعلم', ph: 'الاسم الكامل' },
     { k: 'role', label: 'الصفة', ph: 'معلم / معلمة' },
@@ -13162,6 +13340,7 @@ function pfCfg() {
     if (!c || typeof c !== 'object') c = {};
     c.theme = PF_THEMES[c.theme] ? c.theme : 'emerald';
     c.cover = c.cover === 'b' ? 'b' : 'a';
+    c.style = PF_STYLES[c.style] ? c.style : 'organic';
     c.show = Object.assign({ cv: true, goals: true, toc: true, stats: true, closing: true, hideEmpty: false }, c.show || {});
     c.p = (c.p && typeof c.p === 'object') ? c.p : {};
     if (typeof c.goals !== 'string') c.goals = PF_GOALS_DEFAULT.join('\n');
@@ -13305,15 +13484,48 @@ function pfBlob(pal, uid, flip) {
 function pfWave(pal) {
     return pfImg(`<svg class="pf-wave" width="794" height="220" viewBox="0 0 794 220" preserveAspectRatio="none"><path d="M0 80 C180 20 380 150 560 92 C660 60 730 40 794 52 V220 H0 Z" fill="${pal.s2}"/><path d="M0 132 C200 78 420 190 600 132 C690 104 750 96 794 104 V220 H0 Z" fill="${pal.p}"/></svg>`);
 }
+function pfSquareBadge(no, fill, color) {
+    return pfImg(`<svg class="pf-hex" width="34" height="34" viewBox="0 0 34 34"><rect x="1" y="1" width="32" height="32" rx="4" fill="${fill}"/><text x="17" y="17.5" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="700" font-family="Arial, sans-serif" fill="${color}">${pfNum(no)}</text></svg>`);
+}
+// زخارف النمط الهندسي: كتل مضلّعة وشبكة نقاط.
+function pfGeoDots(x, y, cols, rows, fill, op) {
+    const d = []; for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) d.push(`<circle cx="${x + c * 16}" cy="${y + r * 16}" r="2.2"/>`);
+    return `<g fill="${fill}" fill-opacity="${op}">${d.join('')}</g>`;
+}
+function pfGeoHero(pal) {
+    return pfImg(`<svg class="pf-ghero" width="794" height="640" viewBox="0 0 794 640"><polygon points="0,0 794,0 794,500 0,640" fill="${pal.p}"/><polygon points="794,0 794,330 470,0" fill="${pal.d}"/><polygon points="0,0 250,0 0,200" fill="${pal.d}" fill-opacity=".55"/>${pfGeoDots(560, 380, 9, 5, '#ffffff', .28)}<polygon points="0,560 0,640 230,600" fill="${pal.a}"/><rect x="60" y="70" width="70" height="70" fill="none" stroke="${pal.a}" stroke-width="3" transform="rotate(12 95 105)"/></svg>`);
+}
+function pfGeoBlock(pal) {
+    return pfImg(`<svg class="pf-gblock" width="794" height="470" viewBox="0 0 794 470"><polygon points="0,0 794,0 794,390 0,470" fill="${pal.p}"/><polygon points="794,0 794,250 560,0" fill="${pal.d}"/>${pfGeoDots(40, 40, 8, 4, '#ffffff', .25)}<polygon points="0,420 0,470 160,454" fill="${pal.a}"/></svg>`);
+}
+function pfGeoCorner(pal) {
+    return pfImg(`<svg class="pf-gcorner" width="170" height="130" viewBox="0 0 170 130"><polygon points="0,0 130,0 0,100" fill="${pal.p}"/><polygon points="0,0 64,0 0,50" fill="${pal.a}"/>${pfGeoDots(96, 18, 4, 3, pal.p, .35)}</svg>`)
+        + pfImg(`<svg class="pf-gcorner2" width="150" height="110" viewBox="0 0 150 110"><polygon points="150,110 150,20 40,110" fill="${pal.s2}"/><polygon points="150,110 150,62 92,110" fill="${pal.p}"/></svg>`);
+}
+function pfGeoFoot(pal) {
+    return pfImg(`<svg class="pf-gfoot" width="794" height="260" viewBox="0 0 794 260"><polygon points="0,110 794,0 794,260 0,260" fill="${pal.p}"/><polygon points="794,0 794,140 560,32" fill="${pal.d}"/><polygon points="0,110 0,170 220,80" fill="${pal.a}"/>${pfGeoDots(620, 170, 9, 4, '#ffffff', .25)}</svg>`);
+}
+// زخارف النمط الرسمي: فاصل مزخرف وشعار دائري.
+function pfOrn(pal, w) {
+    w = w || 240; const c = w / 2;
+    return pfImg(`<svg class="pf-orn" width="${w}" height="22" viewBox="0 0 ${w} 22"><g stroke="${pal.a}" stroke-width="1.2" fill="none"><path d="M0 11 H${c - 26} M${c + 26} 11 H${w}"/><rect x="${c - 7}" y="4" width="14" height="14" transform="rotate(45 ${c} 11)" fill="${pal.a}"/><rect x="${c - 15}" y="6" width="10" height="10" transform="rotate(45 ${c - 18} 11)"/><rect x="${c + 5}" y="6" width="10" height="10" transform="rotate(45 ${c + 18} 11)" /></g><circle cx="${c - 34}" cy="11" r="2.4" fill="${pal.a}"/><circle cx="${c + 34}" cy="11" r="2.4" fill="${pal.a}"/></svg>`);
+}
+function pfEmblem(pal) {
+    const sq = (r, rot) => `<rect x="${70 - r}" y="${70 - r}" width="${2 * r}" height="${2 * r}" transform="rotate(${rot} 70 70)"/>`;
+    return pfImg(`<svg class="pf-emblem" width="140" height="140" viewBox="0 0 140 140"><circle cx="70" cy="70" r="66" fill="none" stroke="${pal.a}" stroke-width="2"/><circle cx="70" cy="70" r="59" fill="none" stroke="${pal.a}" stroke-width="1"/><g fill="${pal.p}">${sq(36, 0)}${sq(36, 45)}</g><g fill="none" stroke="${pal.a}" stroke-width="1.6">${sq(22, 0)}${sq(22, 45)}</g><circle cx="70" cy="70" r="9" fill="${pal.a}"/></svg>`);
+}
 function pfRun(label) {
     return `<div class="pf-run"><span class="pf-run-l"><i></i>${pfEsc(label)}</span><span>ملف شواهد الأداء الوظيفي</span></div>`;
 }
 function pfFoot(ctx, no, inv) {
     const pal = pfPal(ctx.cfg.theme);
-    return `<div class="pf-foot${inv ? ' inv' : ''}">${pfHexBadge(no, inv ? '#ffffff' : pal.p, inv ? pal.p : '#ffffff')}<span>${pfEsc(ctx.prof.name || '')}</span></div>`;
+    const st = ctx.cfg.style;
+    if (st === 'formal') return `<div class="pf-foot"><span>${pfEsc(ctx.prof.name || '')}</span><b class="pf-fpg">— ${pfNum(no)} —</b><span>ملف شواهد الأداء الوظيفي</span></div>`;
+    const badge = st === 'geo' ? pfSquareBadge : pfHexBadge;
+    return `<div class="pf-foot${inv ? ' inv' : ''}">${badge(no, inv ? '#ffffff' : pal.p, inv ? pal.p : '#ffffff')}<span>${pfEsc(ctx.prof.name || '')}</span></div>`;
 }
 function pfHead(title, sub, run) {
-    return `${pfRun(run || title)}<div class="pf-ttl">${sub ? `<small>${pfEsc(sub)}</small>` : ''}<h2>${pfEsc(title)}</h2><u></u></div>`;
+    return `${pfRun(run || title)}<div class="pf-ttl">${sub ? `<small>${pfEsc(sub)}</small>` : ''}<h2>${pfEsc(title)}</h2><u><b></b></u></div>`;
 }
 function pfLbl(t) { return `<div class="pf-lbl"><i></i>${pfEsc(t)}</div>`; }
 function pfRepLink(ctx, r, pageNo) {
@@ -13329,15 +13541,25 @@ function pfRenderPage(p, ctx) {
     const { prof, cfg, data, pageOf } = ctx;
     const pal = pfPal(cfg.theme);
     const th = 'pf-t-' + cfg.theme;
-    const deco = `<div class="pf-pat"></div>`;
-    const wrap = (inner, extra) => `<section class="pf-page pf-pro ${th}${extra ? ' ' + extra : ''}" data-no="${p.no}">${deco}${inner}</section>`;
-    const corners = pfCorner(pal, 'tl') + pfCorner(pal, 'br');
+    const st = cfg.style || 'organic';
+    const deco = `<div class="pf-pat"></div>` + (st === 'formal' ? '<div class="pf-frame3"><i></i></div>' : st === 'geo' ? '<i class="pf-band"></i>' : '');
+    const wrap = (inner, extra) => `<section class="pf-page pf-pro pf-v-${st} ${th}${extra ? ' ' + extra : ''}" data-no="${p.no}">${deco}${inner}</section>`;
+    const corners = st === 'organic' ? pfCorner(pal, 'tl') + pfCorner(pal, 'br') : st === 'geo' ? pfGeoCorner(pal) : '';
     const T = data.totals;
     const w = c => pfEsc(typeof formatWeight === 'function' ? formatWeight(c.weight) : c.weight);
     if (p.t === 'cover') {
         const facts = [['fa-book-open', 'المادة / التخصص', prof.subject], ['fa-calendar-days', 'الفصل الدراسي', prof.term || prof.year], ['fa-building-columns', 'إدارة التعليم', prof.education]].filter(x => x[2]);
         const stats = `<div class="pf-cstats"><div><b>${pfNum(T.evidence)}</b><span>الشواهد الموثّقة</span></div><div><b>${pfNum(T.images)}</b><span>الصور المرفقة</span></div><div><b>${pfNum(T.covered)}<small>/${pfNum(T.total)}</small></b><span>المعايير المغطّاة</span></div></div>`;
         const card = `<div class="pf-ccard"><div class="pf-cc-row"><small><i class="fas fa-user"></i> اسم المعلّم</small><div class="pf-cc-name">${pfEsc(prof.name || 'اسم المعلم')}</div>${prof.role ? `<div class="pf-cc-role">${pfEsc(prof.role)}</div>` : ''}</div>${prof.school ? `<div class="pf-cc-row pf-cc-sep"><small><i class="fas fa-school"></i> المدرسة</small><div class="pf-cc-val">${pfEsc(prof.school)}</div></div>` : ''}${facts.length ? `<div class="pf-cc-facts">${facts.map(([ic, l, v]) => `<div><small><i class="fas ${ic}"></i> ${l}</small><div class="pf-cc-val">${pfEsc(v)}</div></div>`).join('')}</div>` : ''}</div>`;
+        const titleH = `<h1 class="pf-ctitle2">ملف شواهد<br><span>الأداء الوظيفي</span></h1>`;
+        const descP = `<p class="pf-cdesc">توثيقٌ منظّم لممارسات المعلّم وإنجازاته، مرتّبٌ وفق معايير الأداء المهني.</p>`;
+        if (st === 'geo') {
+            return wrap(`${pfGeoHero(pal)}<div class="pf-gcover"><div class="pf-g-top"><div class="pf-kick2">المملكة العربية السعودية • وزارة التعليم</div>${prof.year ? `<span class="pf-year2">${pfEsc(prof.year)}</span>` : ''}${titleH}${descP}</div>${card}${stats}</div>`);
+        }
+        if (st === 'formal') {
+            const rows = [['المدرسة', prof.school], ['المادة / التخصص', prof.subject], ['الفصل الدراسي', prof.term], ['إدارة التعليم', prof.education]].filter(x => x[1]);
+            return wrap(`<div class="pf-fcover">${pfEmblem(pal)}<div class="pf-kick2">المملكة العربية السعودية • وزارة التعليم</div>${pfOrn(pal, 260)}<h1 class="pf-ctitle2">ملف شواهد<br><span>الأداء الوظيفي</span></h1>${descP}${pfOrn(pal, 180)}<div class="pf-f-name"><small>إعداد</small>${pfEsc(prof.name || 'اسم المعلم')}${prof.role ? `<em>${pfEsc(prof.role)}</em>` : ''}</div>${rows.length ? `<div class="pf-f-info">${rows.map(([l, v]) => `<div><small>${l}</small><b>${pfEsc(v)}</b></div>`).join('')}</div>` : ''}${stats}${prof.year ? `<div class="pf-f-year">${pfEsc(prof.year)}</div>` : ''}</div>`);
+        }
         if (cfg.cover === 'b') {
             return wrap(`<div class="pf-cover-b2"><div class="pf-frame2"><div class="pf-kick2">المملكة العربية السعودية • وزارة التعليم</div>${prof.year ? `<span class="pf-year2">${pfEsc(prof.year)}</span>` : ''}<u class="pf-goldbar"></u><h1 class="pf-ctitle2">ملف شواهد<br><span>الأداء الوظيفي</span></h1><p class="pf-cdesc">توثيقٌ منظّم لممارسات المعلّم وإنجازاته، مرتّبٌ وفق معايير الأداء المهني.</p>${card}${stats}</div></div>`, 'pf-dark');
         }
@@ -13385,6 +13607,14 @@ function pfRenderPage(p, ctx) {
             ? `${pfLbl(isC ? 'الشواهد المرتبطة بالمعيار' : 'الشواهد')}<ul class="pf-replist2${reps.length > 7 ? ' dense' : ''}">${reps.map(r => pfRepLink(ctx, r, pageOf.ev[r.key])).join('')}</ul>`
             : `<div class="pf-empty">لم تُوثّق شواهد لهذا المعيار بعد</div>`;
         const title = isC ? c.name : 'شواهد إضافية';
+        const kick = isC ? 'المعيار ' + pfOrd(p.i) : 'خارج المعايير';
+        const descH = isC ? (c.desc ? `<p class="pf-cc2-d">${pfEsc(c.desc)}</p>` : '') : '<p class="pf-cc2-d">تقارير موثّقة لم تُربط بمعيار محدد.</p>';
+        if (st === 'geo') {
+            return wrap(`${pfGeoBlock(pal)}<div class="pf-gcc"><div class="pf-gcc-top"><div class="pf-gcc-run">ملف شواهد الأداء الوظيفي</div><div class="pf-gcc-num">${isC ? pfNn(p.i + 1) : '+'}</div><small>${kick}</small><h2>${pfEsc(title)}</h2></div><div class="pf-gcc-body">${descH}<div class="pf-chips">${chips}</div><hr>${list}</div></div>${pfFoot(ctx, p.no)}`);
+        }
+        if (st === 'formal') {
+            return wrap(`<div class="pf-fcc"><div class="pf-medal"><div><small>المعيار</small><b>${isC ? pfNn(p.i + 1) : '+'}</b></div></div><small class="pf-cc2-k">${kick}</small><h2>${pfEsc(title)}</h2>${pfOrn(pal, 220)}${descH}<div class="pf-chips">${chips}</div>${list}</div>${pfFoot(ctx, p.no)}`);
+        }
         return wrap(`${pfStar(pal, 'pf-star pf-star-ml')}<div class="pf-wm" style="color:${pal.wm}">${isC ? pfNn(p.i + 1) : '+'}</div>${pfRun(title)}<div class="pf-cc2"><span class="pf-cc2-ic" style="background:${pal.p}"><i class="fas ${isC ? pfIcon(c.name) : 'fa-paperclip'}"></i></span><small class="pf-cc2-k">${isC ? 'المعيار ' + pfOrd(p.i) : 'خارج المعايير'}</small><h2>${pfEsc(title)}</h2>${isC ? (c.desc ? `<p class="pf-cc2-d">${pfEsc(c.desc)}</p>` : '') : '<p class="pf-cc2-d">تقارير موثّقة لم تُربط بمعيار محدد.</p>'}<div class="pf-chips">${chips}</div><hr>${list}</div>${pfWave(pal)}${pfFoot(ctx, p.no, true)}`, 'pf-has-wave');
     }
     if (p.t === 'ev') {
@@ -13395,6 +13625,10 @@ function pfRenderPage(p, ctx) {
     }
     // closing
     const sig = (l, v) => `<div><small>${l}</small><b>${pfEsc(v || '')}&nbsp;</b><i></i></div>`;
+    const closeTxt = `<p>هذا الملف توثيقٌ لجزءٍ من رحلةٍ تعليميةٍ مستمرة، ويضمّ ${pfNum(T.evidence)} شاهداً موثّقاً${T.images ? ` و${pfNum(T.images)} صورة مرفقة` : ''} تغطي ${pfNum(T.covered)} من ${pfNum(T.total)} معياراً من معايير الأداء الوظيفي. ويبقى الأثر الحقيقي فيما تعلّمه الطلبة ونما لديهم من مهارات وقيم.</p>`;
+    const sigs = `<div class="pf-sig2">${sig('المعلّم', prof.name)}${sig('مدير المدرسة', prof.principal)}${sig('التوقيع', '')}${sig('التاريخ', '')}</div>`;
+    if (st === 'geo') return wrap(`${corners}<div class="pf-close2"><u class="pf-goldbar"></u><h1>ختاماً</h1>${closeTxt}${sigs}</div>${pfGeoFoot(pal)}${pfFoot(ctx, p.no, true)}`, 'pf-has-wave');
+    if (st === 'formal') return wrap(`<div class="pf-close2">${pfEmblem(pal)}<h1>ختاماً</h1>${pfOrn(pal, 220)}${closeTxt}${sigs}</div>${pfFoot(ctx, p.no)}`);
     return wrap(`${pfStar(pal, 'pf-star pf-star-tl')}${pfBlob(pal, 'c' + p.no, true)}<div class="pf-close2"><u class="pf-goldbar"></u><h1>ختاماً</h1><p>هذا الملف توثيقٌ لجزءٍ من رحلةٍ تعليميةٍ مستمرة، ويضمّ ${pfNum(T.evidence)} شاهداً موثّقاً${T.images ? ` و${pfNum(T.images)} صورة مرفقة` : ''} تغطي ${pfNum(T.covered)} من ${pfNum(T.total)} معياراً من معايير الأداء الوظيفي. ويبقى الأثر الحقيقي فيما تعلّمه الطلبة ونما لديهم من مهارات وقيم.</p><div class="pf-sig2">${sig('المعلّم', prof.name)}${sig('مدير المدرسة', prof.principal)}${sig('التوقيع', '')}${sig('التاريخ', '')}</div></div>${pfFoot(ctx, p.no)}`);
 }
 function pfBuild(interactive) {
@@ -13422,6 +13656,8 @@ function pfRender() {
     const cfg = pfCfg(), b = pfBuild(true);
     box.innerHTML = b.html.map(h => `<div class="pf-wrap">${h}</div>`).join('');
     pfScale(); pfFit(box);
+    const stl = document.getElementById('pfStyles');
+    if (stl) stl.innerHTML = '<span class="pf-sw-label">تصميم الملف:</span><div class="pf-style-row">' + Object.keys(PF_STYLES).map(k => `<button type="button" class="pf-style${cfg.style === k ? ' on' : ''}" onclick="pfSetOpt('style','${k}')"><i class="fas ${PF_STYLES[k].ic}"></i><b>${PF_STYLES[k].name}</b><small>${PF_STYLES[k].desc}</small></button>`).join('') + '</div>';
     const sw = document.getElementById('pfSwatches');
     if (sw) sw.innerHTML = '<span class="pf-sw-label">لون الملف:</span>' + Object.keys(PF_THEMES).map(k => `<button type="button" class="pf-sw${cfg.theme === k ? ' on' : ''}" title="${PF_THEMES[k].name}" style="background:${PF_THEMES[k].p}" onclick="pfSetOpt('theme','${k}')"><span style="background:${PF_THEMES[k].a}"></span></button>`).join('');
     const hint = document.getElementById('pfHint');
