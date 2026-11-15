@@ -6755,6 +6755,170 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
 .pf-sig2 b { display: block; font-size: 15px; font-weight: 800; margin-top: 4px; min-height: 22px; }
 .pf-sig2 i { display: block; height: 1px; background: #b9b09a; margin-top: 10px; }
 </style>
+<style id="voice-sheet-v2">
+/* =====================================================================
+   نافذة الإصدار الصوتي: تبويبان (أمر حر / توجيه تدريجي) وزر ضغط كبير
+   في منتصف أسفل كل لوحة، بهالات متحركة أثناء الاستماع.
+   ===================================================================== */
+#voiceModeSheet.vm2 {
+    --vm-em: #0a6b4f;
+    --vm-em-2: #0d8a66;
+    --vm-em-soft: #e5f2ed;
+    --vm-gold: #c99a2e;
+    --vm-text: #0d1f19;
+    --vm-muted: #5d6e68;
+    --vm-line: #e3e8e6;
+    display: flex;
+    flex-direction: column;
+    max-width: 520px;
+    max-height: 92vh;
+    max-height: 92dvh;
+    overflow-y: auto;
+    padding: 8px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+    border-radius: 30px 30px 0 0;
+    background: #ffffff;
+    box-shadow: 0 -24px 60px -20px rgba(13, 31, 25, 0.35);
+}
+#voiceModeSheet .voice-mode-sheet-handle { width: 40px; height: 5px; background: #d6dcda; margin: 4px auto 10px; }
+
+/* الرأس: العنوان وزر إغلاق دائري */
+#voiceModeSheet .vm-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+#voiceModeSheet .voice-mode-sheet-title { margin: 0; font-size: 19px; font-weight: 900; color: var(--vm-text); text-align: right; }
+#voiceModeSheet .vm-close {
+    flex: none; width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid var(--vm-line); background: #f4f6f5; color: var(--vm-text);
+    display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+#voiceModeSheet .vm-close:hover { background: var(--vm-em-soft); }
+#voiceModeSheet .vm-close:active { transform: scale(0.92); }
+
+/* القالب: سطر صغير مرتب */
+#voiceModeSheet .template-switch--sheet { margin: 0 0 12px; gap: 10px; }
+#voiceModeSheet .template-switch-label { font-size: 13px; color: var(--vm-muted); font-weight: 700; }
+#voiceModeSheet .template-switch-pills { background: #f4f6f5; border: 1px solid var(--vm-line); border-radius: 14px; padding: 3px; box-shadow: none; }
+#voiceModeSheet .template-pill { font-size: 13.5px; padding: 7px 6px; border-radius: 11px; color: var(--vm-muted); box-shadow: none; }
+#voiceModeSheet .template-pill.active { background: #ffffff; color: var(--vm-em); box-shadow: 0 1px 3px rgba(13, 31, 25, 0.12); }
+
+/* التبويبان */
+#voiceModeSheet .vm-tabs {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    border-bottom: 1px solid var(--vm-line);
+    margin: 0 -4px 16px;
+}
+#voiceModeSheet .vm-tab {
+    position: relative;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 6px 13px;
+    background: none; border: none; cursor: pointer;
+    font-family: var(--app-font); font-size: 15px; font-weight: 800;
+    color: var(--vm-muted);
+    transition: color 0.2s ease;
+}
+#voiceModeSheet .vm-tab i { font-size: 15px; }
+#voiceModeSheet .vm-tab::after {
+    content: ''; position: absolute; left: 18%; right: 18%; bottom: -1px; height: 3px;
+    border-radius: 3px 3px 0 0; background: var(--vm-em);
+    transform: scaleX(0); transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+#voiceModeSheet .vm-tab.active { color: var(--vm-em); }
+#voiceModeSheet .vm-tab.active::after { transform: scaleX(1); }
+
+/* اللوحة: محتوى في الأعلى، والزر في منتصف الأسفل دائماً */
+#voiceModeSheet .vm-panel { display: flex; flex-direction: column; min-height: 380px; animation: vmFade 0.3s ease; }
+#voiceModeSheet .vm-panel[hidden] { display: none; }
+@keyframes vmFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+#voiceModeSheet .vm-body { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+#voiceModeSheet .vm-lead { margin: 0; font-size: 14px; line-height: 1.8; color: var(--vm-muted); text-align: right; }
+
+#voiceModeSheet .voice-mode-first-use-hint {
+    margin: 0; border-radius: 14px; background: #fbf4e2; border: 1px solid #ecd9a8; color: #6b4e10; font-size: 12.5px;
+}
+#voiceModeSheet .voice-mode-first-use-hint i { color: var(--vm-gold); }
+#voiceModeSheet .voice-mode-free-checklist {
+    margin: 0; padding: 12px 14px; border: 1px solid var(--vm-line); border-radius: 14px;
+    background: #f7f9f8; color: var(--vm-text); font-size: 12.5px; line-height: 1.8; align-items: flex-start;
+}
+#voiceModeSheet .voice-mode-free-checklist i { color: var(--vm-em); font-size: 16px; margin-top: 3px; }
+#voiceModeSheet .voice-mode-remind-toggle { justify-content: flex-start; margin: 2px 2px 0; font-size: 13px; color: var(--vm-text); }
+#voiceModeSheet .voice-mode-remind-box { border-color: #b8c6c0; border-radius: 6px; width: 20px; height: 20px; }
+#voiceModeSheet .voice-mode-remind-toggle input[type="checkbox"]:checked + .voice-mode-remind-box { background: var(--vm-em); border-color: var(--vm-em); }
+#voiceModeSheet .voice-mode-remind-toggle input[type="checkbox"]:focus-visible + .voice-mode-remind-box { outline-color: var(--vm-em); }
+#voiceModeSheet .voice-mode-free-live {
+    margin: 0; border-radius: 14px; border: 1.5px dashed #e7a3a3; background: #fff6f6; color: var(--vm-text);
+    font-size: 13px; line-height: 1.8; max-height: 120px; overflow-y: auto;
+}
+
+/* خطوات التوجيه التدريجي */
+#voiceModeSheet .vm-steps { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 0; }
+#voiceModeSheet .vm-steps li { display: flex; align-items: center; gap: 14px; padding: 11px 0; border-bottom: 1px dashed var(--vm-line); }
+#voiceModeSheet .vm-steps li:last-child { border-bottom: none; }
+#voiceModeSheet .vm-steps b {
+    flex: none; width: 36px; height: 36px; border-radius: 12px; background: var(--vm-em-soft); color: var(--vm-em);
+    display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900;
+}
+#voiceModeSheet .vm-steps span { font-size: 12.5px; color: var(--vm-muted); line-height: 1.5; }
+#voiceModeSheet .vm-steps strong { display: block; font-size: 14.5px; color: var(--vm-text); font-weight: 800; }
+
+/* منطقة الزر: في منتصف أسفل اللوحة */
+#voiceModeSheet .vm-dock {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: 26px 8px 4px; margin-top: 14px;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+}
+#voiceModeSheet .vm-mic {
+    position: relative;
+    width: 108px; height: 108px; padding: 0; margin: 0 0 14px;
+    border-radius: 50%; background: transparent; border: none;
+    display: flex; align-items: center; justify-content: center;
+    flex: none;
+}
+#voiceModeSheet .vm-mic .voice-mode-option-icon {
+    position: relative; z-index: 2;
+    width: 96px; height: 96px; border-radius: 50%;
+    background: radial-gradient(120% 120% at 30% 20%, var(--vm-em-2) 0%, var(--vm-em) 55%, #064b38 100%);
+    color: #fff; font-size: 34px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 7px #ffffff, 0 0 0 8px var(--vm-line), 0 18px 34px -12px rgba(10, 107, 79, 0.75);
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease, box-shadow 0.3s ease;
+}
+#voiceModeSheet .vm-mic:hover .voice-mode-option-icon { transform: translateY(-2px); }
+#voiceModeSheet .vm-mic:active .voice-mode-option-icon { transform: scale(0.94); }
+#voiceModeSheet .vm-mic--prog .voice-mode-option-icon { font-size: 30px; padding-right: 4px; }
+
+/* هالات خفيفة دائمة تدعو للضغط */
+#voiceModeSheet .vm-halo {
+    position: absolute; z-index: 1; inset: 0; border-radius: 50%;
+    background: rgba(10, 107, 79, 0.12);
+    animation: vmBreathe 2.6s ease-in-out infinite;
+}
+#voiceModeSheet .vm-halo2 { animation-delay: 1.3s; }
+@keyframes vmBreathe {
+    0% { transform: scale(0.9); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: scale(1.35); opacity: 0; }
+}
+
+#voiceModeSheet .vm-dock-title { display: block; font-size: 17px; font-weight: 900; color: var(--vm-text); line-height: 1.5; }
+#voiceModeSheet .vm-dock-desc { display: block; max-width: 340px; margin-top: 4px; font-size: 13px; color: var(--vm-muted); line-height: 1.7; }
+
+/* أثناء الضغط المطوّل: الزر أحمر ينبض، وهالات أسرع وأوضح */
+#voiceModeSheet .vm-mic.voice-free-holding .voice-mode-option-icon {
+    background: radial-gradient(120% 120% at 30% 20%, #f05252 0%, #d92d20 55%, #a3160d 100%);
+    transform: scale(1.08);
+    box-shadow: 0 0 0 7px #ffffff, 0 0 0 8px #fbd5d2, 0 18px 34px -12px rgba(217, 45, 32, 0.8);
+}
+#voiceModeSheet .vm-mic.voice-free-holding .vm-halo { background: rgba(217, 45, 32, 0.22); animation-duration: 1.2s; }
+#voiceModeSheet .vm-mic.voice-free-holding .vm-halo2 { animation-delay: 0.6s; }
+#voiceModeSheet .vm-dock:has(.voice-free-holding) .vm-dock-title { color: #b42318; }
+
+@media (min-width: 600px) {
+    #voiceModeSheet.vm2 { border-radius: 30px; bottom: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #voiceModeSheet .vm-halo { animation: none; opacity: .6; transform: scale(1.12); }
+}
+</style>
 </head>
 
 <body class="theme-default">
@@ -6890,9 +7054,12 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
      (بضغطة عادية - يبدأ النظام القائم بلا أي تغيير في سلوكه). راجع
      closeVoiceModeSheet/startVoiceFreeHold/endVoiceFreeHold بالأسفل. -->
 <div id="voiceModeSheetBackdrop" class="voice-mode-sheet-backdrop" onclick="closeVoiceModeSheet()"></div>
-<div id="voiceModeSheet" class="voice-mode-sheet">
+<div id="voiceModeSheet" class="voice-mode-sheet vm2" data-vm-tab="free" role="dialog" aria-labelledby="vmTitle">
     <div class="voice-mode-sheet-handle"></div>
-    <div class="voice-mode-sheet-title">كيف تريد إصدار التقرير؟</div>
+    <div class="vm-head">
+        <div class="voice-mode-sheet-title" id="vmTitle">كيف تريد إصدار التقرير؟</div>
+        <button type="button" class="vm-close" onclick="closeVoiceModeSheet()" aria-label="إغلاق"><i class="fas fa-xmark"></i></button>
+    </div>
 
     <!-- نفس محوّل القالب الموجود أعلى النموذج - حتى يختار من يبدأ بالصوت
          مباشرةً القالب (طويل/قصير) من هنا دون الرجوع للنموذج. -->
@@ -6904,52 +7071,65 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
       </div>
     </div>
 
-    <!-- تلميح أول استخدام فقط - يظهر مرة واحدة حتى يجرب المستخدم الضغط
-         المطول أول مرة (localStorage)، راجع openVoiceModeSheet/startVoiceFreeHold. -->
-    <div class="voice-mode-first-use-hint" id="voiceModeFreeFirstUseHint" style="display:none;">
-        <i class="fas fa-lightbulb"></i>
-        جديد: اضغط مطوّلاً على "أمر صوتي حر" بالأسفل دون رفع إصبعك وتحدث بكل التفاصيل، ثم ارفع إصبعك فقط عند الانتهاء منها كاملة.
+    <!-- تبويبان: الأمر الحر والتوجيه التدريجي، كلٌّ في لوحته الخاصة (setVoiceModeTab). -->
+    <div class="vm-tabs" role="tablist">
+        <button type="button" class="vm-tab" role="tab" data-vm-tab="free" onclick="setVoiceModeTab('free')"><i class="fas fa-microphone-lines"></i> أمر صوتي حر</button>
+        <button type="button" class="vm-tab" role="tab" data-vm-tab="progressive" onclick="setVoiceModeTab('progressive')"><i class="fas fa-list-ol"></i> توجيه تدريجي</button>
     </div>
 
-    <button type="button" class="voice-mode-option voice-mode-option--free" id="voiceModeFreeOption"
-        onpointerdown="startVoiceFreeHold(event)" onpointerup="endVoiceFreeHold(event)"
-        onpointerleave="endVoiceFreeHold(event)" onpointercancel="endVoiceFreeHold(event)"
-        oncontextmenu="return false;">
-        <span class="voice-mode-option-icon"><i class="fas fa-microphone"></i></span>
-        <span class="voice-mode-option-text">
-            <span class="voice-mode-option-title" id="voiceModeFreeOptionTitle">أمر صوتي حر</span>
-            <span class="voice-mode-option-desc" id="voiceModeFreeOptionDesc">اضغط مطوّلاً واستمر بالتحدث عن كل تفاصيل التقرير، ثم ارفع إصبعك عند الانتهاء</span>
-        </span>
-        <i class="fas fa-microphone voice-mode-option-mic-hint"></i>
-    </button>
-
-    <!-- تذكير دائم بخط صغير هادئ ببنود الأمر الحر - يبقى ظاهراً هنا قبل
-         الضغط المطول وخلاله أيضاً (كلا الموضعين معاً، كما طُلب). -->
-    <div class="voice-mode-free-checklist" id="voiceModeFreeChecklist">
+    <div class="vm-panel" data-vm-panel="free" role="tabpanel">
+        <div class="vm-body">
+            <p class="vm-lead">تحدّث عن تفاصيل التقرير كاملة في تسجيل واحد، وسيرتّبها المساعد في خانات التقرير.</p>
+            <!-- تلميح أول استخدام فقط - يظهر مرة واحدة حتى يجرب المستخدم الضغط
+                 المطول أول مرة (localStorage)، راجع openVoiceModeSheet/startVoiceFreeHold. -->
+            <div class="voice-mode-first-use-hint" id="voiceModeFreeFirstUseHint" style="display:none;">
+        <i class="fas fa-lightbulb"></i>
+        جديد: اضغط مطوّلاً على زر الميكروفون بالأسفل دون رفع إصبعك وتحدث بكل التفاصيل، ثم ارفع إصبعك فقط عند الانتهاء منها كاملة.
+    </div>
+            <!-- تذكير دائم بخط صغير هادئ ببنود الأمر الحر. -->
+            <div class="voice-mode-free-checklist" id="voiceModeFreeChecklist">
         <i class="fas fa-circle-info"></i>
         <span id="voiceModeFreeChecklistText">لا تنسَ ذكر: الفصل الدراسي، مكان التنفيذ، الصف ثم الشعبة/الفصل، المستهدفون، العدد، المادة والدرس، والملاحظات الإضافية</span>
     </div>
-
-    <!-- خيار التذكير بعد التحليل: إن كان مفعَّلاً يعرض ملخص المراجعة البنود التي
-         لم تُذكر مع إمكانية إضافتها بالصوت، وإلا تُتجاوز بصمت. يُحفظ في localStorage. -->
-    <label class="voice-mode-remind-toggle" for="voiceFreeRemindMissingToggle">
+            <!-- خيار التذكير بعد التحليل بالبنود التي لم تُذكر (localStorage). -->
+            <label class="voice-mode-remind-toggle" for="voiceFreeRemindMissingToggle">
         <input type="checkbox" id="voiceFreeRemindMissingToggle" checked onchange="onVoiceFreeRemindToggleChange()">
         <span class="voice-mode-remind-box"><i class="fas fa-check"></i></span>
         <span>ذكّرني بعد التحليل بالبنود التي لم أذكرها</span>
     </label>
+            <div class="voice-mode-free-live" id="voiceModeFreeLive" style="display:none;"></div>
+        </div>
+        <div class="vm-dock">
+            <button type="button" class="voice-mode-option voice-mode-option--free vm-mic" id="voiceModeFreeOption"
+                onpointerdown="startVoiceFreeHold(event)" onpointerup="endVoiceFreeHold(event)"
+                onpointerleave="endVoiceFreeHold(event)" onpointercancel="endVoiceFreeHold(event)"
+                oncontextmenu="return false;" aria-label="اضغط مطوّلاً للتحدث">
+                <span class="vm-halo"></span><span class="vm-halo vm-halo2"></span>
+                <span class="voice-mode-option-icon"><i class="fas fa-microphone"></i></span>
+            </button>
+            <span class="voice-mode-option-title vm-dock-title" id="voiceModeFreeOptionTitle">أمر صوتي حر</span>
+            <span class="voice-mode-option-desc vm-dock-desc" id="voiceModeFreeOptionDesc">اضغط مطوّلاً واستمر بالتحدث عن كل تفاصيل التقرير، ثم ارفع إصبعك عند الانتهاء</span>
+        </div>
+    </div>
 
-    <div class="voice-mode-free-live" id="voiceModeFreeLive" style="display:none;"></div>
-
-    <button type="button" class="voice-mode-option voice-mode-option--progressive" onclick="chooseProgressiveVoiceMode()">
-        <span class="voice-mode-option-icon"><i class="fas fa-list-ul"></i></span>
-        <span class="voice-mode-option-text">
-            <span class="voice-mode-option-title">توجيه صوتي تدريجي</span>
-            <span class="voice-mode-option-desc">يساعدك خطوة بخطوة للإجابة، والانتقال للأمر التالي.</span>
-        </span>
-        <i class="fas fa-chevron-left voice-mode-option-arrow"></i>
-    </button>
-
-    <button type="button" class="voice-mode-sheet-cancel" onclick="closeVoiceModeSheet()">إغلاق</button>
+    <div class="vm-panel" data-vm-panel="progressive" role="tabpanel" hidden>
+        <div class="vm-body">
+            <p class="vm-lead">يسألك المساعد عن بنود التقرير واحداً تلو الآخر، فتجيب بصوتك وينتقل تلقائياً للبند التالي.</p>
+            <ol class="vm-steps">
+                <li><b>١</b><span><strong>يقرأ لك السؤال</strong>بنداً واحداً في كل مرة</span></li>
+                <li><b>٢</b><span><strong>تجيب بصوتك</strong>بكلمات قصيرة وواضحة</span></li>
+                <li><b>٣</b><span><strong>تؤكد الإجابة</strong>ثم ينتقل للبند التالي</span></li>
+            </ol>
+        </div>
+        <div class="vm-dock">
+            <button type="button" class="voice-mode-option voice-mode-option--progressive vm-mic vm-mic--prog" onclick="chooseProgressiveVoiceMode()" aria-label="ابدأ التوجيه التدريجي">
+                <span class="vm-halo"></span>
+                <span class="voice-mode-option-icon"><i class="fas fa-play"></i></span>
+            </button>
+            <span class="voice-mode-option-title vm-dock-title">ابدأ التوجيه التدريجي</span>
+            <span class="voice-mode-option-desc vm-dock-desc">اضغط مرة واحدة للبدء</span>
+        </div>
+    </div>
 </div>
 
 <!-- شريط الأخبار العلوي -->
@@ -14804,6 +14984,9 @@ function openVoiceModeSheet() {
     }
     const remindEl = document.getElementById('voiceFreeRemindMissingToggle');
     if (remindEl) remindEl.checked = isVoiceFreeRemindEnabled();
+    let vmTab = 'free';
+    try { vmTab = localStorage.getItem('enjaz_voice_tab') || 'free'; } catch (_) { /* تجاهل */ }
+    setVoiceModeTab(vmTab);
     // إرشاد صوتي قصير: أول مرتين فقط يُفتح فيهما هذا الخيار، ثم يتوقف.
     try {
         const n = parseInt(localStorage.getItem('enjaz_howto_count') || '0', 10) || 0;
@@ -14822,6 +15005,22 @@ function isVoiceFreeRemindEnabled() {
 function onVoiceFreeRemindToggleChange() {
     const el = document.getElementById('voiceFreeRemindMissingToggle');
     try { localStorage.setItem('voiceFreeRemindMissing', el && el.checked ? '1' : '0'); } catch (_) { /* تجاهل */ }
+}
+
+// تبويبا نافذة الإصدار الصوتي: يُحفظ آخر تبويب اختاره المعلم ليفتح عليه في المرة القادمة.
+function setVoiceModeTab(tab) {
+    if (window.__voiceFreeHoldActive) return;
+    tab = tab === 'progressive' ? 'progressive' : 'free';
+    const sheet = document.getElementById('voiceModeSheet');
+    if (!sheet) return;
+    sheet.setAttribute('data-vm-tab', tab);
+    sheet.querySelectorAll('.vm-tab').forEach(b => {
+        const on = b.getAttribute('data-vm-tab') === tab;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    sheet.querySelectorAll('.vm-panel').forEach(p => { p.hidden = p.getAttribute('data-vm-panel') !== tab; });
+    try { localStorage.setItem('enjaz_voice_tab', tab); } catch (_) { /* تجاهل */ }
 }
 
 function closeVoiceModeSheet() {
