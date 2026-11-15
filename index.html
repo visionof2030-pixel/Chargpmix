@@ -7066,8 +7066,8 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
     <div class="template-switch template-switch--sheet" id="templateSwitchSheet">
       <span class="template-switch-label">القالب:</span>
       <div class="template-switch-pills">
-        <button type="button" class="template-pill" data-template-style="short" onclick="setReportTemplateStyle('short')">قصير</button>
-        <button type="button" class="template-pill active" data-template-style="long" onclick="setReportTemplateStyle('long')">طويل</button>
+        <button type="button" class="template-pill active" data-template-style="short" onclick="setReportTemplateStyle('short')">قصير</button>
+        <button type="button" class="template-pill" data-template-style="long" onclick="setReportTemplateStyle('long')">طويل</button>
       </div>
     </div>
 
@@ -7224,13 +7224,13 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
   <div class="template-switch" id="templateSwitchMain">
     <span class="template-switch-label"><i class="fas fa-file-lines"></i> القالب:</span>
     <div class="template-switch-pills">
-      <button type="button" class="template-pill" data-template-style="short" onclick="setReportTemplateStyle('short')">قالب قصير<small>صفحة واحدة مختصرة</small></button>
-      <button type="button" class="template-pill active" data-template-style="long" onclick="setReportTemplateStyle('long')">قالب طويل<small>تقرير مفصّل بكل أقسامه</small></button>
+      <button type="button" class="template-pill active" data-template-style="short" onclick="setReportTemplateStyle('short')">قالب قصير<small>صفحة واحدة مختصرة</small></button>
+      <button type="button" class="template-pill" data-template-style="long" onclick="setReportTemplateStyle('long')">قالب طويل<small>تقرير مفصّل بكل أقسامه</small></button>
     </div>
   </div>
 
   <!-- ================= نموذج القالب الطويل (القالب الأصلي كما هو) ================= -->
-  <div id="longTemplateForm">
+  <div id="longTemplateForm" style="display:none;">
 
   <!-- مؤشر تقدم عام (عرض فقط - لا يمثل قاعدة عمل جديدة) -->
   <div class="main-progress-bar">
@@ -7673,7 +7673,7 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
   <!-- ================= نهاية نموذج القالب الطويل ================= -->
 
   <!-- ================= نموذج القالب القصير ================= -->
-  <div id="shortTemplateForm" style="display:none;">
+  <div id="shortTemplateForm">
 
     <!-- نوع القالب القصير: تقرير عام، أو استمارة تبادل الزيارات بين المعلمين (تُفعَّل تلقائياً أيضاً عند ذكر تبادل الزيارات بالصوت أو في العنوان) -->
     <div class="short-variant-switch" id="shortVariantSwitch">
@@ -10438,7 +10438,7 @@ function updateHealthReport() { /* لن تُستخدم */ }
 // الاصطناعي (خطوات التنفيذ/الوصف، الأهداف) + شاهدان. القالب المختار محفوظ في
 // localStorage، وكل الخصائص (الصوت، التوليد، الحفظ، PDF) تتبعه عبر isShortTemplate().
 const REPORT_TEMPLATE_STYLE_KEY = 'reportTemplateStyle';
-window.__reportTemplateStyle = 'long';
+window.__reportTemplateStyle = 'short';
 function isShortTemplate() { return window.__reportTemplateStyle === 'short'; }
 
 // البنود الصغيرة في القالب القصير. key هو اسم البند لدى الخادم (التوليد
@@ -10490,9 +10490,18 @@ function setReportTemplateStyle(style, opts = {}) {
     if (typeof updateReport === 'function') updateReport();
 }
 
+// القالب القصير هو الافتراضي. من حفظ جهازه "الطويل" سابقاً (قبل أن يصبح القصير افتراضياً)
+// يُنقل إلى القصير مرة واحدة فقط، ثم يُحترم أي اختيار يقوم به بعد ذلك.
+const REPORT_TEMPLATE_DEFAULT_MIGRATED_KEY = 'reportTemplateStyleShortDefault';
 function loadReportTemplateStyle() {
-    let saved = 'long';
-    try { saved = localStorage.getItem(REPORT_TEMPLATE_STYLE_KEY) || 'long'; } catch (_) { /* تجاهل */ }
+    let saved = 'short';
+    try {
+        if (localStorage.getItem(REPORT_TEMPLATE_DEFAULT_MIGRATED_KEY) !== '1') {
+            localStorage.setItem(REPORT_TEMPLATE_DEFAULT_MIGRATED_KEY, '1');
+            localStorage.setItem(REPORT_TEMPLATE_STYLE_KEY, 'short');
+        }
+        saved = localStorage.getItem(REPORT_TEMPLATE_STYLE_KEY) || 'short';
+    } catch (_) { /* تجاهل */ }
     setReportTemplateStyle(saved, { skipSave: true });
 }
 
@@ -13448,9 +13457,9 @@ document.addEventListener('enjaz-reports-ready', () => { if (document.getElement
 // صفحة الدخول الأولى: تغطية المعايير، الخطوة التالية، تحليل النتائج، والمعايير التي تحتاج شواهد.
 // تقرأ من التقارير المحفوظة محلياً (pfCollect) ولا ترسل شيئاً لأي خادم. نموذج إنشاء التقرير نفسه (homePage) لم يتغير.
 function dashNextCriteria(data) {
-    // غير المغطاة، الأعلى وزناً أولاً (مع بقاء ترتيب المعايير الأصلي عند التساوي).
+    // غير المغطاة، بترتيب أرقام المعايير الأصلي (١، ٢، ٣ ...).
     return data.crits.map((c, i) => ({ c, i })).filter(x => !x.c.reports.length)
-        .sort((a, b) => (parseFloat(b.c.weight) || 0) - (parseFloat(a.c.weight) || 0) || a.i - b.i);
+        .sort((a, b) => a.i - b.i);
 }
 function dashRender() {
     const box = document.getElementById('dashPage');
