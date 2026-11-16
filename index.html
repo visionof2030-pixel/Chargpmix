@@ -7095,6 +7095,48 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
 .pf-v-geo .pf-close2 { padding: 0 64px 280px; }
 .pf-v-geo .pf-close2 .pf-goldbar { width: 90px; height: 6px; border-radius: 0; }
 </style>
+<style id="short-variant-chips">
+/* «نوع القالب» في القالب القصير: شرائح مدمجة تلتف بحسب طول النص، بأيقونة داخل دائرة
+   خضراء فاتحة، والمختار منها أخضر بأيقونة ذهبية (هوية الأداة). */
+#shortVariantSwitch { gap: 8px; margin-bottom: 14px; }
+#shortVariantSwitch .short-variant-label { font-size: 13px; font-weight: 800; color: var(--f-muted, #5d6e68); }
+#shortVariantSwitch .short-variant-pills {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 0; border: none; background: none; border-radius: 0;
+}
+#shortVariantSwitch .short-variant-pill {
+    flex: 0 0 auto;
+    display: inline-flex; align-items: center; gap: 8px;
+    min-height: 0; padding: 5px 14px 5px 6px;
+    border-radius: 999px;
+    border: 1px solid var(--f-line, #e3e8e6);
+    background: var(--f-surface, #fff);
+    color: var(--f-text, #0d1f19);
+    font-size: 13px; font-weight: 700; line-height: 1.4;
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(13, 31, 25, 0.04);
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+#shortVariantSwitch .short-variant-pill i {
+    flex: none; width: 28px; height: 28px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--f-em-soft, #e5f2ed); color: var(--f-em, #0a6b4f); font-size: 12.5px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+#shortVariantSwitch .short-variant-pill:not(.active):hover { border-color: var(--f-em-soft-2, #d3e9e0); background: #fbfdfc; }
+#shortVariantSwitch .short-variant-pill:active { transform: scale(0.97); }
+#shortVariantSwitch .short-variant-pill.active {
+    background: var(--f-em, #0a6b4f); border-color: var(--f-em, #0a6b4f); color: #fff;
+    box-shadow: 0 6px 14px -8px rgba(10, 107, 79, 0.7);
+}
+#shortVariantSwitch .short-variant-pill.active i { background: rgba(255, 255, 255, 0.16); color: var(--f-gold, #e8bf55); }
+@media (max-width: 560px) {
+    #shortVariantSwitch .short-variant-pill { font-size: 12.5px; padding: 4px 12px 4px 5px; gap: 7px; }
+    #shortVariantSwitch .short-variant-pill i { width: 26px; height: 26px; font-size: 12px; }
+    #shortVariantSwitch .short-variant-pill:last-child:nth-child(odd) { grid-column: auto; }
+}
+body.theme-dark #shortVariantSwitch .short-variant-pill:not(.active) { background: #24344a; border-color: rgba(255,255,255,.1); color: #e2e8f0; }
+</style>
 </head>
 
 <body class="theme-default">
@@ -13765,15 +13807,16 @@ document.addEventListener('click', e => {
     const b = e.target.closest && e.target.closest('[data-dash-add]');
     if (b) dashStartReport(b.getAttribute('data-dash-add'));
 });
-// الزر الأوسط في الشريط السفلي: في الرئيسية وملف الإنجاز يفتح نموذج إنشاء تقرير، وفي بقية الحالات يولّد التقرير كما كان.
+// الزر الأوسط في الشريط السفلي: داخل نموذج إنشاء التقرير فقط (home) يصبح «توليد التقرير»؛
+// وفي كل الصفحات الأخرى (الرئيسية، رأيك، حسابي، ملف الإنجاز...) يبقى «+ تقرير جديد» ويفتح النموذج.
 function fabAction() {
-    if (window.__curPage === 'dash' || window.__curPage === 'portfolio' || window.__curPage === 'ra') { showPage('home'); return; }
+    if (window.__curPage && window.__curPage !== 'home') { showPage('home'); return; }
     fillWithAI();
 }
 function dashUpdateFab(name) {
     const fab = document.getElementById('aiFillFloatingBtn');
     if (!fab) return;
-    const create = (name === 'dash' || name === 'portfolio' || name === 'ra');
+    const create = name !== 'home';
     const icon = fab.querySelector('.floating-ai-icon'), txt = fab.querySelector('.floating-ai-text');
     if (icon) icon.className = 'fas ' + (create ? 'fa-plus' : 'fa-wand-magic-sparkles') + ' floating-ai-icon';
     if (txt) txt.textContent = create ? 'تقرير جديد' : 'توليد التقرير';
