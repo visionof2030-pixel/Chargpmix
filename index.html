@@ -7256,6 +7256,10 @@ body.sr-mode { overflow: hidden; }
 body.theme-dark .entry-paths .ep-manual { background: #24344a; border-color: rgba(255,255,255,.1); color: #e2e8f0; }
 body.theme-dark .entry-paths .ep-sub { color: #94a3b8; }
 body.theme-dark .entry-paths-head { color: #e2e8f0; }
+/* قبل اختيار طريقة الإصدار: يُخفى بانر الترويج ونموذج البيانات، ويظهران عند اختيار
+   الإدخال اليدوي، أو تلقائياً عندما يعبّئ الإدخال الصوتي النموذج أو يُفتح تقرير محفوظ. */
+#homePage.ep-collapsed .brand-promo-card,
+#homePage.ep-collapsed .wrapper { display: none !important; }
 /* وميض خفيف على نموذج البيانات عند اختيار الإدخال اليدوي */
 .input-section.ep-flash { animation: epFlash 1.4s ease; }
 @keyframes epFlash { 0% { box-shadow: 0 0 0 0 rgba(10,107,79,.0); } 25% { box-shadow: 0 0 0 4px rgba(10,107,79,.28); } 100% { box-shadow: 0 0 0 0 rgba(10,107,79,0); } }
@@ -7367,7 +7371,7 @@ body.theme-dark .entry-paths-head { color: #e2e8f0; }
 <div id="dashPage" style="display:none;"></div>
 
 <!-- ================= صفحة الرئيسية (إنشاء/تحرير التقرير) ================= -->
-<div id="homePage">
+<div id="homePage" class="ep-collapsed">
 
 <!-- بانر دعوة الأمر الصوتي - زر واحد موحَّد (كان سابقاً زرين منفصلين)، أول
      عنصر ظاهر في الصفحة. الضغط عليه يفتح قائمة منبثقة (Action Sheet) لاختيار
@@ -13315,6 +13319,7 @@ function loadSavedReport(criterionId) {
     const report = getSavedReportsMap()[criterionId];
     if (!report) return false;
     window.__curReportKey = criterionId;
+    epRevealForm();
 
     // التحقق من أن الدور المحفوظ هو "teacher" فقط، وإلا نمنع التحميل
     if (report.role && report.role !== 'teacher') {
@@ -15812,7 +15817,12 @@ function chooseProgressiveVoiceMode() {
 }
 
 // الإدخال اليدوي: ينقل إلى نموذج البيانات ويضع المؤشر في أول خانة (عنوان التقرير إن وُجد).
+function epRevealForm() {
+    const hp = document.getElementById('homePage');
+    if (hp && hp.classList.contains('ep-collapsed')) hp.classList.remove('ep-collapsed');
+}
 function startManualEntry() {
+    epRevealForm();
     const sec = document.querySelector('#homePage .input-section') || document.querySelector('.input-section');
     if (!sec) return;
     const top = sec.getBoundingClientRect().top + window.scrollY - 150;
@@ -16078,6 +16088,7 @@ function showVoiceConfirmBanner(parsed) {
 // تأكيد صريح (بالزر) أو تلقائي (بانتهاء العدّاد) - يكتب العنوان المعروض في
 // البانر (المُعدَّل يدوياً إن كان) في حقل التقرير الفعلي ثم يُصدر مباشرة.
 function confirmVoiceReportCommand() {
+    epRevealForm();
     cancelVoiceCountdown();
     const title = document.getElementById('voiceConfirmTitleInput').value.trim();
     if (!title) {
@@ -17613,6 +17624,7 @@ const VOICE_FREE_EXTRACT_KEY_BY_ELID = {
 // فعلاً فـ applyVoiceFieldValue (المستخدمة أعلاه) تُعيد تفعيل ذلك المربع
 // بنفسها تلقائياً، فلا حاجة لتكرار ذلك هنا.
 function applyVoiceFreeExtractedFields(fields) {
+    epRevealForm();
     if (!fields) return;
     if (isVisitTemplate()) { applyVisitExtractedFields(fields); return; }
     if (isDocVariant()) { applyDocExtractedFields(fields); return; }
@@ -18100,6 +18112,7 @@ function dismissVoiceFreeMissingReminder() {
 // (عبر buildVoiceCorrectionsFeedback الموجودة مسبقاً بلا أي تعديل) فتصل
 // ملاحظات القبول/التراجع لـ generate-report تماماً كما تصل من النظام التدريجي.
 function confirmVoiceFreeReportIssue() {
+    epRevealForm();
     hideVoiceFreeConfirmBanner();
     fillWithAI();
 }
@@ -18136,6 +18149,7 @@ function rejectVoiceFreeReportCommand() {
 
 // ==================== التعبئة الذكية ====================
 async function fillWithAI() {
+    epRevealForm();
     // زر التعبئة الذكية أصبح ضمن شريط التنقل السفلي ومتاح من أي صفحة، فنعيد المستخدم للرئيسية أولاً ليرى الحقول أثناء تعبئتها
     if (document.getElementById('accountPage') && getComputedStyle(document.getElementById('accountPage')).display !== 'none') {
         showPage('home');
