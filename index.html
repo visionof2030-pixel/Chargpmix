@@ -13759,8 +13759,8 @@ function pfQrImg(url, size) {
     if (typeof qrcode === 'undefined' || !url) return '';
     try {
         const q = qrcode(0, 'M'); q.addData(url); q.make();
-        const svg = q.createSvgTag(4, 0);
-        return `<img class="pf-qr" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}" width="${size}" height="${size}" alt="">`;
+        // صورة GIF وليست SVG: Safari يرفض رسم صور SVG داخل لوحة PDF فيفشل التنزيل.
+        return `<img class="pf-qr" src="${q.createDataURL(4, 0)}" width="${size}" height="${size}" alt="">`;
     } catch (_) { return ''; }
 }
 // روابط التقارير المعروفة على هذا الجهاز (التي رُفعت بنجاح من قبل).
@@ -13838,13 +13838,34 @@ async function pfPrepareShares(onStep) {
     if (full) return { ok: false, reason: 'limit' };
     return failed ? { ok: false, reason: 'upload' } : { ok: true };
 }
-// تجهيز الروابط ورموز QR قبل التنزيل أو الطباعة، مع رسالة واضحة إن تعذّر ذلك (يستمر التصدير بدونها).
-async function pfPrepareQrForExport(btn) {
-    const label = btn ? btn.innerHTML : '';
+// مزامنة صامتة في الخلفية عند فتح ملف الإنجاز أو تغييره: ترفع التقارير الجديدة أو المعدّلة
+// ثم تعيد رسم المعاينة لتظهر رموز QR، فلا ينتظر التنزيل أو الطباعة الشبكة.
+async function pfSyncShares(onStep) {
     try { await pfEnsureQr(); } catch (_) { /* بدون رموز */ }
+    const before = JSON.stringify(pfJsonGet(PF_SHARE_KEY));
     let res;
-    try { res = await pfPrepareShares((i, n) => { if (btn) btn.innerHTML = `<i class="fas fa-qrcode"></i> ${pfNum(i)} / ${pfNum(n)}`; }); }
+    try { res = await pfPrepareShares(onStep); }
     catch (e) { console.error('pfPrepareShares:', e); res = { ok: false, reason: 'upload' }; }
+    if (JSON.stringify(pfJsonGet(PF_SHARE_KEY)) !== before && document.getElementById('portfolioPage')?.style.display === 'block') pfRender();
+    return res;
+}
+function pfAutoShare() {
+    if (!PF_SHARE_API || window.__pfShareP) return;
+    clearTimeout(window.__pfShareT);
+    window.__pfShareT = setTimeout(() => {
+        window.__pfShareP = pfSyncShares().finally(() => { window.__pfShareP = null; });
+    }, 1200);
+}
+// قبل التنزيل: تُكمَل المزامنة (إن لزم) مع عدّاد على الزر ورسالة واضحة إن تعذّرت.
+// قبل الطباعة (quick): لا انتظار للشبكة حتى لا يرفض المتصفح فتح نافذة الطباعة؛ تُستخدم الرموز الجاهزة.
+async function pfPrepareQrForExport(btn, quick) {
+    if (!PF_SHARE_API) return;
+    if (quick) { pfAutoShare(); return; }
+    clearTimeout(window.__pfShareT);
+    if (window.__pfShareP) { try { await window.__pfShareP; } catch (_) { /* تجاهل */ } }
+    const label = btn ? btn.innerHTML : '';
+    let res;
+    try { res = await pfSyncShares((i, n) => { if (btn) btn.innerHTML = `<i class="fas fa-qrcode"></i> ${pfNum(i)} / ${pfNum(n)}`; }); }
     finally { if (btn) btn.innerHTML = label; }
     if (!res.ok && res.reason !== 'off') {
         const msg = res.reason === 'auth' ? 'سجّل دخولك لإنشاء رموز QR للتقارير؛ سيُصدَّر الملف بدونها.'
@@ -13925,6 +13946,7 @@ function pfRender() {
     }
     box.innerHTML = b.html.map(h => `<div class="pf-wrap">${h}</div>`).join('');
     pfScale(); pfFit(box);
+    if (b.data.totals.evidence) pfAutoShare();
     const stl = document.getElementById('pfStyles');
     if (stl) stl.innerHTML = '<span class="pf-sw-label">تصميم الملف:</span><div class="pf-style-row">' + Object.keys(PF_STYLES).map(k => `<button type="button" class="pf-style${cfg.style === k ? ' on' : ''}" onclick="pfSetOpt('style','${k}')"><i class="fas ${PF_STYLES[k].ic}"></i><b>${PF_STYLES[k].name}</b><small>${PF_STYLES[k].desc}</small></button>`).join('') + '</div>';
     const sw = document.getElementById('pfSwatches');
@@ -13933,7 +13955,7 @@ function pfRender() {
     if (hint) {
         const T = b.data.totals;
         hint.innerHTML = T.evidence
-            ? `${pfNum(b.count)} صفحة • ${pfNum(T.evidence)} شاهد • ${pfNum(T.covered)} من ${pfNum(T.total)} معياراً — اضغط على عنوان تقرير في غلاف المعيار لفتحه.${PF_SHARE_API ? ' تُنشأ رموز QR للتقارير تحت كل معيار عند التنزيل أو الطباعة، ويستطيع من يمسح الرمز عرض التقرير.' : ''}`
+            ? `${pfNum(b.count)} صفحة • ${pfNum(T.evidence)} شاهد • ${pfNum(T.covered)} من ${pfNum(T.total)} معياراً — اضغط على عنوان تقرير في غلاف المعيار لفتحه.${PF_SHARE_API ? ' يظهر رمز QR تحت كل تقرير في غلاف معياره، ويستطيع من يمسح الرمز عرض التقرير.' : ''}`
             : 'لا توجد شواهد بعد. أصدر تقريراً واحفظه وسيظهر هنا تلقائياً ضمن معياره.';
     }
 }
@@ -14335,7 +14357,7 @@ async function pfDownloadPdf(pages, fileName, btnId) {
     }
 }
 async function pfPrint(pages) {
-    if (!Array.isArray(pages)) await pfPrepareQrForExport(document.getElementById('pfPrintBtn'));
+    if (!Array.isArray(pages)) await pfPrepareQrForExport(document.getElementById('pfPrintBtn'), true);
     const host = pfMakeHost(Array.isArray(pages) ? pages : null);
     await pfWaitImages(host); pfFit(host);
     document.body.classList.add('pf-printing');
