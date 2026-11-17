@@ -9563,8 +9563,32 @@ async function rsFetch(path, opts, ms) {
     try { return await fetch(rsApi() + path, { ...opts, signal: ctl.signal, cache: 'no-store' }); }
     finally { clearTimeout(t); }
 }
+// يشغّل fn على العناصر بالتوازي (n في الوقت نفسه).
+// يُرجع عدد العناصر التي فشلت بخطأ (انقطاع اتصال مثلاً).
+async function rsPool(items, n, fn) {
+    let i = 0, errors = 0;
+    const worker = async () => { while (i < items.length) { const it = items[i++]; try { await fn(it); } catch (e) { errors++; console.warn('rsSync item:', e); } } };
+    await Promise.all(Array.from({ length: Math.min(n, items.length) }, worker));
+    return errors;
+}
+// نسخة الرفع: الصور الكبيرة تُضغط (النسخة على هذا الجهاز تبقى كما هي).
+async function rsUploadBody(k, l, lu) {
+    const copy = Object.assign({}, l, { key: k, updatedAt: lu });
+    if (Array.isArray(l.images)) {
+        const out = [];
+        for (const src of l.images) {
+            if (typeof src === 'string' && src.length > 450000 && typeof pfShrinkImage === 'function') {
+                const x = await pfShrinkImage(src, 1600, 0.82);
+                out.push(x && x.length < src.length ? x : src);
+            } else out.push(src);
+        }
+        copy.images = out;
+    }
+    return JSON.stringify(copy);
+}
 async function rsRun() {
-    if (window.__rsRunning) { window.__rsAgain = true; return; }
+    // تشغيل سابق عالق (مثلاً جُمّدت الصفحة في الخلفية على iPhone) لا يمنع تشغيلاً جديداً بعد دقيقتين.
+    if (window.__rsRunning && Date.now() - (window.__rsRunStart || 0) < 120000) { window.__rsAgain = true; return; }
     if (!rsApi() || !navigator.onLine || typeof supabaseClient === 'undefined') return;
     let session = null;
     try { session = (await supabaseClient.auth.getSession()).data.session; } catch (_) { session = null; }
@@ -9572,30 +9596,33 @@ async function rsRun() {
     const uid = session.user.id, st = rsState();
     // متصفح مستخدَم بحساب آخر من قبل: لا تُخلط تقارير حسابين.
     if (st.owner && st.owner !== uid) { console.warn('rsRun: تقارير هذا المتصفح تخص حساباً آخر؛ لم تتم المزامنة.'); return; }
-    window.__rsRunning = true;
-    let pulled = 0, removed = 0;
+    const run = (window.__rsRunId || 0) + 1;
+    window.__rsRunId = run; window.__rsRunning = true; window.__rsRunStart = Date.now();
+    let pulled = 0, removed = 0, failed = 0, listed = false;
     try {
         try { await window.__reportsReady; } catch (_) { /* تجاهل */ }
         const H = { Authorization: 'Bearer ' + session.access_token };
         const res = await rsFetch('/v1/sync', { headers: H });
-        if (!res.ok) return;
+        if (!res.ok) { failed++; return; }
+        listed = true;
         const remote = {};
         ((await res.json()).items || []).forEach(i => { if (i && i.k) remote[i.k] = i; });
         const enc = encodeURIComponent;
         // ١) حذف ما حُذف على هذا الجهاز (ما لم يُعدَّل بعد ذلك على جهاز آخر)
-        for (const k of Object.keys(st.del)) {
+        failed += await rsPool(Object.keys(st.del), 3, async k => {
             const r = remote[k], t = st.del[k];
-            if (r && !r.d && r.u > t) { delete st.del[k]; continue; }
+            if (r && !r.d && r.u > t) { delete st.del[k]; return; }
             if (r && !r.d) {
                 const d = await rsFetch('/v1/sync/item?k=' + enc(k) + '&u=' + t, { method: 'DELETE', headers: H });
-                if (!d.ok) continue;
+                if (!d.ok) { failed++; return; }
                 remote[k] = { k, u: t, d: true };
             }
             delete st.del[k];
-        }
-        rsSave(st);
+        });
+        rsSave(Object.assign(rsState(), { del: st.del }));
         // ٢) من الحساب إلى هذا الجهاز
         const local = getSavedReportsMap();
+        const toPull = [];
         for (const r of Object.values(remote)) {
             const l = local[r.k], lu = l ? rsU(l) : 0;
             if (r.d) {
@@ -9603,31 +9630,38 @@ async function rsRun() {
                 continue;
             }
             if (st.del[r.k] || (l && lu >= r.u)) continue;
+            toPull.push(r);
+        }
+        failed += await rsPool(toPull, 3, async r => {
             const g = await rsFetch('/v1/sync/item?k=' + enc(r.k), { headers: H }, 60000);
-            if (!g.ok) continue;
-            let obj = null;
-            try { obj = await g.json(); } catch (_) { obj = null; }
-            if (!obj || typeof obj !== 'object') continue;
+            if (!g.ok) { failed++; return; }
+            const obj = await g.json();
+            if (!obj || typeof obj !== 'object') return;
             obj.key = r.k; obj.updatedAt = r.u;
             await reportsStorePut(r.k, obj, { sync: true });
             pulled++;
-        }
+        });
         // ٣) من هذا الجهاز إلى الحساب
-        for (const k of Object.keys(local)) {
+        const toPush = Object.keys(local).filter(k => {
             const l = local[k];
-            if (!l || typeof l !== 'object') continue;
-            const r = remote[k], lu = rsU(l);
-            if (r && r.u >= lu) continue;
-            const body = JSON.stringify(Object.assign({}, l, { key: k, updatedAt: lu }));
-            const p = await rsFetch('/v1/sync/item?k=' + enc(k) + '&u=' + lu, { method: 'PUT', headers: { ...H, 'Content-Type': 'application/json' }, body }, 90000);
-            if (!p.ok) console.warn('rsRun: تعذّر رفع تقرير', k, p.status);
-        }
-        st.owner = uid; st.last = Date.now();
-        rsSave(st);
+            if (!l || typeof l !== 'object') return false;
+            const r = remote[k];
+            return !(r && r.u >= rsU(l));
+        });
+        failed += await rsPool(toPush, 3, async k => {
+            const l = getSavedReportsMap()[k];
+            if (!l) return;
+            const lu = rsU(l);
+            const p = await rsFetch('/v1/sync/item?k=' + enc(k) + '&u=' + lu, { method: 'PUT', headers: { ...H, 'Content-Type': 'application/json' }, body: await rsUploadBody(k, l, lu) }, 120000);
+            if (!p.ok) { failed++; console.warn('rsRun: تعذّر رفع تقرير', k, p.status); }
+        });
+        if (!failed) { const s2 = rsState(); s2.owner = uid; s2.last = Date.now(); rsSave(s2); }
+        else { const s2 = rsState(); s2.owner = uid; rsSave(s2); }
     } catch (e) {
+        failed++;
         console.warn('rsRun:', e);
     } finally {
-        window.__rsRunning = false;
+        if (window.__rsRunId === run) window.__rsRunning = false;
         if (pulled || removed) {
             try { calculateProgress(); } catch (_) { /* تجاهل */ }
             try { updateDesktopStats(); } catch (_) { /* تجاهل */ }
@@ -9637,12 +9671,17 @@ async function rsRun() {
         }
         try { updateBackupInfo(); } catch (_) { /* تجاهل */ }
         if (window.__rsAgain) { window.__rsAgain = false; rsSchedule(1500); }
+        // ما تعذّر يُعاد تلقائياً بعد قليل (بحد أقصى ٥ محاولات متتالية).
+        else if (failed) {
+            window.__rsRetries = (window.__rsRetries || 0) + 1;
+            if (window.__rsRetries <= 5) rsSchedule(20000 * window.__rsRetries);
+        } else window.__rsRetries = 0;
     }
 }
 window.__reportsReady.then(() => rsSchedule(2500));
 window.addEventListener('online', () => rsSchedule(1000));
 document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && Date.now() - (rsState().last || 0) > 60000) rsSchedule(800);
+    if (document.visibilityState === 'visible' && Date.now() - (rsState().last || 0) > 10000) rsSchedule(800);
 });
 try {
     supabaseClient.auth.onAuthStateChange((event, session) => {
