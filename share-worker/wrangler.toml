@@ -1,0 +1,16 @@
+name = "enjaz-share"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+[[r2_buckets]]
+binding = "REPORTS"
+bucket_name = "enjaz-shared-reports"
+
+[vars]
+# خدمة تسجيل الدخول التي تستخدمها الأداة (قراءة فقط للتحقق من جلسة المعلم).
+AUTH_URL = "https://exulmefyudxtvybadnds.supabase.co"
+# المفتاح العام نفسه الموجود في index.html (ليس سرّياً).
+AUTH_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4dWxtZWZ5dWR4dHZ5YmFkbmRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5NTgyNTMsImV4cCI6MjEwNDUzNDI1M30.bsFEzJIcB622-THJzqTYi0rbr7GYO0iS1aAhR5khsLI"
+# نطاقات الأداة المسموح لها بالرفع، مفصولة بفواصل (فارغ = الكل). مثال: "https://enjaz.example.com"
+ALLOWED_ORIGINS = ""
+MAX_REPORTS_PER_USER = "500"
