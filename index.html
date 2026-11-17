@@ -7264,6 +7264,47 @@ body.theme-dark .entry-paths-head { color: #e2e8f0; }
 .input-section.ep-flash { animation: epFlash 1.4s ease; }
 @keyframes epFlash { 0% { box-shadow: 0 0 0 0 rgba(10,107,79,.0); } 25% { box-shadow: 0 0 0 4px rgba(10,107,79,.28); } 100% { box-shadow: 0 0 0 0 rgba(10,107,79,0); } }
 </style>
+<style id="manual-page-css">
+/* ===== صفحة الإدخال اليدوي المستقلة ===== */
+body.mp-open { overflow: hidden; }
+body.mp-open .notification { z-index: 9100; }
+.mp { position: fixed; inset: 0; z-index: 9000; display: flex; flex-direction: column; background: var(--f-bg, #f4f6f5); direction: rtl; font-family: var(--app-font); color: var(--f-text, #0d1f19); }
+.mp-bar { flex: none; display: flex; align-items: center; gap: 10px; padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 10px; background: var(--f-surface, #fff); border-bottom: 1px solid var(--f-line, #e3e8e6); }
+.mp-back { width: 42px; height: 42px; border-radius: 14px; border: 1px solid var(--f-line, #e3e8e6); background: var(--f-surface, #fff); color: var(--f-text, #0d1f19); font-size: 17px; cursor: pointer; }
+.mp-bar-title { flex: 1; text-align: center; font-size: 17px; font-weight: 900; }
+.mp-bar-sp { width: 42px; }
+.mp-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 22px 16px 24px; max-width: 640px; width: 100%; margin: 0 auto; box-sizing: border-box; }
+.mp-hero { text-align: center; margin-bottom: 22px; }
+.mp-hero-ic { width: 60px; height: 60px; border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; background: var(--f-em-soft, #e5f2ed); color: var(--f-em, #0a6b4f); font-size: 25px; }
+.mp-hero h1 { margin: 12px 0 6px; font-size: 22px; font-weight: 900; }
+.mp-hero p { margin: 0; font-size: 14px; line-height: 1.8; color: var(--f-muted, #5d6e68); }
+.mp-field { margin-bottom: 18px; }
+.mp-label { display: block; font-size: 13.5px; font-weight: 800; margin: 0 4px 8px; color: var(--f-muted, #5d6e68); }
+.mp-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; border-radius: 16px; background: var(--f-surface, #fff); border: 1px solid var(--f-line, #e3e8e6); }
+.mp-seg button { border: none; background: transparent; border-radius: 12px; padding: 9px 6px; font-family: inherit; color: var(--f-text, #0d1f19); cursor: pointer; }
+.mp-seg button b { display: block; font-size: 15px; font-weight: 900; }
+.mp-seg button small { display: block; font-size: 11.5px; color: var(--f-muted, #5d6e68); margin-top: 1px; }
+.mp-seg button.on { background: var(--f-em, #0a6b4f); color: #fff; }
+.mp-seg button.on small { color: rgba(255,255,255,.8); }
+.mp-input { width: 100%; box-sizing: border-box; padding: 16px; border-radius: 16px; border: 2px solid var(--f-line, #e3e8e6); background: var(--f-surface, #fff); font-family: inherit; font-size: 17px; font-weight: 700; color: var(--f-text, #0d1f19); outline: none; }
+.mp-input:focus { border-color: var(--f-em, #0a6b4f); box-shadow: 0 0 0 4px rgba(10,107,79,.12); }
+.mp-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.mp-chips button { border: 1px solid var(--f-line, #e3e8e6); background: var(--f-surface, #fff); color: var(--f-muted, #5d6e68); border-radius: 999px; padding: 6px 12px; font-family: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+.mp-chips button:active { background: var(--f-em-soft, #e5f2ed); }
+.mp-done { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; background: var(--f-em-soft, #e5f2ed); color: var(--f-em, #0a6b4f); }
+.mp-done i { font-size: 26px; }
+.mp-done b { display: block; font-size: 15px; font-weight: 900; }
+.mp-done span { display: block; font-size: 12.5px; color: var(--f-muted, #5d6e68); margin-top: 2px; }
+.mp-foot { flex: none; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: var(--f-surface, #fff); border-top: 1px solid var(--f-line, #e3e8e6); }
+.mp-go { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; max-width: 640px; margin: 0 auto; padding: 16px; border: none; border-radius: 18px; background: var(--f-em, #0a6b4f); color: #fff; font-family: inherit; font-size: 16px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 22px -14px rgba(10,107,79,.8); }
+.mp-go i { color: var(--f-gold, #e8bf55); }
+.mp-go:disabled { opacity: .7; }
+.mp-after { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; max-width: 640px; margin: 10px auto 0; }
+.mp-after button { padding: 11px 6px; border-radius: 14px; border: 1px solid var(--f-line, #e3e8e6); background: var(--f-surface, #fff); color: var(--f-text, #0d1f19); font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+.mp-after button i { color: var(--f-em, #0a6b4f); margin-left: 4px; }
+body.theme-dark .mp { background: #0f172a; color: #e2e8f0; }
+body.theme-dark .mp-bar, body.theme-dark .mp-foot, body.theme-dark .mp-seg, body.theme-dark .mp-input, body.theme-dark .mp-chips button, body.theme-dark .mp-after button, body.theme-dark .mp-back { background: #1e293b; border-color: rgba(255,255,255,.1); color: #e2e8f0; }
+</style>
 </head>
 
 <body class="theme-default">
@@ -7396,17 +7437,17 @@ body.theme-dark .entry-paths-head { color: #e2e8f0; }
             <span class="voice-cta-icon"><i class="fas fa-microphone-lines"></i></span>
             <span class="voice-cta-text">
                 <span class="voice-cta-title" id="voiceMainCtaTitle">الإدخال الصوتي</span>
-                <span class="voice-cta-subtitle" id="voiceMainCtaSubtitle">تحدّث عن تفاصيل التقرير بصوتك، ويرتّبها المساعد في خاناتها تلقائياً.</span>
+                <span class="voice-cta-subtitle" id="voiceMainCtaSubtitle">قل تفاصيل التقرير بصوتك، ويعبّئها المساعد تلقائياً.</span>
             </span>
-            <span class="ep-foot">أسرع طريقة <i class="fas fa-arrow-left"></i></span>
+            <span class="ep-foot">الأسهل والأسرع <i class="fas fa-arrow-left"></i></span>
         </button>
-        <button type="button" class="ep-card ep-manual" onclick="startManualEntry()">
+        <button type="button" class="ep-card ep-manual" onclick="openManualPage()">
             <span class="ep-icon"><i class="fas fa-keyboard"></i></span>
             <span class="ep-text">
                 <span class="ep-title">الإدخال اليدوي</span>
-                <span class="ep-sub">اكتب بيانات التقرير بنفسك خانة بخانة، مع تحكّم كامل في كل التفاصيل.</span>
+                <span class="ep-sub">اكتب عنوان التقرير فقط، والذكاء الاصطناعي يكمل الباقي.</span>
             </span>
-            <span class="ep-foot">ابدأ الكتابة <i class="fas fa-arrow-left"></i></span>
+            <span class="ep-foot">اكتب العنوان <i class="fas fa-arrow-left"></i></span>
         </button>
     </div>
 </div>
@@ -13251,6 +13292,7 @@ function saveCurrentReport() {
     if (savedReports[recordKey] && savedReports[recordKey].snapshot) reportData.snapshot = savedReports[recordKey].snapshot;
     savedReports[recordKey] = reportData;
     window.__curReportKey = recordKey;
+    window.__lastReportSavedAt = Date.now();
     if (shortMode) setTimeout(() => { renderShortReportCanvas().then(c => pfStoreSnapshot(c, recordKey)).catch(() => { /* تجاهل */ }); }, 400);
     reportsStorePut(recordKey, reportData).then(ok => {
         if (ok) return;
@@ -15817,6 +15859,55 @@ function chooseProgressiveVoiceMode() {
 }
 
 // الإدخال اليدوي: ينقل إلى نموذج البيانات ويضع المؤشر في أول خانة (عنوان التقرير إن وُجد).
+// ===== صفحة الإدخال اليدوي المستقلة =====
+function openManualPage() {
+    const pg = document.getElementById('manualPage');
+    if (!pg) return;
+    const cur = document.getElementById('manualReportTitle');
+    document.getElementById('mpTitleInput').value = cur ? cur.value : '';
+    document.getElementById('mpDone').style.display = 'none';
+    document.getElementById('mpAfter').style.display = 'none';
+    mpSyncTemplate();
+    pg.style.display = 'flex';
+    document.body.classList.add('mp-open');
+    try { history.pushState({ mp: 1 }, ''); } catch (_) { /* تجاهل */ }
+    setTimeout(() => { try { document.getElementById('mpTitleInput').focus(); } catch (_) { /* تجاهل */ } }, 250);
+}
+function closeManualPage(fromHistory) {
+    const pg = document.getElementById('manualPage');
+    if (!pg || pg.style.display === 'none') return;
+    pg.style.display = 'none';
+    document.body.classList.remove('mp-open');
+    if (!fromHistory && history.state && history.state.mp) { try { history.back(); } catch (_) { /* تجاهل */ } }
+}
+window.addEventListener('popstate', () => closeManualPage(true));
+function mpSyncTemplate() {
+    const t = (typeof isShortTemplate === 'function' && isShortTemplate()) ? 'short' : 'long';
+    document.querySelectorAll('#mpTemplateSeg button').forEach(b => b.classList.toggle('on', b.dataset.tpl === t));
+}
+function mpSetTemplate(t) { try { setReportTemplateStyle(t); } catch (_) { /* تجاهل */ } mpSyncTemplate(); }
+document.addEventListener('click', e => {
+    const c = e.target.closest && e.target.closest('#mpChips button');
+    if (c) { const i = document.getElementById('mpTitleInput'); i.value = c.textContent.trim(); i.focus(); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target && e.target.id === 'mpTitleInput') { e.preventDefault(); mpGenerate(); } });
+async function mpGenerate() {
+    const title = document.getElementById('mpTitleInput').value.trim();
+    if (!title) { showNotification('اكتب عنوان التقرير أولاً', 'warning'); document.getElementById('mpTitleInput').focus(); return; }
+    const t = document.getElementById('manualReportTitle');
+    if (t) { t.value = title; t.dispatchEvent(new Event('input', { bubbles: true })); }
+    const btn = document.getElementById('mpGoBtn'), lbl = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>يكتب الذكاء الاصطناعي التقرير…</span>';
+    const before = window.__lastReportSavedAt || 0;
+    try { await fillWithAI(); } catch (e) { console.error('mpGenerate:', e); }
+    finally { btn.disabled = false; btn.innerHTML = lbl; }
+    if ((window.__lastReportSavedAt || 0) > before) {
+        const gb = document.getElementById('aiGuideBox'); if (gb) gb.style.display = 'none';
+        document.getElementById('mpDone').style.display = 'flex';
+        document.getElementById('mpAfter').style.display = 'grid';
+    }
+}
+function mpReviewFields() { closeManualPage(); setTimeout(startManualEntry, 120); }
 function epRevealForm() {
     const hp = document.getElementById('homePage');
     if (hp && hp.classList.contains('ep-collapsed')) hp.classList.remove('ep-collapsed');
@@ -15919,7 +16010,7 @@ function beginTitleListening() {
         if (myToken !== window.__voiceTitleListenToken) return; // جلسة قديمة - تجاهل (لا نُصفّر واجهة جلسة أحدث)
         ctaBanner.classList.remove('listening');
         ctaTitle.textContent = 'الإدخال الصوتي';
-        ctaSubtitle.textContent = 'تحدّث عن تفاصيل التقرير بصوتك، ويرتّبها المساعد في خاناتها تلقائياً.';
+        ctaSubtitle.textContent = 'قل تفاصيل التقرير بصوتك، ويعبّئها المساعد تلقائياً.';
     };
 
     try {
@@ -18676,6 +18767,7 @@ function closeSettings() {
 // تبديل عرض/إخفاء فقط - لا يوجد راوتر حقيقي ولا تغيير في الرابط، تماماً كبقية
 // النوافذ المنبثقة الموجودة أصلاً في التطبيق (الإعدادات، التقارير المحفوظة).
 function showPage(name) {
+    if (typeof closeManualPage === 'function') closeManualPage();
     const home = document.getElementById('homePage');
     const account = document.getElementById('accountPage');
     const feedback = document.getElementById('feedbackPage');
@@ -19390,5 +19482,54 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 </script>
+
+<!-- ========== صفحة الإدخال اليدوي: صفحة مستقلة بملء الشاشة (لا تشارك غيرها أي عنصر) ==========
+     يكتب المعلم عنوان التقرير فقط، ويكمل الذكاء الاصطناعي الباقي (fillWithAI) على نموذج الرئيسية نفسه. -->
+<div id="manualPage" class="mp" role="dialog" aria-modal="true" aria-labelledby="mpTitle" style="display:none;">
+    <header class="mp-bar">
+        <button type="button" class="mp-back" onclick="closeManualPage()" aria-label="رجوع"><i class="fas fa-arrow-right"></i></button>
+        <div class="mp-bar-title" id="mpTitle">الإدخال اليدوي</div>
+        <span class="mp-bar-sp"></span>
+    </header>
+    <main class="mp-body">
+        <div class="mp-hero">
+            <span class="mp-hero-ic"><i class="fas fa-keyboard"></i></span>
+            <h1>اكتب عنوان التقرير</h1>
+            <p>العنوان فقط، والذكاء الاصطناعي يكتب الأهداف والخطوات وباقي التقرير.</p>
+        </div>
+
+        <div class="mp-field">
+            <span class="mp-label">القالب</span>
+            <div class="mp-seg" id="mpTemplateSeg">
+                <button type="button" data-tpl="short" onclick="mpSetTemplate('short')"><b>قصير</b><small>صفحة واحدة</small></button>
+                <button type="button" data-tpl="long" onclick="mpSetTemplate('long')"><b>طويل</b><small>تقرير مفصّل</small></button>
+            </div>
+        </div>
+
+        <div class="mp-field">
+            <label class="mp-label" for="mpTitleInput">عنوان التقرير</label>
+            <input type="text" id="mpTitleInput" class="mp-input" placeholder="مثال: الاحتفال باليوم الوطني" autocomplete="off" enterkeyhint="go">
+            <div class="mp-chips" id="mpChips">
+                <button type="button">الاحتفال باليوم الوطني</button>
+                <button type="button">تفعيل استراتيجية التعلم التعاوني</button>
+                <button type="button">التواصل مع أولياء الأمور</button>
+                <button type="button">حصة نموذجية</button>
+            </div>
+        </div>
+
+        <div class="mp-done" id="mpDone" style="display:none;">
+            <i class="fas fa-circle-check"></i>
+            <div><b>تم إنشاء التقرير وحفظه</b><span>نزّله أو شاركه، أو راجع الحقول قبل ذلك.</span></div>
+        </div>
+    </main>
+    <footer class="mp-foot">
+        <button type="button" class="mp-go" id="mpGoBtn" onclick="mpGenerate()"><i class="fas fa-wand-magic-sparkles"></i> <span>توليد التقرير بالذكاء الاصطناعي</span></button>
+        <div class="mp-after" id="mpAfter" style="display:none;">
+            <button type="button" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> تنزيل PDF</button>
+            <button type="button" onclick="sharePDFWhatsApp()"><i class="fab fa-whatsapp"></i> واتساب</button>
+            <button type="button" onclick="mpReviewFields()"><i class="fas fa-pen-to-square"></i> مراجعة الحقول</button>
+        </div>
+    </footer>
+</div>
 </body>
 </html>
