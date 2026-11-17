@@ -4,12 +4,19 @@
 //   GET    /v1/r/:id     قراءة عامة لتقرير واحد برمزه (لمن يمسح الرمز)
 //   DELETE /v1/r/:id     حذف تقرير يملكه المعلم
 //
+// مزامنة تقارير المعلم بين أجهزته (خاصة به وحده، تتطلب جلسة الدخول):
+//   GET    /v1/sync              قائمة تقاريره: [{ k, u, d }] (المفتاح، وقت التعديل، محذوف؟)
+//   GET    /v1/sync/item?k=      التقرير كاملاً
+//   PUT    /v1/sync/item?k=&u=   حفظ التقرير (JSON) بوقت تعديله
+//   DELETE /v1/sync/item?k=&u=   حذف (يبقى أثر حذف حتى تحذفه أجهزته الأخرى)
+//
 // يتحقق من المعلم تلقائياً بجلسة دخوله الحالية في الأداة (رمز الجلسة يُرسل في Authorization)،
 // بسؤال خدمة تسجيل الدخول عن صاحب الرمز (قراءة فقط). لا يحتاج المعلم أي مفتاح إضافي.
 //
 // التخزين في حاوية R2 (REPORTS):
 //   r/<id>.json            { v, owner, key, content, updated_at }
 //   u/<owner>/k/<sha(key)> نص فيه <id>  ← يُبقي رمز التقرير ثابتاً للمعلم نفسه من أي جهاز
+//   s/<owner>/<sha(key)>   نسخة المزامنة الكاملة، وبياناتها الوصفية { k, u, d }
 
 const ID_RE = /^[A-Za-z0-9]{12,40}$/;
 const IMG_RE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
@@ -17,6 +24,8 @@ const ABC = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const MAX_BODY = 8 * 1024 * 1024;      // حجم طلب الرفع كاملاً
 const MAX_CONTENT = 2560 * 1024;       // حجم التقرير الواحد بعد التحويل إلى JSON (مع صورة القالب الرسمي)
 const MAX_ITEMS = 3;
+const MAX_SYNC_ITEM = 12 * 1024 * 1024;  // تقرير المزامنة الواحد (بصوره)
+const MAX_SYNC_COUNT = 3000;             // عدد تقارير المعلم الواحد
 
 export default {
     async fetch(req, env) {
@@ -28,6 +37,8 @@ export default {
             if (m && req.method === 'GET') return await getReport(m[1], env, cors);
             if (m && req.method === 'DELETE') return await deleteReport(req, m[1], env, cors);
             if (url.pathname === '/v1/reports' && req.method === 'POST') return await upload(req, env, cors);
+            if (url.pathname === '/v1/sync' && req.method === 'GET') return await syncList(req, env, cors);
+            if (url.pathname === '/v1/sync/item') return await syncItem(req, url, env, cors);
             return json({ error: 'not_found' }, 404, cors);
         } catch (e) {
             console.error(e);
@@ -42,7 +53,7 @@ function corsHeaders(req, env) {
     const ok = !allowed.length || allowed.includes(origin);
     return {
         'Access-Control-Allow-Origin': ok ? (origin || '*') : allowed[0],
-        'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Authorization, Content-Type',
         'Access-Control-Max-Age': '86400',
         Vary: 'Origin',
@@ -178,4 +189,70 @@ async function deleteReport(req, id, env, cors) {
     if (!rec || rec.owner !== owner) return json({ error: 'forbidden' }, 403, cors);
     await env.REPORTS.delete([`r/${id}.json`, `u/${owner}/k/${await sha(rec.key)}`]);
     return json({ ok: true }, 200, cors);
+}
+
+// ===================== مزامنة تقارير المعلم بين أجهزته =====================
+async function syncList(req, env, cors) {
+    const owner = await verifyUser(req, env);
+    if (!owner) return json({ error: 'auth' }, 401, cors);
+    const items = [];
+    let cursor;
+    do {
+        const page = await env.REPORTS.list({ prefix: `s/${owner}/`, cursor, limit: 1000, include: ['customMetadata'] });
+        page.objects.forEach(o => {
+            const m = o.customMetadata || {};
+            if (m.k) items.push({ k: m.k, u: +m.u || 0, d: m.d === '1' });
+        });
+        cursor = page.truncated ? page.cursor : undefined;
+    } while (cursor && items.length < MAX_SYNC_COUNT + 1000);
+    return json({ items }, 200, cors, { 'Cache-Control': 'no-store' });
+}
+
+async function syncItem(req, url, env, cors) {
+    const owner = await verifyUser(req, env);
+    if (!owner) return json({ error: 'auth' }, 401, cors);
+    const k = str(url.searchParams.get('k'), 200);
+    if (!k) return json({ error: 'bad_key' }, 400, cors);
+    const objKey = `s/${owner}/${await sha(k)}`;
+    const u = Math.max(0, Math.floor(+url.searchParams.get('u') || 0)) || Date.now();
+
+    if (req.method === 'GET') {
+        const obj = await env.REPORTS.get(objKey);
+        if (!obj || (obj.customMetadata || {}).d === '1') return json({ error: 'not_found' }, 404, cors);
+        return new Response(obj.body, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...cors } });
+    }
+    if (req.method === 'PUT') {
+        const len = +(req.headers.get('Content-Length') || 0);
+        if (len > MAX_SYNC_ITEM) return json({ error: 'too_large' }, 413, cors);
+        const text = await req.text();
+        if (text.length > MAX_SYNC_ITEM) return json({ error: 'too_large' }, 413, cors);
+        let rep;
+        try { rep = JSON.parse(text); } catch (_) { return json({ error: 'bad_json' }, 400, cors); }
+        if (!rep || typeof rep !== 'object' || Array.isArray(rep)) return json({ error: 'bad_json' }, 400, cors);
+        const head = await env.REPORTS.head(objKey);
+        if (!head) {
+            const n = await countSync(env, owner, MAX_SYNC_COUNT);
+            if (n >= MAX_SYNC_COUNT) return json({ error: 'limit' }, 409, cors);
+        }
+        await env.REPORTS.put(objKey, text, {
+            httpMetadata: { contentType: 'application/json; charset=utf-8' },
+            customMetadata: { k, u: String(u), d: '0' },
+        });
+        return json({ ok: true, u }, 200, cors);
+    }
+    if (req.method === 'DELETE') {
+        await env.REPORTS.put(objKey, '', { customMetadata: { k, u: String(u), d: '1' } });
+        return json({ ok: true, u }, 200, cors);
+    }
+    return json({ error: 'not_found' }, 404, cors);
+}
+
+async function countSync(env, owner, stopAt) {
+    let n = 0, cursor;
+    do {
+        const page = await env.REPORTS.list({ prefix: `s/${owner}/`, cursor, limit: 1000 });
+        n += page.objects.length;
+        cursor = page.truncated ? page.cursor : undefined;
+    } while (cursor && n < stopAt);
+    return n;
 }

@@ -9492,16 +9492,19 @@ function reportsDbRequest(mode, fn) {
     });
 }
 // يحفظ تقريراً واحداً (يُحدّث الذاكرة فوراً ثم يكتب)؛ يعيد وعداً بـ true عند النجاح و false عند الفشل (مثلاً امتلاء المساحة).
-async function reportsStorePut(key, report) {
+// opts.sync: الكتابة آتية من مزامنة الحساب نفسها (لا يُغيَّر وقت التعديل ولا تُعاد المزامنة).
+async function reportsStorePut(key, report, opts) {
     report.key = key;
+    if (!(opts && opts.sync)) { report.updatedAt = Date.now(); rsSchedule(2500); }
     getSavedReportsMap()[key] = report;
     if (window.__reportsDb) {
         try { await reportsDbRequest('readwrite', st => st.put(report)); return true; } catch (e) { console.error('reportsStorePut:', e); return false; }
     }
     try { localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(getSavedReportsMap())); return true; } catch (e) { return false; }
 }
-async function reportsStoreDelete(key) {
+async function reportsStoreDelete(key, opts) {
     delete getSavedReportsMap()[key];
+    if (!(opts && opts.sync)) { rsMarkDeleted(key); rsSchedule(1500); }
     if (window.__reportsDb) {
         try { await reportsDbRequest('readwrite', st => st.delete(key)); return true; } catch (e) { console.error('reportsStoreDelete:', e); return false; }
     }
@@ -9541,6 +9544,111 @@ async function reportsStoreInit() {
     try { document.dispatchEvent(new CustomEvent('enjaz-reports-ready')); } catch (_) { /* تجاهل */ }
 }
 window.__reportsReady = reportsStoreInit();
+
+// ==================== مزامنة التقارير مع حساب المعلم ====================
+// كل تقرير يُحفظ أو يُحذف يُزامَن في الخلفية مع حساب المعلم (خاص به)، فتظهر تقاريره في أي متصفح
+// أو جهاز يدخل منه. الأحدث يغلب (updatedAt)، والحذف ينتقل لبقية الأجهزة.
+const RS_STATE_KEY = 'enjaz_sync_v1'; // { owner, last, del: { key: وقت الحذف } }
+function rsState() { try { const v = JSON.parse(localStorage.getItem(RS_STATE_KEY)); return v && typeof v === 'object' ? Object.assign({ del: {} }, v) : { del: {} }; } catch (_) { return { del: {} }; } }
+function rsSave(st) { try { localStorage.setItem(RS_STATE_KEY, JSON.stringify(st)); } catch (_) { /* تجاهل */ } }
+function rsMarkDeleted(key) { const st = rsState(); st.del[key] = Date.now(); rsSave(st); }
+function rsU(r) { return +(r && (r.updatedAt || r.id)) || 1; }
+function rsApi() { try { return PF_SHARE_API ? PF_SHARE_API.replace(/\/+$/, '') : ''; } catch (_) { return ''; } }
+function rsSchedule(ms) {
+    clearTimeout(window.__rsT);
+    window.__rsT = setTimeout(() => { rsRun().catch(e => console.warn('rsRun:', e)); }, ms || 1500);
+}
+async function rsFetch(path, opts, ms) {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms || 30000);
+    try { return await fetch(rsApi() + path, { ...opts, signal: ctl.signal, cache: 'no-store' }); }
+    finally { clearTimeout(t); }
+}
+async function rsRun() {
+    if (window.__rsRunning) { window.__rsAgain = true; return; }
+    if (!rsApi() || !navigator.onLine || typeof supabaseClient === 'undefined') return;
+    let session = null;
+    try { session = (await supabaseClient.auth.getSession()).data.session; } catch (_) { session = null; }
+    if (!session || !session.user) return;
+    const uid = session.user.id, st = rsState();
+    // متصفح مستخدَم بحساب آخر من قبل: لا تُخلط تقارير حسابين.
+    if (st.owner && st.owner !== uid) { console.warn('rsRun: تقارير هذا المتصفح تخص حساباً آخر؛ لم تتم المزامنة.'); return; }
+    window.__rsRunning = true;
+    let pulled = 0, removed = 0;
+    try {
+        try { await window.__reportsReady; } catch (_) { /* تجاهل */ }
+        const H = { Authorization: 'Bearer ' + session.access_token };
+        const res = await rsFetch('/v1/sync', { headers: H });
+        if (!res.ok) return;
+        const remote = {};
+        ((await res.json()).items || []).forEach(i => { if (i && i.k) remote[i.k] = i; });
+        const enc = encodeURIComponent;
+        // ١) حذف ما حُذف على هذا الجهاز (ما لم يُعدَّل بعد ذلك على جهاز آخر)
+        for (const k of Object.keys(st.del)) {
+            const r = remote[k], t = st.del[k];
+            if (r && !r.d && r.u > t) { delete st.del[k]; continue; }
+            if (r && !r.d) {
+                const d = await rsFetch('/v1/sync/item?k=' + enc(k) + '&u=' + t, { method: 'DELETE', headers: H });
+                if (!d.ok) continue;
+                remote[k] = { k, u: t, d: true };
+            }
+            delete st.del[k];
+        }
+        rsSave(st);
+        // ٢) من الحساب إلى هذا الجهاز
+        const local = getSavedReportsMap();
+        for (const r of Object.values(remote)) {
+            const l = local[r.k], lu = l ? rsU(l) : 0;
+            if (r.d) {
+                if (l && lu <= r.u) { await reportsStoreDelete(r.k, { sync: true }); try { pfUnshare(r.k); } catch (_) { /* تجاهل */ } removed++; }
+                continue;
+            }
+            if (st.del[r.k] || (l && lu >= r.u)) continue;
+            const g = await rsFetch('/v1/sync/item?k=' + enc(r.k), { headers: H }, 60000);
+            if (!g.ok) continue;
+            let obj = null;
+            try { obj = await g.json(); } catch (_) { obj = null; }
+            if (!obj || typeof obj !== 'object') continue;
+            obj.key = r.k; obj.updatedAt = r.u;
+            await reportsStorePut(r.k, obj, { sync: true });
+            pulled++;
+        }
+        // ٣) من هذا الجهاز إلى الحساب
+        for (const k of Object.keys(local)) {
+            const l = local[k];
+            if (!l || typeof l !== 'object') continue;
+            const r = remote[k], lu = rsU(l);
+            if (r && r.u >= lu) continue;
+            const body = JSON.stringify(Object.assign({}, l, { key: k, updatedAt: lu }));
+            const p = await rsFetch('/v1/sync/item?k=' + enc(k) + '&u=' + lu, { method: 'PUT', headers: { ...H, 'Content-Type': 'application/json' }, body }, 90000);
+            if (!p.ok) console.warn('rsRun: تعذّر رفع تقرير', k, p.status);
+        }
+        st.owner = uid; st.last = Date.now();
+        rsSave(st);
+    } catch (e) {
+        console.warn('rsRun:', e);
+    } finally {
+        window.__rsRunning = false;
+        if (pulled || removed) {
+            try { calculateProgress(); } catch (_) { /* تجاهل */ }
+            try { updateDesktopStats(); } catch (_) { /* تجاهل */ }
+            try { document.dispatchEvent(new CustomEvent('enjaz-reports-ready')); } catch (_) { /* تجاهل */ }
+            try { if (document.getElementById('savedReportsModal').style.display === 'flex') openSavedReports(); } catch (_) { /* تجاهل */ }
+            if (pulled) showNotification(pulled === 1 ? 'وصل تقرير واحد من حسابك.' : 'وصل ' + pulled + ' تقارير من حسابك.');
+        }
+        try { updateBackupInfo(); } catch (_) { /* تجاهل */ }
+        if (window.__rsAgain) { window.__rsAgain = false; rsSchedule(1500); }
+    }
+}
+window.__reportsReady.then(() => rsSchedule(2500));
+window.addEventListener('online', () => rsSchedule(1000));
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && Date.now() - (rsState().last || 0) > 60000) rsSchedule(800);
+});
+try {
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) rsSchedule(1500);
+    });
+} catch (_) { /* تجاهل */ }
 
 // ---- نسخة احتياطية: ملف JSON تحفظه أنت (ملفات/آي كلاود) وتستعيده على أي جهاز ----
 async function exportReportsBackup() {
@@ -9605,6 +9713,13 @@ function updateBackupInfo() {
     try { last = parseInt(localStorage.getItem('enjaz_last_backup') || '0', 10) || 0; } catch (_) { /* تجاهل */ }
     const n = Object.keys(getSavedReportsMap()).length;
     if (!n) { el.textContent = ''; return; }
+    const synced = rsState().last || 0;
+    if (synced && Date.now() - synced < 7 * 86400000) {
+        const d = new Date(synced);
+        el.textContent = '☁️ تقاريرك محفوظة في حسابك وتظهر على أي جهاز تدخل منه. آخر مزامنة: ' + d.toLocaleDateString('ar-SA', { day: 'numeric', month: 'short' }) + ' ' + d.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }) + '.';
+        el.className = 'reports-backup-info';
+        return;
+    }
     if (!last) { el.textContent = 'لم تحفظ نسخة احتياطية بعد. تقاريرك على هذا الجهاز فقط.'; el.className = 'reports-backup-info warn'; return; }
     const days = Math.floor((Date.now() - last) / 86400000);
     el.textContent = days <= 0 ? 'آخر نسخة احتياطية: اليوم.' : 'آخر نسخة احتياطية: قبل ' + days + ' يوم.';
