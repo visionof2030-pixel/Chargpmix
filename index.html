@@ -14323,6 +14323,43 @@ async function pfEnsureLibs() {
     if (!(window.jspdf && window.jspdf.jsPDF)) await pfLoadScript(PF_LIBS.jspdf);
     return !!(window.jspdf && window.jspdf.jsPDF) && typeof html2canvas !== 'undefined';
 }
+// نسخة «آمنة» من الصفحات لـ Safari: تُزال صور الخلفية ورسوم SVG والصور غير المضمّنة التي تجعل
+// المتصفح يمنع قراءة اللوحة، ويبقى النص والألوان وصور التقارير ورموز QR.
+// level 1: أنماط الخلفية فقط • 2: ورسوم SVG • 3: والصور غير المضمّنة.
+function pfSafeClone(root, level) {
+    const doc = root.ownerDocument, win = doc.defaultView, hasUrl = v => /url\(/.test(v || '');
+    let css = '';
+    root.querySelectorAll('*').forEach((el, i) => {
+        const tag = String(el.tagName).toLowerCase();
+        if (tag === 'svg') { if (level >= 2) el.remove(); return; }
+        if (tag === 'img' && level >= 3 && !/^data:image\/(png|jpe?g|gif|webp)[;,]/i.test(el.getAttribute('src') || '')) { el.remove(); return; }
+        const cs = win.getComputedStyle(el);
+        if (hasUrl(cs.backgroundImage)) el.style.backgroundImage = pfNoUrl(cs.backgroundImage);
+        if (hasUrl(cs.borderImageSource)) el.style.borderImageSource = 'none';
+        if (hasUrl(cs.maskImage) || hasUrl(cs.webkitMaskImage)) { el.style.maskImage = 'none'; el.style.webkitMaskImage = 'none'; }
+        ['::before', '::after'].forEach(ps => {
+            const pcs = win.getComputedStyle(el, ps);
+            if (hasUrl(pcs.backgroundImage) || hasUrl(pcs.content)) {
+                el.setAttribute('data-pfsafe', i);
+                css += `[data-pfsafe="${i}"]${ps}{background-image:${pfNoUrl(pcs.backgroundImage)} !important;${hasUrl(pcs.content) ? 'content:"" !important;' : ''}}`;
+            }
+        });
+    });
+    if (css) { const st = doc.createElement('style'); st.textContent = css; doc.head.appendChild(st); }
+}
+// يحذف طبقات url(...) من قائمة صور الخلفية ويُبقي التدرّجات اللونية.
+function pfNoUrl(v) {
+    const parts = [], s = String(v || '');
+    let depth = 0, cur = '';
+    for (const ch of s) {
+        if (ch === '(') depth++;
+        if (ch === ')') depth--;
+        if (ch === ',' && depth === 0) { parts.push(cur.trim()); cur = ''; } else cur += ch;
+    }
+    if (cur.trim()) parts.push(cur.trim());
+    const keep = parts.filter(x => x && !/^url\(/.test(x) && x !== 'none');
+    return keep.length ? keep.join(', ') : 'none';
+}
 async function pfDownloadPdf(pages, fileName, btnId) {
     if (window.__pfBusy) return;
     let ok = false;
@@ -14340,18 +14377,21 @@ async function pfDownloadPdf(pages, fileName, btnId) {
         const pdf = new J({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
         // Safari على iPhone/iPad يحدّ ذاكرة الرسم، فتفشل الدقة 3× مع الملفات الطويلة؛ نبدأ هناك بدقة 2×
         // (كافية للطباعة)، وإن فشلت صفحة تُعاد بدقة أقل بدل أن يفشل الملف كله.
-        let scale = PF_LOW_MEM ? 2 : 3;
+        // safe: إن رفض Safari قراءة الصفحة (SecurityError) بسبب صور الزخرفة، تُعاد بإزالة تدريجية لها
+        // (المستوى يبقى لباقي الصفحات).
+        let scale = PF_LOW_MEM ? 2 : 3, safe = 0;
         for (let i = 0; i < pgEls.length; i++) {
             if (btn) btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${pfNum(i + 1)} / ${pfNum(pgEls.length)}`;
             let img = '';
             for (;;) {
                 let canvas = null;
                 try {
-                    canvas = await html2canvas(pgEls[i], { scale, backgroundColor: '#faf7ef', useCORS: true, scrollX: 0, scrollY: 0, windowWidth: PF_W, windowHeight: PF_H, width: PF_W, height: PF_H, onclone: doc => { const h = doc.getElementById('pfPrintHost'); if (h) { h.style.opacity = '1'; h.style.left = '0'; h.style.top = '0'; h.style.zIndex = '0'; } } });
+                    canvas = await html2canvas(pgEls[i], { scale, backgroundColor: '#faf7ef', useCORS: true, scrollX: 0, scrollY: 0, windowWidth: PF_W, windowHeight: PF_H, width: PF_W, height: PF_H, onclone: doc => { const h = doc.getElementById('pfPrintHost'); if (h) { h.style.opacity = '1'; h.style.left = '0'; h.style.top = '0'; h.style.zIndex = '0'; if (safe) pfSafeClone(h, safe); } } });
                     img = canvas.toDataURL('image/jpeg', 0.93);
                     if (img.length < 2000) throw new Error('empty canvas'); // ذاكرة الرسم نفدت فخرجت اللوحة فارغة
                     break;
                 } catch (err) {
+                    if (err && err.name === 'SecurityError' && safe < 3) { safe++; console.warn('pfDownloadPdf: safe level', safe, err); continue; }
                     if (scale <= 1) throw err;
                     console.warn('pfDownloadPdf: page', i + 1, 'scale', scale, err);
                     scale = scale > 2 ? 2 : scale > 1.5 ? 1.5 : 1;
@@ -14367,6 +14407,7 @@ async function pfDownloadPdf(pages, fileName, btnId) {
         }
         const nm = (pfProfile().name || 'ملف الإنجاز').replace(/[\\/:*?"<>|]/g, '').trim() || 'ملف الإنجاز';
         pdf.save(fileName || ('ملف شواهد الأداء الوظيفي - ' + nm + '.pdf'));
+        if (safe) showNotification('تم تنزيل الملف بزخارف مبسّطة لأن المتصفح منع بعضها. (وضع ' + safe + ')', 'info');
     } catch (e) {
         console.error('pfDownloadPdf:', e);
         const why = e && (e.name && e.name !== 'Error' ? e.name : e.message) ? ' (' + String(e.name && e.name !== 'Error' ? e.name : e.message).slice(0, 40) + ')' : '';
