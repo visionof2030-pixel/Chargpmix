@@ -7137,6 +7137,20 @@ body.theme-dark input, body.theme-dark select, body.theme-dark textarea { backgr
 }
 body.theme-dark #shortVariantSwitch .short-variant-pill:not(.active) { background: #24344a; border-color: rgba(255,255,255,.1); color: #e2e8f0; }
 </style>
+<style id="pf-del-css">
+/* زر حذف التقرير داخل معاينة ملف الإنجاز فقط (لا يظهر في PDF). كبير بمقاس الصفحة لأن المعاينة مصغّرة. */
+.pf-rep .pf-del {
+    flex: none; width: 54px; height: 54px; margin-inline-start: 6px; border-radius: 14px;
+    border: 1.5px solid #f3c9c9; background: #fff5f5; color: #c0392b; font-size: 24px;
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.pf-rep .pf-del:active { background: #fde2e2; }
+.pf-host .pf-del { display: none !important; }
+/* صورة التقرير بقالبه الرسمي في صفحة عرض التقرير المشارَك */
+.sr-official h2 { margin-bottom: 10px; }
+.sr-official img { display: block; width: 100%; border-radius: 12px; border: 1px solid #e3e8e6; background: #fff; }
+.sr-official p { margin: 8px 0 0; font-size: 12.5px; color: #5d6e68; }
+</style>
 <style id="pf-share-css">
 /* رمز QR بجانب كل تقرير في غلاف المعيار (ملف الإنجاز) */
 .pf-rep.has-qr { padding-top: 8px; padding-bottom: 8px; }
@@ -7185,6 +7199,66 @@ body.sr-mode { overflow: hidden; }
     body.sr-mode #sharedReportView { position: static; overflow: visible; background: #fff; }
     .sr-foot button { display: none; }
 }
+</style>
+<style id="entry-paths-css">
+/* ===== مساران لإصدار التقرير في الرئيسية: صوتي (مميّز بالأخضر وشارة «الأسهل») ويدوي ===== */
+.entry-paths { max-width: 880px; width: calc(100% - 20px); margin: 0 auto 14px; box-sizing: border-box; }
+@media (min-width: 1024px) { .entry-paths { max-width: none; width: 100%; margin: 0 auto 18px; } }
+.entry-paths-head { font-size: 15px; font-weight: 900; color: var(--f-text, #0d1f19); margin: 2px 4px 10px; }
+.entry-paths-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: stretch; }
+.entry-paths .ep-card {
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+    width: 100%; max-width: none; margin: 0; min-height: 184px;
+    padding: 16px 14px 14px; border-radius: 20px;
+    text-align: right; font-family: var(--app-font); cursor: pointer; box-sizing: border-box;
+    -webkit-tap-highlight-color: rgba(0,0,0,0); transition: transform .15s ease, box-shadow .2s ease;
+}
+.entry-paths .ep-card:active { transform: scale(.98); }
+.entry-paths .ep-voice {
+    background: var(--f-em, #0a6b4f); color: #fff; border: none;
+    box-shadow: 0 12px 26px -14px rgba(10,107,79,.75);
+}
+.entry-paths .ep-voice::after {
+    content: ''; position: absolute; left: -38px; bottom: -58px; width: 140px; height: 140px;
+    border-radius: 50%; border: 20px solid rgba(255,255,255,.08); pointer-events: none;
+}
+.entry-paths .ep-manual {
+    background: var(--f-surface, #fff); color: var(--f-text, #0d1f19);
+    border: 1.5px solid var(--f-line, #e3e8e6); box-shadow: 0 2px 8px rgba(13,31,25,.05);
+}
+.entry-paths .ep-voice .voice-cta-icon, .entry-paths .ep-icon {
+    width: 48px; height: 48px; border-radius: 15px; flex: none;
+    display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: none;
+}
+.entry-paths .ep-voice .voice-cta-icon { background: rgba(255,255,255,.16); color: var(--f-gold, #e8bf55); }
+.entry-paths .ep-icon { background: var(--f-em-soft, #e5f2ed); color: var(--f-em, #0a6b4f); }
+.entry-paths .voice-cta-text, .entry-paths .ep-text { display: block; flex: 1; min-width: 0; }
+.entry-paths .voice-cta-title, .entry-paths .ep-title { display: block; font-size: 17px; font-weight: 900; line-height: 1.35; }
+.entry-paths .ep-voice .voice-cta-title { color: #fff; }
+.entry-paths .voice-cta-subtitle, .entry-paths .ep-sub { display: block; font-size: 12.5px; font-weight: 600; line-height: 1.65; margin-top: 4px; }
+.entry-paths .ep-voice .voice-cta-subtitle { color: rgba(255,255,255,.86); opacity: 1; }
+.entry-paths .ep-sub { color: var(--f-muted, #5d6e68); }
+.entry-paths .ep-foot { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 800; position: relative; z-index: 1; }
+.entry-paths .ep-voice .ep-foot { color: var(--f-gold, #e8bf55); }
+.entry-paths .ep-manual .ep-foot { color: var(--f-em, #0a6b4f); }
+.entry-paths .ep-badge {
+    position: absolute; top: 12px; left: 12px; z-index: 1;
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--f-gold, #e8bf55); color: #3b2a05; border-radius: 999px;
+    padding: 3px 9px; font-size: 11px; font-weight: 900;
+}
+.entry-paths .ep-badge i { font-size: 9px; }
+.entry-paths .ep-voice.listening { animation: none; }
+.entry-paths .ep-voice.listening .voice-cta-icon { background: #fff; color: var(--f-em, #0a6b4f); animation: epPulse 1.2s ease-in-out infinite; }
+@keyframes epPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,.55); } 50% { box-shadow: 0 0 0 10px rgba(255,255,255,0); } }
+@media (max-width: 340px) { .entry-paths-grid { grid-template-columns: 1fr; } .entry-paths .ep-card { min-height: 0; } }
+body.theme-dark .entry-paths .ep-manual { background: #24344a; border-color: rgba(255,255,255,.1); color: #e2e8f0; }
+body.theme-dark .entry-paths .ep-sub { color: #94a3b8; }
+body.theme-dark .entry-paths-head { color: #e2e8f0; }
+/* وميض خفيف على نموذج البيانات عند اختيار الإدخال اليدوي */
+.input-section.ep-flash { animation: epFlash 1.4s ease; }
+@keyframes epFlash { 0% { box-shadow: 0 0 0 0 rgba(10,107,79,.0); } 25% { box-shadow: 0 0 0 4px rgba(10,107,79,.28); } 100% { box-shadow: 0 0 0 0 rgba(10,107,79,0); } }
 </style>
 </head>
 
@@ -7307,13 +7381,31 @@ body.sr-mode { overflow: hidden; }
     <button type="button" class="voice-lang-pill" data-lang="en-US" onclick="setVoiceRecognitionLang('en-US', event)">English</button>
     <button type="button" class="voice-lang-pill voice-tts-pill" onclick="toggleTts(event)" title="الردود الصوتية"><i class="fas fa-volume-low"></i> صوت: ردود فقط</button>
 </div>
-<button type="button" class="voice-cta-banner" id="voiceMainCtaBanner" onclick="openVoiceModeSheet()">
-    <span class="voice-cta-icon"><i class="fas fa-microphone-lines"></i></span>
-    <span class="voice-cta-text">
-        <span class="voice-cta-title" id="voiceMainCtaTitle">🎙️ إصدار تقرير بأمر صوتي</span>
-        <span class="voice-cta-subtitle" id="voiceMainCtaSubtitle">اضغط لاختيار طريقة الإصدار: أمر حر أو توجيه تدريجي</span>
-    </span>
-</button>
+<!-- مساران لإصدار التقرير: الإدخال الصوتي (الأسهل، يفتح قائمة الطرق الصوتية كما كان)
+     والإدخال اليدوي (ينقل إلى نموذج البيانات بالأسفل). زر الصوت يحتفظ بمعرّفاته
+     (voiceMainCtaBanner/Title/Subtitle) لأن نظام الاستماع يغيّر نصّه أثناء الاستماع. -->
+<div class="entry-paths" role="group" aria-label="طريقة إصدار التقرير">
+    <div class="entry-paths-head">كيف تريد إصدار التقرير؟</div>
+    <div class="entry-paths-grid">
+        <button type="button" class="voice-cta-banner ep-card ep-voice" id="voiceMainCtaBanner" onclick="openVoiceModeSheet()">
+            <span class="ep-badge"><i class="fas fa-star"></i> الأسهل</span>
+            <span class="voice-cta-icon"><i class="fas fa-microphone-lines"></i></span>
+            <span class="voice-cta-text">
+                <span class="voice-cta-title" id="voiceMainCtaTitle">الإدخال الصوتي</span>
+                <span class="voice-cta-subtitle" id="voiceMainCtaSubtitle">تحدّث عن تفاصيل التقرير بصوتك، ويرتّبها المساعد في خاناتها تلقائياً.</span>
+            </span>
+            <span class="ep-foot">أسرع طريقة <i class="fas fa-arrow-left"></i></span>
+        </button>
+        <button type="button" class="ep-card ep-manual" onclick="startManualEntry()">
+            <span class="ep-icon"><i class="fas fa-keyboard"></i></span>
+            <span class="ep-text">
+                <span class="ep-title">الإدخال اليدوي</span>
+                <span class="ep-sub">اكتب بيانات التقرير بنفسك خانة بخانة، مع تحكّم كامل في كل التفاصيل.</span>
+            </span>
+            <span class="ep-foot">ابدأ الكتابة <i class="fas fa-arrow-left"></i></span>
+        </button>
+    </div>
+</div>
 
 <!-- قائمة اختيار طريقة الأمر الصوتي (Action Sheet) - تنسدل من الأسفل.
      الأمر الحر أولاً (بالضغط المطول - كأصوات واتساب، استمع طوال فترة
@@ -11894,6 +11986,7 @@ async function exportShortReportPdf(mode) {
     let canvas;
     try {
         canvas = await renderShortReportCanvas();
+        pfStoreSnapshot(canvas);
     } catch (e) {
         console.error('تعذر رسم صفحة القالب القصير:', e);
         showNotification('تعذر تجهيز ملف التقرير. حاول مرة أخرى.', 'warning');
@@ -13150,7 +13243,11 @@ function saveCurrentReport() {
     let recordKey = Object.keys(savedReports).find(k => { const r = savedReports[k]; return r && r.templateStyle === reportData.templateStyle && r.criterionId === criterionId && normTitle(r.title) === normTitle(reportData.title); }) || null;
     if (!recordKey) recordKey = 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
     reportData.key = recordKey;
+    // صورة القالب الرسمي السابقة تبقى حتى تُلتقط صورة جديدة (عند التنزيل/المشاركة أو حفظ القالب القصير).
+    if (savedReports[recordKey] && savedReports[recordKey].snapshot) reportData.snapshot = savedReports[recordKey].snapshot;
     savedReports[recordKey] = reportData;
+    window.__curReportKey = recordKey;
+    if (shortMode) setTimeout(() => { renderShortReportCanvas().then(c => pfStoreSnapshot(c, recordKey)).catch(() => { /* تجاهل */ }); }, 400);
     reportsStorePut(recordKey, reportData).then(ok => {
         if (ok) return;
         // تعذّر الحفظ (مساحة ممتلئة): يُحفظ التقرير نفسه دون صوره بدل أن يضيع كله.
@@ -13217,6 +13314,7 @@ function calculateProgress() {
 function loadSavedReport(criterionId) {
     const report = getSavedReportsMap()[criterionId];
     if (!report) return false;
+    window.__curReportKey = criterionId;
 
     // التحقق من أن الدور المحفوظ هو "teacher" فقط، وإلا نمنع التحميل
     if (report.role && report.role !== 'teacher') {
@@ -13624,7 +13722,7 @@ function pfRepLink(ctx, r, pageNo) {
     const k = pfEsc(r.key || '');
     const t = pfEsc(r.title);
     const qr = ctx.qr && ctx.qr[r.key] ? pfQrImg(ctx.qr[r.key], 60) : '';
-    return `<li class="pf-rep${qr ? ' has-qr' : ''}"><span class="pf-rep-ic"><i class="fas fa-link"></i></span><b>${ctx.interactive ? `<a class="pf-link" data-pfkey="${k}">${t}</a>` : t}${qr ? '<small class="pf-qr-hint">امسح الرمز لعرض التقرير</small>' : ''}</b><em>${pfEsc(r.date || '')}</em><span class="pf-pg">ص ${pfNum(pageNo || '')}</span>${qr ? `<span class="pf-qr-box">${qr}</span>` : ''}</li>`;
+    return `<li class="pf-rep${qr ? ' has-qr' : ''}"><span class="pf-rep-ic"><i class="fas fa-link"></i></span><b>${ctx.interactive ? `<a class="pf-link" data-pfkey="${k}">${t}</a>` : t}${qr ? '<small class="pf-qr-hint">امسح الرمز لعرض التقرير</small>' : ''}</b><em>${pfEsc(r.date || '')}</em><span class="pf-pg">ص ${pfNum(pageNo || '')}</span>${qr ? `<span class="pf-qr-box">${qr}</span>` : ''}${ctx.interactive ? `<button type="button" class="pf-del" data-pfdel="${k}" title="حذف التقرير" aria-label="حذف التقرير"><i class="fas fa-trash-can"></i></button>` : ''}</li>`;
 }
 function pfRing2(pct, size, pal) {
     const r = size / 2 - 6, c = 2 * Math.PI * r, v = Math.max(0, Math.min(100, pct));
@@ -13784,6 +13882,64 @@ function pfShrinkImage(src, max, q) {
         im.src = src;
     });
 }
+// صورة التقرير بقالبه الرسمي (كما في ملف PDF التقرير) تُحفظ مع التقرير وتظهر لمن يمسح رمز QR.
+// تُلتقط عند تنزيل/مشاركة PDF التقرير، وعند حفظ تقرير القالب القصير.
+function pfStoreSnapshot(canvas, key) {
+    try {
+        key = key || window.__curReportKey;
+        const r = key && getSavedReportsMap()[key];
+        if (!r || !canvas || !canvas.width || !canvas.height) return;
+        const k = Math.min(1, 1000 / canvas.width);
+        const c = document.createElement('canvas');
+        c.width = Math.round(canvas.width * k); c.height = Math.round(canvas.height * k);
+        const g = c.getContext('2d');
+        g.fillStyle = '#ffffff'; g.fillRect(0, 0, c.width, c.height);
+        g.drawImage(canvas, 0, 0, c.width, c.height);
+        const data = c.toDataURL('image/jpeg', 0.8);
+        c.width = c.height = 0;
+        if (!PF_SHARE_IMG_RE.test(data) || data === r.snapshot) return;
+        r.snapshot = data;
+        reportsStorePut(key, r);
+        if (document.getElementById('portfolioPage')?.style.display === 'block') pfRenderSoon();
+    } catch (e) { console.warn('pfStoreSnapshot:', e); }
+}
+
+// حذف تقرير من ملف الإنجاز: من الجهاز ومن الاستضافة (يتوقف رمزه). إن تعذّر حذف النسخة المنشورة
+// الآن (بلا اتصال) يُحفظ طلب الحذف ويُعاد في المزامنة التالية.
+const PF_SHARE_DEL_KEY = 'enjaz_share_del_v1';
+function pfUnshare(key) {
+    const ids = pfJsonGet(PF_SHARE_KEY), hashes = pfJsonGet(PF_SHARE_HASH_KEY), id = ids[key];
+    delete ids[key]; delete hashes[key];
+    pfJsonSet(PF_SHARE_KEY, ids); pfJsonSet(PF_SHARE_HASH_KEY, hashes);
+    if (!id) return;
+    const pend = pfJsonGet(PF_SHARE_DEL_KEY); pend[id] = 1; pfJsonSet(PF_SHARE_DEL_KEY, pend);
+    pfFlushDeletes();
+}
+async function pfFlushDeletes() {
+    const pend = pfJsonGet(PF_SHARE_DEL_KEY), list = Object.keys(pend);
+    if (!list.length || !PF_SHARE_API || typeof supabaseClient === 'undefined' || !navigator.onLine) return;
+    let session = null;
+    try { session = (await supabaseClient.auth.getSession()).data.session; } catch (_) { session = null; }
+    if (!session) return;
+    for (const id of list) {
+        try {
+            const res = await pfShareFetch('/v1/r/' + encodeURIComponent(id), { method: 'DELETE', headers: { Authorization: 'Bearer ' + session.access_token } });
+            if (res.ok || res.status === 404 || res.status === 403) delete pend[id];
+        } catch (_) { /* يُعاد لاحقاً */ }
+    }
+    pfJsonSet(PF_SHARE_DEL_KEY, pend);
+}
+async function pfDeleteReport(key) {
+    const r = getSavedReportsMap()[key];
+    if (!r) return;
+    if (!confirm('حذف التقرير «' + (r.title || '') + '»؟\nسيُحذف من الجهاز ومن ملف الإنجاز، ويتوقف رمز QR الخاص به.')) return;
+    await reportsStoreDelete(key);
+    pfUnshare(key);
+    try { calculateProgress(); } catch (_) { /* تجاهل */ }
+    pfRender();
+    showNotification('تم حذف التقرير من ملف الإنجاز.');
+}
+
 async function pfShareContent(r, crit, critNo, prof, data) {
     const { meta, secs } = pfEvidenceContent(r);
     const imgs = [];
@@ -13792,6 +13948,7 @@ async function pfShareContent(r, crit, critNo, prof, data) {
         v: 1, title: r.title || 'تقرير', date: r.date || '', criterion: crit ? crit.name : '', criterionNo: critNo || 0,
         teacher: prof.name || '', role: prof.role || '', school: prof.school || '', subject: prof.subject || '', education: prof.education || '',
         meta, secs, images: imgs,
+        official: typeof r.snapshot === 'string' && PF_SHARE_IMG_RE.test(r.snapshot) ? r.snapshot : '',
     };
 }
 // يرفع التقارير المرتبطة بالمعايير (وغير المرتبطة) ويحدّث خريطة الروابط. يُرجع { ok, reason }.
@@ -13818,8 +13975,8 @@ async function pfPrepareShares(onStep) {
         rows.push({ key: r.key, content, _h: h });
     }
     let failed = 0, full = false;
-    for (let i = 0; i < rows.length; i += 3) {
-        const batch = rows.slice(i, i + 3);
+    for (let i = 0; i < rows.length; i += 2) {
+        const batch = rows.slice(i, i + 2);
         let res;
         try {
             res = await pfShareFetch('/v1/reports', {
@@ -13843,6 +14000,7 @@ async function pfPrepareShares(onStep) {
 // ثم تعيد رسم المعاينة لتظهر رموز QR، فلا ينتظر التنزيل أو الطباعة الشبكة.
 async function pfSyncShares(onStep) {
     try { await pfEnsureQr(); } catch (_) { /* بدون رموز */ }
+    try { await pfFlushDeletes(); } catch (_) { /* تجاهل */ }
     const before = JSON.stringify(pfJsonGet(PF_SHARE_KEY));
     let res;
     try { res = await pfPrepareShares(onStep); }
@@ -13897,6 +14055,7 @@ async function pfSharedView(id) {
     const pairs = x => (Array.isArray(x) ? x : []).filter(p => Array.isArray(p) && p.length >= 2);
     rep.meta = pairs(rep.meta); rep.secs = pairs(rep.secs);
     rep.images = (Array.isArray(rep.images) ? rep.images : []).filter(x => typeof x === 'string' && PF_SHARE_IMG_RE.test(x));
+    rep.official = typeof rep.official === 'string' && PF_SHARE_IMG_RE.test(rep.official) ? rep.official : '';
     const info = [['المعلم', rep.teacher], ['الصفة', rep.role], ['المدرسة', rep.school], ['المادة', rep.subject], ['إدارة التعليم', rep.education]].filter(x => x[1]);
     box.innerHTML = `<div class="sr-wrap">
         <header class="sr-head">
@@ -13909,6 +14068,7 @@ async function pfSharedView(id) {
         ${(rep.meta || []).length ? `<section class="sr-card sr-meta">${rep.meta.map(([l, v]) => `<div><small>${e(l)}</small><b>${e(v)}</b></div>`).join('')}</section>` : ''}
         ${(rep.secs || []).map(([l, v]) => `<section class="sr-card sr-sec"><h2><i></i>${e(l)}</h2><p>${e(v)}</p></section>`).join('')}
         ${(rep.images || []).length ? `<section class="sr-imgs">${rep.images.map(s => `<img src="${s}" alt="">`).join('')}</section>` : ''}
+        ${rep.official ? `<section class="sr-card sr-sec sr-official"><h2><i></i>التقرير بالقالب الرسمي</h2><img src="${rep.official}" alt="التقرير بالقالب الرسمي"><p>يمكنك تكبير الصورة بإصبعين.</p></section>` : ''}
         <footer class="sr-foot"><button type="button" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button><span>صادر من أداة إنجاز للتقارير التربوية</span></footer>
     </div>`;
 }
@@ -13981,6 +14141,8 @@ function pfOpenReport(key) {
     if (loadSavedReport(key)) showPage('home');
 }
 document.addEventListener('click', e => {
+    const d = e.target.closest && e.target.closest('[data-pfdel]');
+    if (d) { e.preventDefault(); e.stopPropagation(); pfDeleteReport(d.getAttribute('data-pfdel')); return; }
     const a = e.target.closest && e.target.closest('[data-pfkey]');
     if (a) { e.preventDefault(); pfOpenReport(a.getAttribute('data-pfkey')); }
 });
@@ -14450,6 +14612,8 @@ async function shareSavedReportWhatsApp(criterionId) {
 function deleteSavedReport(criterionId) {
     if (!confirm('هل أنت متأكد من حذف هذا التقرير؟')) return;
     reportsStoreDelete(criterionId);
+    pfUnshare(criterionId);
+    if (document.getElementById('portfolioPage')?.style.display === 'block') pfRenderSoon();
     calculateProgress();
     if (document.getElementById('savedReportsModal').style.display === 'flex') {
         closeSavedReports(); setTimeout(openSavedReports, 300);
@@ -15647,6 +15811,18 @@ function chooseProgressiveVoiceMode() {
     startVoiceReportCommand();
 }
 
+// الإدخال اليدوي: ينقل إلى نموذج البيانات ويضع المؤشر في أول خانة (عنوان التقرير إن وُجد).
+function startManualEntry() {
+    const sec = document.querySelector('#homePage .input-section') || document.querySelector('.input-section');
+    if (!sec) return;
+    const top = sec.getBoundingClientRect().top + window.scrollY - 150;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    sec.classList.remove('ep-flash'); void sec.offsetWidth; sec.classList.add('ep-flash');
+    setTimeout(() => {
+        const f = document.getElementById('manualReportTitle');
+        if (f && f.offsetParent) { try { f.focus({ preventScroll: true }); } catch (_) { /* تجاهل */ } }
+    }, 650);
+}
 function startVoiceReportCommand() {
     const SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognitionApi) {
@@ -15732,8 +15908,8 @@ function beginTitleListening() {
     recognition.onend = () => {
         if (myToken !== window.__voiceTitleListenToken) return; // جلسة قديمة - تجاهل (لا نُصفّر واجهة جلسة أحدث)
         ctaBanner.classList.remove('listening');
-        ctaTitle.textContent = '🎙️ إصدار تقرير بأمر صوتي';
-        ctaSubtitle.textContent = 'اضغط لاختيار طريقة الإصدار: توجيه تدريجي أو أمر حر';
+        ctaTitle.textContent = 'الإدخال الصوتي';
+        ctaSubtitle.textContent = 'تحدّث عن تفاصيل التقرير بصوتك، ويرتّبها المساعد في خاناتها تلقائياً.';
     };
 
     try {
@@ -18319,6 +18495,7 @@ async function captureReportAsSinglePageA4Pdf(element) {
             ...getStableCaptureOptions(),
             onclone: function(clonedDoc) { const cloned = clonedDoc.getElementById(element.id); if (cloned) cloned.style.background = '#ffffff'; }
         });
+        pfStoreSnapshot(canvas);
         const JsPDFCtor = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
         if (!JsPDFCtor) return null; // احتياط: نعود للمسار الافتراضي إن تعذّر الوصول لمكتبة jsPDF لأي سبب
         const imgData = canvas.toDataURL('image/jpeg', 0.95);

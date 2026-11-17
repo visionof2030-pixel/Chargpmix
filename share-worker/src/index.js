@@ -14,8 +14,8 @@
 const ID_RE = /^[A-Za-z0-9]{12,40}$/;
 const IMG_RE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
 const ABC = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const MAX_BODY = 4 * 1024 * 1024;      // حجم طلب الرفع كاملاً
-const MAX_CONTENT = 1536 * 1024;       // حجم التقرير الواحد بعد التحويل إلى JSON
+const MAX_BODY = 8 * 1024 * 1024;      // حجم طلب الرفع كاملاً
+const MAX_CONTENT = 2560 * 1024;       // حجم التقرير الواحد بعد التحويل إلى JSON (مع صورة القالب الرسمي)
 const MAX_ITEMS = 3;
 
 export default {
@@ -103,6 +103,8 @@ function cleanContent(c) {
         meta: pairs(c.meta, 500),
         secs: pairs(c.secs, 20000),
         images: (Array.isArray(c.images) ? c.images : []).filter(s => typeof s === 'string' && IMG_RE.test(s)).slice(0, 2),
+        // صورة التقرير بقالبه الرسمي (كما في PDF التقرير)
+        official: typeof c.official === 'string' && c.official.length < 1600 * 1024 && IMG_RE.test(c.official) ? c.official : '',
     };
 }
 
