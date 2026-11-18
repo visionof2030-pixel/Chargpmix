@@ -9,6 +9,7 @@
 //   GET    /v1/sync/item?k=      التقرير كاملاً
 //   PUT    /v1/sync/item?k=&u=   حفظ التقرير (JSON) بوقت تعديله
 //   DELETE /v1/sync/item?k=&u=   حذف (يبقى أثر حذف حتى تحذفه أجهزته الأخرى)
+//   GET/PUT /v1/profile          بيانات إضافية للمعلم (التخصص) { subject, u }
 //
 // يتحقق من المعلم تلقائياً بجلسة دخوله الحالية في الأداة (رمز الجلسة يُرسل في Authorization)،
 // بسؤال خدمة تسجيل الدخول عن صاحب الرمز (قراءة فقط). لا يحتاج المعلم أي مفتاح إضافي.
@@ -39,6 +40,7 @@ export default {
             if (url.pathname === '/v1/reports' && req.method === 'POST') return await upload(req, env, cors);
             if (url.pathname === '/v1/sync' && req.method === 'GET') return await syncList(req, env, cors);
             if (url.pathname === '/v1/sync/item') return await syncItem(req, url, env, cors);
+            if (url.pathname === '/v1/profile') return await profile(req, env, cors);
             return json({ error: 'not_found' }, 404, cors);
         } catch (e) {
             console.error(e);
@@ -255,4 +257,23 @@ async function countSync(env, owner, stopAt) {
         cursor = page.truncated ? page.cursor : undefined;
     } while (cursor && n < stopAt);
     return n;
+}
+
+// ===================== بيانات المعلم الإضافية (التخصص) =====================
+async function profile(req, env, cors) {
+    const owner = await verifyUser(req, env);
+    if (!owner) return json({ error: 'auth' }, 401, cors);
+    const key = `p/${owner}.json`;
+    if (req.method === 'GET') {
+        const obj = await env.REPORTS.get(key);
+        const rec = obj ? await obj.json().catch(() => null) : null;
+        return json(rec || {}, 200, cors, { 'Cache-Control': 'no-store' });
+    }
+    if (req.method === 'PUT') {
+        let b; try { b = JSON.parse(await req.text()); } catch (_) { return json({ error: 'bad_json' }, 400, cors); }
+        const rec = { subject: str(b && b.subject, 120), u: Math.max(0, Math.floor(+(b && b.u) || 0)) || Date.now() };
+        await env.REPORTS.put(key, JSON.stringify(rec), { httpMetadata: { contentType: 'application/json; charset=utf-8' } });
+        return json({ ok: true, u: rec.u }, 200, cors);
+    }
+    return json({ error: 'not_found' }, 404, cors);
 }

@@ -8467,6 +8467,7 @@ body.theme-dark .vm-chip { background: #24344a; border-color: rgba(255,255,255,.
       <div class="account-row"><i class="fas fa-chalkboard-teacher"></i><span class="account-row-label">صفة مقدم التقرير</span><span class="account-row-value" id="accountViewReporterType">—</span></div>
       <div class="account-row"><i class="fas fa-university"></i><span class="account-row-label">إدارة التعليم</span><span class="account-row-value" id="accountViewEducation">—</span></div>
       <div class="account-row"><i class="fas fa-school"></i><span class="account-row-label">المدرسة / المكتب</span><span class="account-row-value" id="accountViewSchool">—</span></div>
+      <div class="account-row"><i class="fas fa-book"></i><span class="account-row-label">التخصص / المادة</span><span class="account-row-value" id="accountViewSubject">—</span></div>
       <div class="account-row"><i class="fas fa-user-cog"></i><span class="account-row-label">صفة المدير (تلقائي)</span><span class="account-row-value" id="accountViewPrincipalType">—</span></div>
       <div class="account-row"><i class="fas fa-user-cog"></i><span class="account-row-label">اسم المدير / المسؤول</span><span class="account-row-value" id="accountViewPrincipal">—</span></div>
     </div>
@@ -8501,6 +8502,12 @@ body.theme-dark .vm-chip { background: #24344a; border-color: rgba(255,255,255,.
       <div class="form-group">
         <label for="school"><i class="fas fa-school"></i> اسم المدرسة / المكتب</label>
         <input id="school" placeholder="اسم المدرسة أو المكتب" oninput="updateReport()">
+      </div>
+
+      <div class="form-group">
+        <label for="teacherSubject"><i class="fas fa-book"></i> التخصص / المادة</label>
+        <input id="teacherSubject" list="teacherSubjectList" placeholder="مثال: اللغة الإنجليزية" oninput="updateReport()">
+        <datalist id="teacherSubjectList"><option value="اللغة العربية"><option value="اللغة الإنجليزية"><option value="الرياضيات"><option value="العلوم"><option value="الدراسات الإسلامية"><option value="الدراسات الاجتماعية"><option value="المهارات الرقمية"><option value="التربية الفنية"><option value="التربية البدنية والدفاع عن النفس"><option value="المهارات الحياتية والأسرية"><option value="التفكير الناقد"><option value="الفيزياء"><option value="الكيمياء"><option value="الأحياء"><option value="التربية الخاصة"><option value="رياض الأطفال"></datalist>
       </div>
 
       <div class="form-row">
@@ -9613,6 +9620,28 @@ async function reportsStoreInit() {
 }
 window.__reportsReady = reportsStoreInit();
 
+// ==================== تخصص المعلم (البيانات الأساسية) ====================
+// يُحفظ على الجهاز ومع حساب المعلم عبر خادم المزامنة (جدول الحسابات في Supabase بلا تعديل)،
+// ويُستخدم في: «المادة» في التقرير وملف الإنجاز، وتخصيص عناوين التقارير المقترحة.
+const TS_KEY = 'enjaz_teacher_subject_v1'; // { v, u }
+function tsGet() { try { const o = JSON.parse(localStorage.getItem(TS_KEY)); return o && typeof o === 'object' ? o : { v: '', u: 0 }; } catch (_) { return { v: '', u: 0 }; } }
+function tsValue() { return String(tsGet().v || '').trim(); }
+function tsApply(v) {
+    const el = document.getElementById('teacherSubject'); if (el && el.value !== v) el.value = v;
+    const rep = document.getElementById('subject'); if (rep && !rep.value.trim()) rep.value = v;
+    try { const cfg = pfCfg(); if (cfg && cfg.p && !String(cfg.p.subject || '').trim() && v) { cfg.p.subject = v; pfSaveCfg(); } } catch (_) { /* تجاهل */ }
+    try { renderAccountSummary(); } catch (_) { /* تجاهل */ }
+}
+function tsSave(v, u, fromSync) {
+    v = String(v || '').trim();
+    const cur = tsGet();
+    if (cur.v === v && !u) return;
+    try { localStorage.setItem(TS_KEY, JSON.stringify({ v, u: u || Date.now() })); } catch (_) { /* تجاهل */ }
+    tsApply(v);
+    if (!fromSync) rsSchedule(1500);
+}
+document.addEventListener('DOMContentLoaded', () => { const v = tsValue(); if (v) tsApply(v); });
+
 // ==================== مزامنة التقارير مع حساب المعلم ====================
 // كل تقرير يُحفظ أو يُحذف يُزامَن في الخلفية مع حساب المعلم (خاص به)، فتظهر تقاريره في أي متصفح
 // أو جهاز يدخل منه. الأحدث يغلب (updatedAt)، والحذف ينتقل لبقية الأجهزة.
@@ -9673,6 +9702,13 @@ async function rsRun() {
         const res = await rsFetch('/v1/sync', { headers: H });
         if (!res.ok) { failed++; return; }
         listed = true;
+        // التخصص: الأحدث يغلب
+        try {
+            const pr = await rsFetch('/v1/profile', { headers: H });
+            const rp = pr.ok ? await pr.json() : null, lp = tsGet();
+            if (rp && rp.subject !== undefined && (+rp.u || 0) > (lp.u || 0)) tsSave(rp.subject, +rp.u, true);
+            else if (lp.u && (!rp || (lp.u > (+rp.u || 0)))) await rsFetch('/v1/profile', { method: 'PUT', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify({ subject: lp.v, u: lp.u }) });
+        } catch (e) { console.warn('rsRun profile:', e); }
         const remote = {};
         ((await res.json()).items || []).forEach(i => { if (i && i.k) remote[i.k] = i; });
         const enc = encodeURIComponent;
@@ -12877,7 +12913,9 @@ const KW = (() => {
     const V_ATTEND = kwTok('حضرت|حضرنا|احضر|حضور\\S*|حضر');
     const V_LESSON = kwTok('حصه|حصص|حصتي|حصته|حصتهم|درس|دروس');
     const V_SWAP = kwTok('تبادل\\S*|متبادل\\S*');
-    const V_SWAP_OBJ = kwTok('زيار\\S*|زملا\\S*|زميل\\S*|معلم\\S*|حصص|حصه|خبر\\S*|الخبرات');
+    // «تبادل» وحده لا يكفي: «تبادل خطط الوحدات مع معلمي التخصص» أو «تبادل الخبرات» تقارير عامة.
+    // إشارة الاستمارة: تبادل + زيارات/حصص فقط.
+    const V_SWAP_OBJ = kwTok('زيار\\S*|حصص|حصه');
     const visit = (t, s) => {
         const sig = [];
         const hasAuth = t.some(x => V_AUTH.test(x));
@@ -14471,6 +14509,18 @@ function dashRender() {
 window.__dvs = { crit: '', page: 0, list: [] };
 const dvsNorm = t => String(t || '').replace(/[\u064B-\u0652]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/\s+/g, ' ').trim();
 // عناوين المعيار مرتّبة: البنود غير الموثّقة أولاً، ومتنوّعة بين البنود، وبلا عناوين استُخدمت من قبل.
+// يستبدل اسم المادة في عنوان جاهز بتخصص المعلم: «… لدرس الرياضيات» ← «… لدرس اللغة الإنجليزية».
+const DVS_SUBJECTS = ['اللغة العربية', 'لغتي الجميلة', 'لغتي', 'اللغة الإنجليزية', 'اللغة الانجليزية', 'الرياضيات', 'العلوم', 'الدراسات الإسلامية', 'التربية الإسلامية', 'القرآن الكريم', 'الدراسات الاجتماعية', 'الاجتماعيات', 'المهارات الرقمية', 'الحاسب الآلي', 'الحاسب', 'التربية الفنية', 'التربية البدنية', 'الفيزياء', 'الكيمياء', 'الأحياء', 'التفكير الناقد'];
+function dvsPersonalize(title) {
+    const subj = tsValue();
+    if (!subj) return title;
+    const alts = DVS_SUBJECTS.slice().sort((a, b) => b.length - a.length).map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    const re = new RegExp('((?:^|\\s)(?:ل|ب|في\\s+)?(?:مادة|مادّة|درس|دروس|حصة|حصص|منهج|مقرر|اختبار)\\s+)(' + alts + ')(?=$|[\\s،.,:؛])', 'g');
+    const re2 = new RegExp('((?:^|\\s)(?:في|لـ?|ب)\\s*)(' + alts + ')(?=$|[\\s،.,:؛])', 'g');
+    let out = title.replace(re, (m, pre, s0) => (dvsNorm(s0) === dvsNorm(subj) ? m : pre + subj));
+    if (out === title) out = title.replace(re2, (m, pre, s0) => (dvsNorm(s0) === dvsNorm(subj) ? m : pre + subj));
+    return out;
+}
 function dvsCandidates(critId) {
     const subs = (window.subcategoriesByCriterion && window.subcategoriesByCriterion[critId]) || [];
     const used = new Set(Object.values(getSavedReportsMap()).map(r => dvsNorm(r && r.title)));
@@ -14487,7 +14537,7 @@ function dvsCandidates(critId) {
     let i = 0, added = true;
     while (added) { // تناوب بين البنود حتى تتنوّع الاقتراحات
         added = false;
-        groups.forEach(g => { if (g.reps[i]) { out.push({ title: g.reps[i].name, reportId: g.reps[i].id, subId: g.sub.id, subName: g.sub.name, fresh: !g.covered }); added = true; } });
+        groups.forEach(g => { if (g.reps[i]) { out.push({ title: dvsPersonalize(g.reps[i].name), reportId: g.reps[i].id, subId: g.sub.id, subName: g.sub.name, fresh: !g.covered }); added = true; } });
         i++;
     }
     return out;
@@ -19707,6 +19757,7 @@ function toggleAccountEdit() {
 }
 
 async function saveAccountEdits() {
+    tsSave(document.getElementById('teacherSubject')?.value || '');
     updateReport();
     renderAccountSummary();
     document.getElementById('accountEditMode').style.display = 'none';
@@ -19741,6 +19792,7 @@ function renderAccountSummary() {
     setView('accountViewReporterType', roleLabel);
     setView('accountViewEducation', document.getElementById('education')?.value);
     setView('accountViewSchool', document.getElementById('school')?.value);
+    setView('accountViewSubject', document.getElementById('teacherSubject')?.value);
     setView('accountViewPrincipalType', document.getElementById('principalTypeDisplay')?.value);
     setView('accountViewPrincipal', document.getElementById('principal')?.value);
     updateBasicDataAlert();
@@ -19752,6 +19804,7 @@ const BASIC_DATA_FIELDS = [
     { id: 'reporterName', label: 'اسم مقدم التقرير' },
     { id: 'education', label: 'إدارة التعليم' },
     { id: 'school', label: 'اسم المدرسة' },
+    { id: 'teacherSubject', label: 'التخصص / المادة' },
     { id: 'principal', label: 'اسم المدير' }
 ];
 
