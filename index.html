@@ -7374,6 +7374,28 @@ body.theme-dark .dvs-t, body.theme-dark .dvs-more button { background: #24344a; 
 .vm-chip-sel button { flex: none; border: none; background: rgba(255,255,255,.18); color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; }
 body.theme-dark .vm-chip { background: #24344a; border-color: rgba(255,255,255,.1); color: #e2e8f0; }
 </style>
+<style id="qw-css">
+/* ===== صفحة «تقرير جديد بالكتابة» ===== */
+.qw { z-index: 9050; }
+.qw-body { padding: 16px 16px 24px; max-width: 640px; margin: 0 auto; }
+.qw-crit { background: var(--f-em, #0a6b4f); color: #fff; border-radius: 18px; padding: 12px 16px; margin-bottom: 14px; }
+.qw-crit small { display: block; font-size: 12px; font-weight: 700; opacity: .8; }
+.qw-crit b { display: block; font-size: 16px; font-weight: 900; line-height: 1.5; }
+.qw-sec { background: var(--f-surface, #fff); border: 1px solid var(--f-line, #e3e8e6); border-radius: 20px; padding: 14px; margin-bottom: 14px; }
+.qw-lbl { display: block; font-size: 14px; font-weight: 900; color: var(--f-text, #0d1f19); margin: 2px 2px 10px; }
+.qw-lbl i { color: var(--f-em, #0a6b4f); margin-left: 6px; }
+.qw-lbl small { display: block; font-size: 12px; font-weight: 600; color: var(--f-muted, #5d6e68); margin-top: 3px; }
+.qw-chips { margin-bottom: 12px; }
+.qw .mp-input { font-size: 16px; padding: 14px; }
+.qw-f { margin-bottom: 12px; }
+.qw-f label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: var(--f-muted, #5d6e68); margin: 0 2px 6px; }
+.qw-f label i { color: var(--f-em, #0a6b4f); width: 16px; text-align: center; }
+.qw-f input, .qw-f select, .qw-f textarea { width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; border: 1.5px solid var(--f-line, #e3e8e6); background: var(--f-bg, #f7f9f8); font-family: inherit; font-size: 15px; font-weight: 700; color: var(--f-text, #0d1f19); outline: none; }
+.qw-f input:focus, .qw-f select:focus, .qw-f textarea:focus { border-color: var(--f-em, #0a6b4f); background: var(--f-surface, #fff); }
+.qw-f textarea { min-height: 80px; resize: vertical; }
+body.theme-dark .qw-sec { background: #1e293b; border-color: rgba(255,255,255,.1); }
+body.theme-dark .qw-f input, body.theme-dark .qw-f select, body.theme-dark .qw-f textarea { background: #0f172a; color: #e2e8f0; border-color: rgba(255,255,255,.12); }
+</style>
 <style id="done-sheet-css">
 /* ===== شاشة «تم إصدار تقريرك» ===== */
 body.ds-open { overflow: hidden; }
@@ -14672,6 +14694,7 @@ async function dvsFetchAiTitles(critId) {
         window.__vmChipsPage = 0;
     }
     if (window.__vmCritCtx === critId) { window.__vmFromDvs = true; vmChipsRender(); }
+    if (window.__qw && window.__qw.crit === critId) qwChipsRender();
 }
 // بطاقات العناوين داخل نافذة الإدخال الصوتي
 function vmChipsRender() {
@@ -14792,10 +14815,126 @@ function dvsOwnVoice() {
 function dvsWrite() {
     const critId = window.__dvs.crit;
     dvsClose();
-    dvsApplyCriterion(critId);
-    openManualPage();
+    openQw(critId);
+}
+// ===== صفحة «تقرير جديد بالكتابة» =====
+window.__qw = { crit: '', pick: null, page: 0 };
+function qwIsOpen() { const pg = document.getElementById('qwPage'); return !!pg && pg.style.display !== 'none'; }
+function openQw(critId) {
     const c = (window.allCriteria || []).find(x => x.id === critId);
-    if (c) showNotification('اخترت المعيار: ' + c.name + '. اكتب عنوان التقرير.');
+    // تقرير جديد: تفريغ بنود التقرير السابق وصوره، ثم المادة من البيانات الأساسية
+    try { resetFormFieldsForVoiceFreeCapture(); } catch (_) { /* تجاهل */ }
+    try { resetReportImagesForNewReport(); } catch (_) { /* تجاهل */ }
+    if (document.getElementById('voiceExtraNotesInput')) document.getElementById('voiceExtraNotesInput').value = '';
+    dvsApplyCriterion(critId);
+    tsFill();
+    window.__qw = { crit: critId, pick: null, page: 0 };
+    window.__dvs.crit = critId;
+    window.__dvs.list = dvsCandidates(critId);
+    document.getElementById('qwCritName').textContent = c ? c.name : '';
+    document.getElementById('qwTitle').value = '';
+    const pg = document.getElementById('qwPage');
+    pg.style.display = 'flex';
+    document.body.classList.add('mp-open');
+    try { history.pushState({ qw: 1 }, ''); } catch (_) { /* تجاهل */ }
+    document.getElementById('qwBody').scrollTop = 0;
+    if (tsValue()) dvsFetchAiTitles(critId);
+    qwChipsRender();
+    qwFieldsRender();
+}
+function closeQw(fromHistory) {
+    if (!qwIsOpen()) return;
+    document.getElementById('qwPage').style.display = 'none';
+    if (!mpIsOpen()) document.body.classList.remove('mp-open');
+    window.__qw.crit = '';
+    if (!fromHistory && history.state && history.state.qw) { try { history.back(); } catch (_) { /* تجاهل */ } }
+}
+window.addEventListener('popstate', () => closeQw(true));
+function qwChipsRender() {
+    const st = window.__qw, critId = st.crit;
+    if (!critId) return;
+    const ai = window.__aiTitles[dvsAiKey(critId)];
+    const loading = !!(ai && ai.status === 'loading');
+    let list = window.__dvs.list || [];
+    if (ai && ai.status === 'done' && !list.some(x => x.ai)) {
+        const seen = new Set(ai.list.map(x => dvsNorm(x.title)));
+        list = ai.list.concat(list.filter(x => !seen.has(dvsNorm(x.title))));
+        window.__dvs.list = list;
+    }
+    const items = list.slice(st.page * 3, st.page * 3 + 3);
+    document.getElementById('qwChips').innerHTML = (loading && st.page === 0 ? '<span class="vm-chip ai-loading"><b><i class="fas fa-wand-magic-sparkles"></i> نجهّز عناوين لك…</b><small>حسب تخصصك</small></span>' : '')
+        + items.map((p, i) => `<button type="button" class="vm-chip${p.ai ? ' ai' : ''}${st.pick && st.pick.title === p.title ? ' on' : ''}" data-qwchip="${st.page * 3 + i}"><b>${p.ai ? '✨ ' : ''}${pfEsc(p.title)}</b><small class="${p.fresh ? 'new' : ''}">${p.ai ? 'مقترح لك • ' : ''}${pfEsc(p.subName || '')}</small></button>`).join('')
+        + (list.length > 3 ? '<button type="button" class="vm-chip more" data-qwchip="more"><i class="fas fa-rotate"></i> غيرها</button>' : '')
+        + (!items.length && !loading ? '<span class="vm-chip" style="cursor:default"><b>اكتب عنوان تقريرك</b><small>لا توجد اقتراحات الآن</small></span>' : '');
+}
+document.addEventListener('click', e => {
+    const c = e.target.closest && e.target.closest('[data-qwchip]');
+    if (!c) return;
+    const v = c.getAttribute('data-qwchip'), list = window.__dvs.list || [], st = window.__qw;
+    if (v === 'more') { st.page = (st.page + 1) * 3 < list.length ? st.page + 1 : 0; qwChipsRender(); return; }
+    const p = list[+v];
+    if (!p) return;
+    st.pick = p;
+    document.getElementById('qwTitle').value = p.title;
+    qwChipsRender();
+    qwTitleChanged();
+});
+// العنوان قد يغيّر نوع القالب (تبادل زيارات، استراتيجية، أداة، أولياء أمور) فتتغير البنود
+function qwTitleChanged() {
+    const t = document.getElementById('qwTitle').value.trim();
+    const st = window.__qw;
+    if (st.pick && st.pick.title !== t) st.pick = null;
+    const before = (isShortTemplate() ? window.__shortVariant : 'long');
+    if (t) { try { autoSelectShortVariantFromText(t); } catch (_) { /* تجاهل */ } }
+    setTimeout(() => { if ((isShortTemplate() ? window.__shortVariant : 'long') !== before) { tsFill(); qwFieldsRender(); } }, 30);
+}
+document.addEventListener('input', e => {
+    if (e.target && e.target.id === 'qwTitle') { clearTimeout(window.__qwT); window.__qwT = setTimeout(qwTitleChanged, 600); }
+});
+function qwFieldsRender() {
+    const box = document.getElementById('qwFields');
+    if (!box) return;
+    const steps = getVoiceWizardSteps().filter(s => !isVoiceFieldStepSkipped(s));
+    box.innerHTML = steps.map(s => {
+        const real = document.getElementById(s.elId);
+        const val = real ? String(real.value || '') : '';
+        const id = 'qw_' + s.elId;
+        let ctl;
+        if (s.kind === 'select' && real && real.tagName === 'SELECT') {
+            ctl = `<select id="${id}" data-qwreal="${s.elId}">` + Array.from(real.options).map(o => `<option value="${pfEsc(o.value)}"${o.value === real.value ? ' selected' : ''}>${pfEsc(o.textContent)}</option>`).join('') + '</select>';
+        } else if (s.kind === 'notes') {
+            ctl = `<textarea id="${id}" data-qwreal="${s.elId}" placeholder="${pfEsc(s.placeholder || '')}">${pfEsc(val)}</textarea>`;
+        } else {
+            ctl = `<input type="text" id="${id}" data-qwreal="${s.elId}" value="${pfEsc(val)}" placeholder="${pfEsc(s.placeholder || '')}">`;
+        }
+        return `<div class="qw-f"><label for="${id}"><i class="fas ${s.icon || 'fa-pen'}"></i> ${pfEsc(s.label)}</label>${ctl}</div>`;
+    }).join('');
+}
+// كل خانة في الصفحة تكتب في خانتها الحقيقية في نموذج التقرير
+function qwSync(el) {
+    const real = document.getElementById(el.getAttribute('data-qwreal'));
+    if (!real) return;
+    real.value = el.value;
+    real.dispatchEvent(new Event(real.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
+    if (real.tagName === 'SELECT') {
+        const step = getVoiceWizardSteps().find(s => s.elId === real.id);
+        if (step && typeof step.afterSet === 'function') { try { step.afterSet(); } catch (_) { /* تجاهل */ } }
+        qwFieldsRender(); // بنود تظهر أو تختفي حسب الاختيار (مثل داخل/خارج الصف)
+    }
+}
+document.addEventListener('input', e => { if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-qwreal') && e.target.tagName !== 'SELECT') qwSync(e.target); });
+document.addEventListener('change', e => { if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-qwreal') && e.target.tagName === 'SELECT') qwSync(e.target); });
+async function qwGenerate() {
+    const t = document.getElementById('qwTitle').value.trim();
+    if (!t) { showNotification('اختر عنواناً من الاقتراحات أو اكتب عنوان التقرير', 'warning'); document.getElementById('qwTitle').focus(); return; }
+    const st = window.__qw;
+    dvsApplyCriterion(st.crit, st.pick && st.pick.subId, st.pick && st.pick.reportId);
+    dvsSetTitle(t);
+    tsFill();
+    const btn = document.getElementById('qwGo'), lbl = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>يكتب الذكاء الاصطناعي التقرير…</span>';
+    try { await fillWithAI(); } catch (e) { console.error('qwGenerate:', e); }
+    finally { btn.disabled = false; btn.innerHTML = lbl; }
 }
 // يفتح نموذج إنشاء التقرير (القالب الطويل) ومعه المعيار المختار.
 function dashStartReport(critId) {
@@ -16458,6 +16597,7 @@ window.addEventListener('popstate', () => closeManualPage(true));
 // بعد أي توليد ناجح (من هذه الصفحة أو الصوت أو الشريط السفلي): تُفتح الصفحة على النتيجة مع أزرار التنزيل والمشاركة.
 function mpAfterGenerate() {
     closeManualPage();
+    if (typeof closeQw === 'function') closeQw();
     openDoneSheet();
     setTimeout(() => { const gb = document.getElementById('aiGuideBox'); if (gb) gb.style.display = 'none'; }, 0);
 }
@@ -19440,6 +19580,7 @@ function closeSettings() {
 function showPage(name) {
     if (typeof closeManualPage === 'function') closeManualPage();
     if (typeof closeDoneSheet === 'function') closeDoneSheet();
+    if (typeof closeQw === 'function') closeQw();
     const home = document.getElementById('homePage');
     const account = document.getElementById('accountPage');
     const feedback = document.getElementById('feedbackPage');
@@ -20215,6 +20356,32 @@ document.addEventListener("DOMContentLoaded", async () => {
             <button type="button" onclick="dvsOwnVoice()"><i class="fas fa-microphone"></i> أقول عنواني بصوتي</button>
         </div>
     </div>
+</div>
+
+<!-- ========== تقرير جديد بالكتابة لمعيار محدد (من «الخطوة التالية» أو قائمة المعايير) ==========
+     صفحة مرتبة: ٣ عناوين مقترحة (ذكاء اصطناعي + بنك)، خانة العنوان، ثم بنود القالب فقط. -->
+<div id="qwPage" class="mp qw" role="dialog" aria-modal="true" aria-labelledby="qwHead" style="display:none;">
+    <header class="mp-bar">
+        <button type="button" class="mp-back" onclick="closeQw()" aria-label="رجوع"><i class="fas fa-arrow-right"></i></button>
+        <div class="mp-bar-title" id="qwHead">تقرير جديد بالكتابة</div>
+        <span class="mp-bar-sp"></span>
+    </header>
+    <main class="mp-body qw-body" id="qwBody">
+        <div class="qw-crit"><small>المعيار</small><b id="qwCritName"></b></div>
+        <section class="qw-sec">
+            <div class="qw-lbl"><i class="fas fa-wand-magic-sparkles"></i> عناوين مقترحة لك</div>
+            <div class="vm-chips-row qw-chips" id="qwChips"></div>
+            <label class="qw-lbl" for="qwTitle"><i class="fas fa-heading"></i> عنوان التقرير</label>
+            <input type="text" id="qwTitle" class="mp-input" placeholder="اختر من الاقتراحات أو اكتب عنوانك" autocomplete="off">
+        </section>
+        <section class="qw-sec">
+            <div class="qw-lbl"><i class="fas fa-list-check"></i> بنود التقرير <small>اكتب ما تعرفه، والذكاء الاصطناعي يكتب الأهداف والخطوات</small></div>
+            <div id="qwFields"></div>
+        </section>
+    </main>
+    <footer class="mp-foot">
+        <button type="button" class="mp-go" id="qwGo" onclick="qwGenerate()"><i class="fas fa-wand-magic-sparkles"></i> <span>توليد التقرير</span></button>
+    </footer>
 </div>
 
 <!-- ========== شاشة «تم إصدار تقريرك» ========== -->
