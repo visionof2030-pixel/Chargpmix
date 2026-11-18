@@ -7347,6 +7347,28 @@ body.theme-dark .mp-bar, body.theme-dark .mp-foot, body.theme-dark .mp-seg, body
 body.theme-dark .dvs { background: #1e293b; color: #e2e8f0; }
 body.theme-dark .dvs-t, body.theme-dark .dvs-more button { background: #24344a; border-color: rgba(255,255,255,.1); color: #e2e8f0; }
 </style>
+<style id="vm-chips-css">
+/* بطاقات العناوين المقترحة داخل نافذة الإدخال الصوتي: صف أفقي صغير لا يزاحم بقية العناصر */
+.vm-chips { margin: 2px 0 12px; }
+.vm-chips-lbl { font-size: 12.5px; font-weight: 800; color: var(--f-muted, #5d6e68); margin: 0 2px 7px; }
+.vm-chips-lbl i { color: var(--f-gold2, #c99a2e); margin-left: 4px; }
+.vm-chips-row { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.vm-chips-row::-webkit-scrollbar { display: none; }
+.vm-chip { flex: none; max-width: 230px; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px 12px; border-radius: 14px;
+    border: 1.5px solid var(--f-line, #e3e8e6); background: var(--f-surface, #fff); color: var(--f-text, #0d1f19); font-family: inherit; text-align: right; cursor: pointer;
+    box-shadow: 0 4px 12px -10px rgba(13,31,25,.5); }
+.vm-chip b { font-size: 13px; font-weight: 800; line-height: 1.45; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.vm-chip small { font-size: 11px; font-weight: 700; color: var(--f-muted, #5d6e68); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.vm-chip small.new { color: var(--f-gold2, #c99a2e); }
+.vm-chip.on { border-color: var(--f-em, #0a6b4f); background: var(--f-em-soft, #e5f2ed); }
+.vm-chip.more { justify-content: center; align-items: center; color: var(--f-em, #0a6b4f); font-weight: 900; font-size: 13px; min-width: 76px; }
+.vm-chips[hidden], .vm-chip-sel[hidden] { display: none !important; }
+.vm-chip-sel { display: flex; align-items: center; gap: 8px; margin-top: 4px; padding: 9px 12px; border-radius: 14px; background: var(--f-em, #0a6b4f); color: #fff; font-size: 13px; font-weight: 800; line-height: 1.6; }
+.vm-chip-sel i.fa-circle-check { color: var(--f-gold, #e8bf55); }
+.vm-chip-sel span { flex: 1; min-width: 0; }
+.vm-chip-sel button { flex: none; border: none; background: rgba(255,255,255,.18); color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; }
+body.theme-dark .vm-chip { background: #24344a; border-color: rgba(255,255,255,.1); color: #e2e8f0; }
+</style>
 </head>
 
 <body class="theme-default">
@@ -7517,6 +7539,13 @@ body.theme-dark .dvs-t, body.theme-dark .dvs-more button { background: #24344a; 
       </div>
     </div>
 
+    <!-- عناوين مقترحة للمعيار المختار (عند الفتح من «الخطوة التالية» أو قائمة المعايير فقط):
+         من عنده عنوان يقوله كالمعتاد؛ ومن ليس عنده يضغط بطاقة ثم يذكر البنود فقط. -->
+    <div class="vm-chips" id="vmChips" hidden>
+        <div class="vm-chips-lbl"><i class="fas fa-lightbulb"></i> ما عندك عنوان؟ اختر واحد:</div>
+        <div class="vm-chips-row" id="vmChipsRow"></div>
+        <div class="vm-chip-sel" id="vmChipSel" hidden></div>
+    </div>
     <!-- تبويبان: الأمر الحر والتوجيه التدريجي، كلٌّ في لوحته الخاصة (setVoiceModeTab). -->
     <div class="vm-tabs" role="tablist">
         <button type="button" class="vm-tab" role="tab" data-vm-tab="free" onclick="setVoiceModeTab('free')"><i class="fas fa-microphone-lines"></i> أمر صوتي حر</button>
@@ -14477,10 +14506,67 @@ function dvsClose() {
     document.getElementById('dvs').classList.remove('open');
 }
 function dvsVoice() {
-    document.getElementById('dvsChoose').style.display = 'none';
-    document.getElementById('dvsTitles').style.display = '';
-    dvsRender();
+    const critId = window.__dvs.crit;
+    dvsClose();
+    dvsApplyCriterion(critId);
+    window.__dvsKeepCrit = critId;      // المسار الصوتي المعتاد (عنوان بصوت المعلم) يُبقي المعيار
+    window.__vmCritCtx = critId;        // بطاقات العناوين داخل نافذة الإدخال الصوتي
+    window.__vmPresetTitle = '';
+    window.__vmChipsPage = 0;
+    window.__vmFromDvs = true;
+    showPage('home'); // نافذة الإدخال الصوتي جزء من الرئيسية
+    openVoiceModeSheet();
 }
+// بطاقات العناوين داخل نافذة الإدخال الصوتي
+function vmChipsRender() {
+    const box = document.getElementById('vmChips');
+    if (!box) return;
+    if (window.__vmFromDvs) window.__vmFromDvs = false;
+    else { window.__vmCritCtx = ''; window.__vmPresetTitle = ''; window.__dvsKeepCrit = ''; }
+    const critId = window.__vmCritCtx;
+    const list = critId ? (window.__dvs.crit === critId && window.__dvs.list.length ? window.__dvs.list : dvsCandidates(critId)) : [];
+    box.hidden = !list.length;
+    if (!list.length) return;
+    window.__dvs.list = list;
+    const pg = window.__vmChipsPage || 0, items = list.slice(pg * 3, pg * 3 + 3);
+    document.getElementById('vmChipsRow').innerHTML = items.map((p, i) => `<button type="button" class="vm-chip${window.__vmPresetTitle === p.title ? ' on' : ''}" data-vmchip="${pg * 3 + i}"><b>${pfEsc(p.title)}</b><small class="${p.fresh ? 'new' : ''}">${pfEsc(p.subName)}${p.fresh ? ' • غير موثّق' : ''}</small></button>`).join('')
+        + (list.length > 3 ? '<button type="button" class="vm-chip more" data-vmchip="more"><i class="fas fa-rotate"></i> غيرها</button>' : '');
+    vmChipSelRender();
+}
+function vmChipSelRender() {
+    const el = document.getElementById('vmChipSel');
+    if (!el) return;
+    const t = window.__vmPresetTitle;
+    el.hidden = !t;
+    if (t) el.innerHTML = `<i class="fas fa-circle-check"></i><span>العنوان: ${pfEsc(t)}<br><small style="font-weight:700;opacity:.85">اضغط مطوّلاً على الميكروفون واذكر البنود فقط (المنفذون، المكان، المستفيدون…)</small></span><button type="button" onclick="vmChipClear()" aria-label="إلغاء العنوان"><i class="fas fa-xmark"></i></button>`;
+}
+function vmChipClear() {
+    window.__vmPresetTitle = '';
+    dvsSetTitle('');
+    window.__vmFromDvs = true;
+    vmChipsRender();
+}
+document.addEventListener('click', e => {
+    const c = e.target.closest && e.target.closest('[data-vmchip]');
+    if (!c) return;
+    const v = c.getAttribute('data-vmchip'), list = window.__dvs.list;
+    if (v === 'more') { window.__vmChipsPage = ((window.__vmChipsPage || 0) + 1) * 3 < list.length ? (window.__vmChipsPage || 0) + 1 : 0; window.__vmFromDvs = true; vmChipsRender(); return; }
+    const p = list[+v];
+    if (!p) return;
+    const tab = document.getElementById('voiceModeSheet')?.getAttribute('data-vm-tab');
+    if (tab === 'progressive') {
+        // التوجيه التدريجي: العنوان جاهز، فتبدأ أسئلة البنود مباشرة
+        closeVoiceModeSheet();
+        dvsPick(p);
+        return;
+    }
+    // الأمر الحر: يُثبَّت العنوان (والبند)، ويذكر المعلم البنود فقط بالضغط المطوّل
+    window.__vmPresetTitle = p.title;
+    dvsApplyCriterion(window.__vmCritCtx, p.subId, p.reportId);
+    dvsSetTitle(p.title);
+    window.__vmFromDvs = true;
+    vmChipsRender();
+});
 function dvsRender() {
     const st = window.__dvs, box = document.getElementById('dvsList');
     const page = st.list.slice(st.page * 3, st.page * 3 + 3);
@@ -14536,6 +14622,7 @@ function dvsPick(p) {
 function dvsOwnVoice() {
     window.__dvsKeepCrit = window.__dvs.crit;
     dvsClose();
+    showPage('home');
     startVoiceReportCommand();
 }
 function dvsWrite() {
@@ -16112,6 +16199,7 @@ function openVoiceModeSheet() {
     let vmTab = 'free';
     try { vmTab = localStorage.getItem('enjaz_voice_tab') || 'free'; } catch (_) { /* تجاهل */ }
     setVoiceModeTab(vmTab);
+    vmChipsRender();
     // إرشاد صوتي قصير: أول مرتين فقط يُفتح فيهما هذا الخيار، ثم يتوقف.
     try {
         const n = parseInt(localStorage.getItem('enjaz_howto_count') || '0', 10) || 0;
@@ -18349,7 +18437,7 @@ async function runVoiceFreeReviewPasses(title) {
     const statusEl = document.getElementById('voiceFreeConfirmReviewStatus');
     if (statusEl) statusEl.style.display = 'flex';
     await Promise.all([
-        reviewVoiceTitleWithAI(title, 'manualReportTitle', 'voiceFreeConfirmReviewStatus', 'voiceFreeTitleCorrectionNotice'),
+        window.__vmPresetTitle ? Promise.resolve() : reviewVoiceTitleWithAI(title, 'manualReportTitle', 'voiceFreeConfirmReviewStatus', 'voiceFreeTitleCorrectionNotice'),
         reviewVoiceFieldsWithAI(),
     ]);
     if (statusEl) statusEl.style.display = 'none';
@@ -18366,12 +18454,12 @@ async function handleVoiceFreeTranscript(transcript) {
     window.__voiceFreeMissingDismissed = false;
     window.__voiceFreeEditingField = null;
     // ذكر نوع خاص من التقارير بأي صيغة (تبادل الزيارات، تنفيذ استراتيجية، استخدام أداة أو تطبيق، التواصل مع أولياء الأمور) يضعه في قالبه تلقائياً.
-    autoSelectShortVariantFromText(transcript);
+    autoSelectShortVariantFromText((window.__vmPresetTitle ? window.__vmPresetTitle + ' ' : '') + transcript);
     // أمر جديد يبدأ بلا صور؛ أما الإضافة/إعادة المحاولة (والبانر مفتوح) فتحتفظ بما اختاره المعلم.
     if (!document.getElementById('voiceFreeConfirmBanner').classList.contains('show')) resetReportImagesForNewReport();
     resetFormFieldsForVoiceFreeCapture();
     showVoiceFreeConfirmBannerLoading();
-    const fields = await extractVoiceFreeFields(transcript);
+    const fields = await extractVoiceFreeFields(window.__vmPresetTitle ? 'تقرير عن ' + window.__vmPresetTitle + '. ' + transcript : transcript);
     const extractionFailed = fields === null;
     window.__voiceFreeExtractionFailed = extractionFailed;
     let title;
@@ -18417,8 +18505,11 @@ async function handleVoiceFreeTranscript(transcript) {
         applyVoiceFreeTitleSpillover(clean);
         title = clean.title;
     }
+    if (window.__vmPresetTitle) title = window.__vmPresetTitle; // عنوان اختاره المعلم من البطاقات
     const titleEl = document.getElementById('manualReportTitle');
     if (titleEl) titleEl.value = title;
+    if (window.__vmPresetTitle) { const sh = document.getElementById('shortReportTitle'); if (sh) sh.value = title; }
+    if (window.__vmCritCtx) dvsApplyCriterion(window.__vmCritCtx, (window.__dvs.list.find(x => x.title === window.__vmPresetTitle) || {}).subId, (window.__dvs.list.find(x => x.title === window.__vmPresetTitle) || {}).reportId);
     if (typeof updateReport === 'function') updateReport();
     renderVoiceFreeConfirmSummary();
     renderVoiceFreeFailureNotice();
@@ -18510,6 +18601,7 @@ function dismissVoiceFreeMissingReminder() {
 // (عبر buildVoiceCorrectionsFeedback الموجودة مسبقاً بلا أي تعديل) فتصل
 // ملاحظات القبول/التراجع لـ generate-report تماماً كما تصل من النظام التدريجي.
 function confirmVoiceFreeReportIssue() {
+    window.__vmPresetTitle = ''; window.__vmCritCtx = '';
     epRevealForm();
     hideVoiceFreeConfirmBanner();
     fillWithAI();
@@ -18540,6 +18632,7 @@ function syncVoiceFreeEditBtn() {
 // المستخدمة قبل كل التقاط جديد) حتى لا يبقى أي أثر له في النموذج - يعادل
 // منطقياً "رفض" في أول بانر بالنظام التدريجي (قبل أي كتابة فعلية في الحقول).
 function rejectVoiceFreeReportCommand() {
+    window.__vmPresetTitle = '';
     hideVoiceFreeConfirmBanner();
     resetFormFieldsForVoiceFreeCapture();
     showNotification('تم تجاهل الأمر الصوتي الحر، ولم تُحفظ أي بيانات منه.', 'warning');
