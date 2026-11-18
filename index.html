@@ -7369,6 +7369,39 @@ body.theme-dark .dvs-t, body.theme-dark .dvs-more button { background: #24344a; 
 .vm-chip-sel button { flex: none; border: none; background: rgba(255,255,255,.18); color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; }
 body.theme-dark .vm-chip { background: #24344a; border-color: rgba(255,255,255,.1); color: #e2e8f0; }
 </style>
+<style id="done-sheet-css">
+/* ===== شاشة «تم إصدار تقريرك» ===== */
+body.ds-open { overflow: hidden; }
+body.ds-open .notification { z-index: 9400; }
+.ds { position: fixed; inset: 0; z-index: 9300; display: flex; align-items: center; justify-content: center; padding: 20px; direction: rtl; font-family: var(--app-font);
+    background: radial-gradient(900px 700px at 50% 20%, rgba(10,107,79,.55), rgba(5,38,28,.92)); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+.ds-card { position: relative; width: 100%; max-width: 460px; background: var(--f-surface, #fff); color: var(--f-text, #0d1f19); border-radius: 30px; padding: 34px 22px 20px; text-align: center; box-shadow: 0 40px 90px -30px rgba(0,0,0,.6); }
+.ds.in .ds-card { animation: dsIn .45s cubic-bezier(.2,.9,.25,1.2); }
+@keyframes dsIn { from { transform: translateY(40px) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+.ds-x { position: absolute; top: 14px; left: 14px; width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--f-line, #e3e8e6); background: transparent; color: var(--f-muted, #5d6e68); font-size: 16px; cursor: pointer; }
+.ds-burst { position: relative; width: 104px; height: 104px; margin: 0 auto 14px; }
+.ds-ring { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle, rgba(232,191,85,.35), rgba(232,191,85,0) 70%); }
+.ds.in .ds-ring { animation: dsPulse 1.6s ease-out .2s 2; }
+@keyframes dsPulse { 0% { transform: scale(.7); opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }
+.ds-check { position: absolute; inset: 12px; border-radius: 50%; background: linear-gradient(145deg, #13a074, var(--f-em, #0a6b4f)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 38px; box-shadow: 0 16px 34px -14px rgba(10,107,79,.9), inset 0 0 0 4px rgba(232,191,85,.55); }
+.ds.in .ds-check { animation: dsPop .5s cubic-bezier(.2,.9,.3,1.4) .1s both; }
+@keyframes dsPop { from { transform: scale(.3); } to { transform: scale(1); } }
+.ds-card h2 { margin: 0; font-size: 26px; font-weight: 900; color: var(--f-em, #0a6b4f); }
+.ds-title { display: inline-block; margin: 10px auto 14px; max-width: 100%; padding: 8px 16px; border-radius: 14px; background: var(--f-em-soft, #e5f2ed); color: var(--f-text, #0d1f19); font-size: 15px; font-weight: 800; line-height: 1.6; }
+.ds-info { list-style: none; margin: 0 0 18px; padding: 0; text-align: right; }
+.ds-info li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 4px; font-size: 15.5px; font-weight: 600; line-height: 1.75; color: var(--f-text, #0d1f19); }
+.ds-info li i { flex: none; width: 34px; height: 34px; border-radius: 11px; background: var(--f-em-soft, #e5f2ed); color: var(--f-em, #0a6b4f); display: flex; align-items: center; justify-content: center; font-size: 15px; margin-top: 2px; }
+.ds-info b { color: var(--f-em, #0a6b4f); font-weight: 900; }
+.ds-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ds-actions button { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 15px 8px; border: none; border-radius: 18px; font-family: inherit; font-size: 16px; font-weight: 900; cursor: pointer; }
+.ds-pdf { background: var(--f-gold, #e8bf55); color: #3b2a05; box-shadow: 0 12px 24px -14px rgba(201,154,46,.9); }
+.ds-wa { background: #1e9e5a; color: #fff; box-shadow: 0 12px 24px -14px rgba(30,158,90,.9); }
+.ds-pf { width: 100%; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 13px; border-radius: 18px; border: 2px solid var(--f-em, #0a6b4f); background: transparent; color: var(--f-em, #0a6b4f); font-family: inherit; font-size: 15px; font-weight: 900; cursor: pointer; }
+.ds-pf small { font-weight: 700; color: var(--f-muted, #5d6e68); font-size: 12px; }
+.ds-edit { margin-top: 10px; border: none; background: transparent; color: var(--f-muted, #5d6e68); font-family: inherit; font-size: 13.5px; font-weight: 800; cursor: pointer; padding: 6px 10px; }
+body.theme-dark .ds-card { background: #1e293b; color: #e2e8f0; }
+body.theme-dark .ds-info li { color: #e2e8f0; }
+</style>
 </head>
 
 <body class="theme-default">
@@ -9628,7 +9661,7 @@ function tsGet() { try { const o = JSON.parse(localStorage.getItem(TS_KEY)); ret
 function tsValue() { return String(tsGet().v || '').trim(); }
 function tsApply(v) {
     const el = document.getElementById('teacherSubject'); if (el && el.value !== v) el.value = v;
-    const rep = document.getElementById('subject'); if (rep && !rep.value.trim()) rep.value = v;
+    tsFill();
     try { const cfg = pfCfg(); if (cfg && cfg.p && !String(cfg.p.subject || '').trim() && v) { cfg.p.subject = v; pfSaveCfg(); } } catch (_) { /* تجاهل */ }
     try { renderAccountSummary(); } catch (_) { /* تجاهل */ }
 }
@@ -9641,6 +9674,13 @@ function tsSave(v, u, fromSync) {
     if (!fromSync) rsSchedule(1500);
 }
 document.addEventListener('DOMContentLoaded', () => { const v = tsValue(); if (v) tsApply(v); });
+// كل خانات «المادة» في القوالب: الطويل، استمارة تبادل الزيارات، قالب الأدوات والتطبيقات.
+const TS_FIELD_IDS = ['subject', 'visitSubject', 'dv_tool_subject'];
+function tsFill() {
+    const v = tsValue();
+    if (!v) return;
+    TS_FIELD_IDS.forEach(id => { const el = document.getElementById(id); if (el && !String(el.value || '').trim()) { el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); } });
+}
 
 // ==================== مزامنة التقارير مع حساب المعلم ====================
 // كل تقرير يُحفظ أو يُحذف يُزامَن في الخلفية مع حساب المعلم (خاص به)، فتظهر تقاريره في أي متصفح
@@ -12584,6 +12624,7 @@ function applyShortVariantUI() {
 }
 
 function setShortVariant(variant, opts = {}) {
+    setTimeout(tsFill, 0);
     const next = (variant === 'visit' || DOC_VARIANTS[variant]) ? variant : 'general';
     const prev = window.__shortVariant;
     const changed = prev !== next;
@@ -16319,6 +16360,7 @@ function openManualPage(opts) {
     const pg = document.getElementById('manualPage');
     if (!pg) return;
     mpMountForm();
+    tsFill();
     const review = !!(opts && opts.review);
     document.getElementById('mpDone').style.display = review ? 'flex' : 'none';
     document.getElementById('mpAfter').style.display = review ? 'grid' : 'none';
@@ -16342,9 +16384,32 @@ function closeManualPage(fromHistory) {
 window.addEventListener('popstate', () => closeManualPage(true));
 // بعد أي توليد ناجح (من هذه الصفحة أو الصوت أو الشريط السفلي): تُفتح الصفحة على النتيجة مع أزرار التنزيل والمشاركة.
 function mpAfterGenerate() {
-    openManualPage({ review: true });
+    closeManualPage();
+    openDoneSheet();
     setTimeout(() => { const gb = document.getElementById('aiGuideBox'); if (gb) gb.style.display = 'none'; }, 0);
 }
+// شاشة «تم إصدار تقريرك»: أين حُفظ، وتحت أي معيار أُدرج برمز QR، وتنزيل PDF أو واتساب.
+function openDoneSheet() {
+    const r = getSavedReportsMap()[window.__curReportKey] || {};
+    const critId = reportEffectiveCriterionId(r);
+    const crit = (window.allCriteria || []).find(c => c.id === critId);
+    document.getElementById('dsTitle').textContent = r.title || document.getElementById('manualReportTitle')?.value || '';
+    document.getElementById('dsWhere').innerHTML = crit
+        ? `وأُدرج <b>برمز QR</b> تحت معيار <b>«${pfEsc(crit.name)}»</b> في ملف الشواهد الوظيفية.`
+        : `وأُدرج <b>برمز QR</b> في ملف الشواهد الوظيفية ضمن <b>«تقارير أخرى»</b>.`;
+    const el = document.getElementById('doneSheet');
+    el.style.display = 'flex';
+    el.classList.remove('in'); void el.offsetWidth; el.classList.add('in');
+    document.body.classList.add('ds-open');
+}
+function closeDoneSheet() {
+    const el = document.getElementById('doneSheet');
+    if (!el || el.style.display === 'none') return;
+    el.style.display = 'none';
+    document.body.classList.remove('ds-open');
+}
+function dsPortfolio() { closeDoneSheet(); openPortfolio(); }
+function dsEdit() { closeDoneSheet(); openManualPage({ review: true }); setTimeout(mpReviewFields, 250); }
 async function mpGenerate() {
     const t = document.getElementById('manualReportTitle');
     if (!t || !t.value.trim()) {
@@ -16959,6 +17024,7 @@ function stopVoiceFieldListening() {
 }
 
 function startVoiceFieldWizard() {
+    tsFill();
     window.__ttsVoiceSession = true;
     if (ttsMode() === 'all') ttsUnlock();
     window.__voiceFieldStepIndex = 0;
@@ -16969,6 +17035,8 @@ function startVoiceFieldWizard() {
 }
 
 function isVoiceFieldStepSkipped(step) {
+    // «المادة» معروفة من البيانات الأساسية: لا داعي لسؤال المعلم عنها
+    if (TS_FIELD_IDS.includes(step.elId) && tsValue() && String(document.getElementById(step.elId)?.value || '').trim()) return true;
     return typeof step.skipIf === 'function' && step.skipIf();
 }
 
@@ -18555,6 +18623,7 @@ async function handleVoiceFreeTranscript(transcript) {
         applyVoiceFreeTitleSpillover(clean);
         title = clean.title;
     }
+    tsFill(); // «المادة» من البيانات الأساسية إن لم تُذكر في التسجيل
     if (window.__vmPresetTitle) title = window.__vmPresetTitle; // عنوان اختاره المعلم من البطاقات
     const titleEl = document.getElementById('manualReportTitle');
     if (titleEl) titleEl.value = title;
@@ -18691,6 +18760,7 @@ function rejectVoiceFreeReportCommand() {
 // ==================== التعبئة الذكية ====================
 async function fillWithAI() {
     epRevealForm();
+    tsFill();
     // زر التعبئة الذكية أصبح ضمن شريط التنقل السفلي ومتاح من أي صفحة، فنعيد المستخدم للرئيسية أولاً ليرى الحقول أثناء تعبئتها
     if (document.getElementById('accountPage') && getComputedStyle(document.getElementById('accountPage')).display !== 'none') {
         showPage('home');
@@ -19222,6 +19292,7 @@ function closeSettings() {
 // النوافذ المنبثقة الموجودة أصلاً في التطبيق (الإعدادات، التقارير المحفوظة).
 function showPage(name) {
     if (typeof closeManualPage === 'function') closeManualPage();
+    if (typeof closeDoneSheet === 'function') closeDoneSheet();
     const home = document.getElementById('homePage');
     const account = document.getElementById('accountPage');
     const feedback = document.getElementById('feedbackPage');
@@ -19966,7 +20037,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <div class="mp-after" id="mpAfter" style="display:none;">
             <button type="button" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> تنزيل PDF</button>
             <button type="button" onclick="sharePDFWhatsApp()"><i class="fab fa-whatsapp"></i> واتساب</button>
-            <button type="button" onclick="mpReviewFields()"><i class="fas fa-pen-to-square"></i> مراجعة البنود</button>
+            <button type="button" onclick="mpReviewFields()"><i class="fas fa-pen-to-square"></i> مراجعة البنود وتحريرها</button>
         </div>
     </footer>
 </div>
@@ -19996,6 +20067,26 @@ document.addEventListener("DOMContentLoaded", async () => {
             <button type="button" id="dvsMoreBtn" onclick="dvsMore()"><i class="fas fa-rotate"></i> اقتراحات أخرى</button>
             <button type="button" onclick="dvsOwnVoice()"><i class="fas fa-microphone"></i> أقول عنواني بصوتي</button>
         </div>
+    </div>
+</div>
+
+<!-- ========== شاشة «تم إصدار تقريرك» ========== -->
+<div id="doneSheet" class="ds" role="dialog" aria-modal="true" aria-labelledby="dsHead" style="display:none;">
+    <div class="ds-card">
+        <button type="button" class="ds-x" onclick="closeDoneSheet()" aria-label="إغلاق"><i class="fas fa-xmark"></i></button>
+        <div class="ds-burst"><span class="ds-ring"></span><span class="ds-check"><i class="fas fa-check"></i></span></div>
+        <h2 id="dsHead">تم إصدار تقريرك</h2>
+        <div class="ds-title" id="dsTitle"></div>
+        <ul class="ds-info">
+            <li><i class="fas fa-folder-open"></i><span>محفوظ في <b>«التقارير المحفوظة»</b>،</span></li>
+            <li><i class="fas fa-qrcode"></i><span id="dsWhere"></span></li>
+        </ul>
+        <div class="ds-actions">
+            <button type="button" class="ds-pdf" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> تنزيل PDF</button>
+            <button type="button" class="ds-wa" onclick="sharePDFWhatsApp()"><i class="fab fa-whatsapp"></i> واتساب</button>
+        </div>
+        <button type="button" class="ds-pf" onclick="dsPortfolio()"><i class="fas fa-award"></i> الشواهد الوظيفية <small>تأكّد من مكانه</small></button>
+        <button type="button" class="ds-edit" onclick="dsEdit()"><i class="fas fa-pen-to-square"></i> مراجعة البنود وتحريرها</button>
     </div>
 </div>
 </body>
