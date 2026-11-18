@@ -7308,6 +7308,45 @@ body.mp-open .notification { z-index: 9100; }
 body.theme-dark .mp { background: #0f172a; color: #e2e8f0; }
 body.theme-dark .mp-bar, body.theme-dark .mp-foot, body.theme-dark .mp-seg, body.theme-dark .mp-input, body.theme-dark .mp-chips button, body.theme-dark .mp-after button, body.theme-dark .mp-back { background: #1e293b; border-color: rgba(255,255,255,.1); color: #e2e8f0; }
 </style>
+<style id="dvs-css">
+/* ===== ورقة «تقرير جديد للمعيار»: الصوتي أولاً مع عناوين مقترحة ===== */
+.dvs-backdrop { position: fixed; inset: 0; background: rgba(5,20,15,.45); z-index: 9190; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+.dvs-backdrop.open { opacity: 1; pointer-events: auto; }
+.dvs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9200; max-width: 640px; margin: 0 auto; background: var(--f-surface, #fff); color: var(--f-text, #0d1f19);
+    border-radius: 28px 28px 0 0; padding: 10px 18px calc(18px + env(safe-area-inset-bottom, 0px)); direction: rtl; font-family: var(--app-font);
+    transform: translateY(105%); transition: transform .3s cubic-bezier(.2,.8,.2,1); box-shadow: 0 -20px 50px -20px rgba(0,0,0,.35); max-height: 88vh; overflow-y: auto; }
+.dvs.open { transform: translateY(0); }
+.dvs-handle { width: 46px; height: 5px; border-radius: 3px; background: #d5dcd9; margin: 2px auto 10px; }
+.dvs-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.dvs-head-tx { flex: 1; min-width: 0; }
+.dvs-head-tx small { display: block; font-size: 12.5px; color: var(--f-muted, #5d6e68); font-weight: 700; }
+.dvs-head-tx b { display: block; font-size: 17px; font-weight: 900; line-height: 1.5; color: var(--f-em, #0a6b4f); }
+.dvs-x { flex: none; width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--f-line, #e3e8e6); background: transparent; color: var(--f-text, #0d1f19); font-size: 16px; cursor: pointer; }
+.dvs-voice { position: relative; width: 100%; display: flex; align-items: center; gap: 14px; padding: 20px 16px; border: none; border-radius: 22px; background: var(--f-em, #0a6b4f); color: #fff; text-align: right; font-family: inherit; cursor: pointer; box-shadow: 0 14px 30px -16px rgba(10,107,79,.8); }
+.dvs-voice:active { transform: scale(.98); }
+.dvs-vic { flex: none; width: 58px; height: 58px; border-radius: 18px; background: rgba(255,255,255,.15); color: var(--f-gold, #e8bf55); display: flex; align-items: center; justify-content: center; font-size: 26px; }
+.dvs-vtx b { display: block; font-size: 20px; font-weight: 900; }
+.dvs-vtx small { display: block; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.85); line-height: 1.6; margin-top: 2px; }
+.dvs-badge { position: absolute; top: 10px; left: 12px; background: var(--f-gold, #e8bf55); color: #3b2a05; border-radius: 999px; padding: 2px 10px; font-size: 11px; font-weight: 900; }
+.dvs-write { display: block; margin: 12px auto 4px; border: none; background: transparent; color: var(--f-muted, #5d6e68); font-family: inherit; font-size: 14px; font-weight: 800; cursor: pointer; padding: 8px 14px; }
+.dvs-write i { margin-left: 6px; }
+.dvs-lead { font-size: 14.5px; font-weight: 900; margin: 0 2px 10px; color: var(--f-text, #0d1f19); }
+.dvs-lead i { color: var(--f-gold2, #c99a2e); margin-left: 6px; }
+.dvs-t { width: 100%; display: flex; align-items: center; gap: 12px; text-align: right; margin-bottom: 9px; padding: 13px 14px; border-radius: 18px; border: 1.5px solid var(--f-line, #e3e8e6); background: var(--f-surface, #fff); color: var(--f-text, #0d1f19); font-family: inherit; cursor: pointer; }
+.dvs-t:active { background: var(--f-em-soft, #e5f2ed); border-color: var(--f-em, #0a6b4f); }
+.dvs-n { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--f-em-soft, #e5f2ed); color: var(--f-em, #0a6b4f); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; }
+.dvs-tt { flex: 1; min-width: 0; }
+.dvs-tt b { display: block; font-size: 15px; font-weight: 800; line-height: 1.55; }
+.dvs-tt small { display: block; font-size: 12px; color: var(--f-muted, #5d6e68); font-weight: 700; margin-top: 2px; }
+.dvs-tt small.new { color: var(--f-gold2, #c99a2e); }
+.dvs-go { flex: none; color: var(--f-em, #0a6b4f); font-size: 18px; }
+.dvs-more { display: flex; gap: 8px; margin-top: 4px; }
+.dvs-more button { flex: 1; padding: 11px 6px; border-radius: 14px; border: 1px solid var(--f-line, #e3e8e6); background: var(--f-surface, #fff); color: var(--f-text, #0d1f19); font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+.dvs-more button i { color: var(--f-em, #0a6b4f); margin-left: 4px; }
+.dvs-empty { padding: 14px; border-radius: 16px; background: var(--f-bg, #f4f6f5); font-size: 13.5px; font-weight: 700; color: var(--f-muted, #5d6e68); line-height: 1.7; margin-bottom: 10px; }
+body.theme-dark .dvs { background: #1e293b; color: #e2e8f0; }
+body.theme-dark .dvs-t, body.theme-dark .dvs-more button { background: #24344a; border-color: rgba(255,255,255,.1); color: #e2e8f0; }
+</style>
 </head>
 
 <body class="theme-default">
@@ -14399,6 +14438,114 @@ function dashRender() {
     const portfolio = `<button type="button" class="dash-btn wide" onclick="openPortfolio()"><i class="fas fa-award"></i> ملف الإنجاز</button>`;
     box.innerHTML = hero + cov + next + analysis + goal + list + portfolio;
 }
+// ===== تقرير جديد لمعيار محدد: الصوتي أولاً مع عناوين مقترحة من بنك المعيار =====
+window.__dvs = { crit: '', page: 0, list: [] };
+const dvsNorm = t => String(t || '').replace(/[\u064B-\u0652]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/\s+/g, ' ').trim();
+// عناوين المعيار مرتّبة: البنود غير الموثّقة أولاً، ومتنوّعة بين البنود، وبلا عناوين استُخدمت من قبل.
+function dvsCandidates(critId) {
+    const subs = (window.subcategoriesByCriterion && window.subcategoriesByCriterion[critId]) || [];
+    const used = new Set(Object.values(getSavedReportsMap()).map(r => dvsNorm(r && r.title)));
+    const coveredSubs = new Set();
+    Object.values(getSavedReportsMap()).forEach(r => {
+        if (!r || reportEffectiveCriterionId(r) !== critId) return;
+        const sid = r.templateStyle === 'short' ? (r.short && r.short.subcategoryId) : r.subcategoryId;
+        if (sid) coveredSubs.add(String(sid));
+    });
+    const groups = subs.map(sub => ({ sub, covered: coveredSubs.has(String(sub.id)), reps: ((window.reportsBySubcategory && window.reportsBySubcategory[sub.id]) || []).filter(r => r && r.name && !used.has(dvsNorm(r.name))) }))
+        .filter(g => g.reps.length);
+    groups.sort((a, b) => Number(a.covered) - Number(b.covered));
+    const out = [];
+    let i = 0, added = true;
+    while (added) { // تناوب بين البنود حتى تتنوّع الاقتراحات
+        added = false;
+        groups.forEach(g => { if (g.reps[i]) { out.push({ title: g.reps[i].name, reportId: g.reps[i].id, subId: g.sub.id, subName: g.sub.name, fresh: !g.covered }); added = true; } });
+        i++;
+    }
+    return out;
+}
+function dvsOpen(critId) {
+    const c = (window.allCriteria || []).find(x => x.id === critId);
+    window.__dvs = { crit: critId, page: 0, list: dvsCandidates(critId) };
+    document.getElementById('dvsTitle').textContent = c ? c.name : '';
+    document.getElementById('dvsChoose').style.display = '';
+    document.getElementById('dvsTitles').style.display = 'none';
+    document.getElementById('dvsBackdrop').classList.add('open');
+    document.getElementById('dvs').classList.add('open');
+}
+function dvsClose() {
+    document.getElementById('dvsBackdrop').classList.remove('open');
+    document.getElementById('dvs').classList.remove('open');
+}
+function dvsVoice() {
+    document.getElementById('dvsChoose').style.display = 'none';
+    document.getElementById('dvsTitles').style.display = '';
+    dvsRender();
+}
+function dvsRender() {
+    const st = window.__dvs, box = document.getElementById('dvsList');
+    const page = st.list.slice(st.page * 3, st.page * 3 + 3);
+    document.getElementById('dvsMoreBtn').style.display = st.list.length > 3 ? '' : 'none';
+    if (!page.length) {
+        box.innerHTML = '<div class="dvs-empty"><i class="fas fa-circle-info"></i> لا توجد عناوين جاهزة جديدة لهذا المعيار. قل عنوان تقريرك بصوتك، أو اكتبه.</div>';
+        return;
+    }
+    box.innerHTML = page.map((p, i) => `<button type="button" class="dvs-t" data-dvs="${st.page * 3 + i}"><span class="dvs-n">${pfNum(i + 1)}</span><span class="dvs-tt"><b>${pfEsc(p.title)}</b><small class="${p.fresh ? 'new' : ''}">البند: ${pfEsc(p.subName)}${p.fresh ? ' • غير موثّق بعد' : ''}</small></span><i class="fas fa-microphone dvs-go"></i></button>`).join('');
+}
+function dvsMore() { const st = window.__dvs; st.page = (st.page + 1) * 3 < st.list.length ? st.page + 1 : 0; dvsRender(); }
+document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('[data-dvs]');
+    if (b) dvsPick(window.__dvs.list[+b.getAttribute('data-dvs')]);
+});
+// يضبط المعيار (والبند والعنوان الجاهز إن وُجدا) في نموذج التقرير.
+function dvsApplyCriterion(critId, subId, reportId) {
+    const sel = document.getElementById('criterionSelect');
+    if (!sel || !Array.from(sel.options).some(o => o.value === critId)) return;
+    sel.value = critId;
+    try { loadSubcategories(); } catch (_) { /* تجاهل */ }
+    const ss = document.getElementById('subcategorySelect');
+    if (subId && ss && Array.from(ss.options).some(o => o.value === String(subId))) {
+        ss.value = String(subId);
+        try { loadReports(); } catch (_) { /* تجاهل */ }
+        const rs = document.getElementById('reportSelect');
+        if (reportId && rs && Array.from(rs.options).some(o => o.value === String(reportId))) rs.value = String(reportId);
+    }
+    try { toggleCriteriaCollapse(true); updateCriteriaCollapseStatus(); } catch (_) { /* تجاهل */ }
+}
+function dvsSetTitle(title) {
+    const lt = document.getElementById('manualReportTitle'), sh = document.getElementById('shortReportTitle');
+    if (lt) lt.value = title;
+    if (sh) sh.value = title;
+    try { updateReport(); } catch (_) { /* تجاهل */ }
+}
+// اختيار عنوان: المعيار والبند والعنوان جاهزة، وتبدأ أسئلة الإدخال الصوتي مباشرة.
+function dvsPick(p) {
+    if (!p) return;
+    const critId = window.__dvs.crit;
+    dvsClose();
+    try { hideVoiceConfirmBanner(); hideVoiceFreeConfirmBanner(); } catch (_) { /* تجاهل */ }
+    window.__voicePendingNotes = '';
+    if (document.getElementById('voiceExtraNotesInput')) document.getElementById('voiceExtraNotesInput').value = '';
+    try { resetReportImagesForNewReport(); } catch (_) { /* تجاهل */ }
+    dvsApplyCriterion(critId, p.subId, p.reportId);
+    dvsSetTitle(p.title);
+    try { autoSelectShortVariantFromText(p.title); } catch (_) { /* تجاهل */ }
+    showNotification('العنوان: ' + p.title + ' — جاوب على الأسئلة بصوتك.');
+    startVoiceFieldWizard();
+}
+// عنوان من عند المعلم بصوته: المسار الصوتي المعتاد مع إبقاء المعيار المختار.
+function dvsOwnVoice() {
+    window.__dvsKeepCrit = window.__dvs.crit;
+    dvsClose();
+    startVoiceReportCommand();
+}
+function dvsWrite() {
+    const critId = window.__dvs.crit;
+    dvsClose();
+    dvsApplyCriterion(critId);
+    openManualPage();
+    const c = (window.allCriteria || []).find(x => x.id === critId);
+    if (c) showNotification('اخترت المعيار: ' + c.name + '. اكتب عنوان التقرير.');
+}
 // يفتح نموذج إنشاء التقرير (القالب الطويل) ومعه المعيار المختار.
 function dashStartReport(critId) {
     showPage('home');
@@ -14421,7 +14568,7 @@ function openResultsAnalysis() {
 }
 document.addEventListener('click', e => {
     const b = e.target.closest && e.target.closest('[data-dash-add]');
-    if (b) dashStartReport(b.getAttribute('data-dash-add'));
+    if (b) dvsOpen(b.getAttribute('data-dash-add'));
 });
 // الزر الأوسط في الشريط السفلي: داخل نموذج إنشاء التقرير فقط (home) يصبح «توليد التقرير»؛
 // وفي كل الصفحات الأخرى (الرئيسية، رأيك، حسابي، ملف الإنجاز...) يبقى «+ تقرير جديد» ويفتح النموذج.
@@ -16355,6 +16502,7 @@ function confirmVoiceReportCommand() {
     }
     // تقرير صوتي جديد: لا تنتقل إليه صور التقرير السابق.
     resetReportImagesForNewReport();
+    if (window.__dvsKeepCrit) { dvsApplyCriterion(window.__dvsKeepCrit); window.__dvsKeepCrit = ''; }
     updateReport();
     // بعد تأكيد العنوان، نكمل بمعالج الخانات الثماني (الفصل الدراسي، مكان
     // التنفيذ، الصف، الفصل، المستهدفون، العدد، المادة، الدرس) بالتتابع، وهو
@@ -19675,6 +19823,34 @@ document.addEventListener("DOMContentLoaded", async () => {
             <button type="button" onclick="mpReviewFields()"><i class="fas fa-pen-to-square"></i> مراجعة البنود</button>
         </div>
     </footer>
+</div>
+
+<!-- ========== تقرير جديد لمعيار محدد (من «الخطوة التالية» أو قائمة المعايير) ==========
+     الإدخال الصوتي هو المسار الأساسي: تُقترح ٣ عناوين من بنك عناوين المعيار (البنود غير الموثّقة أولاً)،
+     واختيار عنوان يبدأ أسئلة الإدخال الصوتي مباشرة بالمعيار والبند والعنوان. -->
+<div id="dvsBackdrop" class="dvs-backdrop" onclick="dvsClose()"></div>
+<div id="dvs" class="dvs" role="dialog" aria-modal="true" aria-labelledby="dvsTitle">
+    <div class="dvs-handle"></div>
+    <div class="dvs-head">
+        <button type="button" class="dvs-x" onclick="dvsClose()" aria-label="إغلاق"><i class="fas fa-xmark"></i></button>
+        <div class="dvs-head-tx"><small>تقرير جديد للمعيار</small><b id="dvsTitle"></b></div>
+    </div>
+    <div class="dvs-view" id="dvsChoose">
+        <button type="button" class="dvs-voice" onclick="dvsVoice()">
+            <span class="dvs-badge"><i class="fas fa-star"></i> الأسهل</span>
+            <span class="dvs-vic"><i class="fas fa-microphone-lines"></i></span>
+            <span class="dvs-vtx"><b>بصوتك</b><small>نقترح لك عنوان التقرير، وتجاوب على أسئلة قصيرة بصوتك.</small></span>
+        </button>
+        <button type="button" class="dvs-write" onclick="dvsWrite()"><i class="fas fa-keyboard"></i> أو بالكتابة</button>
+    </div>
+    <div class="dvs-view" id="dvsTitles" style="display:none">
+        <div class="dvs-lead"><i class="fas fa-wand-magic-sparkles"></i> اختر عنوان التقرير، ونكمل بصوتك</div>
+        <div id="dvsList"></div>
+        <div class="dvs-more">
+            <button type="button" id="dvsMoreBtn" onclick="dvsMore()"><i class="fas fa-rotate"></i> اقتراحات أخرى</button>
+            <button type="button" onclick="dvsOwnVoice()"><i class="fas fa-microphone"></i> أقول عنواني بصوتي</button>
+        </div>
+    </div>
 </div>
 </body>
 </html>
