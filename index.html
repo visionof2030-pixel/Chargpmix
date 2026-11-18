@@ -14562,6 +14562,32 @@ function dvsPersonalize(title) {
     if (out === title) out = title.replace(re2, (m, pre, s0) => (dvsNorm(s0) === dvsNorm(subj) ? m : pre + subj));
     return out;
 }
+// كلمات تخص كل مادة: لترتيب العناوين المقترحة حسب قربها من تخصص المعلم.
+const DVS_SUBJECT_GROUPS = [
+    { names: ['انجليزي', 'english'], kw: ['انجليزي', 'english', 'vocabulary', 'grammar', 'phonics', 'المحادثه', 'محادثه'] },
+    { names: ['عربي', 'لغتي'], kw: ['اللغه العربيه', 'لغتي', 'النحو', 'الاملاء', 'الاعراب', 'البلاغه', 'الخط العربي', 'التعبير الكتابي'] },
+    { names: ['رياضيات'], kw: ['الرياضيات', 'رياضيات', 'المسائل', 'الكسور', 'الجبر', 'الهندسه', 'العمليات الحسابيه', 'جدول الضرب'] },
+    { names: ['علوم', 'فيزياء', 'كيمياء', 'احياء'], kw: ['العلوم', 'المختبر', 'مختبر', 'التجارب العلميه', 'تجربه علميه', 'الفيزياء', 'الكيمياء', 'الاحياء'] },
+    { names: ['اسلامي', 'قران', 'دين'], kw: ['القران', 'التلاوه', 'التجويد', 'التحفيظ', 'تحفيظ', 'الحديث الشريف', 'الفقه', 'التوحيد', 'التفسير', 'الدراسات الاسلاميه'] },
+    { names: ['اجتماعي'], kw: ['الاجتماعيات', 'الدراسات الاجتماعيه', 'الخرائط', 'الجغرافيا'] },
+    { names: ['رقمي', 'حاسب', 'حاسوب'], kw: ['الحاسب', 'الحاسوب', 'البرمجه', 'المهارات الرقميه'] },
+    { names: ['فني'], kw: ['التربيه الفنيه', 'الرسم'] },
+    { names: ['بدني'], kw: ['التربيه البدنيه', 'اللياقه'] },
+];
+function dvsSubjectGroup() {
+    const v = dvsNorm(tsValue()).toLowerCase();
+    if (!v) return -1;
+    return DVS_SUBJECT_GROUPS.findIndex(g => g.names.some(n => v.includes(dvsNorm(n))));
+}
+// +2 عنوان يذكر مادة المعلم، 0 عام يصلح لأي مادة، -3 عنوان يخص مادة أخرى.
+function dvsRelevance(title, gi) {
+    if (gi < 0) return 0;
+    const t = ' ' + dvsNorm(title).toLowerCase() + ' ';
+    const has = kw => t.includes(dvsNorm(kw).toLowerCase());
+    if (DVS_SUBJECT_GROUPS[gi].kw.some(has) || (tsValue() && t.includes(dvsNorm(tsValue())))) return 2;
+    if (DVS_SUBJECT_GROUPS.some((g, i) => i !== gi && g.kw.some(has))) return -3;
+    return 0;
+}
 function dvsCandidates(critId) {
     const subs = (window.subcategoriesByCriterion && window.subcategoriesByCriterion[critId]) || [];
     const used = new Set(Object.values(getSavedReportsMap()).map(r => dvsNorm(r && r.title)));
@@ -14573,15 +14599,19 @@ function dvsCandidates(critId) {
     });
     const groups = subs.map(sub => ({ sub, covered: coveredSubs.has(String(sub.id)), reps: ((window.reportsBySubcategory && window.reportsBySubcategory[sub.id]) || []).filter(r => r && r.name && !used.has(dvsNorm(r.name))) }))
         .filter(g => g.reps.length);
-    groups.sort((a, b) => Number(a.covered) - Number(b.covered));
+    // داخل كل بند: الأقرب لمادة المعلم أولاً
+    const gi = dvsSubjectGroup();
+    groups.forEach(g => { g.reps = g.reps.map(r => ({ r, rel: dvsRelevance(dvsPersonalize(r.name), gi) })).sort((a, b) => b.rel - a.rel).map(x => Object.assign({}, x.r, { __rel: x.rel })); g.best = g.reps.length ? g.reps[0].__rel : -9; });
+    groups.sort((a, b) => (Number(a.covered) - Number(b.covered)) || (b.best - a.best));
     const out = [];
     let i = 0, added = true;
     while (added) { // تناوب بين البنود حتى تتنوّع الاقتراحات
         added = false;
-        groups.forEach(g => { if (g.reps[i]) { out.push({ title: dvsPersonalize(g.reps[i].name), reportId: g.reps[i].id, subId: g.sub.id, subName: g.sub.name, fresh: !g.covered }); added = true; } });
+        groups.forEach(g => { if (g.reps[i]) { out.push({ title: dvsPersonalize(g.reps[i].name), reportId: g.reps[i].id, subId: g.sub.id, subName: g.sub.name, fresh: !g.covered, rel: g.reps[i].__rel || 0 }); added = true; } });
         i++;
     }
-    return out;
+    // عناوين مادة أخرى في آخر القائمة (تبقى متاحة عبر «غيرها»)
+    return out.filter(x => x.rel >= 0).concat(out.filter(x => x.rel < 0));
 }
 function dvsOpen(critId) {
     const c = (window.allCriteria || []).find(x => x.id === critId);
@@ -16560,7 +16590,80 @@ function hideVoiceConfirmBanner() {
 // التراجع/التراجع-عن-التراجع أين تكتب بلا الحاجة لتمريرهما كل مرة.
 window.__voiceTitleCorrection = null;
 
+// ===== تصحيح محلي لعنوان التقرير الصوتي بمصطلحات التعليم =====
+// التعرّف الصوتي قد يسمع «مجتمع التعلم المهني» كـ«مجتمع ألمه المهني». نقارن العنوان بمصطلحات تعرفها
+// الأداة (المعايير والبنود وبنك العناوين وقائمة مصطلحات شائعة)، ونصحّح كلمة غير معروفة واحدة داخل
+// عبارة تطابق بقية كلماتها مصطلحاً معروفاً وتشبهه بقوة. المعلم يستطيع التراجع بضغطة.
+const VT_TERMS = ['مجتمع التعلم المهني', 'مجتمعات التعلم المهنية', 'التعلم التعاوني', 'التعلم النشط', 'التعلم باللعب', 'التعلم الذاتي', 'الخطة العلاجية', 'الخطة الإثرائية',
+    'أولياء الأمور', 'التواصل مع أولياء الأمور', 'الإذاعة المدرسية', 'اليوم الوطني', 'يوم التأسيس', 'يوم العلم', 'الاختبارات التشخيصية', 'التقويم البنائي', 'التقويم الختامي', 'التقويم التكويني',
+    'استراتيجيات التدريس', 'استراتيجية التدريس', 'الفصول الافتراضية', 'منصة مدرستي', 'الرخصة المهنية', 'النمو المهني', 'التطوير المهني', 'الدروس التطبيقية', 'درس تطبيقي',
+    'حصة نموذجية', 'الزيارات الصفية', 'تبادل الزيارات', 'مهارات التفكير', 'التفكير الناقد', 'الواجبات المنزلية', 'الإدارة الصفية', 'البيئة الصفية', 'البيئة التعليمية',
+    'الطلاب المتعثرين', 'الطلاب الموهوبين', 'الطلاب المتفوقين', 'صعوبات التعلم', 'التربية الخاصة', 'الأنشطة اللاصفية', 'النشاط الطلابي', 'التحصيل الدراسي', 'نواتج التعلم',
+    'نتائج المتعلمين', 'خطة التعلم', 'الشراكة المجتمعية', 'الحقيبة التدريبية', 'ورشة عمل', 'الدورات التدريبية', 'ملف الإنجاز', 'السبورة التفاعلية', 'الوسائل التعليمية',
+    'تقنيات التعليم', 'الاختبارات المركزية', 'اختبارات نافس', 'الأهداف السلوكية', 'الأهداف التعليمية', 'الخطة الأسبوعية', 'الخطة الفصلية', 'تحليل النتائج', 'التغذية الراجعة'];
+const vtNorm = w => dvsNorm(w).replace(/^و(?=ال)/, '').replace(/ى/g, 'ي');
+function vtLev(a, b) {
+    const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
+    let prev = Array.from({ length: n + 1 }, (_, j) => j);
+    for (let i = 1; i <= m; i++) { const cur = [i]; for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; }
+    return prev[n];
+}
+function vtGlossary() {
+    if (window.__vtGloss && window.__vtGloss.n === (window.allReportsList || []).length) return window.__vtGloss;
+    const src = VT_TERMS.slice();
+    (window.allCriteria || []).forEach(c => src.push(c.name));
+    Object.values(window.subcategoriesByCriterion || {}).forEach(a => (a || []).forEach(x => x && src.push(x.name)));
+    Object.values(window.reportsBySubcategory || {}).forEach(a => (a || []).forEach(x => x && src.push(x.name)));
+    const known = new Set(), phrases = new Map();
+    // كلمات واجهة الأداة كلها (قوائم وقوالب وتلميحات) تُعدّ معروفة: لا نصحّح كلمة حقيقية مثل «التواصل»
+    try { (document.body.innerText || '').split(/[^\u0600-\u06FF]+/).forEach(x => { if (x.length > 1) known.add(vtNorm(x)); }); } catch (_) { /* تجاهل */ }
+    src.forEach(t => {
+        const w = String(t || '').split(/\s+/).filter(Boolean);
+        w.forEach(x => known.add(vtNorm(x)));
+        for (let L = 2; L <= 4; L++) for (let i = 0; i + L <= w.length; i++) { const ph = w.slice(i, i + L); const k = ph.map(vtNorm).join(' '); if (!phrases.has(k)) phrases.set(k, ph); }
+    });
+    window.__vtGloss = { known, phrases: Array.from(phrases.values()), n: (window.allReportsList || []).length };
+    return window.__vtGloss;
+}
+function vtLocalFix(title) {
+    const words = String(title || '').trim().split(/\s+/).filter(Boolean);
+    if (words.length < 2) return title;
+    const g = vtGlossary();
+    for (let L = 4; L >= 2; L--) {
+        for (let i = 0; i + L <= words.length; i++) {
+            const win = words.slice(i, i + L), wn = win.map(vtNorm);
+            const unknown = wn.map((w, k) => (!g.known.has(w) ? k : -1)).filter(k => k >= 0);
+            if (unknown.length !== 1) continue; // كلمة واحدة غير معروفة فقط
+            const u = unknown[0];
+            let best = null;
+            for (const ph of g.phrases) {
+                if (ph.length !== L) continue;
+                const pn = ph.map(vtNorm);
+                if (pn.some((w, k) => k !== u && w !== wn[k])) continue; // بقية الكلمات مطابقة تماماً
+                if (pn[u][0] !== wn[u][0]) continue;
+                const a = wn.join(' '), b = pn.join(' '), sim = 1 - vtLev(a, b) / Math.max(a.length, b.length);
+                // الكلمة الغريبة بين كلمتين صحيحتين من المصطلح، أو قريبة جداً من الكلمة الصحيحة (خطأ إملائي خفيف)
+                const wordSim = 1 - vtLev(wn[u], pn[u]) / Math.max(wn[u].length, pn[u].length);
+                const sandwiched = u > 0 && u < L - 1;
+                if (sim >= 0.74 && (sandwiched || wordSim >= 0.75) && (!best || sim > best.sim)) best = { sim, word: ph[u] };
+            }
+            if (best) { const out = words.slice(); out[i + u] = best.word; return out.join(' '); }
+        }
+    }
+    return title;
+}
 async function reviewVoiceTitleWithAI(originalTitle, targetElId = 'voiceConfirmTitleInput', reviewStatusElId = 'voiceConfirmReviewStatus', noticeElId = 'voiceConfirmTitleCorrectionNotice') {
+    // ١) تصحيح محلي فوري بمصطلحات التعليم
+    try {
+        const fixed = vtLocalFix(originalTitle);
+        const input0 = document.getElementById(targetElId);
+        if (fixed && fixed !== originalTitle && input0 && input0.value.trim() === originalTitle.trim()) {
+            input0.value = fixed;
+            window.__voiceTitleCorrection = { original: originalTitle, corrected: fixed, reverted: false, targetElId, noticeElId, local: true };
+            renderVoiceTitleCorrectionNotice();
+            originalTitle = fixed;
+        }
+    } catch (e) { console.warn('vtLocalFix:', e); }
     const reviewStatusEl = document.getElementById(reviewStatusElId);
     if (reviewStatusEl) reviewStatusEl.style.display = 'flex';
     try {
@@ -16569,7 +16672,7 @@ async function reviewVoiceTitleWithAI(originalTitle, targetElId = 'voiceConfirmT
         const invokePromise = supabaseClient.functions.invoke('review-voice-fields', {
             body: { candidate_fields: ['title'], context: { title: originalTitle } }
         });
-        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: null, error: new Error('timeout') }), 6000));
+        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: null, error: new Error('timeout') }), 15000));
         const { data, error } = await Promise.race([invokePromise, timeoutPromise]);
         if (error || !data || !data.corrections) return;
         const suggestion = data.corrections.title;
@@ -16580,7 +16683,8 @@ async function reviewVoiceTitleWithAI(originalTitle, targetElId = 'voiceConfirmT
         // لو عدّل المستخدم العنوان يدوياً أثناء الانتظار، لا نستبدل كتابته
         // الحالية بردّ متأخر كان مبنياً على النص القديم.
         if (!input || input.value.trim() !== originalTitle.trim()) return;
-        window.__voiceTitleCorrection = { original: originalTitle, corrected, reverted: false, targetElId, noticeElId };
+        const prevLocal = window.__voiceTitleCorrection && window.__voiceTitleCorrection.local && window.__voiceTitleCorrection.corrected === originalTitle ? window.__voiceTitleCorrection.original : null;
+        window.__voiceTitleCorrection = { original: prevLocal || originalTitle, corrected, reverted: false, targetElId, noticeElId };
         input.value = corrected;
         renderVoiceTitleCorrectionNotice();
     } catch (e) {
@@ -16596,7 +16700,7 @@ function buildVoiceTitleCorrectionNoticeHTML() {
     const cls = c.reverted ? 'voice-final-confirm-correction-item voice-final-confirm-correction-reverted' : 'voice-final-confirm-correction-item';
     const text = c.reverted
         ? `عنوان التقرير: ${escapeHtml(c.original)} <span style="opacity:.7">(تم التراجع عن اقتراح الذكاء الاصطناعي: ${escapeHtml(c.corrected)})</span>`
-        : `عنوان التقرير: <del>${escapeHtml(c.original)}</del> ← <b>${escapeHtml(c.corrected)}</b> <span style="opacity:.7">(اقتراح الذكاء الاصطناعي)</span>`;
+        : `عنوان التقرير: <del>${escapeHtml(c.original)}</del> ← <b>${escapeHtml(c.corrected)}</b> <span style="opacity:.7">(${c.local ? 'تصحيح تلقائي' : 'اقتراح الذكاء الاصطناعي'})</span>`;
     const btn = c.reverted
         ? `<button type="button" class="voice-final-confirm-correction-revert" onclick="undoRevertVoiceTitleCorrection()">تراجع عن التراجع</button>`
         : `<button type="button" class="voice-final-confirm-correction-revert" onclick="revertVoiceTitleCorrection()">إبقِ كما قلته</button>`;
