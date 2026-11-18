@@ -7361,6 +7361,11 @@ body.theme-dark .dvs-t, body.theme-dark .dvs-more button { background: #24344a; 
 .vm-chip small { font-size: 11px; font-weight: 700; color: var(--f-muted, #5d6e68); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .vm-chip small.new { color: var(--f-gold2, #c99a2e); }
 .vm-chip.on { border-color: var(--f-em, #0a6b4f); background: var(--f-em-soft, #e5f2ed); }
+.vm-chip.ai { border-color: var(--f-gold, #e8bf55); background: linear-gradient(135deg, #fffaf0, #fff); }
+.vm-chip.ai small { color: var(--f-gold2, #c99a2e); }
+.vm-chip.ai-loading { cursor: default; border-style: dashed; border-color: var(--f-gold, #e8bf55); color: var(--f-gold2, #c99a2e); animation: vmPulse 1.2s ease-in-out infinite; }
+.vm-chip.ai-loading b i { margin-left: 4px; }
+@keyframes vmPulse { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
 .vm-chip.more { justify-content: center; align-items: center; color: var(--f-em, #0a6b4f); font-weight: 900; font-size: 13px; min-width: 76px; }
 .vm-chips[hidden], .vm-chip-sel[hidden] { display: none !important; }
 .vm-chip-sel { display: flex; align-items: center; gap: 8px; margin-top: 4px; padding: 9px 12px; border-radius: 14px; background: var(--f-em, #0a6b4f); color: #fff; font-size: 13px; font-weight: 800; line-height: 1.6; }
@@ -14565,8 +14570,8 @@ function dvsPersonalize(title) {
 // كلمات تخص كل مادة: لترتيب العناوين المقترحة حسب قربها من تخصص المعلم.
 const DVS_SUBJECT_GROUPS = [
     { names: ['انجليزي', 'english'], kw: ['انجليزي', 'english', 'vocabulary', 'grammar', 'phonics', 'المحادثه', 'محادثه'] },
-    { names: ['عربي', 'لغتي'], kw: ['اللغه العربيه', 'لغتي', 'النحو', 'الاملاء', 'الاعراب', 'البلاغه', 'الخط العربي', 'التعبير الكتابي'] },
-    { names: ['رياضيات'], kw: ['الرياضيات', 'رياضيات', 'المسائل', 'الكسور', 'الجبر', 'الهندسه', 'العمليات الحسابيه', 'جدول الضرب'] },
+    { names: ['عربي', 'لغتي'], kw: ['اللغه العربيه', 'لغتي', 'النحو', 'الاملاء', 'الاعراب', 'البلاغه', 'الخط العربي', 'التعبير الكتابي', 'الصرف', 'الحروف الهجائيه'] },
+    { names: ['رياضيات'], kw: ['الرياضيات', 'رياضيات', 'المسائل', 'الكسور', 'الجبر', 'الهندسه', 'العمليات الحسابيه', 'جدول الضرب', 'الجمع', 'الطرح', 'الضرب', 'القسمه', 'الاعداد', 'المضاعفات', 'المعادلات', 'المساحه', 'المحيط'] },
     { names: ['علوم', 'فيزياء', 'كيمياء', 'احياء'], kw: ['العلوم', 'المختبر', 'مختبر', 'التجارب العلميه', 'تجربه علميه', 'الفيزياء', 'الكيمياء', 'الاحياء'] },
     { names: ['اسلامي', 'قران', 'دين'], kw: ['القران', 'التلاوه', 'التجويد', 'التحفيظ', 'تحفيظ', 'الحديث الشريف', 'الفقه', 'التوحيد', 'التفسير', 'الدراسات الاسلاميه'] },
     { names: ['اجتماعي'], kw: ['الاجتماعيات', 'الدراسات الاجتماعيه', 'الخرائط', 'الجغرافيا'] },
@@ -14638,6 +14643,36 @@ function dvsVoice() {
     showPage('home'); // نافذة الإدخال الصوتي جزء من الرئيسية
     openVoiceModeSheet();
 }
+// عناوين جديدة يولّدها الذكاء الاصطناعي (دالة suggest-titles): ٤–٦ كلمات، للمعيار وتخصص المعلم.
+// تُطلب مرة لكل (معيار + تخصص) في الجلسة، وتُضاف أول القائمة بعلامة ✨؛ عند التعذّر تبقى عناوين البنك.
+window.__aiTitles = {};
+function dvsAiKey(critId) { return critId + '|' + tsValue(); }
+async function dvsFetchAiTitles(critId) {
+    const k = dvsAiKey(critId), st = window.__aiTitles;
+    if (st[k] && (st[k].status === 'loading' || st[k].status === 'done')) return;
+    if (st[k] && st[k].status === 'failed' && Date.now() - (st[k].at || 0) < 60000) return; // لا إعادة فورية بعد التعذّر
+    st[k] = { status: 'loading', list: [] };
+    const used = Object.values(getSavedReportsMap()).map(r => r && r.title).filter(Boolean).slice(-40);
+    let list = [];
+    try {
+        const { data: sess } = await supabaseClient.auth.getSession();
+        if (sess && sess.session) {
+            const call = supabaseClient.functions.invoke('suggest-titles', { body: { criterion_id: critId, subject: tsValue(), avoid: used, count: 3, role: getBackendRole(document.getElementById('role')?.value) } });
+            const timeout = new Promise(res => setTimeout(() => res({ data: null, error: new Error('timeout') }), 18000));
+            const { data, error } = await Promise.race([call, timeout]);
+            if (!error && data && Array.isArray(data.titles)) list = data.titles.filter(t => t && t.title).map(t => ({ title: t.title, subId: t.subcategory_id, subName: t.subcategory_name, reportId: '', fresh: true, rel: 3, ai: true }));
+            else console.warn('suggest-titles:', (data && data.reason) || (error && error.message));
+        }
+    } catch (e) { console.warn('suggest-titles:', e); }
+    st[k] = { status: list.length ? 'done' : 'failed', list, at: Date.now() };
+    // دمجها في القائمة المعروضة إن كانت النافذة ما زالت على المعيار نفسه
+    if (window.__dvs.crit === critId && list.length) {
+        const seen = new Set(list.map(x => dvsNorm(x.title)));
+        window.__dvs.list = list.concat(window.__dvs.list.filter(x => !x.ai && !seen.has(dvsNorm(x.title))));
+        window.__vmChipsPage = 0;
+    }
+    if (window.__vmCritCtx === critId) { window.__vmFromDvs = true; vmChipsRender(); }
+}
 // بطاقات العناوين داخل نافذة الإدخال الصوتي
 function vmChipsRender() {
     const box = document.getElementById('vmChips');
@@ -14645,12 +14680,20 @@ function vmChipsRender() {
     if (window.__vmFromDvs) window.__vmFromDvs = false;
     else { window.__vmCritCtx = ''; window.__vmPresetTitle = ''; window.__dvsKeepCrit = ''; }
     const critId = window.__vmCritCtx;
-    const list = critId ? (window.__dvs.crit === critId && window.__dvs.list.length ? window.__dvs.list : dvsCandidates(critId)) : [];
-    box.hidden = !list.length;
-    if (!list.length) return;
-    window.__dvs.list = list;
+    if (critId && tsValue()) dvsFetchAiTitles(critId);
+    const ai = critId ? window.__aiTitles[dvsAiKey(critId)] : null;
+    const loading = !!(ai && ai.status === 'loading');
+    let list = critId ? (window.__dvs.crit === critId && window.__dvs.list.length ? window.__dvs.list : dvsCandidates(critId)) : [];
+    if (critId && ai && ai.status === 'done' && !list.some(x => x.ai)) {
+        const seen = new Set(ai.list.map(x => dvsNorm(x.title)));
+        list = ai.list.concat(list.filter(x => !seen.has(dvsNorm(x.title))));
+    }
+    box.hidden = !list.length && !loading;
+    if (!list.length && !loading) return;
+    window.__dvs.crit = critId; window.__dvs.list = list;
     const pg = window.__vmChipsPage || 0, items = list.slice(pg * 3, pg * 3 + 3);
-    document.getElementById('vmChipsRow').innerHTML = items.map((p, i) => `<button type="button" class="vm-chip${window.__vmPresetTitle === p.title ? ' on' : ''}" data-vmchip="${pg * 3 + i}"><b>${pfEsc(p.title)}</b><small class="${p.fresh ? 'new' : ''}">${pfEsc(p.subName)}${p.fresh ? ' • غير موثّق' : ''}</small></button>`).join('')
+    document.getElementById('vmChipsRow').innerHTML = (loading && pg === 0 ? '<span class="vm-chip ai-loading"><b><i class="fas fa-wand-magic-sparkles"></i> نجهّز عناوين لك…</b><small>حسب تخصصك</small></span>' : '')
+        + items.map((p, i) => `<button type="button" class="vm-chip${p.ai ? ' ai' : ''}${window.__vmPresetTitle === p.title ? ' on' : ''}" data-vmchip="${pg * 3 + i}"><b>${p.ai ? '✨ ' : ''}${pfEsc(p.title)}</b><small class="${p.fresh ? 'new' : ''}">${p.ai ? 'مقترح لك • ' : ''}${pfEsc(p.subName || '')}${p.fresh && !p.ai ? ' • غير موثّق' : ''}</small></button>`).join('')
         + (list.length > 3 ? '<button type="button" class="vm-chip more" data-vmchip="more"><i class="fas fa-rotate"></i> غيرها</button>' : '');
     vmChipSelRender();
 }
