@@ -48,3 +48,17 @@ Dialect: Saudi (Hijazi/Najdi mix). Language: Arabic, right-to-left. Font: Cairo 
 - Subtitles on screen were written from the script; the author's audio may differ slightly in wording.
 - Python renderer is flat/simple; the goal of moving to Remotion/HyperFrames is richer motion (squash & stretch,
   blinking, hair sway, camera moves, better water/steam effects).
+
+## Remotion version (v5) — `remotion/`
+- `src/Character.tsx` — SVG character rig: gradients + outlines, blinking, 8 expressions, eyelids, lip-sync
+  from `timeline.json` env, hair sway, breathing, run cycle with squash, wet state (darker colours + drips), shiver.
+- `src/backgrounds.tsx` — room (sun, heat shimmer, curtains, bed, thermometer) and bathroom (tiles, shower,
+  knob, door, hallway). `src/scenes.tsx` — title / room / bath / end with smoothed camera, shake, SFX words.
+- `src/ui.tsx` — Arabic speech bubbles (Cairo), pills, pop words, iris wipe, colour grade.
+- Audio: `public/audio.wav` is the mixed track made by `prep.py` (copy `audio2.wav` there).
+- Render:
+  ```bash
+  python3 prep.py && cp audio2.wav remotion/public/audio.wav
+  cd remotion && npm i && npx remotion render TarafEp1 ../Taraf_Ep1_v5.mp4
+  ```
+  If Chrome can't be downloaded, set `REMOTION_BROWSER=/path/to/chrome`.
