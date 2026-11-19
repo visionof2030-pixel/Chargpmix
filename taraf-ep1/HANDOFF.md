@@ -26,7 +26,7 @@ Dialect: Saudi (Hijazi/Najdi mix). Language: Arabic, right-to-left. Font: Cairo 
   Mustard-yellow t-shirt (246,190,38) with short sleeves, light-blue denim skirt (146,182,226), white sneakers.
   Reference: refs/taraf_ref3_yellow_tee_FINAL.jpg (the design target). refs/taraf_ref2_crown.jpg = optional princess
   look for special episodes (TARAF_P in lib.py: tiara, cream sparkly top, blush satin skirt).
-- **سحاب / Sahab**: same age. Light skin (226,176,140), long straight black hair with a white cloud hair-clip,
+- **سحاب / Sahab**: same age. Same skin tone as Taraf (246,211,182), long straight black hair with a white cloud hair-clip,
   sky-blue dress with short sleeves, pink shoes. When wet: hair/dress darker, water drips.
 - **فجر / Fajr** (episode 2+): adult aunt, hair bun, teal long home dress, holds a coffee cup, stern eyebrows.
 - Style: flat cartoon, big heads, front-facing, simple shadows, bubbles with a colored name chip

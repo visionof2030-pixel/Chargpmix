@@ -39,9 +39,10 @@ export const TARAF: Palette = {
 
 export const SAHAB: Palette = {
   kind: 'sahab',
-  skin: '#e2b08c',
-  skinShade: '#c88f6a',
-  blush: '#f2848a',
+  // same skin tone as Taraf
+  skin: TARAF.skin,
+  skinShade: TARAF.skinShade,
+  blush: TARAF.blush,
   hair: '#141018',
   hairHi: '#4a4258',
   top: '#7cc4f2',

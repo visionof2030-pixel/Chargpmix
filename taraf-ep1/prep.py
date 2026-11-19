@@ -65,7 +65,7 @@ json.dump(dict(title=title_dur, room_dur=room_dur, bath_dur=bath_dur, end_dur=en
 
 # ---- audio
 N = int(total*SR) + SR
-voice = np.zeros(N); music = np.zeros(N); sfx = np.zeros(N)
+voice = np.zeros(N); music = np.zeros(N); sfx = np.zeros(N); shower = np.zeros(N)
 def add(buf, sig, at, vol=1.0):
     i = int(at*SR); j = min(N, i+len(sig))
     if i < N: buf[i:j] += sig[:j-i]*vol
@@ -92,8 +92,8 @@ def noise(d, lp=40):
     return np.convolve(rng.standard_normal(int(d*SR)), np.ones(lp)/lp, 'same')
 bo = off['bath']
 ws = bath['T6'][1] - .3
-sh = noise(bath['S8'][1]+1.0-ws, 8)
-add(sfx, sh*np.minimum(1, np.arange(len(sh))/(SR*.3))*2.2, bo+ws, .35)
+sh = noise(bath['S8'][1]+1.0-ws, 18)  # softer (more low-passed) hiss
+add(shower, sh*np.minimum(1, np.arange(len(sh))/(SR*.3))*2.2, bo+ws, .35)
 s6e = bath['S6'][1]
 t_ = np.arange(int(.35*SR))/SR
 add(sfx, np.sin(2*np.pi*70*t_)*np.exp(-t_*14)+noise(.35,20)*np.exp(-t_*18)*3, bo+s6e+.6, .9)
@@ -102,7 +102,9 @@ add(sfx, np.sin(2*np.pi*2200*t_)*np.exp(-t_*70), bo+s6e+.85, .7)
 # duck music under voice
 act = np.convolve(np.abs(voice) > .02, np.ones(int(.25*SR))/int(.25*SR), 'same')
 music = music*0.5*(1-0.6*np.clip(act*3, 0, 1))
-mix = voice*1.0 + music*0.55 + sfx*0.6
+# shower: quieter overall and ducked hard under dialogue so Sahab stays clear
+shower = shower*0.45*(1-0.8*np.clip(act*3, 0, 1))
+mix = voice*1.0 + music*0.55 + sfx*0.6 + shower*0.6
 mix = mix[:int(total*SR)]
 mix[-int(1.5*SR):] *= np.linspace(1, 0, int(1.5*SR))
 mix = mix/np.abs(mix).max()*0.9
