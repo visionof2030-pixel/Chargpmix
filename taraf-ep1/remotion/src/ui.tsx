@@ -18,12 +18,14 @@ export const Bubble: React.FC<{
   tipX: number;
   tipY: number;
   top?: number;
-}> = ({id, age, left, name, color, tipX, tipY, top = 170}) => {
-  const text = T.text[id];
+  text?: string;
+  shout?: boolean;
+}> = ({id, age, left, name, color, tipX, tipY, top = 170, text: textOverride, shout: shoutOverride}) => {
+  const text = textOverride ?? T.text[id];
   const inS = pop(age / 0.32);
   const outS = left < 0.15 ? clamp01(left / 0.15) : 1;
   const sc = Math.max(0.01, inS * outS);
-  const shout = SHOUT.has(id);
+  const shout = shoutOverride ?? SHOUT.has(id);
   const jx = shout ? noise(age * 3, 1) * 6 : 0;
   const jy = shout ? noise(age * 3, 7) * 6 : 0;
   const fs = text.length > 34 ? 50 : 56;
@@ -121,7 +123,9 @@ export const Bubbles: React.FC<{
   t: number;
   cam: Cam;
   place: (id: string) => {name: string; color: string; x: number; y: number};
-}> = ({ev, t, cam, place}) => {
+  texts?: Record<string, string>;
+  shouts?: Set<string>;
+}> = ({ev, t, cam, place, texts, shouts}) => {
   return (
     <>
       {Object.keys(ev).map((id) => {
@@ -139,6 +143,8 @@ export const Bubbles: React.FC<{
             color={p.color}
             tipX={sp.x}
             tipY={Math.max(330, sp.y)}
+            text={texts?.[id]}
+            shout={shouts ? shouts.has(id) : undefined}
           />
         );
       })}

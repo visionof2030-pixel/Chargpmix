@@ -8,11 +8,11 @@ import {BLUE, Cam, FLOOR, H, PINK, T, W, activeLine, camTransform, clamp01, ease
 const S = 0.9; // character scale in world units
 const HEAD = 1100 * S; // approx height to top of head
 
-const World: React.FC<{cam: Cam; children: React.ReactNode}> = ({cam, children}) => (
+export const World: React.FC<{cam: Cam; children: React.ReactNode}> = ({cam, children}) => (
   <div style={{position: 'absolute', left: 0, top: 0, width: W, height: H, transformOrigin: '0 0', transform: camTransform(cam)}}>{children}</div>
 );
 
-const Dust: React.FC<{x: number; y: number; age: number; dir?: number}> = ({x, y, age, dir = 1}) => {
+export const Dust: React.FC<{x: number; y: number; age: number; dir?: number}> = ({x, y, age, dir = 1}) => {
   if (age < 0 || age > 0.8) return null;
   const k = age / 0.8;
   return (
@@ -25,7 +25,7 @@ const Dust: React.FC<{x: number; y: number; age: number; dir?: number}> = ({x, y
 };
 
 // ---------------------------------------------------------------- title
-export const TitleScene: React.FC = () => {
+export const TitleScene: React.FC<{episode?: string; subtitle?: string}> = ({episode = 'الحلقة ١', subtitle = 'مقلب الدش'}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const t = frame / fps;
@@ -118,7 +118,7 @@ export const TitleScene: React.FC = () => {
             transform: `scale(${Math.max(0.01, chip)})`,
           }}
         >
-          الحلقة ١
+          {episode}
         </div>
       </div>
       <div
@@ -138,7 +138,7 @@ export const TitleScene: React.FC = () => {
           transform: `scale(${Math.max(0.01, sub)})`,
         }}
       >
-        مقلب الدش
+        {subtitle}
       </div>
       <Grade strength={0.04} />
     </AbsoluteFill>
@@ -440,7 +440,7 @@ export const BathScene: React.FC = () => {
 };
 
 // ---------------------------------------------------------------- end card
-export const EndScene: React.FC = () => {
+export const EndScene: React.FC<{next?: string; lines?: string[]}> = ({next = 'الحلقة ٢', lines = ['ترف تهرب...', 'وسحاب ما راح تسكت!']}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const t = frame / fps;
@@ -499,9 +499,9 @@ export const EndScene: React.FC = () => {
           transform: `scale(${Math.max(0.01, pop((t - 1.0) / 0.5))})`,
         }}
       >
-        الحلقة ٢
+        {next}
       </div>
-      {['ترف تهرب...', 'وسحاب ما راح تسكت!'].map((line, i) => (
+      {lines.map((line, i) => (
         <div
           key={i}
           dir="rtl"

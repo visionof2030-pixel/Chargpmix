@@ -4,7 +4,7 @@ import {clamp01, lerp, mix, rnd} from './lib';
 export type Expr = 'smile' | 'sly' | 'laugh' | 'bored' | 'sus' | 'worry' | 'shock' | 'angry';
 
 export type Palette = {
-  kind: 'taraf' | 'sahab';
+  kind: 'taraf' | 'sahab' | 'fajr';
   skin: string;
   skinShade: string;
   blush: string;
@@ -55,6 +55,23 @@ export const SAHAB: Palette = {
   iris: '#2a1a12',
 };
 
+export const FAJR: Palette = {
+  kind: 'fajr',
+  skin: TARAF.skin,
+  skinShade: TARAF.skinShade,
+  blush: '#f2848a',
+  hair: '#2a1a16',
+  hairHi: '#5e3d33',
+  top: '#2fa59d',
+  topShade: '#1e7a74',
+  bottom: '#2fa59d',
+  bottomShade: '#1e7a74',
+  shoe: '#f4d9b0',
+  shoeShade: '#caa57a',
+  accent: '#f2c14e',
+  iris: '#3a2214',
+};
+
 const OUT = '#3a2230';
 const SW = 5;
 
@@ -82,6 +99,8 @@ export type CharProps = {
   squash?: number;
   sweat?: number;
   flipRun?: boolean;
+  cup?: boolean;
+  cupSpill?: number;
 };
 
 // shoulder offset and arm geometry (body units)
@@ -262,7 +281,9 @@ const Arm: React.FC<{
   skin: string;
   sleeve: string;
   sleeveShade: string;
-}> = ({side, raise, bend, skin, sleeve, sleeveShade}) => {
+  cup?: boolean;
+  cupSpill?: number;
+}> = ({side, raise, bend, skin, sleeve, sleeveShade, cup, cupSpill = 0}) => {
   const ex = 0;
   const ey = UPPER;
   const b = (bend * Math.PI) / 180;
@@ -271,6 +292,16 @@ const Arm: React.FC<{
   return (
     <g transform={`translate(${side * SH_X},${SH_Y}) rotate(${side * -raise})`}>
       <Limb d={`M 0 0 L ${ex} ${ey} L ${hx} ${hy}`} w={40} color={skin} />
+      {cup ? (
+        <g transform={`translate(${hx},${hy - 4}) rotate(${side * raise - cupSpill * 70})`}>
+          <path d="M -30 -46 L 30 -46 L 22 0 Q 0 10 -22 0 Z" fill="#fffaf0" stroke={OUT} strokeWidth={5} strokeLinejoin="round" />
+          <path d="M -28 -34 L 28 -34" stroke="#f2c14e" strokeWidth={6} />
+          <ellipse cx={0} cy={-46} rx={30} ry={7} fill="#7a4a24" stroke={OUT} strokeWidth={3} />
+          {cupSpill > 0 ? (
+            <path d={`M 26 -46 q 30 10 ${20 + cupSpill * 30} ${40 + cupSpill * 60}`} stroke="#8a5428" strokeWidth={9} fill="none" strokeLinecap="round" opacity={0.9} />
+          ) : null}
+        </g>
+      ) : null}
       <circle cx={hx} cy={hy} r={25} fill={skin} stroke={OUT} strokeWidth={SW} />
       <path d={`M ${hx - side * 8} ${hy + 10} q ${side * 8} 8 ${side * 16} 0`} stroke={OUT} strokeWidth={3} fill="none" opacity={0.5} />
       <path
@@ -333,11 +364,15 @@ export const Character: React.FC<CharProps> = (p) => {
   const flat = 1 - wet * 0.18; // wet hair hugs the head
 
   const isT = pal.kind === 'taraf';
-  const hairLen = isT ? -420 : -470;
+  const isF = pal.kind === 'fajr';
+  const TALL = isF ? 170 : 0; // adults: everything above the hips sits higher
+  const hairLen = isT ? -420 : isF ? -700 : -470;
 
   // back hair with sway
   const bx = sway;
-  const backHair = isT
+  const backHair = isF
+    ? `M -150 -1040 Q -226 -1000 -224 -880 Q -222 -760 -190 -700 Q 0 -660 190 -700 Q 222 -760 224 -880 Q 226 -1000 150 -1040 Q 0 -1110 -150 -1040 Z`
+    : isT
     ? `M -150 -1040 Q -232 -1000 -238 -880 Q ${-250 * flat + bx * 0.3} -720 ${-246 * flat + bx * 0.6} -580
        Q ${-240 * flat + bx} -470 ${-215 * flat + bx} ${hairLen}
        Q ${-180 + bx} ${hairLen + 22} ${-150 + bx} ${hairLen - 6} Q ${-110 + bx} ${hairLen + 26} ${-70 + bx} ${hairLen}
@@ -349,6 +384,10 @@ export const Character: React.FC<CharProps> = (p) => {
 
   const frontHair = (side: -1 | 1) => {
     const k = side;
+    if (isF) {
+      return `M 0 -1000 Q ${k * -120} -1010 ${k * -176} -930 Q ${k * -196} -860 ${k * -186} -780
+        L ${k * -222} -790 Q ${k * -240} -900 ${k * -222} -980 Q ${k * -190} -1060 ${k * -100} -1084 Q ${k * -40} -1096 0 -1090 Z`;
+    }
     if (isT) {
       return `M 0 -990 Q ${k * -110} -986 ${k * -170} -905 Q ${k * -200} -820 ${k * -188} -700 Q ${k * -184} -655 ${k * -170 + sway * 0.3} -600
         L ${k * -236 + sway * 0.4} -610 Q ${k * -252} -760 ${k * -240} -900 Q ${k * -222} -1032 ${k * -120} -1072 Q ${k * -50} -1092 0 -1084 Z`;
@@ -360,7 +399,9 @@ export const Character: React.FC<CharProps> = (p) => {
   const bangs =
     'M -186 -930 Q -170 -1050 0 -1060 Q 170 -1050 186 -930 Q 160 -950 140 -918 Q 118 -950 92 -912 Q 66 -948 40 -910 Q 14 -946 -12 -910 Q -38 -948 -64 -912 Q -90 -950 -116 -916 Q -140 -952 -160 -918 Q -172 -940 -186 -930 Z';
 
-  const skirt = isT
+  const skirt = isF
+    ? `M -112 ${-440 - TALL} L 112 ${-440 - TALL} Q 150 -300 ${186 + (run ? Math.sin(ph) * 10 : 0)} -40 Q 0 -22 ${-186 + (run ? Math.sin(ph) * 10 : 0)} -40 Q -150 -300 -112 ${-440 - TALL} Z`
+    : isT
     ? `M -104 -430 L 104 -430 Q 136 -340 ${158 + (run ? Math.sin(ph) * 8 : 0)} -248 Q 0 -230 ${-158 + (run ? Math.sin(ph) * 8 : 0)} -248 Q -136 -340 -104 -430 Z`
     : `M -100 -440 L 100 -440 Q 150 -340 ${178 + (run ? Math.sin(ph) * 10 : 0)} -262 Q 90 -244 0 -250 Q -90 -244 ${-178 + (run ? Math.sin(ph) * 10 : 0)} -262 Q -150 -340 -100 -440 Z`;
 
@@ -423,7 +464,14 @@ export const Character: React.FC<CharProps> = (p) => {
 
       <g transform={`translate(0,${-jump}) rotate(${p.lean ?? 0}) scale(${s * sx},${s * sy})`}>
         {/* back hair */}
-        <g transform={`translate(0,${-laughBounce}) rotate(${headTilt * 0.4},0,-830)`}>
+        <g transform={`translate(0,${-laughBounce - TALL}) rotate(${headTilt * 0.4},0,-830)`}>
+          {isF ? (
+            <g>
+              <circle cx={0} cy={-1120} r={82} fill={`url(#${id}-hair)`} stroke={OUT} strokeWidth={SW} />
+              <path d="M -60 -1150 Q 0 -1180 60 -1150" stroke={hairHi} strokeWidth={10} fill="none" opacity={0.6} strokeLinecap="round" />
+              <rect x={-70} y={-1062} width={140} height={22} rx={11} fill={pal.accent} stroke={OUT} strokeWidth={4} />
+            </g>
+          ) : null}
           <path d={backHair} fill={`url(#${id}-hair)`} stroke={OUT} strokeWidth={SW} strokeLinejoin="round" />
           {isT ? (
             <path
@@ -442,7 +490,7 @@ export const Character: React.FC<CharProps> = (p) => {
           const a = side * legA;
           return (
             <g key={side} transform={`rotate(${a},${side * 46},-270)`}>
-              <Limb d={`M ${side * 46} -270 L ${side * 46} -46`} w={44} color={skin} />
+              {isF ? null : <Limb d={`M ${side * 46} -270 L ${side * 46} -46`} w={44} color={skin} />}
               {isT ? null : <path d={`M ${side * 46 - 22} -80 L ${side * 46 + 22} -80`} stroke="#fff" strokeWidth={14} opacity={0.0} />}
               <g transform={`translate(${side * 50},-22)`}>
                 <path
@@ -465,7 +513,13 @@ export const Character: React.FC<CharProps> = (p) => {
 
         {/* skirt / dress bottom */}
         <path d={skirt} fill={`url(#${id}-bot)`} stroke={OUT} strokeWidth={SW} strokeLinejoin="round" />
-        {isT ? (
+        {isF ? (
+          <>
+            <path d={`M -112 ${-440 - TALL} Q 0 ${-420 - TALL} 112 ${-440 - TALL}`} stroke={pal.accent} strokeWidth={10} fill="none" />
+            <path d="M -176 -70 Q 0 -50 176 -70" stroke={pal.accent} strokeWidth={8} fill="none" opacity={0.85} />
+            <path d={`M -50 ${-400 - TALL} Q -80 -260 -110 -60 M 50 ${-400 - TALL} Q 80 -260 110 -60`} stroke={bottomShade} strokeWidth={6} fill="none" opacity={0.5} />
+          </>
+        ) : isT ? (
           <>
             <path d="M -2 -430 L -4 -246" stroke={pal.bottomShade} strokeWidth={4} />
             <path d="M -96 -402 L 96 -402" stroke={pal.bottomShade} strokeWidth={3} strokeDasharray="10 8" />
@@ -481,6 +535,7 @@ export const Character: React.FC<CharProps> = (p) => {
         )}
 
         {/* arms behind torso edges are drawn after torso for readability */}
+        <g transform={`translate(0,${-TALL})`}>
         <g transform={`scale(1,${breathe})`} style={{transformOrigin: '0px -430px'}}>
           {/* torso */}
           <path
@@ -492,7 +547,12 @@ export const Character: React.FC<CharProps> = (p) => {
             strokeWidth={SW}
             strokeLinejoin="round"
           />
-          {isT ? (
+          {isF ? (
+            <>
+              <path d="M -50 -624 Q 0 -580 50 -624" fill="none" stroke={pal.accent} strokeWidth={8} />
+              <path d="M 0 -606 L 0 -470" stroke={pal.accent} strokeWidth={5} strokeDasharray="4 10" />
+            </>
+          ) : isT ? (
             <>
               <path d="M -50 -624 Q 0 -588 50 -624" fill="none" stroke={pal.topShade} strokeWidth={9} />
               <path d="M -60 -520 Q -30 -500 -10 -530 M 30 -470 Q 60 -460 80 -490" stroke={pal.topShade} strokeWidth={4} fill="none" opacity={0.5} />
@@ -508,12 +568,12 @@ export const Character: React.FC<CharProps> = (p) => {
           <path d="M -34 -690 L -34 -620 Q 0 -600 34 -620 L 34 -690 Z" fill={pal.skinShade} stroke={OUT} strokeWidth={SW} />
         </g>
 
-        <Arm side={-1} raise={armL} bend={p.bendL ?? (armL > 60 ? 20 : 8)} skin={skin} sleeve={top} sleeveShade={topShade} />
+        <Arm side={-1} raise={armL} bend={p.bendL ?? (armL > 60 ? 20 : 8)} skin={skin} sleeve={top} sleeveShade={topShade} cup={p.cup} cupSpill={p.cupSpill} />
         <Arm side={1} raise={armR} bend={p.bendR ?? (armR > 60 ? 20 : 8)} skin={skin} sleeve={top} sleeveShade={topShade} />
 
         {/* head */}
         <g transform={`translate(0,${-laughBounce}) rotate(${headTilt},0,-680)`}>
-          {!isT ? (
+          {!isT && !isF ? (
             <>
               <ellipse cx={-176} cy={-790} rx={24} ry={34} fill={skin} stroke={OUT} strokeWidth={SW} />
               <ellipse cx={176} cy={-790} rx={24} ry={34} fill={skin} stroke={OUT} strokeWidth={SW} />
@@ -576,7 +636,7 @@ export const Character: React.FC<CharProps> = (p) => {
           ) : null}
 
           {/* front hair */}
-          {isT ? (
+          {isT || isF ? (
             <>
               <path d={frontHair(1)} fill={`url(#${id}-hair)`} stroke={OUT} strokeWidth={SW} strokeLinejoin="round" />
               <path d={frontHair(-1)} fill={`url(#${id}-hair)`} stroke={OUT} strokeWidth={SW} strokeLinejoin="round" />
@@ -605,6 +665,7 @@ export const Character: React.FC<CharProps> = (p) => {
           {wet > 0.3 ? (
             <path d="M -170 -900 Q -200 -800 -190 -700 M 170 -900 Q 200 -800 190 -700" stroke="#a8dcff" strokeWidth={6} fill="none" opacity={wet * 0.5} />
           ) : null}
+        </g>
         </g>
         {drips}
       </g>
