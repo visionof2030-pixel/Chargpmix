@@ -72,10 +72,13 @@ const GEMINI_KEYS = [
   Deno.env.get("GEMINI_API_KEY_10"),
 ].filter((k): k is string => !!k);
 
-// Models tried for EACH key, in order: the more accurate "flash" first, then
-// the faster/cheaper "flash-lite" as a fallback on the same key if flash is
-// rate-limited (429), overloaded (503), unavailable (404) or too slow.
-const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
+// Models in order: gemini-3.1-flash-lite first (much larger free daily quota:
+// 500 requests/day per project vs 20 for the 2.5 models), then the 2.5 models
+// as fallbacks. Each model is tried across ALL keys before moving to the next,
+// so the small 2.5 quotas are only spent once 3.1 is unavailable everywhere.
+const PRIMARY_MODEL = "gemini-3.1-flash-lite";
+const GEMINI_MODELS = [PRIMARY_MODEL, "gemini-2.5-flash", "gemini-2.5-flash-lite"];
+const FALLBACK_MODELS = GEMINI_MODELS.slice(1);
 
 // Per-attempt timeout, and a hard overall budget for the whole request. The
 // client waits up to ~20s, so the server must give up (and say so with
@@ -109,9 +112,11 @@ async function callGeminiModel(apiKey: string, model: string, prompt: string, ti
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const generationConfig: Record<string, unknown> = {
-      temperature: 0,
       responseMimeType: "application/json",
     };
+    // Gemini 3 models: keep the default temperature (Google's recommendation;
+    // low values can degrade them). Their default thinking level is minimal.
+    if (!model.startsWith("gemini-3")) generationConfig.temperature = 0;
     // flash "thinks" by default, which adds seconds of latency for a simple
     // slot-filling task - disable it. flash-lite doesn't think by default.
     if (model === "gemini-2.5-flash") generationConfig.thinkingConfig = { thinkingBudget: 0 };
@@ -136,22 +141,38 @@ async function callGeminiModel(apiKey: string, model: string, prompt: string, ti
   }
 }
 
-async function callGeminiOnce(prompt: string): Promise<string | null> {
-  const deadline = Date.now() + OVERALL_DEADLINE_MS;
+async function callGeminiOnce(prompt: string, models: string[] = GEMINI_MODELS, overallMs = OVERALL_DEADLINE_MS): Promise<string | null> {
+  const deadline = Date.now() + overallMs;
   const keys = shuffledKeyOrder();
-  for (let i = 0; i < keys.length; i++) {
-    for (const model of GEMINI_MODELS) {
+  for (const model of models) {
+    for (let i = 0; i < keys.length; i++) {
       const remaining = deadline - Date.now();
       if (remaining < 1500) {
-        console.error(`Overall deadline reached after ${i} key(s); giving up.`);
+        console.error(`Overall deadline reached at ${model} key ${i}; giving up.`);
         return null;
       }
       const { text, status } = await callGeminiModel(keys[i], model, prompt, Math.min(PER_ATTEMPT_TIMEOUT_MS, remaining));
-      if (text) return text;
+      if (text) {
+        console.log(`gemini ok model=${model} key=${i + 1}`);
+        return text;
+      }
       console.error(`Gemini attempt ${i + 1}/${keys.length} (${model}) failed (${status}), trying next...`);
+      // 400/404 = this model itself is unavailable; a timeout on the primary
+      // model is model-wide slowness. Either way, move on to the next model.
+      if (status === 400 || status === 404 || (model === PRIMARY_MODEL && status === "timeout")) break;
     }
   }
   return null;
+}
+
+function parseFields(raw: string): Record<string, unknown> | null {
+  const cleaned = raw.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
+  try {
+    const v = JSON.parse(cleaned);
+    return v && typeof v === "object" && !Array.isArray(v) ? v : null;
+  } catch {
+    return null;
+  }
 }
 
 // See the file-header comment above for why this is base64 rather than
@@ -235,24 +256,23 @@ Deno.serve(async (req: Request) => {
 
   const prompt = buildPrompt(transcript);
 
-  const raw = await callGeminiOnce(prompt);
+  let raw = await callGeminiOnce(prompt);
   // failed:true lets the client tell "the AI was unavailable" apart from
   // "the AI ran and found nothing" - the two need very different handling
   // (e.g. never hide report fields just because the AI couldn't be reached).
   if (!raw) return jsonResponse({ fields: {}, failed: true });
 
-  // Strip any possible Markdown fencing (```json ... ```) then parse
-  // defensively - any failure here simply means "no extraction", never an
-  // error returned to the client, since this is an optional helper feature
-  // that must never block the report-issuing flow; the manual form always
-  // remains available as a fallback.
-  const cleaned = raw.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
-  let parsed: Record<string, unknown> = {};
-  try {
-    parsed = JSON.parse(cleaned);
-  } catch {
-    return jsonResponse({ fields: {}, failed: true });
+  // Strip any possible Markdown fencing then parse defensively. An unparsable
+  // answer gets ONE retry on the 2.5 fallback models (short budget); any
+  // failure after that simply means "no extraction" (failed:true), since this
+  // is an optional helper that must never block the report-issuing flow.
+  let parsed = parseFields(raw);
+  if (!parsed) {
+    console.error("extract: unparsable answer, retrying with fallback models");
+    raw = await callGeminiOnce(prompt, FALLBACK_MODELS, 7000);
+    parsed = raw ? parseFields(raw) : null;
   }
+  if (!parsed) return jsonResponse({ fields: {}, failed: true });
 
   const fields: Partial<Record<SlotKey, string>> = {};
   for (const key of SLOT_KEYS) {

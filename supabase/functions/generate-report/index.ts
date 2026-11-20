@@ -32,7 +32,10 @@ function shuffledKeyOrder(): string[] {
 }
 const PER_ATTEMPT_TIMEOUT_MS = 30000;
 const OVERALL_DEADLINE_MS = 75000;
-const GEMINI_MODEL = "gemini-2.5-flash-lite";
+// النموذج الأساسي 3.1 Flash-Lite (حصته المجانية ٥٠٠ طلب/يوم لكل مشروع)، و2.5 Flash-Lite احتياطاً.
+// المرور: الأساسي على كل المفاتيح أولاً، ثم الاحتياطي على كل المفاتيح.
+const PRIMARY_MODEL = "gemini-3.1-flash-lite";
+const GEMINI_MODELS = [PRIMARY_MODEL, "gemini-2.5-flash-lite"];
 interface VoiceCorrectionFeedback {
     field_name?: string;
     original_text?: string;
@@ -92,50 +95,60 @@ async function callGeminiWithFailover(prompt: string): Promise<GeminiCallResult>
     let attempts = 0;
     const keys = shuffledKeyOrder();
     const deadline = Date.now() + OVERALL_DEADLINE_MS;
-    for (let i = 0; i < totalKeys; i++) {
-        const apiKey = keys[i];
-        if (!apiKey)
-            break;
-        const remaining = deadline - Date.now();
-        if (remaining < 3000) {
-            console.error(`Overall generation deadline reached after ${attempts} attempt(s); giving up.`);
-            break;
-        }
-        attempts++;
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), Math.min(PER_ATTEMPT_TIMEOUT_MS, remaining));
-        try {
-            const geminiResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                }),
-                signal: controller.signal,
-            });
-            if (!geminiResp.ok) {
-                lastErrorMessage = await geminiResp.text();
-                console.error(`Gemini attempt ${i + 1}/${totalKeys} failed (HTTP ${geminiResp.status}), trying next key...`);
-                continue;
+    for (const model of GEMINI_MODELS) {
+        let skipModel = false;
+        for (let i = 0; i < totalKeys && !skipModel; i++) {
+            const apiKey = keys[i];
+            if (!apiKey)
+                break;
+            const remaining = deadline - Date.now();
+            if (remaining < 3000) {
+                console.error(`Overall generation deadline reached after ${attempts} attempt(s); giving up.`);
+                return { content: null, lastErrorMessage, attempts, succeededOnAttempt: null };
             }
-            const geminiJson = await geminiResp.json();
-            const parts = geminiJson?.candidates?.[0]?.content?.parts ?? [];
-            const text = parts.map((p: {
-                text?: string;
-            }) => p.text || "").join("");
-            if (!text) {
-                lastErrorMessage = "empty response from Gemini";
-                console.error(`Gemini attempt ${i + 1}/${totalKeys} returned empty content, trying next key...`);
-                continue;
+            attempts++;
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), Math.min(PER_ATTEMPT_TIMEOUT_MS, remaining));
+            try {
+                const geminiResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                    }),
+                    signal: controller.signal,
+                });
+                if (!geminiResp.ok) {
+                    lastErrorMessage = await geminiResp.text();
+                    console.error(`Gemini attempt ${i + 1}/${totalKeys} (${model}) failed (HTTP ${geminiResp.status}), trying next...`);
+                    // 400/404: النموذج نفسه غير متاح — لا فائدة من بقية المفاتيح عليه.
+                    if (geminiResp.status === 400 || geminiResp.status === 404)
+                        skipModel = true;
+                    continue;
+                }
+                const geminiJson = await geminiResp.json();
+                const parts = geminiJson?.candidates?.[0]?.content?.parts ?? [];
+                const text = parts.map((p: {
+                    text?: string;
+                }) => p.text || "").join("");
+                if (!text) {
+                    lastErrorMessage = "empty response from Gemini";
+                    console.error(`Gemini attempt ${i + 1}/${totalKeys} (${model}) returned empty content, trying next...`);
+                    continue;
+                }
+                console.log(`gemini ok model=${model} key=${i + 1}`);
+                return { content: stripMarkdown(text), lastErrorMessage: "", attempts, succeededOnAttempt: attempts };
             }
-            return { content: stripMarkdown(text), lastErrorMessage: "", attempts, succeededOnAttempt: i + 1 };
-        }
-        catch (e) {
-            lastErrorMessage = e instanceof Error ? e.message : String(e);
-            console.error(`Gemini attempt ${i + 1}/${totalKeys} threw (${lastErrorMessage}), trying next key...`);
-        }
-        finally {
-            clearTimeout(timer);
+            catch (e) {
+                lastErrorMessage = e instanceof Error ? e.message : String(e);
+                console.error(`Gemini attempt ${i + 1}/${totalKeys} (${model}) threw (${lastErrorMessage}), trying next...`);
+                // بطء النموذج الأساسي عام لا يخص مفتاحاً بعينه: انتقل للاحتياطي مباشرة.
+                if (model === PRIMARY_MODEL && e instanceof Error && e.name === "AbortError")
+                    skipModel = true;
+            }
+            finally {
+                clearTimeout(timer);
+            }
         }
     }
     return { content: null, lastErrorMessage, attempts, succeededOnAttempt: null };

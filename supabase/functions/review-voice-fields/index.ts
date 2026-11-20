@@ -49,15 +49,19 @@ const GEMINI_KEYS = [
   Deno.env.get("GEMINI_API_KEY_10"),
 ].filter((k): k is string => !!k);
 
-let keyIndex = 0;
-function nextGeminiKey(): string | null {
-  if (GEMINI_KEYS.length === 0) return null;
-  const key = GEMINI_KEYS[keyIndex % GEMINI_KEYS.length];
-  keyIndex++;
-  return key;
+// يبدأ كل طلب من مفتاح عشوائي (النسخ تُشغَّل من جديد كثيراً فكان العدّاد يبدأ دائماً من المفتاح الأول).
+function shuffledKeyOrder(): string[] {
+  const n = GEMINI_KEYS.length;
+  if (n === 0) return [];
+  const start = Math.floor(Math.random() * n);
+  return Array.from({ length: n }, (_, i) => GEMINI_KEYS[(start + i) % n]);
 }
 
-const GEMINI_MODEL = "gemini-2.5-flash-lite";
+// النموذج الأساسي 3.1 Flash-Lite (حصته المجانية ٥٠٠ طلب/يوم لكل مشروع)، و2.5 Flash-Lite احتياطاً.
+const PRIMARY_MODEL = "gemini-3.1-flash-lite";
+const ALL_MODELS = [PRIMARY_MODEL, "gemini-2.5-flash-lite"];
+const FALLBACK_MODELS = ALL_MODELS.slice(1);
+const PER_ATTEMPT_TIMEOUT_MS = 8000;
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -66,34 +70,56 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
-async function callGeminiOnce(prompt: string): Promise<string | null> {
-  const totalKeys = GEMINI_KEYS.length;
-  for (let i = 0; i < totalKeys; i++) {
-    const apiKey = nextGeminiKey();
-    if (!apiKey) break;
-    try {
-      const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-        },
-      );
-      if (!resp.ok) {
-        console.error(`Gemini key #${i + 1}/${totalKeys} failed (HTTP ${resp.status}), trying next key...`);
-        continue;
+async function callGeminiOnce(prompt: string, models: string[] = ALL_MODELS): Promise<string | null> {
+  const keys = shuffledKeyOrder();
+  const totalKeys = keys.length;
+  for (const model of models) {
+    let skipModel = false;
+    for (let i = 0; i < totalKeys && !skipModel; i++) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), PER_ATTEMPT_TIMEOUT_MS);
+      try {
+        const resp = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${keys[i]}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+            signal: controller.signal,
+          },
+        );
+        if (!resp.ok) {
+          console.error(`Gemini key #${i + 1}/${totalKeys} (${model}) failed (HTTP ${resp.status}), trying next...`);
+          if (resp.status === 400 || resp.status === 404) skipModel = true;
+          continue;
+        }
+        const json = await resp.json();
+        const parts = json?.candidates?.[0]?.content?.parts ?? [];
+        const text = parts.map((p: { text?: string }) => p.text || "").join("");
+        if (text) {
+          console.log(`gemini ok model=${model} key=${i + 1}`);
+          return text;
+        }
+        console.error(`Gemini key #${i + 1}/${totalKeys} (${model}) returned empty content, trying next...`);
+      } catch (e) {
+        console.error(`Gemini key #${i + 1}/${totalKeys} (${model}) threw (${e instanceof Error ? e.message : String(e)}), trying next...`);
+        if (model === PRIMARY_MODEL && e instanceof Error && e.name === "AbortError") skipModel = true;
+      } finally {
+        clearTimeout(timer);
       }
-      const json = await resp.json();
-      const parts = json?.candidates?.[0]?.content?.parts ?? [];
-      const text = parts.map((p: { text?: string }) => p.text || "").join("");
-      if (text) return text;
-      console.error(`Gemini key #${i + 1}/${totalKeys} returned empty content, trying next key...`);
-    } catch (e) {
-      console.error(`Gemini key #${i + 1}/${totalKeys} threw (${e instanceof Error ? e.message : String(e)}), trying next key...`);
     }
   }
   return null;
+}
+
+function parseCorrections(raw: string): Record<string, { corrected?: string; changed?: boolean }> | null {
+  const cleaned = raw.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
+  try {
+    const v = JSON.parse(cleaned);
+    return v && typeof v === "object" && !Array.isArray(v) ? v : null;
+  } catch {
+    return null;
+  }
 }
 
 // الحقول المسموح مراجعتها - حصراً الحقول النصية الحرة المعرّضة لهذا النوع من
@@ -187,19 +213,18 @@ ${fieldsBlock}
 {"اسم_الحقل": {"corrected": "النص بعد المراجعة", "changed": true أو false}}
 ضع "changed": false و"corrected" مطابقاً للنص الأصلي تماماً إن كان صحيحاً كما هو.`;
 
-  const raw = await callGeminiOnce(prompt);
+  let raw = await callGeminiOnce(prompt);
   if (!raw) return jsonResponse({ corrections: {} });
 
-  // تنظيف أي تغليف Markdown محتمل (```json ... ```) ثم محاولة التحليل بأمان -
-  // أي فشل هنا يعني ببساطة "لا تصحيحات"، لا خطأ يُرجع للعميل، فهذه ميزة
-  // مساعِدة اختيارية ويجب ألا تُعطّل تدفق إصدار التقرير أبداً.
-  const cleaned = raw.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
-  let parsed: Record<string, { corrected?: string; changed?: boolean }> = {};
-  try {
-    parsed = JSON.parse(cleaned);
-  } catch {
-    return jsonResponse({ corrections: {} });
+  // تنظيف أي تغليف Markdown محتمل ثم التحليل بأمان. ردّ غير صالح من النموذج الأساسي
+  // يُعاد مرة واحدة بالنموذج الاحتياطي؛ وأي فشل بعدها يعني ببساطة "لا تصحيحات"،
+  // فهذه ميزة مساعِدة اختيارية ويجب ألا تُعطّل تدفق إصدار التقرير أبداً.
+  let parsed = parseCorrections(raw);
+  if (!parsed) {
+    raw = await callGeminiOnce(prompt, FALLBACK_MODELS);
+    parsed = raw ? parseCorrections(raw) : null;
   }
+  if (!parsed) return jsonResponse({ corrections: {} });
 
   const corrections: Record<string, { corrected: string; changed: boolean }> = {};
   for (const field of candidateFields) {

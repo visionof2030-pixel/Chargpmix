@@ -17,7 +17,11 @@ for (let n = 1; n <= 10; n++) {
   if (k) GEMINI_KEYS.push(k);
 }
 
-const GEMINI_MODELS = ["gemini-2.5-flash-lite", "gemini-2.5-flash"];
+// النموذج الأساسي 3.1 Flash-Lite (حصته المجانية ٥٠٠ طلب/يوم لكل مشروع)، ثم 2.5 احتياطاً.
+// المرور: الأساسي على كل المفاتيح أولاً، ثم الاحتياطي.
+const PRIMARY_MODEL = "gemini-3.1-flash-lite";
+const ALL_MODELS = [PRIMARY_MODEL, "gemini-2.5-flash-lite", "gemini-2.5-flash"];
+const FALLBACK_MODELS = ALL_MODELS.slice(1);
 
 let lastGeminiIssue = "";
 
@@ -92,12 +96,14 @@ async function callGemini(
   jsonMode: boolean,
   perAttemptMs: number,
   overallMs: number,
+  models: string[] = ALL_MODELS,
 ): Promise<string | null> {
   const keys = shuffledKeyOrder();
   const deadline = Date.now() + overallMs;
   lastGeminiIssue = "";
-  for (let i = 0; i < keys.length; i++) {
-    for (const model of GEMINI_MODELS) {
+  for (const model of models) {
+    let skipModel = false;
+    for (let i = 0; i < keys.length && !skipModel; i++) {
       const remaining = deadline - Date.now();
       if (remaining < 1500) {
         lastGeminiIssue = "deadline";
@@ -109,7 +115,8 @@ async function callGemini(
       try {
         const generationConfig: Record<string, unknown> = {};
         if (jsonMode) {
-          generationConfig.temperature = 0;
+          // نماذج الجيل الثالث: تُترك الحرارة على الافتراضي (توصية Google).
+          if (!model.startsWith("gemini-3")) generationConfig.temperature = 0;
           generationConfig.responseMimeType = "application/json";
         }
         if (model === "gemini-2.5-flash") generationConfig.thinkingConfig = { thinkingBudget: 0 };
@@ -128,17 +135,22 @@ async function callGemini(
           try { detail = (await resp.text()).slice(0, 160); } catch { /* ignore */ }
           lastGeminiIssue = model + " HTTP " + resp.status;
           console.error("Gemini key " + (i + 1) + "/" + keys.length + " (" + model + ") failed: HTTP " + resp.status + " " + detail);
+          if (resp.status === 400 || resp.status === 404) skipModel = true;
           continue;
         }
         const data = await resp.json();
         const parts = data?.candidates?.[0]?.content?.parts ?? [];
         const text = parts.map((p: { text?: string }) => p.text || "").join("");
-        if (text) return text;
+        if (text) {
+          console.log("gemini ok model=" + model + " key=" + (i + 1));
+          return text;
+        }
         lastGeminiIssue = model + " empty (" + (data?.candidates?.[0]?.finishReason || data?.promptFeedback?.blockReason || "?") + ")";
         console.error("Gemini key " + (i + 1) + "/" + keys.length + " (" + model + ") returned no text: " + lastGeminiIssue);
       } catch (e) {
         lastGeminiIssue = model + " " + (e instanceof Error ? e.name : "error");
         console.error("Gemini key " + (i + 1) + "/" + keys.length + " (" + model + ") threw: " + (e instanceof Error ? e.message : String(e)));
+        if (model === PRIMARY_MODEL && e instanceof Error && e.name === "AbortError") skipModel = true;
       } finally {
         clearTimeout(timer);
       }
@@ -227,7 +239,8 @@ Deno.serve(async (req: Request) => {
     const prompt = fill(template, "{{TRANSCRIPT}}", transcript);
     let parsed: Record<string, unknown> | null = null;
     for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
-      const raw = await callGemini(prompt, attempt === 0, 7000, attempt === 0 ? 14000 : 5000);
+      // المحاولة الثانية (بعد ردّ غير صالح أو فشل) بنماذج 2.5 الاحتياطية فقط.
+      const raw = await callGemini(prompt, attempt === 0, 7000, attempt === 0 ? 14000 : 5000, attempt === 0 ? ALL_MODELS : FALLBACK_MODELS);
       if (!raw) {
         console.error("extract attempt " + (attempt + 1) + ": no answer from Gemini");
         continue;

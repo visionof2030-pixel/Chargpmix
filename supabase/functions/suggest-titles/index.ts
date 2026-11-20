@@ -20,7 +20,12 @@ for (let n = 1; n <= 10; n++) {
   const k = Deno.env.get("GEMINI_API_KEY_" + n);
   if (k) GEMINI_KEYS.push(k);
 }
-const GEMINI_MODELS = ["gemini-2.5-flash-lite", "gemini-2.5-flash"];
+// النموذج الأساسي 3.1 Flash-Lite (حصته المجانية ٥٠٠ طلب/يوم لكل مشروع)، ثم 2.5 احتياطاً.
+// المرور: النموذج الأساسي على كل المفاتيح أولاً، ثم الاحتياطي — حتى لا تُستهلك حصة 2.5 الصغيرة
+// ما دام في أي مفتاح حصة من 3.1.
+const PRIMARY_MODEL = "gemini-3.1-flash-lite";
+const ALL_MODELS = [PRIMARY_MODEL, "gemini-2.5-flash-lite", "gemini-2.5-flash"];
+const FALLBACK_MODELS = ALL_MODELS.slice(1);
 const STRUCTURE_TTL_MS = 10 * 60 * 1000;
 
 function jsonResponse(body: unknown, status = 200) {
@@ -30,37 +35,49 @@ function asText(v: unknown, max: number): string {
   return typeof v === "string" ? v.trim().slice(0, max) : "";
 }
 function normAr(t: string): string {
-  return t.replace(/[ً-ٰٟـ]/g, "").replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").replace(/\s+/g, " ").trim();
+  return t.replace(/[\u064B-\u0670\u065F\u0640]/g, "").replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").replace(/\s+/g, " ").trim();
 }
 
 let lastIssue = "";
-async function callGemini(prompt: string, perAttemptMs: number, overallMs: number): Promise<string | null> {
+async function callGemini(prompt: string, perAttemptMs: number, overallMs: number, models: string[] = ALL_MODELS): Promise<string | null> {
   const n = GEMINI_KEYS.length;
   if (!n) return null;
   const start = Math.floor(Math.random() * n);
   const keys = Array.from({ length: n }, (_, i) => GEMINI_KEYS[(start + i) % n]);
   const deadline = Date.now() + overallMs;
   lastIssue = "";
-  for (let i = 0; i < keys.length; i++) {
-    for (const model of GEMINI_MODELS) {
+  for (const model of models) {
+    let skipModel = false;
+    for (let i = 0; i < keys.length && !skipModel; i++) {
       const remaining = deadline - Date.now();
       if (remaining < 1500) { lastIssue = "deadline"; return null; }
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), Math.min(perAttemptMs, remaining));
       try {
-        const generationConfig: Record<string, unknown> = { temperature: 0.9, responseMimeType: "application/json" };
+        const generationConfig: Record<string, unknown> = { responseMimeType: "application/json" };
+        // نماذج الجيل الثالث: تُترك الحرارة والتفكير على الافتراضي (توصية Google).
+        if (!model.startsWith("gemini-3")) generationConfig.temperature = 0.9;
         if (model === "gemini-2.5-flash") generationConfig.thinkingConfig = { thinkingBudget: 0 };
         const resp = await fetch(
           "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + keys[i],
           { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig }), signal: controller.signal },
         );
-        if (!resp.ok) { lastIssue = model + " HTTP " + resp.status; continue; }
+        if (!resp.ok) {
+          lastIssue = model + " HTTP " + resp.status;
+          console.error("Gemini key " + (i + 1) + "/" + n + " (" + model + ") failed: HTTP " + resp.status);
+          // 400/404: النموذج نفسه غير متاح أو الطلب لا يناسبه — لا فائدة من بقية المفاتيح عليه.
+          if (resp.status === 400 || resp.status === 404) skipModel = true;
+          continue;
+        }
         const data = await resp.json();
         const text = (data?.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text || "").join("");
-        if (text) return text;
+        if (text) { console.log("gemini ok model=" + model + " key=" + (i + 1)); return text; }
         lastIssue = model + " empty";
       } catch (e) {
         lastIssue = model + " " + (e instanceof Error ? e.name : "error");
+        console.error("Gemini key " + (i + 1) + "/" + n + " (" + model + ") threw: " + lastIssue);
+        // بطء النموذج الأساسي عام لا يخص مفتاحاً بعينه: انتقل للاحتياطي مباشرة.
+        if (model === PRIMARY_MODEL && e instanceof Error && e.name === "AbortError") skipModel = true;
       } finally {
         clearTimeout(timer);
       }
@@ -138,15 +155,23 @@ Deno.serve(async (req: Request) => {
   const crit = await loadCriterion(supabase, role, critId);
   if (!crit || !crit.subs.length) return jsonResponse({ titles: [], failed: true, reason: "unknown_criterion" });
 
-  const raw = await callGemini(buildPrompt(crit, subject, avoid, count + 2), 9000, 16000);
+  const prompt = buildPrompt(crit, subject, avoid, count + 2);
+  const parseTitles = (raw: string): { titles?: Array<Record<string, unknown>> } | null => {
+    try {
+      const c = raw.trim().replace(/^```json\s*/i, "").replace(/```\s*$/i, "");
+      const v = JSON.parse(c.slice(c.indexOf("{"), c.lastIndexOf("}") + 1));
+      return v && typeof v === "object" && Array.isArray(v.titles) ? v : null;
+    } catch { return null; }
+  };
+  let raw = await callGemini(prompt, 9000, 16000);
   if (!raw) return jsonResponse({ titles: [], failed: true, reason: lastIssue || "no_answer" });
-
-  let parsed: { titles?: Array<Record<string, unknown>> } | null = null;
-  try {
-    const c = raw.trim().replace(/^```json\s*/i, "").replace(/```\s*$/i, "");
-    const v = JSON.parse(c.slice(c.indexOf("{"), c.lastIndexOf("}") + 1));
-    parsed = v && typeof v === "object" ? v : null;
-  } catch { parsed = null; }
+  let parsed = parseTitles(raw);
+  if (!parsed) {
+    // ردّ غير صالح: محاولة واحدة بالنموذج الاحتياطي قبل الاستسلام.
+    console.error("suggest-titles: unparsable answer, retrying with fallback model");
+    raw = await callGemini(prompt, 7000, 9000, FALLBACK_MODELS);
+    parsed = raw ? parseTitles(raw) : null;
+  }
   if (!parsed || !Array.isArray(parsed.titles)) return jsonResponse({ titles: [], failed: true, reason: "unparsable" });
 
   const avoidN = new Set(avoid.map(normAr));
