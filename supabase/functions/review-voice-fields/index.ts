@@ -62,6 +62,8 @@ const PRIMARY_MODEL = "gemini-3.1-flash-lite";
 const ALL_MODELS = [PRIMARY_MODEL, "gemini-2.5-flash-lite"];
 const FALLBACK_MODELS = ALL_MODELS.slice(1);
 const PER_ATTEMPT_TIMEOUT_MS = 8000;
+// بعد ردّين 503 (ضغط عالٍ لدى Google على النموذج نفسه) يُتجاوز الأساسي إلى الاحتياطي.
+const PRIMARY_MAX_503 = 2;
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -75,6 +77,7 @@ async function callGeminiOnce(prompt: string, models: string[] = ALL_MODELS): Pr
   const totalKeys = keys.length;
   for (const model of models) {
     let skipModel = false;
+    let count503 = 0;
     for (let i = 0; i < totalKeys && !skipModel; i++) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), PER_ATTEMPT_TIMEOUT_MS);
@@ -91,6 +94,7 @@ async function callGeminiOnce(prompt: string, models: string[] = ALL_MODELS): Pr
         if (!resp.ok) {
           console.error(`Gemini key #${i + 1}/${totalKeys} (${model}) failed (HTTP ${resp.status}), trying next...`);
           if (resp.status === 400 || resp.status === 404) skipModel = true;
+          if (resp.status === 503 && model === PRIMARY_MODEL && ++count503 >= PRIMARY_MAX_503) skipModel = true;
           continue;
         }
         const json = await resp.json();

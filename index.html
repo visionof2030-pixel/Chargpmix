@@ -7419,6 +7419,11 @@ body.ds-open .notification { z-index: 9400; }
 .ds.in .ds-check { animation: dsPop .5s cubic-bezier(.2,.9,.3,1.4) .1s both; }
 @keyframes dsPop { from { transform: scale(.3); } to { transform: scale(1); } }
 .ds-card h2 { margin: 0; font-size: 26px; font-weight: 900; color: var(--f-em, #0a6b4f); }
+.ds-model { display: block; width: fit-content; margin: -6px auto 12px; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; background: #eef2ff; color: #3730a3; border: 1px dashed #a5b4fc; }
+.ds-model[hidden] { display: none !important; }
+.admin-log-model { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: #eef2ff; color: #3730a3; }
+.admin-log-model.fb { background: #fff7ed; color: #9a3412; }
+.admin-log-model.na { background: #f1f5f9; color: #64748b; }
 .ds-title { display: inline-block; margin: 10px auto 14px; max-width: 100%; padding: 8px 16px; border-radius: 14px; background: var(--f-em-soft, #e5f2ed); color: var(--f-text, #0d1f19); font-size: 15px; font-weight: 800; line-height: 1.6; }
 .ds-info { list-style: none; margin: 0 0 18px; padding: 0; text-align: right; }
 .ds-info li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 4px; font-size: 15.5px; font-weight: 600; line-height: 1.75; color: var(--f-text, #0d1f19); }
@@ -8720,6 +8725,12 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
         <option value="">كل الطرق</option>
         <option value="voice">أمر صوتي</option>
         <option value="typed">كتابة</option>
+      </select>
+      <select id="adminLogFilterModel" onchange="renderAdminReportLog()" style="display:none;">
+        <option value="">كل النماذج</option>
+        <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash-Lite</option>
+        <option value="fallback">احتياطي (2.5)</option>
+        <option value="none">غير مسجّل</option>
       </select>
       <select id="adminLogFilterDate" onchange="renderAdminReportLog()">
         <option value="">كل التواريخ</option>
@@ -13630,6 +13641,10 @@ function saveCurrentReport() {
     reportData.key = recordKey;
     // صورة القالب الرسمي السابقة تبقى حتى تُلتقط صورة جديدة (عند التنزيل/المشاركة أو حفظ القالب القصير).
     if (savedReports[recordKey] && savedReports[recordKey].snapshot) reportData.snapshot = savedReports[recordKey].snapshot;
+    // النموذج الذي كتب التقرير (يصل لحساب المالك فقط) — يبقى عند الحفظ اليدوي اللاحق.
+    const aiModel = window.__pendingAiModel || (savedReports[recordKey] && savedReports[recordKey].aiModel) || '';
+    window.__pendingAiModel = '';
+    if (aiModel) reportData.aiModel = aiModel;
     savedReports[recordKey] = reportData;
     window.__curReportKey = recordKey;
     window.__lastReportSavedAt = Date.now();
@@ -16642,6 +16657,13 @@ function openDoneSheet() {
     document.getElementById('dsWhere').innerHTML = crit
         ? `وأُدرج <b>برمز QR</b> تحت معيار <b>«${pfEsc(crit.name)}»</b> في ملف الشواهد الوظيفية.`
         : `وأُدرج <b>برمز QR</b> في ملف الشواهد الوظيفية ضمن <b>«تقارير أخرى»</b>.`;
+    // للمالك فقط: النموذج الذي كتب التقرير (لدراسة الحالة).
+    const dm = document.getElementById('dsModel');
+    if (dm) {
+        const showModel = !!(window.__isProjectOwner && r.aiModel);
+        dm.hidden = !showModel;
+        dm.innerHTML = showModel ? '<i class="fas fa-microchip"></i> كتبه: ' + pfEsc(aiModelLabel(r.aiModel)) : '';
+    }
     const el = document.getElementById('doneSheet');
     el.style.display = 'flex';
     el.classList.remove('in'); void el.offsetWidth; el.classList.add('in');
@@ -19176,6 +19198,8 @@ async function fillWithAI() {
         } else {
             parseAIResponseProfessional(data.content);
         }
+        // الخادم يُعيد ai_model لحساب المالك فقط؛ يُحفظ مع التقرير ويظهر في شاشة الإصدار.
+        window.__pendingAiModel = (data && data.ai_model) || '';
         saveCurrentReport();
         mpAfterGenerate();
         // نربط تقييم "رأيك" (إن استخدمه المستخدم) بمعرّف هذا التقرير فقط عندما يكون معياراً
@@ -19786,16 +19810,23 @@ async function submitBetaFeedback() {
 // ==================== لوحة "إدارة النسخة التجريبية" (Admin) ====================
 // الصلاحية تُتحقق من جدول admin_users عبر Supabase (RLS: كل حساب يقرأ صفّه فقط) - وليست
 // مجرد تحقق من البريد الإلكتروني داخل الواجهة الأمامية، تماشياً مع الاتفاق حول آلية الصلاحية.
+// حساب مالك المشروع: يرى النموذج الذي كتب كل تقرير (عرض فقط؛ الخادم لا يُعيد اسم النموذج لغيره).
+const ENJAZ_OWNER_EMAIL = 'ifahadenglish@gmail.com';
+const AI_MODEL_LABELS = { 'gemini-3.1-flash-lite': 'Gemini 3.1 Flash-Lite', 'gemini-2.5-flash-lite': 'Gemini 2.5 Flash-Lite (احتياطي)', 'gemini-2.5-flash': 'Gemini 2.5 Flash (احتياطي)' };
+function aiModelLabel(m) { return m ? (AI_MODEL_LABELS[m] || m) : 'غير مسجّل'; }
 async function checkAdminStatus() {
     try {
         const { data: sessionData } = await supabaseClient.auth.getSession();
         const userId = sessionData?.session?.user?.id;
+        window.__isProjectOwner = String(sessionData?.session?.user?.email || '').toLowerCase() === ENJAZ_OWNER_EMAIL;
         if (!userId) { window.__isBetaAdmin = false; return; }
         const { data, error } = await supabaseClient.from('admin_users').select('user_id').eq('user_id', userId).maybeSingle();
         window.__isBetaAdmin = !error && !!data;
     } catch (e) {
         window.__isBetaAdmin = false;
     }
+    const mf = document.getElementById('adminLogFilterModel');
+    if (mf) mf.style.display = window.__isProjectOwner ? '' : 'none';
     const btn = document.getElementById('drawerAdminBtn');
     if (btn) btn.style.display = window.__isBetaAdmin ? '' : 'none';
 }
@@ -19930,7 +19961,7 @@ async function loadAdminReportLog() {
     listEl.innerHTML = '<div class="admin-feedback-empty">جارٍ التحميل...</div>';
     try {
         const { data, error } = await supabaseClient.from('report_generation_log')
-            .select('id, created_at, title, template_kind, input_method, reporter_name, role')
+            .select('id, created_at, title, template_kind, input_method, reporter_name, role, ai_model')
             .order('created_at', { ascending: false })
             .limit(1000);
         if (error) throw error;
@@ -19957,7 +19988,9 @@ function renderAdminReportLog() {
     const kindF = document.getElementById('adminLogFilterKind')?.value || '';
     const methodF = document.getElementById('adminLogFilterMethod')?.value || '';
     const dateF = document.getElementById('adminLogFilterDate')?.value || '';
+    const modelF = window.__isProjectOwner ? (document.getElementById('adminLogFilterModel')?.value || '') : '';
     const filtered = all.filter(r => {
+        if (modelF === 'none' ? !!r.ai_model : (modelF === 'fallback' ? !(r.ai_model && r.ai_model.startsWith('gemini-2.5')) : (modelF && r.ai_model !== modelF))) return false;
         if (kindF === 'short_all' ? !ADMIN_LOG_SHORT_KINDS.includes(r.template_kind) : (kindF && r.template_kind !== kindF)) return false;
         if (methodF && r.input_method !== methodF) return false;
         if (dateF) {
@@ -19981,6 +20014,7 @@ function renderAdminReportLog() {
             <div class="admin-feedback-card-row"><span>القالب</span><span>${ADMIN_LOG_KIND_LABELS[r.template_kind] || '—'}</span></div>
             <div class="admin-feedback-card-row"><span>الطريقة</span><span>${method}</span></div>
             <div class="admin-feedback-card-row"><span>المُصدِر</span><span>${r.reporter_name ? esc(r.reporter_name) : '—'}</span></div>
+            ${window.__isProjectOwner ? `<div class="admin-feedback-card-row"><span>النموذج</span><span class="admin-log-model${!r.ai_model ? ' na' : (r.ai_model.startsWith('gemini-2.5') ? ' fb' : '')}">${esc(aiModelLabel(r.ai_model))}</span></div>` : ''}
         </div>`;
     }).join('') + (filtered.length > SHOW ? `<div class="admin-log-more">يظهر أحدث ${SHOW} من ${filtered.length} - استخدم التصفية لتضييق النتائج.</div>` : '');
 }
@@ -20423,6 +20457,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <div class="ds-burst"><span class="ds-ring"></span><span class="ds-check"><i class="fas fa-check"></i></span></div>
         <h2 id="dsHead">تم إصدار تقريرك</h2>
         <div class="ds-title" id="dsTitle"></div>
+        <div class="ds-model" id="dsModel" hidden></div>
         <ul class="ds-info">
             <li><i class="fas fa-folder-open"></i><span>محفوظ في <b>«التقارير المحفوظة»</b>،</span></li>
             <li><i class="fas fa-qrcode"></i><span id="dsWhere"></span></li>

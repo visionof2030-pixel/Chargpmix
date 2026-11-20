@@ -22,8 +22,15 @@ for (let n = 1; n <= 10; n++) {
 const PRIMARY_MODEL = "gemini-3.1-flash-lite";
 const ALL_MODELS = [PRIMARY_MODEL, "gemini-2.5-flash-lite", "gemini-2.5-flash"];
 const FALLBACK_MODELS = ALL_MODELS.slice(1);
+// مهلة أقصر للنموذج الأساسي، وتجاوزه بعد ردّين 503 (ضغط عالٍ لدى Google).
+const PRIMARY_TIMEOUT_MS = 15000;
+const PRIMARY_MAX_503 = 2;
+// صاحب المشروع: يُعاد له اسم النموذج الذي كتب التقرير (لدراسة الحالة)، ولا يُعاد لغيره.
+const OWNER_EMAIL = "ifahadenglish@gmail.com";
+
 
 let lastGeminiIssue = "";
+let lastGeminiModel = "";
 
 const EXTRACT_KEYS = [
   "title", "executors", "participants", "place", "duration", "date",
@@ -103,6 +110,7 @@ async function callGemini(
   lastGeminiIssue = "";
   for (const model of models) {
     let skipModel = false;
+    let count503 = 0;
     for (let i = 0; i < keys.length && !skipModel; i++) {
       const remaining = deadline - Date.now();
       if (remaining < 1500) {
@@ -111,7 +119,7 @@ async function callGemini(
         return null;
       }
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), Math.min(perAttemptMs, remaining));
+      const timer = setTimeout(() => controller.abort(), Math.min(model === PRIMARY_MODEL ? Math.min(perAttemptMs, PRIMARY_TIMEOUT_MS) : perAttemptMs, remaining));
       try {
         const generationConfig: Record<string, unknown> = {};
         if (jsonMode) {
@@ -136,6 +144,7 @@ async function callGemini(
           lastGeminiIssue = model + " HTTP " + resp.status;
           console.error("Gemini key " + (i + 1) + "/" + keys.length + " (" + model + ") failed: HTTP " + resp.status + " " + detail);
           if (resp.status === 400 || resp.status === 404) skipModel = true;
+          if (resp.status === 503 && model === PRIMARY_MODEL && ++count503 >= PRIMARY_MAX_503) skipModel = true;
           continue;
         }
         const data = await resp.json();
@@ -143,6 +152,7 @@ async function callGemini(
         const text = parts.map((p: { text?: string }) => p.text || "").join("");
         if (text) {
           console.log("gemini ok model=" + model + " key=" + (i + 1));
+          lastGeminiModel = model;
           return text;
         }
         lastGeminiIssue = model + " empty (" + (data?.candidates?.[0]?.finishReason || data?.promptFeedback?.blockReason || "?") + ")";
@@ -197,6 +207,7 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({ detail: "Invalid session", code: "auth" }, 401);
   }
   const userId = userData.user.id;
+  const isOwner = (userData.user.email || "").toLowerCase() === OWNER_EMAIL;
 
   let body: Record<string, unknown>;
   try {
@@ -273,6 +284,7 @@ Deno.serve(async (req: Request) => {
   }
 
   const rawContent = await callGemini(prompt, false, 30000, 75000);
+  const usedModel = lastGeminiModel || null;
   if (!rawContent) {
     return jsonResponse({ detail: "AI is unavailable right now", code: "ai_unavailable" }, 502);
   }
@@ -303,6 +315,7 @@ Deno.serve(async (req: Request) => {
     template_kind: baseKey,
     input_method: inputMethod,
     reporter_name: reporterName,
+    ai_model: usedModel,
   });
   if (logError) console.error("report_generation_log insert failed: " + logError.message);
 
@@ -327,5 +340,5 @@ Deno.serve(async (req: Request) => {
     }
   }
 
-  return jsonResponse({ content, generated_at: new Date().toISOString() });
+  return jsonResponse({ content, generated_at: new Date().toISOString(), ...(isOwner ? { ai_model: usedModel } : {}) });
 });

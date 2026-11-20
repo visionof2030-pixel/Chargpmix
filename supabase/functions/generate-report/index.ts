@@ -36,6 +36,13 @@ const OVERALL_DEADLINE_MS = 75000;
 // المرور: الأساسي على كل المفاتيح أولاً، ثم الاحتياطي على كل المفاتيح.
 const PRIMARY_MODEL = "gemini-3.1-flash-lite";
 const GEMINI_MODELS = [PRIMARY_MODEL, "gemini-2.5-flash-lite"];
+// مهلة أقصر للنموذج الأساسي: لو تأخر ينتقل للاحتياطي بدل انتظار نصف دقيقة.
+const PRIMARY_TIMEOUT_MS = 15000;
+// بعد ردّين 503 (ضغط عالٍ لدى Google على النموذج نفسه) يُتجاوز إلى الاحتياطي.
+const PRIMARY_MAX_503 = 2;
+// صاحب المشروع: يُعاد له اسم النموذج الذي كتب التقرير (لدراسة الحالة)، ولا يُعاد لغيره.
+const OWNER_EMAIL = "ifahadenglish@gmail.com";
+
 interface VoiceCorrectionFeedback {
     field_name?: string;
     original_text?: string;
@@ -88,6 +95,7 @@ interface GeminiCallResult {
     lastErrorMessage: string;
     attempts: number;
     succeededOnAttempt: number | null;
+    model?: string;
 }
 async function callGeminiWithFailover(prompt: string): Promise<GeminiCallResult> {
     const totalKeys = GEMINI_KEYS.length;
@@ -97,6 +105,7 @@ async function callGeminiWithFailover(prompt: string): Promise<GeminiCallResult>
     const deadline = Date.now() + OVERALL_DEADLINE_MS;
     for (const model of GEMINI_MODELS) {
         let skipModel = false;
+        let count503 = 0;
         for (let i = 0; i < totalKeys && !skipModel; i++) {
             const apiKey = keys[i];
             if (!apiKey)
@@ -108,7 +117,7 @@ async function callGeminiWithFailover(prompt: string): Promise<GeminiCallResult>
             }
             attempts++;
             const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), Math.min(PER_ATTEMPT_TIMEOUT_MS, remaining));
+            const timer = setTimeout(() => controller.abort(), Math.min(model === PRIMARY_MODEL ? PRIMARY_TIMEOUT_MS : PER_ATTEMPT_TIMEOUT_MS, remaining));
             try {
                 const geminiResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
                     method: "POST",
@@ -124,6 +133,8 @@ async function callGeminiWithFailover(prompt: string): Promise<GeminiCallResult>
                     // 400/404: النموذج نفسه غير متاح — لا فائدة من بقية المفاتيح عليه.
                     if (geminiResp.status === 400 || geminiResp.status === 404)
                         skipModel = true;
+                    if (geminiResp.status === 503 && model === PRIMARY_MODEL && ++count503 >= PRIMARY_MAX_503)
+                        skipModel = true;
                     continue;
                 }
                 const geminiJson = await geminiResp.json();
@@ -137,7 +148,7 @@ async function callGeminiWithFailover(prompt: string): Promise<GeminiCallResult>
                     continue;
                 }
                 console.log(`gemini ok model=${model} key=${i + 1}`);
-                return { content: stripMarkdown(text), lastErrorMessage: "", attempts, succeededOnAttempt: attempts };
+                return { content: stripMarkdown(text), lastErrorMessage: "", attempts, succeededOnAttempt: attempts, model };
             }
             catch (e) {
                 lastErrorMessage = e instanceof Error ? e.message : String(e);
@@ -171,6 +182,7 @@ Deno.serve(async (req: Request) => {
         return jsonResponse({ detail: "جلسة غير صالحة، يرجى تسجيل الدخول من جديد" }, 401);
     }
     const userId = userData.user.id;
+    const isOwner = (userData.user.email || "").toLowerCase() === OWNER_EMAIL;
     let body: GenerateReportRequest;
     try {
         body = await req.json();
@@ -324,6 +336,7 @@ Deno.serve(async (req: Request) => {
         template_kind: "long",
         input_method: inputMethod,
         reporter_name: reporterName,
+        ai_model: geminiResult.model || null,
     });
     if (logError) {
         console.error("report_generation_log insert failed:", logError.message);
@@ -354,5 +367,6 @@ Deno.serve(async (req: Request) => {
         subcategory_name: isFreeMode ? null : subcategoryName,
         criterion_name: isFreeMode ? null : criterionName,
         generated_at: new Date().toISOString(),
+        ...(isOwner ? { ai_model: geminiResult.model || null } : {}),
     });
 });
