@@ -27,6 +27,9 @@ const PRIMARY_TIMEOUT_MS = 15000;
 const PRIMARY_MAX_503 = 2;
 // صاحب المشروع: يُعاد له اسم النموذج الذي كتب التقرير (لدراسة الحالة)، ولا يُعاد لغيره.
 const OWNER_EMAIL = "ifahadenglish@gmail.com";
+// صيغة المؤنث: حين تكون صفة مقدم التقرير «معلمة» يُلحق هذا التوجيه بنص الطلب.
+const FEMALE_NOTE = "\n\nتعليمات الصياغة (إلزامية): مقدِّمة هذا التقرير معلمة (أنثى) في مدرسة بنات. اكتب كل ما يخصها بصيغة المؤنث (المعلمة، قامت، نفّذت، حرصت، استخدمت...)، واستخدم صيغ المؤنث للمتعلمين (الطالبات، الطالبة، المتعلمات، المتفوقات، أولياء أمور الطالبات) بدل صيغ المذكر، وكذلك عند الإشارة إلى الزميلات أو المشرفة أو قائدة المدرسة. لا تغيّر أسماء الأعلام ولا المصطلحات الرسمية الثابتة، والتزم بالشكل والتنسيق المطلوبين أعلاه تماماً.";
+
 
 
 let lastGeminiIssue = "";
@@ -283,6 +286,7 @@ Deno.serve(async (req: Request) => {
     prompt = fill(prompt, "{" + placeholder + "}", asText(reportData[dataKey], 1500) || NOT_MENTIONED);
   }
 
+  if (body.gender === "female") prompt += FEMALE_NOTE;
   const rawContent = await callGemini(prompt, false, 30000, 75000);
   const usedModel = lastGeminiModel || null;
   if (!rawContent) {

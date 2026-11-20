@@ -108,12 +108,12 @@ async function loadCriterion(supabase: ReturnType<typeof createClient>, role: st
   return hit.crits.get(critId) || null;
 }
 
-function buildPrompt(crit: Crit, subject: string, avoid: string[], count: number): string {
+function buildPrompt(crit: Crit, subject: string, avoid: string[], count: number, female = false): string {
   const subsText = crit.subs.map((s) => `[${s.n}] ${s.name}${s.examples.length ? " — أمثلة على الأسلوب فقط: " + s.examples.join("؛ ") : ""}`).join("\n");
   return `أنت مساعد تربوي لمعلم في المملكة العربية السعودية يوثّق شواهد الأداء الوظيفي.
 اقترح ${count} عناوين تقارير تربوية جديدة لمعيار الأداء: «${crit.name}».
 تخصص المعلم: ${subject || "غير محدد"}.
-
+${female ? "المعلمة أنثى في مدرسة بنات: استخدم صيغ المؤنث في العناوين (الطالبات، المتعلمات، المتفوقات، أولياء أمور الطالبات).\n" : ""}
 بنود المعيار (اختر لكل عنوان بنداً مناسباً، ونوّع بين البنود قدر الإمكان):
 ${subsText}
 
@@ -155,7 +155,7 @@ Deno.serve(async (req: Request) => {
   const crit = await loadCriterion(supabase, role, critId);
   if (!crit || !crit.subs.length) return jsonResponse({ titles: [], failed: true, reason: "unknown_criterion" });
 
-  const prompt = buildPrompt(crit, subject, avoid, count + 2);
+  const prompt = buildPrompt(crit, subject, avoid, count + 2, body.gender === "female");
   const parseTitles = (raw: string): { titles?: Array<Record<string, unknown>> } | null => {
     try {
       const c = raw.trim().replace(/^```json\s*/i, "").replace(/```\s*$/i, "");

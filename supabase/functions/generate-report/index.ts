@@ -42,6 +42,9 @@ const PRIMARY_TIMEOUT_MS = 15000;
 const PRIMARY_MAX_503 = 2;
 // صاحب المشروع: يُعاد له اسم النموذج الذي كتب التقرير (لدراسة الحالة)، ولا يُعاد لغيره.
 const OWNER_EMAIL = "ifahadenglish@gmail.com";
+// صيغة المؤنث: حين تكون صفة مقدم التقرير «معلمة» يُلحق هذا التوجيه بنص الطلب.
+const FEMALE_NOTE = "\n\nتعليمات الصياغة (إلزامية): مقدِّمة هذا التقرير معلمة (أنثى) في مدرسة بنات. اكتب كل ما يخصها بصيغة المؤنث (المعلمة، قامت، نفّذت، حرصت، استخدمت...)، واستخدم صيغ المؤنث للمتعلمين (الطالبات، الطالبة، المتعلمات، المتفوقات، أولياء أمور الطالبات) بدل صيغ المذكر، وكذلك عند الإشارة إلى الزميلات أو المشرفة أو قائدة المدرسة. لا تغيّر أسماء الأعلام ولا المصطلحات الرسمية الثابتة، والتزم بالشكل والتنسيق المطلوبين أعلاه تماماً.";
+
 
 interface VoiceCorrectionFeedback {
     field_name?: string;
@@ -57,6 +60,7 @@ interface GenerateReportRequest {
     report_data?: Record<string, unknown>;
     voice_corrections_feedback?: VoiceCorrectionFeedback[];
     input_method?: string;
+    gender?: string;
 }
 function jsonResponse(body: unknown, status = 200) {
     return new Response(JSON.stringify(body), {
@@ -305,7 +309,7 @@ Deno.serve(async (req: Request) => {
     if (GEMINI_KEYS.length === 0) {
         return jsonResponse({ detail: "لم يتم إعداد مفتاح الذكاء الاصطناعي" }, 500);
     }
-    const geminiResult = await callGeminiWithFailover(prompt);
+    const geminiResult = await callGeminiWithFailover(body.gender === "female" ? prompt + FEMALE_NOTE : prompt);
     if (!geminiResult.content) {
         console.error(`All ${geminiResult.attempts} configured Gemini key(s) failed for this request. Last error: ${geminiResult.lastErrorMessage}`);
         return jsonResponse({

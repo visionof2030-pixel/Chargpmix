@@ -7419,6 +7419,11 @@ body.ds-open .notification { z-index: 9400; }
 .ds.in .ds-check { animation: dsPop .5s cubic-bezier(.2,.9,.3,1.4) .1s both; }
 @keyframes dsPop { from { transform: scale(.3); } to { transform: scale(1); } }
 .ds-card h2 { margin: 0; font-size: 26px; font-weight: 900; color: var(--f-em, #0a6b4f); }
+.sub-expired-bar { position: sticky; top: 0; z-index: 9000; display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #fef2f2; color: #991b1b; border-bottom: 1px solid #fecaca; font-size: 13px; line-height: 1.7; }
+.sub-expired-bar > i { font-size: 18px; flex: none; }
+.sub-expired-bar span { flex: 1; }
+.sub-expired-bar button { flex: none; border: 0; border-radius: 999px; padding: 6px 12px; background: #b91c1c; color: #fff; font: inherit; font-weight: 800; font-size: 12px; cursor: pointer; }
+.sub-expired-line { color: #b91c1c; background: #fef2f2; border-radius: 10px; padding: 6px 10px; margin-bottom: 6px; }
 .ds-model { display: block; width: fit-content; margin: -6px auto 12px; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; background: #eef2ff; color: #3730a3; border: 1px dashed #a5b4fc; }
 .ds-model[hidden] { display: none !important; }
 .admin-log-model { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: #eef2ff; color: #3730a3; }
@@ -10606,6 +10611,12 @@ function updateReporterFields(backendRole) {
     updateReport();
 }
 
+// جنس مقدم التقرير من «صفة مقدم التقرير» (معلم / معلمة): يُرسل للذكاء الاصطناعي ليكتب بصيغة المؤنث.
+function reporterIsFemale() {
+    const t = String(document.getElementById('reporterType')?.value || '');
+    return t.includes('ة') || t.includes('معلمة');
+}
+function reporterGender() { return reporterIsFemale() ? 'female' : 'male'; }
 function updatePrincipalType() {
     const reporterType = document.getElementById('reporterType').value;
     const isFemale = reporterType.includes('ة') || reporterType.includes('معلمة');
@@ -14640,6 +14651,7 @@ function dvsRelevance(title, gi) {
     return 0;
 }
 function dvsCandidates(critId) {
+    if (window.__subExpired) return []; // العناوين المقترحة ميزة للمشتركين فقط
     const subs = (window.subcategoriesByCriterion && window.subcategoriesByCriterion[critId]) || [];
     const used = new Set(Object.values(getSavedReportsMap()).map(r => dvsNorm(r && r.title)));
     const coveredSubs = new Set();
@@ -14692,18 +14704,19 @@ function dvsVoice() {
 // عناوين جديدة يولّدها الذكاء الاصطناعي (دالة suggest-titles): ٤–٦ كلمات، للمعيار وتخصص المعلم.
 // تُطلب مرة لكل (معيار + تخصص) في الجلسة، وتُضاف أول القائمة بعلامة ✨؛ عند التعذّر تبقى عناوين البنك.
 window.__aiTitles = {};
-function dvsAiKey(critId) { return critId + '|' + tsValue(); }
+function dvsAiKey(critId) { return critId + '|' + tsValue() + '|' + reporterGender(); }
 async function dvsFetchAiTitles(critId) {
     const k = dvsAiKey(critId), st = window.__aiTitles;
     if (st[k] && (st[k].status === 'loading' || st[k].status === 'done')) return;
     if (st[k] && st[k].status === 'failed' && Date.now() - (st[k].at || 0) < 60000) return; // لا إعادة فورية بعد التعذّر
+    if (window.__subExpired) return; // الاشتراك منتهٍ: لا اقتراحات ذكاء اصطناعي
     st[k] = { status: 'loading', list: [] };
     const used = Object.values(getSavedReportsMap()).map(r => r && r.title).filter(Boolean).slice(-40);
     let list = [];
     try {
         const { data: sess } = await supabaseClient.auth.getSession();
         if (sess && sess.session) {
-            const call = supabaseClient.functions.invoke('suggest-titles', { body: { criterion_id: critId, subject: tsValue(), avoid: used, count: 3, role: getBackendRole(document.getElementById('role')?.value) } });
+            const call = supabaseClient.functions.invoke('suggest-titles', { body: { criterion_id: critId, subject: tsValue(), avoid: used, count: 3, role: getBackendRole(document.getElementById('role')?.value), gender: reporterGender() } });
             const timeout = new Promise(res => setTimeout(() => res({ data: null, error: new Error('timeout') }), 18000));
             const { data, error } = await Promise.race([call, timeout]);
             if (!error && data && Array.isArray(data.titles)) list = data.titles.filter(t => t && t.title).map(t => ({ title: t.title, subId: t.subcategory_id, subName: t.subcategory_name, reportId: '', fresh: true, rel: 3, ai: true }));
@@ -14889,7 +14902,9 @@ function qwChipsRender() {
     document.getElementById('qwChips').innerHTML = (loading && st.page === 0 ? '<span class="vm-chip ai-loading"><b><i class="fas fa-wand-magic-sparkles"></i> نجهّز عناوين لك…</b><small>حسب تخصصك</small></span>' : '')
         + items.map((p, i) => `<button type="button" class="vm-chip${p.ai ? ' ai' : ''}${st.pick && st.pick.title === p.title ? ' on' : ''}" data-qwchip="${st.page * 3 + i}"><b>${p.ai ? '✨ ' : ''}${pfEsc(p.title)}</b><small class="${p.fresh ? 'new' : ''}">${p.ai ? 'مقترح لك • ' : ''}${pfEsc(p.subName || '')}</small></button>`).join('')
         + (list.length > 3 ? '<button type="button" class="vm-chip more" data-qwchip="more"><i class="fas fa-rotate"></i> غيرها</button>' : '')
-        + (!items.length && !loading ? '<span class="vm-chip" style="cursor:default"><b>اكتب عنوان تقريرك</b><small>لا توجد اقتراحات الآن</small></span>' : '');
+        + (!items.length && !loading ? (window.__subExpired
+            ? '<span class="vm-chip" style="cursor:default"><b><i class="fas fa-lock"></i> العناوين المقترحة متوقفة</b><small>' + pfEsc(window.__subExpiredMsg || 'انتهى اشتراكك') + '</small></span>'
+            : '<span class="vm-chip" style="cursor:default"><b>اكتب عنوان تقريرك</b><small>لا توجد اقتراحات الآن</small></span>') : '');
 }
 document.addEventListener('click', e => {
     const c = e.target.closest && e.target.closest('[data-qwchip]');
@@ -19148,7 +19163,8 @@ async function fillWithAI() {
                 template: currentTemplateKey(),
                 report_data: isVisitTemplate() ? buildVisitReportData(reportTitle, extraNotes) : (isDocVariant() ? buildDocReportData(reportTitle, extraNotes) : buildShortReportData(reportTitle, extraNotes)),
                 voice_corrections_feedback: buildVoiceCorrectionsFeedback(),
-                input_method: window.__ttsVoiceSession ? 'voice' : 'typed'
+                input_method: window.__ttsVoiceSession ? 'voice' : 'typed',
+                gender: reporterGender()
             } : {
                 criterion_id: criterionId,
                 subcategory_id: subcategoryId,
@@ -19177,7 +19193,8 @@ async function fillWithAI() {
                 // كمرجع تعلّم جماعي؛ فارغة دائماً للتقارير غير الصوتية أو التي لم
                 // يُقترح فيها أي تصحيح.
                 voice_corrections_feedback: buildVoiceCorrectionsFeedback(),
-                input_method: window.__ttsVoiceSession ? 'voice' : 'typed'
+                input_method: window.__ttsVoiceSession ? 'voice' : 'typed',
+                gender: reporterGender()
             }
         });
         if (error) {
@@ -20270,6 +20287,37 @@ function blockExportIfBasicDataIncomplete() {
     return true;
 }
 
+// انتهاء الاشتراك: نفس شروط check_report_access في الخادم (الحالة، تاريخ الانتهاء، رصيد الاستخدام).
+function subExpiryReason(e) {
+    if (!e) return '';
+    if (e.status && e.status !== 'active') return 'تم إيقاف حسابك';
+    if (e.expires_at && Date.now() > new Date(e.expires_at).getTime()) return 'انتهى اشتراكك';
+    if (e.usage_limit !== null && e.usage_limit !== undefined && e.usage_count >= e.usage_limit) return 'استهلكت جميع التقارير المتاحة في اشتراكك';
+    return '';
+}
+function subApplyExpiry(e) {
+    const reason = subExpiryReason(e);
+    const was = !!window.__subExpired;
+    window.__subExpired = !!reason;
+    window.__subExpiredMsg = reason;
+    let bar = document.getElementById('subExpiredBar');
+    if (reason) {
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.id = 'subExpiredBar';
+            bar.className = 'sub-expired-bar';
+            bar.setAttribute('role', 'alert');
+            document.body.insertBefore(bar, document.body.firstChild);
+        }
+        bar.innerHTML = '<i class="fas fa-circle-exclamation"></i><span><b>' + reason + '</b> — لا يمكن إصدار تقارير جديدة ولا استخدام العناوين المقترحة. تقاريرك المحفوظة وملف الإنجاز متاحة كما هي.</span><button type="button" onclick="showPage(\'account\')">تفاصيل الاشتراك</button>';
+        document.body.classList.add('sub-expired');
+    } else {
+        if (bar) bar.remove();
+        document.body.classList.remove('sub-expired');
+    }
+    if (was !== !!reason) { window.__aiTitles = {}; if (window.__dvs) window.__dvs.list = []; }
+}
+
 // يقرأ حالة الحساب مباشرة من جدول entitlements عبر Supabase (RLS تسمح للمستخدم
 // بقراءة صفّه الخاص فقط) بدلاً من نقطة /subscription/status القديمة.
 async function loadAccountStatus() {
@@ -20289,8 +20337,9 @@ async function loadAccountStatus() {
         const statusLabel = statusLabels[data.status] || data.status;
         const expires = data.expires_at ? new Date(data.expires_at).toLocaleDateString('ar-SA') : "بدون انتهاء";
         const usageLine = data.usage_limit === null ? "غير محدود" : `${data.usage_count} / ${data.usage_limit}`;
+        subApplyExpiry(data);
         const remainingLine = data.usage_limit === null ? "غير محدود" : Math.max(0, data.usage_limit - data.usage_count);
-        document.getElementById("subInfo").innerHTML = `<div><i class="fas fa-user"></i> <strong>نوع الحساب:</strong> ${typeLabel}</div><div><i class="fas fa-toggle-on"></i> <strong>الحالة:</strong> ${statusLabel}</div><div><i class="fas fa-calendar-alt"></i> <strong>تاريخ الانتهاء:</strong> ${expires}</div><div><i class="fas fa-chart-line"></i> <strong>الاستخدام:</strong> ${usageLine}</div><div><i class="fas fa-gauge-high"></i> <strong>المتبقي:</strong> ${remainingLine}</div>`;
+        document.getElementById("subInfo").innerHTML = (window.__subExpired ? `<div class="sub-expired-line"><i class="fas fa-circle-exclamation"></i> <strong>${window.__subExpiredMsg}</strong></div>` : '') + `<div><i class="fas fa-user"></i> <strong>نوع الحساب:</strong> ${typeLabel}</div><div><i class="fas fa-toggle-on"></i> <strong>الحالة:</strong> ${statusLabel}</div><div><i class="fas fa-calendar-alt"></i> <strong>تاريخ الانتهاء:</strong> ${expires}</div><div><i class="fas fa-chart-line"></i> <strong>الاستخدام:</strong> ${usageLine}</div><div><i class="fas fa-gauge-high"></i> <strong>المتبقي:</strong> ${remainingLine}</div>`;
     } catch {
         document.getElementById("subInfo").innerHTML = "تعذر تحميل معلومات الحساب<br>يرجى التأكد من اتصال الإنترنت";
     }
