@@ -316,7 +316,7 @@ export const Scene2: React.FC = () => {
             mouth={mouthAt(sd, t)}
             armL={t < tGo ? 60 : 10}
             bendL={t < tGo ? 40 : 8}
-            armR={holdBlue ? lerp(60, 165, smooth((t - tBury) / 1.0)) : holdGreen ? lerp(40, 150, raise) : t < tGo ? 60 : on(t, tWardrobe, tBury) ? 70 : 12}
+            armR={holdBlue ? lerp(60, 165, smooth((t - tBury) / 1.0)) : holdGreen ? lerp(40, 100, raise) : t < tGo ? 60 : on(t, tWardrobe, tBury) ? 70 : 12}
             bendR={holdBlue || holdGreen ? 10 : t < tGo ? 40 : 30}
             propR={holdBlue && buried < 0.5 ? shirtProp(KIT_COLORS.hilal.shirt) : holdGreen ? shirtProp(KIT_COLORS.ahli.shirt, true) : undefined}
             look={t >= tGo ? 1 : 0}
