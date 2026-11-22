@@ -4298,6 +4298,17 @@ button[title]:hover::before {
 .admin-log-title { font-size: 13.5px; font-weight: 800; color: var(--text-dark); line-height: 1.5; word-break: break-word; }
 .admin-log-del { flex: 0 0 auto; border: 0; background: rgba(200,40,40,.1); color: #b42318; width: 32px; height: 32px; border-radius: 10px; cursor: pointer; font-size: 13px; }
 .admin-log-del:active { background: rgba(200,40,40,.22); }
+.cls-bar { margin: 0 0 12px; padding: 10px 12px; border: 1px dashed rgba(13,107,79,.35); border-radius: 14px; background: rgba(13,107,79,.04); }
+.cls-bar.compact { margin: 10px 0 0; padding: 8px 10px; }
+.cls-h { font-size: 13px; font-weight: 800; color: var(--f-em, #0d6b4f); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cls-h small { font-weight: 600; color: var(--text-light, #667); font-size: 11.5px; }
+.cls-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cls-chip { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; border: 1px solid rgba(13,107,79,.3); background: #fff; color: #12322a; border-radius: 12px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+.cls-chip b { font-weight: 800; }
+.cls-chip small { font-size: 11px; color: #5b6b65; }
+.cls-chip.on { background: #0d6b4f; color: #fff; border-color: #0d6b4f; }
+.cls-chip.on small { color: #d7efe6; }
+.cls-chip.add { flex-direction: row; align-items: center; gap: 6px; border-style: dashed; color: #0d6b4f; font-weight: 700; }
 .ku-note { font-size: 12px; color: var(--text-light, #667); line-height: 1.7; margin: -4px 0 12px; }
 .ku-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
 .ku-summary div { background: var(--f-em-soft, #e5f2ed); border-radius: 12px; padding: 8px; text-align: center; }
@@ -8893,6 +8904,7 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
     <div class="voice-confirm-row">
         <i class="fas fa-microphone-lines"></i>
         <input type="text" id="voiceFieldWizardInput" class="voice-confirm-input" placeholder="قل الإجابة أو اكتبها، أو قل «رجوع»/«تخطي»">
+        <div id="voiceFieldWizardCls" hidden></div>
     </div>
     <div class="voice-field-wizard-status" id="voiceFieldWizardStatus"></div>
     <div class="voice-confirm-actions">
@@ -9768,9 +9780,163 @@ document.addEventListener('DOMContentLoaded', () => { const v = tsValue(); if (v
 const TS_FIELD_IDS = ['subject', 'visitSubject', 'dv_tool_subject'];
 function tsFill() {
     const v = tsValue();
-    if (!v) return;
-    TS_FIELD_IDS.forEach(id => { const el = document.getElementById(id); if (el && !String(el.value || '').trim()) { el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); } });
+    if (v) TS_FIELD_IDS.forEach(id => { const el = document.getElementById(id); if (el && !String(el.value || '').trim()) { el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); } });
+    try { afFill(); } catch (e) { console.warn('afFill:', e); }
 }
+
+// ==================== الخانات التلقائية وذاكرة الصفوف ====================
+// خانات تعرفها الأداة دون سؤال المعلم (الفصل الدراسي، المنفّذ، الزائر، المسؤول...).
+// تُعبّأ فقط إن كانت فارغة، وتُتخطى أسئلتها ما دامت قيمتها هي القيمة التلقائية نفسها
+// (لو عدّلها المعلم صارت قيمته هو وتعود تظهر كسؤال عادي).
+window.__afVals = window.__afVals || {};
+function afSet(id, value) {
+    const el = document.getElementById(id);
+    if (!el || !value) return false;
+    if (String(el.value || '').trim()) return false;
+    if (el.tagName === 'SELECT' && !Array.from(el.options).some(o => o.value === value)) return false;
+    el.value = value;
+    window.__afVals[id] = value;
+    el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
+    return true;
+}
+function afIsAuto(id) {
+    const el = document.getElementById(id);
+    return !!(el && window.__afVals[id] && String(el.value || '') === window.__afVals[id]);
+}
+function afTeacherWord() { return (typeof reporterIsFemale === 'function' && reporterIsFemale()) ? 'معلمة' : 'معلم'; }
+function afFill() {
+    const subj = tsValue();
+    let dflt = null;
+    try { dflt = getVisitYearTermDefault(); } catch (_) { dflt = null; }
+    if (dflt && dflt.term) afSet('term', dflt.term);
+    if (subj) afSet('shortExecutors', afTeacherWord() + ' ' + subj);
+    const name = String(document.getElementById('reporterName')?.value || '').trim();
+    if (name) afSet('visitVisitor', name);
+    afSet('dv_parents_resp', afTeacherWord() + ' المادة');
+}
+
+// ذاكرة الصفوف: صفوف المعلم الثابتة (الصف + الفصل + العدد) تُتعلَّم من تقاريره وتُعرض أزراراً سريعة.
+const CLS_KEY = 'enjaz_classes_v1';
+const CLS_FIELD_IDS = ['grade', 'classSection', 'count', 'target', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience'];
+const CLS_STEP_IDS = ['grade', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience'];
+function clsList() { try { const v = JSON.parse(localStorage.getItem(CLS_KEY)); return Array.isArray(v) ? v.filter(c => c && c.grade) : []; } catch (_) { return []; } }
+function clsSaveList(list) { try { localStorage.setItem(CLS_KEY, JSON.stringify(list.slice(0, 8))); } catch (_) { /* تجاهل */ } }
+function clsGradeOptions() { return Array.from(document.querySelectorAll('#grade option')).map(o => o.value).filter(Boolean); }
+// يحوّل نصاً حراً («الثالث المتوسط ٢»، «ثالث متوسط/أ») إلى صف معروف + فصل.
+function clsParse(text) {
+    const raw = String(text || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+    if (!raw) return null;
+    const norm = t => normalizeArabicForVoice(t).replace(/(^|\s)ال/g, '$1').replace(/\s+/g, ' ').trim();
+    const n = norm(raw);
+    const grade = clsGradeOptions().find(g => { const w = norm(g).split(' '); return w.every(x => n.split(' ').includes(x)); });
+    if (!grade) return null;
+    const m = raw.match(/(?:\/|-|،|\s)\s*([0-9]{1,2}|[أ-ي])\s*$/);
+    const cm = raw.match(/\(?\s*([0-9]{1,3})\s*(?:طالب|طالبة|طلاب|طالبات)/);
+    return { grade, section: m && !/^[0-9]{3}$/.test(m[1]) ? m[1] : '', count: cm ? cm[1] : '' };
+}
+function clsRemember(c) {
+    if (!c || !c.grade) return;
+    const list = clsList();
+    const i = list.findIndex(x => x.grade === c.grade && (x.section || '') === (c.section || ''));
+    const prev = i >= 0 ? list.splice(i, 1)[0] : {};
+    list.unshift({ grade: c.grade, section: c.section || '', count: String(c.count || prev.count || ''), at: Date.now() });
+    clsSaveList(list);
+}
+function clsLabel(c) { return c.grade + (c.section ? ' / ' + c.section : ''); }
+// يتعلّم الصف من نموذج التقرير الحالي عند الحفظ.
+function clsLearnFromForm() {
+    const v = id => String(document.getElementById(id)?.value || '').trim();
+    if (!isShortTemplate()) {
+        if (v('grade')) clsRemember({ grade: v('grade'), section: v('classSection'), count: (v('count').match(/[0-9٠-٩]+/) || [''])[0].replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)) });
+        return;
+    }
+    const src = isVisitTemplate() ? v('visitGrade') : (window.__shortVariant === 'strategy' ? v('dv_strategy_grade') : (window.__shortVariant === 'general' ? v('shortBeneficiaries') : ''));
+    const c = clsParse(src);
+    if (c) clsRemember(c);
+}
+// أول تشغيل: تعلّم الصفوف من التقارير المحفوظة سابقاً.
+function clsSeedFromReports() {
+    try {
+        if (localStorage.getItem(CLS_KEY)) return;
+        const found = [];
+        Object.values(getSavedReportsMap()).forEach(r => {
+            if (!r) return;
+            const d = r.data || {};
+            if (d.grade) found.push({ grade: d.grade, section: d.classSection || '', count: String(d.count || '').replace(/[^0-9٠-٩]/g, '').replace(/[٠-٩]/g, x => '٠١٢٣٤٥٦٧٨٩'.indexOf(x)), at: +(r.id || 0) });
+            const sh = r.short || {};
+            [sh.visit && sh.visit.visitGrade, sh.doc && sh.doc.fields && sh.doc.fields.dv_strategy_grade, sh.shortBeneficiaries].forEach(t => { const c = clsParse(t); if (c) found.push(Object.assign(c, { at: +(r.id || 0) })); });
+        });
+        found.sort((a, b) => a.at - b.at).forEach(clsRemember);
+    } catch (_) { /* تجاهل */ }
+}
+// يعبّئ خانات الصف في القالب الحالي من صف محفوظ.
+function clsApply(i) {
+    const c = clsList()[i];
+    if (!c) return;
+    const lbl = clsLabel(c), t = 'الصف ' + lbl;
+    const put = (id, val) => {
+        const el = document.getElementById(id);
+        if (!el || !val) return;
+        if (el.tagName === 'SELECT' && !Array.from(el.options).some(o => o.value === val)) return;
+        el.value = val;
+        window.__afVals[id] = val;
+        el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
+    };
+    if (!isShortTemplate()) {
+        put('grade', c.grade); put('classSection', c.section); put('count', c.count);
+        put('target', 'طلاب ' + t);
+    } else if (isVisitTemplate()) put('visitGrade', lbl);
+    else if (window.__shortVariant === 'strategy') put('dv_strategy_grade', lbl);
+    else if (window.__shortVariant === 'tool') put('dv_tool_audience', 'طلاب ' + t);
+    else if (window.__shortVariant === 'parents') put('dv_parents_audience', 'أولياء أمور طلاب ' + t);
+    else put('shortBeneficiaries', 'طلاب ' + t + (c.count ? ' (' + c.count + ' طالباً)' : ''));
+    clsRemember(c);
+    window.__clsPicked = clsLabel(c);
+    if (typeof updateReport === 'function') updateReport();
+    clsRenderAll();
+}
+function clsAddNew() {
+    const v = prompt('اكتب الصف والفصل والعدد، مثال: الثالث متوسط 2 - 32 طالب', '');
+    if (v === null) return;
+    const parts = String(v).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).split(/\s+-\s+|\s*،\s*/);
+    const c = clsParse(parts[0]) || clsParse(v), cnt = ((parts[1] || '').match(/([0-9]{1,3})/) || [])[1];
+    if (!c) { showNotification('لم أتعرّف على الصف. اكتبه مثل: الثالث متوسط 2', 'warning'); return; }
+    if (cnt) c.count = cnt;
+    clsRemember(c);
+    clsApply(0);
+}
+// هل القالب الحالي يحوي خانة صف؟
+function clsTemplateHasClass() { return !isShortTemplate() || ['general', 'visit', 'strategy', 'tool', 'parents'].includes(window.__shortVariant); }
+function clsBarHtml(compact) {
+    if (!clsTemplateHasClass()) return '';
+    const list = clsList();
+    const picked = window.__clsPicked || '';
+    const chips = list.map((c, i) => `<button type="button" class="cls-chip${clsLabel(c) === picked ? ' on' : ''}" data-cls="${i}"><b>${pfEsc(clsLabel(c))}</b>${c.count ? `<small>${pfEsc(c.count)} طالباً</small>` : ''}</button>`).join('');
+    return `<div class="cls-bar${compact ? ' compact' : ''}"><div class="cls-h"><i class="fas fa-users-rectangle"></i> صفوفك <small>${list.length ? 'اختر الصف فتُعبّأ خاناته' : 'أضف صفوفك مرة واحدة وتُعبّأ تلقائياً'}</small></div><div class="cls-chips">${chips}<button type="button" class="cls-chip add" data-cls="add"><i class="fas fa-plus"></i> صف</button></div></div>`;
+}
+function clsRenderAll() {
+    document.querySelectorAll('[data-cls-slot]').forEach(slot => { slot.innerHTML = clsBarHtml(slot.getAttribute('data-cls-slot') === 'compact'); });
+    if (typeof qwIsOpen === 'function' && qwIsOpen() && typeof qwFieldsRender === 'function') qwFieldsRender();
+    vfwClsRender();
+}
+// في معالج الأسئلة الصوتية: أزرار الصفوف تحت سؤال الصف
+function vfwClsRender() {
+    const box = document.getElementById('voiceFieldWizardCls');
+    if (!box) return;
+    const step = (getVoiceWizardSteps() || [])[window.__voiceFieldStepIndex];
+    const show = !!(step && CLS_STEP_IDS.includes(step.elId) && clsList().length && document.getElementById('voiceFieldWizardBanner')?.classList.contains('show'));
+    box.hidden = !show;
+    box.innerHTML = show ? clsBarHtml(true) : '';
+}
+document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('[data-cls]');
+    if (!b) return;
+    const v = b.getAttribute('data-cls');
+    const inWizard = !!b.closest('#voiceFieldWizardCls');
+    if (v === 'add') { clsAddNew(); return; }
+    clsApply(+v);
+    if (inWizard) { cancelVoiceFieldAutoAdvance(); stopVoiceFieldListening(); showVoiceFieldStep(window.__voiceFieldStepIndex + 1, 1); }
+});
 
 // ==================== مزامنة التقارير مع حساب المعلم ====================
 // كل تقرير يُحفظ أو يُحذف يُزامَن في الخلفية مع حساب المعلم (خاص به)، فتظهر تقاريره في أي متصفح
@@ -11290,6 +11456,11 @@ function setReportTemplateStyle(style, opts = {}) {
     }
     if (next === 'short') ensureShortDateDefault();
     if (typeof updateReport === 'function') updateReport();
+    clsRefreshManualSlot();
+}
+function clsRefreshManualSlot() {
+    const sl = document.getElementById('mpClsSlot');
+    if (sl && typeof clsBarHtml === 'function') sl.innerHTML = clsBarHtml();
 }
 
 // القالب القصير هو الافتراضي. من حفظ جهازه "الطويل" سابقاً (قبل أن يصبح القصير افتراضياً)
@@ -12745,6 +12916,7 @@ function setShortVariant(variant, opts = {}) {
         try { closeOtherVoiceBannersForFreeCommand(); } catch (_) { /* تجاهل */ }
     }
     updateReport();
+    if (typeof clsRefreshManualSlot === "function") clsRefreshManualSlot();
 }
 
 // تفعيل استمارة الزيارات (اسم قديم يستدعيه الكود الحالي).
@@ -13696,6 +13868,7 @@ function saveCurrentReport() {
     if (aiModel) reportData.aiModel = aiModel;
     savedReports[recordKey] = reportData;
     window.__curReportKey = recordKey;
+    try { clsLearnFromForm(); } catch (_) { /* تجاهل */ }
     window.__lastReportSavedAt = Date.now();
     if (shortMode) setTimeout(() => { renderShortReportCanvas().then(c => pfStoreSnapshot(c, recordKey)).catch(() => { /* تجاهل */ }); }, 400);
     reportsStorePut(recordKey, reportData).then(ok => {
@@ -14903,6 +15076,8 @@ function openQw(critId) {
     if (document.getElementById('voiceExtraNotesInput')) document.getElementById('voiceExtraNotesInput').value = '';
     dvsApplyCriterion(critId);
     tsFill();
+    window.__clsPicked = '';
+    clsSeedFromReports();
     window.__qw = { crit: critId, pick: null, page: 0 };
     window.__dvs.crit = critId;
     window.__dvs.list = dvsCandidates(critId);
@@ -14971,6 +15146,8 @@ document.addEventListener('input', e => {
 function qwFieldsRender() {
     const box = document.getElementById('qwFields');
     if (!box) return;
+    const clsSlot = document.getElementById('qwClsSlot');
+    if (clsSlot) clsSlot.innerHTML = clsBarHtml();
     const steps = getVoiceWizardSteps().filter(s => !isVoiceFieldStepSkipped(s));
     box.innerHTML = steps.map(s => {
         const real = document.getElementById(s.elId);
@@ -16698,6 +16875,10 @@ function openManualPage(opts) {
     mpMountForm();
     tsFill();
     const review = !!(opts && opts.review);
+    if (!review) window.__clsPicked = '';
+    clsSeedFromReports();
+    const mpCls = document.getElementById('mpClsSlot');
+    if (mpCls) mpCls.innerHTML = clsBarHtml();
     document.getElementById('mpDone').style.display = review ? 'flex' : 'none';
     document.getElementById('mpAfter').style.display = review ? 'grid' : 'none';
     if (!mpIsOpen()) {
@@ -17443,6 +17624,7 @@ function stopVoiceFieldListening() {
 
 function startVoiceFieldWizard() {
     tsFill();
+    clsSeedFromReports();
     window.__ttsVoiceSession = true;
     if (ttsMode() === 'all') ttsUnlock();
     window.__voiceFieldStepIndex = 0;
@@ -17455,6 +17637,11 @@ function startVoiceFieldWizard() {
 function isVoiceFieldStepSkipped(step) {
     // «المادة» معروفة من البيانات الأساسية: لا داعي لسؤال المعلم عنها
     if (TS_FIELD_IDS.includes(step.elId) && tsValue() && String(document.getElementById(step.elId)?.value || '').trim()) return true;
+    // خانات عبّأتها الأداة تلقائياً (أو من ذاكرة الصفوف) ولم يغيّرها المعلم: لا داعي لسؤاله عنها
+    if (typeof afIsAuto === 'function' && afIsAuto(step.elId)) return true;
+    // التاريخ يُعبّأ بتاريخ اليوم تلقائياً ما لم يغيّره المعلم
+    if (step.elId === 'shortDate' && window.__shortDateAuto !== false && String(document.getElementById('shortDate')?.value || '').trim()) return true;
+    if (step.elId === 'visitDate' && window.__visitDateAuto !== false && String(document.getElementById('visitDate')?.value || '').trim()) return true;
     return typeof step.skipIf === 'function' && step.skipIf();
 }
 
@@ -17491,6 +17678,7 @@ function showVoiceFieldStep(i, direction = 1) {
     const step = getVoiceWizardSteps()[i];
     document.getElementById('voiceFieldWizardProgress').textContent = `الخطوة ${getVisibleVoiceFieldStepPosition(i)} من ${getVisibleVoiceFieldStepCount()}`;
     document.getElementById('voiceFieldWizardLabel').textContent = step.label;
+    setTimeout(vfwClsRender, 0);
     document.getElementById('voiceFieldWizardIcon').className = `fas ${step.icon}`;
     const input = document.getElementById('voiceFieldWizardInput');
     // نعرض القيمة الحالية للحقل (إن وُجدت) بدل تفريغه دائماً - هذا ما يجعل
@@ -20593,6 +20781,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
         <!-- نموذج التقرير الكامل (القالب، المعيار والتصنيف الفرعي والعناوين المقترحة، العنوان، البنود)
              يُنقل إلى هنا من الرئيسية عند التحميل (mpMountForm) - نقل لا تكرار. -->
+        <div data-cls-slot="full" id="mpClsSlot"></div>
         <div id="mpFormSlot"></div>
     </main>
     <footer class="mp-foot">
@@ -20651,6 +20840,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         </section>
         <section class="qw-sec">
             <div class="qw-lbl"><i class="fas fa-list-check"></i> بنود التقرير <small>اكتب ما تعرفه، والذكاء الاصطناعي يكتب الأهداف والخطوات</small></div>
+            <div data-cls-slot="full" id="qwClsSlot"></div>
             <div id="qwFields"></div>
         </section>
     </main>
