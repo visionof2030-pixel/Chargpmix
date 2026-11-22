@@ -4298,6 +4298,8 @@ button[title]:hover::before {
 .admin-log-title { font-size: 13.5px; font-weight: 800; color: var(--text-dark); line-height: 1.5; word-break: break-word; }
 .admin-log-del { flex: 0 0 auto; border: 0; background: rgba(200,40,40,.1); color: #b42318; width: 32px; height: 32px; border-radius: 10px; cursor: pointer; font-size: 13px; }
 .admin-log-del:active { background: rgba(200,40,40,.22); }
+.qw-ai { display: inline-block; margin-inline-start: 6px; padding: 1px 8px; border-radius: 99px; background: #fff7e6; color: #9a6a00; font-size: 11px; font-weight: 800; }
+.qw-f.ai input, .qw-f.ai select { border-color: #f0c768 !important; background: #fffdf6 !important; }
 .cls-bar { margin: 0 0 12px; padding: 10px 12px; border: 1px dashed rgba(13,107,79,.35); border-radius: 14px; background: rgba(13,107,79,.04); }
 .cls-bar.compact { margin: 10px 0 0; padding: 8px 10px; }
 .cls-h { font-size: 13px; font-weight: 800; color: var(--f-em, #0d6b4f); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -9928,6 +9930,59 @@ function vfwClsRender() {
     box.hidden = !show;
     box.innerHTML = show ? clsBarHtml(true) : '';
 }
+// ===== استنتاج الخانات بالذكاء الاصطناعي (✨): من العنوان والتخصص =====
+// يملأ الخانات الفارغة فقط، وتظهر في صفحة الكتابة بعلامة «✨ مقترح» قابلة للتعديل،
+// ولا يسأل معالج الأسئلة الصوتية عنها. الأسماء والأعداد والصف لا تُستنتج أبداً.
+const AI_FIELD_MAP = {
+    long: { place: 'place', lesson: 'lesson' },
+    short: { domain: 'shortDomain', place: 'shortPlace', duration: 'shortDuration', participants: 'shortParticipants' },
+    visit: { lesson: 'visitLesson' },
+    strategy: { strategy_type: 'dv_strategy_type', effectiveness: 'dv_strategy_effect' },
+    tool: { usage_time: 'dv_tool_time' },
+    parents: { activity_type: 'dv_parents_type', medium: 'dv_parents_medium', domain: 'dv_parents_domain' },
+};
+window.__aiFieldIds = window.__aiFieldIds || new Set();
+function aiTplKey() {
+    if (!isShortTemplate()) return 'long';
+    if (isVisitTemplate()) return 'visit';
+    return DOC_VARIANTS[window.__shortVariant] ? window.__shortVariant : 'short';
+}
+function afIsAI(id) { return window.__aiFieldIds.has(id) && afIsAuto(id); }
+async function aiInferFields(title) {
+    title = String(title || '').trim();
+    if (!title || window.__subExpired) return;
+    const tpl = aiTplKey(), map = AI_FIELD_MAP[tpl];
+    if (!map) return;
+    const empty = Object.values(map).filter(id => { const el = document.getElementById(id); return el && !String(el.value || '').trim(); });
+    if (!empty.length) return;
+    const key = tpl + '|' + title;
+    if (window.__aiInferKey === key) return window.__aiInferP;
+    window.__aiInferKey = key;
+    window.__aiInferP = (async () => {
+        try {
+            const { data: sess } = await supabaseClient.auth.getSession();
+            if (!sess || !sess.session) return;
+            const call = supabaseClient.functions.invoke('infer-fields', { body: { template: tpl, title, subject: tsValue(), gender: reporterGender(), notes: String(document.getElementById('voiceExtraNotesInput')?.value || '').slice(0, 300) } });
+            const timeout = new Promise(res => setTimeout(() => res({ data: null, error: new Error('timeout') }), 10000));
+            const { data, error } = await Promise.race([call, timeout]);
+            if (error || !data || !data.fields) return;
+            if (window.__aiInferKey !== key || aiTplKey() !== tpl) return; // تغيّر العنوان أو القالب أثناء الانتظار
+            let n = 0;
+            Object.entries(data.fields).forEach(([k, v]) => { const id = map[k]; if (id && afSet(id, String(v))) { window.__aiFieldIds.add(id); n++; } });
+            if (!n) return;
+            if (typeof updateReport === 'function') updateReport();
+            if (qwIsOpen()) qwFieldsRender();
+        } catch (e) { console.warn('infer-fields:', e); }
+    })();
+    return window.__aiInferP;
+}
+// العنوان في صفحة الإدخال اليدوي
+document.addEventListener('input', e => {
+    if (!e.target || e.target.id !== 'manualReportTitle' || !mpIsOpen()) return;
+    clearTimeout(window.__mpInferT);
+    window.__mpInferT = setTimeout(() => aiInferFields(e.target.value), 1200);
+});
+
 document.addEventListener('click', e => {
     const b = e.target.closest && e.target.closest('[data-cls]');
     if (!b) return;
@@ -11459,6 +11514,16 @@ function setReportTemplateStyle(style, opts = {}) {
     clsRefreshManualSlot();
 }
 function clsRefreshManualSlot() {
+    // الصف المختار يبقى مختاراً عند تبديل القالب: تُعبّأ خانة الصف في القالب الجديد إن كانت فارغة
+    if (window.__clsPicked && typeof clsList === 'function' && !window.__clsReapplying) {
+        const i = clsList().findIndex(c => clsLabel(c) === window.__clsPicked);
+        const ids = ['grade', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience'];
+        const target = ids.map(id => document.getElementById(id)).find(el => el && el.offsetParent !== null);
+        if (i >= 0 && (!target || !String(target.value || '').trim())) {
+            window.__clsReapplying = true;
+            try { clsApply(i); } finally { window.__clsReapplying = false; }
+        }
+    }
     const sl = document.getElementById('mpClsSlot');
     if (sl && typeof clsBarHtml === 'function') sl.innerHTML = clsBarHtml();
 }
@@ -15077,6 +15142,7 @@ function openQw(critId) {
     dvsApplyCriterion(critId);
     tsFill();
     window.__clsPicked = '';
+    window.__aiInferKey = ''; window.__aiFieldIds = new Set();
     clsSeedFromReports();
     window.__qw = { crit: critId, pick: null, page: 0 };
     window.__dvs.crit = critId;
@@ -15139,6 +15205,7 @@ function qwTitleChanged() {
     const before = (isShortTemplate() ? window.__shortVariant : 'long');
     if (t) { try { autoSelectShortVariantFromText(t); } catch (_) { /* تجاهل */ } }
     setTimeout(() => { if ((isShortTemplate() ? window.__shortVariant : 'long') !== before) { tsFill(); qwFieldsRender(); } }, 30);
+    if (t) setTimeout(() => aiInferFields(t), 60);
 }
 document.addEventListener('input', e => {
     if (e.target && e.target.id === 'qwTitle') { clearTimeout(window.__qwT); window.__qwT = setTimeout(qwTitleChanged, 600); }
@@ -15148,7 +15215,7 @@ function qwFieldsRender() {
     if (!box) return;
     const clsSlot = document.getElementById('qwClsSlot');
     if (clsSlot) clsSlot.innerHTML = clsBarHtml();
-    const steps = getVoiceWizardSteps().filter(s => !isVoiceFieldStepSkipped(s));
+    const steps = getVoiceWizardSteps().filter(s => !isVoiceFieldStepSkipped(s) || afIsAI(s.elId));
     box.innerHTML = steps.map(s => {
         const real = document.getElementById(s.elId);
         const val = real ? String(real.value || '') : '';
@@ -15161,7 +15228,7 @@ function qwFieldsRender() {
         } else {
             ctl = `<input type="text" id="${id}" data-qwreal="${s.elId}" value="${pfEsc(val)}" placeholder="${pfEsc(s.placeholder || '')}">`;
         }
-        return `<div class="qw-f"><label for="${id}"><i class="fas ${s.icon || 'fa-pen'}"></i> ${pfEsc(s.label)}</label>${ctl}</div>`;
+        return `<div class="qw-f${afIsAI(s.elId) ? ' ai' : ''}"><label for="${id}"><i class="fas ${s.icon || 'fa-pen'}"></i> ${pfEsc(s.label)}${afIsAI(s.elId) ? ' <span class="qw-ai">✨ مقترح</span>' : ''}</label>${ctl}</div>`;
     }).join('');
 }
 // كل خانة في الصفحة تكتب في خانتها الحقيقية في نموذج التقرير
@@ -16875,7 +16942,7 @@ function openManualPage(opts) {
     mpMountForm();
     tsFill();
     const review = !!(opts && opts.review);
-    if (!review) window.__clsPicked = '';
+    if (!review) { window.__clsPicked = ''; window.__aiInferKey = ''; window.__aiFieldIds = new Set(); }
     clsSeedFromReports();
     const mpCls = document.getElementById('mpClsSlot');
     if (mpCls) mpCls.innerHTML = clsBarHtml();
@@ -17631,7 +17698,17 @@ function startVoiceFieldWizard() {
     // تصحيحات تقرير سابق (إن وُجدت) لا يجب أن تتسرب لتقرير جديد.
     window.__voiceFieldCorrections = {};
     document.getElementById('voiceFieldWizardBanner').classList.add('show');
-    showVoiceFieldStep(0);
+    const title = String(document.getElementById('manualReportTitle')?.value || '').trim();
+    const p = title && !window.__subExpired ? aiInferFields(title) : null;
+    if (!p) { showVoiceFieldStep(0); return; }
+    // ننتظر الاستنتاج قليلاً (حد أقصى ٤ ثوانٍ) حتى لا نسأل عن خانة سيعبّئها الذكاء الاصطناعي
+    const st = document.getElementById('voiceFieldWizardStatus');
+    if (st) st.textContent = '✨ نجهّز الأسئلة...';
+    const token = window.__vfwStartToken = (window.__vfwStartToken || 0) + 1;
+    Promise.race([p, new Promise(r => setTimeout(r, 4000))]).then(() => {
+        if (token !== window.__vfwStartToken || !document.getElementById('voiceFieldWizardBanner').classList.contains('show')) return;
+        showVoiceFieldStep(0);
+    });
 }
 
 function isVoiceFieldStepSkipped(step) {
