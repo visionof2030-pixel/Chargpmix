@@ -10175,6 +10175,71 @@ async function rsUploadBody(k, l, lu) {
     }
     return JSON.stringify(copy);
 }
+// ===== تبديل الحساب على نفس الجهاز =====
+// تقارير المعلم وبياناته المحلية تخص حساباً واحداً. عند الدخول بحساب آخر تُنقل بيانات الحساب السابق إلى مخزن
+// باسمه (IndexedDB) ويُفرَّغ المخزن الأساسي، وتُعاد بيانات الحساب الجديد إن سبق حفظها على هذا الجهاز.
+const ACCT_LS_KEYS = () => [TS_KEY, CLS_KEY, CLS_U_KEY, PF_CFG_KEY, RS_STATE_KEY, REPORTS_STORAGE_KEY];
+function acctDbOpen(uid) {
+    return new Promise((resolve, reject) => {
+        const rq = indexedDB.open('enjaz_acct_' + uid, 1);
+        rq.onupgradeneeded = () => { const d = rq.result; if (!d.objectStoreNames.contains('reports')) d.createObjectStore('reports', { keyPath: 'key' }); if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta', { keyPath: 'k' }); };
+        rq.onsuccess = () => resolve(rq.result);
+        rq.onerror = () => reject(rq.error || new Error('acct-idb'));
+        rq.onblocked = () => reject(new Error('acct-idb-blocked'));
+    });
+}
+function acctTx(db, stores, mode, fn) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(stores, mode), out = fn(tx);
+        tx.oncomplete = () => resolve(out && out.result !== undefined ? out.result : true);
+        tx.onerror = () => reject(tx.error || new Error('acct-tx'));
+        tx.onabort = () => reject(tx.error || new Error('acct-abort'));
+    });
+}
+async function acctSwitch(oldUid, newUid) {
+    if (!window.indexedDB || !oldUid || !newUid) return false;
+    try { await window.__reportsReady; } catch (_) { /* تجاهل */ }
+    const map = getSavedReportsMap();
+    // ١) حفظ بيانات الحساب السابق جانباً (وإن فشل الحفظ لا يُحذف شيء)
+    const ls = {};
+    ACCT_LS_KEYS().forEach(k => { const v = localStorage.getItem(k); if (v !== null) ls[k] = v; });
+    const oldDb = await acctDbOpen(oldUid);
+    try {
+        await acctTx(oldDb, ['reports', 'meta'], 'readwrite', tx => {
+            const rs = tx.objectStore('reports'); rs.clear();
+            Object.keys(map).forEach(k => { if (map[k] && typeof map[k] === 'object') rs.put(Object.assign({}, map[k], { key: k })); });
+            tx.objectStore('meta').put({ k: 'ls', v: ls, at: Date.now() });
+        });
+        const cnt = await acctTx(oldDb, ['reports'], 'readonly', tx => tx.objectStore('reports').count());
+        if (cnt < Object.keys(map).length) throw new Error('acct-stash-incomplete');
+    } finally { oldDb.close(); }
+    // ٢) تفريغ بيانات الجهاز
+    if (window.__reportsDb) await reportsDbRequest('readwrite', st => st.clear());
+    window.__reportsCache = {};
+    ACCT_LS_KEYS().forEach(k => { try { localStorage.removeItem(k); } catch (_) { /* تجاهل */ } });
+    // ٣) إعادة بيانات الحساب الجديد إن كانت محفوظة على هذا الجهاز
+    const newDb = await acctDbOpen(newUid);
+    let restored = 0;
+    try {
+        const rows = await acctTx(newDb, ['reports'], 'readonly', tx => tx.objectStore('reports').getAll());
+        const meta = await acctTx(newDb, ['meta'], 'readonly', tx => tx.objectStore('meta').get('ls'));
+        for (const r of (Array.isArray(rows) ? rows : [])) { if (r && r.key) { window.__reportsCache[r.key] = r; restored++; if (window.__reportsDb) await reportsDbRequest('readwrite', st => st.put(r)); } }
+        if (!window.__reportsDb && restored) { try { localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(window.__reportsCache)); } catch (_) { /* تجاهل */ } }
+        const v = meta && meta.v;
+        if (v && typeof v === 'object') Object.keys(v).forEach(k => { if (k !== REPORTS_STORAGE_KEY) { try { localStorage.setItem(k, v[k]); } catch (_) { /* تجاهل */ } } });
+    } finally { newDb.close(); }
+    try { indexedDB.deleteDatabase('enjaz_acct_' + newUid); } catch (_) { /* تجاهل */ }
+    const s2 = rsState(); s2.owner = newUid; rsSave(s2);
+    // ٤) تحديث الواجهة
+    try { window.__pfCfg = null; } catch (_) { /* تجاهل */ }
+    try { const el = document.getElementById('teacherSubject'); if (el) el.value = tsValue(); tsApply(tsValue()); } catch (_) { /* تجاهل */ }
+    try { clsEditorRender(); } catch (_) { /* تجاهل */ }
+    try { calculateProgress(); } catch (_) { /* تجاهل */ }
+    try { updateDesktopStats(); } catch (_) { /* تجاهل */ }
+    try { document.dispatchEvent(new CustomEvent('enjaz-reports-ready')); } catch (_) { /* تجاهل */ }
+    console.info('acctSwitch: حُفظت تقارير الحساب السابق جانباً (' + Object.keys(map).length + ')، وأُعيد ' + restored + ' للحساب الحالي.');
+    return true;
+}
 async function rsRun() {
     // تشغيل سابق عالق (مثلاً جُمّدت الصفحة في الخلفية على iPhone) لا يمنع تشغيلاً جديداً بعد دقيقتين.
     if (window.__rsRunning && Date.now() - (window.__rsRunStart || 0) < 120000) { window.__rsAgain = true; return; }
@@ -10182,9 +10247,18 @@ async function rsRun() {
     let session = null;
     try { session = (await supabaseClient.auth.getSession()).data.session; } catch (_) { session = null; }
     if (!session || !session.user) return;
-    const uid = session.user.id, st = rsState();
-    // متصفح مستخدَم بحساب آخر من قبل: لا تُخلط تقارير حسابين.
-    if (st.owner && st.owner !== uid) { console.warn('rsRun: تقارير هذا المتصفح تخص حساباً آخر؛ لم تتم المزامنة.'); return; }
+    const uid = session.user.id;
+    let st = rsState();
+    // متصفح فيه تقارير حساب آخر: تُحفظ جانباً باسم ذلك الحساب، وتُعاد تقارير هذا الحساب إن كانت محفوظة، ثم تتم المزامنة.
+    if (st.owner && st.owner !== uid) {
+        if (window.__acctSwitching) return;
+        let ok = false;
+        window.__acctSwitching = true;
+        try { ok = await acctSwitch(st.owner, uid); } catch (e) { console.warn('acctSwitch:', e); }
+        finally { window.__acctSwitching = false; }
+        if (!ok) { console.warn('rsRun: تقارير هذا المتصفح تخص حساباً آخر؛ لم تتم المزامنة.'); return; }
+        st = rsState();
+    }
     const run = (window.__rsRunId || 0) + 1;
     window.__rsRunId = run; window.__rsRunning = true; window.__rsRunStart = Date.now();
     let pulled = 0, removed = 0, failed = 0, listed = false;
