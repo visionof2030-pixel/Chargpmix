@@ -9675,6 +9675,19 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
 </div>
 
 <script>
+// المتصفح يعيد القيم المكتوبة في الخانات عند تحديث الصفحة «بحسب ترتيبها»؛ فإن أُضيفت خانات في تحديث
+// للأداة انزاحت القيم إلى خانات أخرى (العنوان في اسم المعلم، المدة في المدرسة...). الأداة تستعيد بياناتها
+// بنفسها، لذا نمسح ما أعاده المتصفح قبل أي استعادة، ونمنعه من الحفظ مستقبلاً.
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('input, textarea, select').forEach(el => {
+        const t = (el.type || '').toLowerCase();
+        if (t === 'file' || t === 'hidden' || t === 'button' || t === 'submit') return;
+        if (!el.hasAttribute('autocomplete')) el.setAttribute('autocomplete', 'off');
+        if (t === 'checkbox' || t === 'radio') { el.checked = el.defaultChecked; return; }
+        if (el.tagName === 'SELECT') { const d = Array.from(el.options).find(o => o.defaultSelected); el.value = d ? d.value : (el.options[0] ? el.options[0].value : ''); return; }
+        el.value = el.defaultValue;
+    });
+});
 // ==================== متغيرات عامة ====================
 window.__ACTIVATED__ = false;
 window.allCriteria = [];
@@ -10600,10 +10613,11 @@ async function loadAccountProfile() {
             .single();
         if (error || !data) return;
 
+        // بيانات الحساب هي المرجع: تُكتب دائماً (لا «إن كانت فارغة» فقط) حتى لا تبقى قيمة خاطئة في الخانة
         const fillIfEmpty = (id, value) => {
             if (!value) return;
             const el = document.getElementById(id);
-            if (el && !el.value) el.value = value;
+            if (el && el.value !== value) el.value = value;
         };
 
         fillIfEmpty('reporterName', data.reporter_name);
@@ -10612,7 +10626,7 @@ async function loadAccountProfile() {
         fillIfEmpty('principal', data.principal);
         if (data.reporter_type) {
             const typeSelect = document.getElementById('reporterType');
-            if (typeSelect && !typeSelect.value) typeSelect.value = data.reporter_type;
+            if (typeSelect && Array.from(typeSelect.options).some(o => o.value === data.reporter_type)) typeSelect.value = data.reporter_type;
         }
 
         updatePrincipalType();
@@ -14179,11 +14193,14 @@ function loadSavedReport(criterionId) {
         Promise.resolve(backendLoad).then(() => restoreShortCriteriaSelection(report.short));
     }
 
-    document.getElementById('education').value = report.data.education || '';
-    document.getElementById('school').value = report.data.school || '';
-    document.getElementById('reporterType').value = report.data.reporterType || 'المعلم';
-    document.getElementById('reporterName').value = report.data.reporterName || '';
-    document.getElementById('principal').value = report.data.principal || '';
+    // البيانات الأساسية (الإدارة، المدرسة، الاسم، الصفة، المدير) بيانات حساب: تبقى كما هي في «حسابي»،
+    // ولا تُستبدل بما حُفظ في التقرير إلا إن كانت فارغة.
+    const keepOr = (id, v) => { const el = document.getElementById(id); if (el && !String(el.value || '').trim() && v) el.value = v; };
+    keepOr('education', report.data.education);
+    keepOr('school', report.data.school);
+    keepOr('reporterType', report.data.reporterType || 'المعلم');
+    keepOr('reporterName', report.data.reporterName);
+    keepOr('principal', report.data.principal);
     if (document.getElementById('grade')) document.getElementById('grade').value = report.data.grade || '';
     if (document.getElementById('classSection')) document.getElementById('classSection').value = report.data.classSection || '';
     document.getElementById('term').value = report.data.term || '';
@@ -14386,9 +14403,10 @@ function pfPrefill() {
     const el = id => (document.getElementById(id) && document.getElementById(id).value) || '';
     const term = d.term || el('term');
     return {
-        name: d.reporterName || el('reporterName'), role: d.reporterType || el('reporterType') || 'معلم',
-        subject: d.subject || el('subject'), school: d.school || el('school'), education: d.education || el('education'),
-        term: term ? 'الفصل الدراسي ' + term : '', principal: d.principal || el('principal'),
+        // البيانات الأساسية الحالية أولاً، والتقارير المحفوظة احتياطاً فقط
+        name: el('reporterName') || d.reporterName, role: el('reporterType') || d.reporterType || 'معلم',
+        subject: (typeof tsValue === 'function' && tsValue()) || el('subject') || d.subject, school: el('school') || d.school, education: el('education') || d.education,
+        term: term ? 'الفصل الدراسي ' + term : '', principal: el('principal') || d.principal,
     };
 }
 function pfProfile() {
