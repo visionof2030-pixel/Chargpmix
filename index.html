@@ -4293,6 +4293,30 @@ button[title]:hover::before {
 .admin-log-title { font-size: 13.5px; font-weight: 800; color: var(--text-dark); line-height: 1.5; word-break: break-word; }
 .admin-log-del { flex: 0 0 auto; border: 0; background: rgba(200,40,40,.1); color: #b42318; width: 32px; height: 32px; border-radius: 10px; cursor: pointer; font-size: 13px; }
 .admin-log-del:active { background: rgba(200,40,40,.22); }
+.ku-note { font-size: 12px; color: var(--text-light, #667); line-height: 1.7; margin: -4px 0 12px; }
+.ku-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.ku-summary div { background: var(--f-em-soft, #e5f2ed); border-radius: 12px; padding: 8px; text-align: center; }
+.ku-summary b { display: block; font-size: 18px; }
+.ku-summary small { font-size: 11px; color: var(--text-light, #667); }
+.ku-key { border: 1px solid var(--line-warm, #e5e5e5); border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; background: var(--card-bg, #fff); }
+.ku-key.dead { border-color: #fca5a5; background: #fff5f5; }
+.ku-key.idle { opacity: .65; }
+.ku-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.ku-dot { width: 9px; height: 9px; border-radius: 50%; background: #94a3b8; flex: none; }
+.ku-key.live .ku-dot { background: #16a34a; }
+.ku-key.dead .ku-dot { background: #dc2626; }
+.ku-name { font-weight: 800; font-size: 14px; flex: 1; }
+.ku-name small { font-weight: 600; color: var(--text-light, #667); }
+.ku-edit { border: 0; background: none; color: var(--text-light, #667); cursor: pointer; font-size: 13px; padding: 2px 6px; }
+.ku-bar { height: 8px; border-radius: 99px; background: #eef2f1; overflow: hidden; margin: 4px 0 2px; }
+.ku-bar i { display: block; height: 100%; background: #0d6b4f; border-radius: 99px; }
+.ku-bar i.warn { background: #d97706; } .ku-bar i.full { background: #dc2626; }
+.ku-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--text-dark, #222); }
+.ku-row span:last-child { font-variant-numeric: tabular-nums; }
+.ku-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.ku-chips span { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: #f1f5f9; color: #475569; }
+.ku-chips span.bad { background: #fee2e2; color: #991b1b; }
+.ku-chips span.warn { background: #fef3c7; color: #92400e; }
 .admin-log-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .admin-log-actions button { flex: 1 1 140px; border: 1px solid var(--line-warm, #ddd); background: transparent; border-radius: 12px; padding: 10px 12px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text-dark); }
 .admin-log-actions button.danger { color: #b42318; border-color: rgba(200,40,40,.35); }
@@ -8707,6 +8731,15 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
     <div class="admin-stat-card"><div class="admin-stat-icon">✏️</div><div class="admin-stat-value" id="statHeavyEditRate">—</div><div class="admin-stat-label">نسبة التقارير التي احتاجت تعديلات كثيرة</div></div>
   </div>
 
+  <div class="account-card" id="adminKeysCard" style="display:none;">
+    <div class="account-card-header"><h3><i class="fas fa-key"></i> استهلاك مفاتيح Gemini</h3></div>
+    <div class="ku-note">«اليوم» بتوقيت Google (يتجدد قرابة الساعة 11 صباحاً بتوقيت السعودية). الأرقام لطلبات الأداة فقط؛ استخدام المفتاح خارجها لا يظهر هنا.</div>
+    <div id="adminKeysSummary" class="ku-summary"></div>
+    <div id="adminKeysList"><div class="admin-feedback-empty">جارٍ التحميل...</div></div>
+    <div class="admin-log-actions">
+      <button type="button" onclick="loadAdminKeyUsage()"><i class="fas fa-rotate"></i> تحديث</button>
+    </div>
+  </div>
   <div class="account-card" id="adminLogCard">
     <div class="account-card-header"><h3><i class="fas fa-clock-rotate-left"></i> سجل التقارير</h3></div>
     <div class="admin-stats-grid">
@@ -19672,7 +19705,7 @@ function showPage(name) {
     if (feedback) feedback.style.display = (name === 'feedback') ? 'block' : 'none';
     if (admin) admin.style.display = (name === 'admin') ? 'block' : 'none';
     if (name === 'account') renderAccountSummary();
-    if (name === 'admin') { loadAdminFeedbackData(); loadAdminReportLog(); }
+    if (name === 'admin') { loadAdminFeedbackData(); loadAdminReportLog(); loadAdminKeyUsage(); }
 
     document.getElementById('navHome')?.classList.toggle('active', name === 'home' || name === 'dash');
     document.getElementById('navAccount')?.classList.toggle('active', name === 'account');
@@ -19971,6 +20004,104 @@ function renderAdminFeedbackList() {
 // القراءة والحذف يمرّان عبر سياستي RLS الخاصتين بالأدمن على report_generation_log؛ المستخدم العادي لا يرى إلا صفوفه.
 const ADMIN_LOG_KIND_LABELS = { long: 'طويل', short: 'قصير', visit: 'تبادل زيارات', strategy: 'استراتيجية', tool: 'أداة / تطبيق', parents: 'تواصل أولياء الأمور' };
 const ADMIN_LOG_SHORT_KINDS = ['short', 'visit', 'strategy', 'tool', 'parents'];
+// ==================== استهلاك مفاتيح Gemini (للمالك فقط) ====================
+// المصدر: سجل ai_call_log الذي تكتبه دوال الخادم (رقم خانة المفتاح فقط). الدالة ai_key_usage ترفض غير المالك.
+const KU_LIMITS = { 'gemini-3.1-flash-lite': 500, 'gemini-2.5-flash-lite': 20, 'gemini-2.5-flash': 20 };
+const KU_SHORT = { 'gemini-3.1-flash-lite': '3.1 Flash-Lite', 'gemini-2.5-flash-lite': '2.5 Flash-Lite', 'gemini-2.5-flash': '2.5 Flash' };
+function kuAgo(t) {
+    if (!t) return '—';
+    const m = Math.round((Date.now() - new Date(t).getTime()) / 60000);
+    if (m < 1) return 'الآن';
+    if (m < 60) return 'قبل ' + m + ' د';
+    const h = Math.round(m / 60);
+    if (h < 48) return 'قبل ' + h + ' س';
+    return 'قبل ' + Math.round(h / 24) + ' يوم';
+}
+async function loadAdminKeyUsage() {
+    const card = document.getElementById('adminKeysCard');
+    if (!card) return;
+    card.style.display = window.__isProjectOwner ? '' : 'none';
+    if (!window.__isProjectOwner) return;
+    const listEl = document.getElementById('adminKeysList');
+    listEl.innerHTML = '<div class="admin-feedback-empty">جارٍ التحميل...</div>';
+    try {
+        const [usage, labels] = await Promise.all([
+            supabaseClient.rpc('ai_key_usage'),
+            supabaseClient.from('gemini_key_labels').select('slot, label')
+        ]);
+        if (usage.error) throw usage.error;
+        window.__kuRows = usage.data || [];
+        window.__kuLabels = {};
+        (labels.data || []).forEach(l => { window.__kuLabels[l.slot] = l.label; });
+        renderAdminKeyUsage();
+    } catch (e) {
+        console.error('adminKeyUsage:', e);
+        listEl.innerHTML = '<div class="admin-feedback-empty">تعذّر تحميل استهلاك المفاتيح.</div>';
+    }
+}
+function renderAdminKeyUsage() {
+    const rows = window.__kuRows || [], labels = window.__kuLabels || {};
+    const esc = v => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const bySlot = {};
+    rows.forEach(r => { const k = r.key_slot || 0; (bySlot[k] = bySlot[k] || []).push(r); });
+    const sum = (f, filt) => rows.filter(filt || (() => true)).reduce((a, r) => a + (Number(r[f]) || 0), 0);
+    const primary = 'gemini-3.1-flash-lite';
+    const activeSlots = Object.keys(bySlot).filter(k => +k > 0).length;
+    document.getElementById('adminKeysSummary').innerHTML =
+        `<div><b>${sum('ok_today', r => r.model === primary)}</b><small>طلبات 3.1 اليوم</small></div>`
+        + `<div><b>${sum('ok_today', r => r.model !== primary)}</b><small>ذهبت للاحتياطي 2.5</small></div>`
+        + `<div><b>${activeSlots}</b><small>مفاتيح عملت آخر 7 أيام</small></div>`;
+    const slots = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].concat(bySlot[0] ? [0] : []);
+    document.getElementById('adminKeysList').innerHTML = slots.map(slot => {
+        const rs = bySlot[slot] || [];
+        const lastOk = rs.map(r => r.last_ok_at).filter(Boolean).sort().pop() || null;
+        const lastErrRow = rs.filter(r => r.last_err_at).sort((a, b) => String(a.last_err_at).localeCompare(String(b.last_err_at))).pop();
+        const authErr = lastErrRow && /http_40[013]/.test(lastErrRow.last_err || '') && (!lastOk || lastErrRow.last_err_at > lastOk);
+        const cls = !rs.length ? 'idle' : (authErr ? 'dead' : (lastOk && Date.now() - new Date(lastOk).getTime() < 864e5 ? 'live' : ''));
+        const name = slot === 0 ? 'مفتاح غير معروف' : ('مفتاح ' + slot);
+        const label = labels[slot] ? ' <small>— ' + esc(labels[slot]) + '</small>' : '';
+        const models = Object.keys(KU_LIMITS).map(m => {
+            const r = rs.find(x => x.model === m) || {};
+            const ok = Number(r.ok_today) || 0, lim = KU_LIMITS[m], pct = Math.min(100, Math.round(ok * 100 / lim));
+            if (m !== primary && !ok) return '';
+            return `<div class="ku-row"><span>${KU_SHORT[m]}</span><span>${ok} من ${lim}</span></div>`
+                + (m === primary ? `<div class="ku-bar"><i class="${pct >= 100 ? 'full' : (pct >= 90 ? 'warn' : '')}" style="width:${pct}%"></i></div>` : '');
+        }).join('');
+        const tot = f => rs.reduce((a, r) => a + (Number(r[f]) || 0), 0);
+        const chips = [];
+        if (tot('r503_today')) chips.push(`<span class="warn">ضغط 503 ×${tot('r503_today')}</span>`);
+        if (tot('r429_today')) chips.push(`<span class="warn">حد الحصة 429 ×${tot('r429_today')}</span>`);
+        if (tot('r403_today')) chips.push(`<span class="bad">رفض المفتاح ×${tot('r403_today')}</span>`);
+        if (tot('timeout_today')) chips.push(`<span title="قُطعت لتأخرها وقد تكون محسوبة لدى Google">مهلة ×${tot('timeout_today')} (ربما محسوبة)</span>`);
+        if (tot('other_err_today')) chips.push(`<span>أخطاء أخرى ×${tot('other_err_today')}</span>`);
+        const tokens = tot('tokens_today');
+        if (tokens) chips.push(`<span>${tokens.toLocaleString('en-US')} token اليوم</span>`);
+        chips.push(`<span>آخر نجاح: ${kuAgo(lastOk)}</span>`);
+        if (authErr) chips.push(`<span class="bad">⚠️ آخر رد: ${esc(lastErrRow.last_err)} — قد يكون المفتاح أُلغي</span>`);
+        return `<div class="ku-key ${cls}">
+            <div class="ku-head"><span class="ku-dot"></span><span class="ku-name">${name}${label}</span>${slot ? `<button type="button" class="ku-edit" onclick="renameGeminiKey(${slot})" title="تسمية المفتاح"><i class="fas fa-pen"></i></button>` : ''}</div>
+            ${rs.length ? models : '<div class="ku-row"><span>لا نشاط خلال آخر 7 أيام</span><span></span></div>'}
+            ${rs.length ? `<div class="ku-chips">${chips.join('')}</div>` : ''}
+        </div>`;
+    }).join('');
+}
+async function renameGeminiKey(slot) {
+    if (!window.__isProjectOwner) return;
+    const cur = (window.__kuLabels || {})[slot] || '';
+    const v = prompt('اسم صاحب مفتاح ' + slot + ' (مثلاً: فهد):', cur);
+    if (v === null) return;
+    const label = v.trim().slice(0, 40);
+    try {
+        const { error } = await supabaseClient.from('gemini_key_labels').upsert({ slot, label, updated_at: new Date().toISOString() });
+        if (error) throw error;
+        (window.__kuLabels = window.__kuLabels || {})[slot] = label;
+        renderAdminKeyUsage();
+    } catch (e) {
+        console.error('renameGeminiKey:', e);
+        showNotification('تعذّر حفظ الاسم.', 'warning');
+    }
+}
+
 async function loadAdminReportLog() {
     const listEl = document.getElementById('adminLogList');
     if (!listEl) return;

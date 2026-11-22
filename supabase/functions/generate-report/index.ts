@@ -62,6 +62,53 @@ interface GenerateReportRequest {
     input_method?: string;
     gender?: string;
 }
+// ===== سجل استهلاك مفاتيح Gemini (لوحة المالك): رقم خانة المفتاح فقط، لا المفتاح نفسه =====
+const KEY_SLOT = new Map<string, number>();
+for (let n = 1; n <= 10; n++) {
+  const k = Deno.env.get("GEMINI_API_KEY_" + n);
+  if (k && !KEY_SLOT.has(k)) KEY_SLOT.set(k, n);
+}
+const CALL_LOG: Array<Record<string, unknown>> = [];
+const CALL_LOG_PENDING: Promise<unknown>[] = [];
+async function geminiFetch(fn: string, key: string, model: string, init: RequestInit): Promise<Response> {
+  const t0 = Date.now();
+  const slot = KEY_SLOT.get(key) ?? null;
+  try {
+    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + key, init);
+    const base = { fn, key_slot: slot, model, http_status: r.status, ms: Date.now() - t0 };
+    if (r.ok) {
+      CALL_LOG_PENDING.push(r.clone().json().then((j) => {
+        const u = j?.usageMetadata || {};
+        CALL_LOG.push({ ...base, status: "ok", prompt_tokens: u.promptTokenCount ?? null, output_tokens: u.candidatesTokenCount ?? null, total_tokens: u.totalTokenCount ?? null });
+      }).catch(() => { CALL_LOG.push({ ...base, status: "ok" }); }));
+    } else {
+      CALL_LOG.push({ ...base, status: "http_" + r.status });
+    }
+    return r;
+  } catch (e) {
+    CALL_LOG.push({ fn, key_slot: slot, model, http_status: null, ms: Date.now() - t0, status: e instanceof Error && e.name === "AbortError" ? "timeout" : "error" });
+    throw e;
+  }
+}
+async function flushCallLog(): Promise<void> {
+  try {
+    await Promise.race([Promise.allSettled(CALL_LOG_PENDING.splice(0)), new Promise((r) => setTimeout(r, 1500))]);
+    const rows = CALL_LOG.splice(0);
+    if (!rows.length) return;
+    const db = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+    const { error } = await db.from("ai_call_log").insert(rows);
+    if (error) console.error("ai_call_log insert failed: " + error.message);
+  } catch (_e) {
+    console.error("ai_call_log flush failed");
+  }
+}
+function scheduleCallLogFlush(): Promise<void> | void {
+  // يُكتب السجل بعد إرسال الرد (EdgeRuntime.waitUntil) فلا ينتظره المستخدم.
+  const er = (globalThis as unknown as { EdgeRuntime?: { waitUntil?: (p: Promise<unknown>) => void } }).EdgeRuntime;
+  if (er && typeof er.waitUntil === "function") { er.waitUntil(flushCallLog()); return; }
+  return flushCallLog();
+}
+
 function jsonResponse(body: unknown, status = 200) {
     return new Response(JSON.stringify(body), {
         status,
@@ -123,7 +170,7 @@ async function callGeminiWithFailover(prompt: string): Promise<GeminiCallResult>
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), Math.min(model === PRIMARY_MODEL ? PRIMARY_TIMEOUT_MS : PER_ATTEMPT_TIMEOUT_MS, remaining));
             try {
-                const geminiResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                const geminiResp = await geminiFetch("generate-report", apiKey, model, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -168,7 +215,7 @@ async function callGeminiWithFailover(prompt: string): Promise<GeminiCallResult>
     }
     return { content: null, lastErrorMessage, attempts, succeededOnAttempt: null };
 }
-Deno.serve(async (req: Request) => {
+const handleRequest = async (req: Request): Promise<Response> => {
     if (req.method === "OPTIONS") {
         return new Response("ok", { headers: CORS_HEADERS });
     }
@@ -373,4 +420,10 @@ Deno.serve(async (req: Request) => {
         generated_at: new Date().toISOString(),
         ...(isOwner ? { ai_model: geminiResult.model || null } : {}),
     });
+};
+
+Deno.serve(async (req: Request) => {
+  const res = await handleRequest(req);
+  await scheduleCallLogFlush();
+  return res;
 });

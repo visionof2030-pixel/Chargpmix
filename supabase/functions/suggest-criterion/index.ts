@@ -31,6 +31,53 @@ const SEP = "؛ ";
 const DASH = " — ";
 const NONE_TEXT = "لا توجد";
 
+// ===== سجل استهلاك مفاتيح Gemini (لوحة المالك): رقم خانة المفتاح فقط، لا المفتاح نفسه =====
+const KEY_SLOT = new Map<string, number>();
+for (let n = 1; n <= 10; n++) {
+  const k = Deno.env.get("GEMINI_API_KEY_" + n);
+  if (k && !KEY_SLOT.has(k)) KEY_SLOT.set(k, n);
+}
+const CALL_LOG: Array<Record<string, unknown>> = [];
+const CALL_LOG_PENDING: Promise<unknown>[] = [];
+async function geminiFetch(fn: string, key: string, model: string, init: RequestInit): Promise<Response> {
+  const t0 = Date.now();
+  const slot = KEY_SLOT.get(key) ?? null;
+  try {
+    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + key, init);
+    const base = { fn, key_slot: slot, model, http_status: r.status, ms: Date.now() - t0 };
+    if (r.ok) {
+      CALL_LOG_PENDING.push(r.clone().json().then((j) => {
+        const u = j?.usageMetadata || {};
+        CALL_LOG.push({ ...base, status: "ok", prompt_tokens: u.promptTokenCount ?? null, output_tokens: u.candidatesTokenCount ?? null, total_tokens: u.totalTokenCount ?? null });
+      }).catch(() => { CALL_LOG.push({ ...base, status: "ok" }); }));
+    } else {
+      CALL_LOG.push({ ...base, status: "http_" + r.status });
+    }
+    return r;
+  } catch (e) {
+    CALL_LOG.push({ fn, key_slot: slot, model, http_status: null, ms: Date.now() - t0, status: e instanceof Error && e.name === "AbortError" ? "timeout" : "error" });
+    throw e;
+  }
+}
+async function flushCallLog(): Promise<void> {
+  try {
+    await Promise.race([Promise.allSettled(CALL_LOG_PENDING.splice(0)), new Promise((r) => setTimeout(r, 1500))]);
+    const rows = CALL_LOG.splice(0);
+    if (!rows.length) return;
+    const db = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+    const { error } = await db.from("ai_call_log").insert(rows);
+    if (error) console.error("ai_call_log insert failed: " + error.message);
+  } catch (_e) {
+    console.error("ai_call_log flush failed");
+  }
+}
+function scheduleCallLogFlush(): Promise<void> | void {
+  // يُكتب السجل بعد إرسال الرد (EdgeRuntime.waitUntil) فلا ينتظره المستخدم.
+  const er = (globalThis as unknown as { EdgeRuntime?: { waitUntil?: (p: Promise<unknown>) => void } }).EdgeRuntime;
+  if (er && typeof er.waitUntil === "function") { er.waitUntil(flushCallLog()); return; }
+  return flushCallLog();
+}
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -57,6 +104,7 @@ async function callGemini(prompt: string, perAttemptMs: number, overallMs: numbe
   lastIssue = "";
   for (const model of models) {
     let skipModel = false;
+    let count503 = 0;
     for (let i = 0; i < keys.length && !skipModel; i++) {
       const remaining = deadline - Date.now();
       if (remaining < 2000) {
@@ -71,9 +119,7 @@ async function callGemini(prompt: string, perAttemptMs: number, overallMs: numbe
         if (!model.startsWith("gemini-3")) generationConfig.temperature = 0;
         if (jsonMode) generationConfig.responseMimeType = "application/json";
         if (model === "gemini-2.5-flash") generationConfig.thinkingConfig = { thinkingBudget: 0 };
-        const resp = await fetch(
-          "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + keys[i],
-          {
+        const resp = await geminiFetch("suggest-criterion", keys[i], model, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig }),
@@ -84,6 +130,8 @@ async function callGemini(prompt: string, perAttemptMs: number, overallMs: numbe
           lastIssue = model + " HTTP " + resp.status;
           console.error("Gemini key " + (i + 1) + "/" + keys.length + " (" + model + ") failed: HTTP " + resp.status);
           if (resp.status === 400 || resp.status === 404) skipModel = true;
+          // بعد ردّين 503 (ضغط عالٍ لدى Google على النموذج نفسه) يُتجاوز الأساسي.
+          if (resp.status === 503 && model === PRIMARY_MODEL && ++count503 >= 2) skipModel = true;
           continue;
         }
         const data = await resp.json();
@@ -248,7 +296,7 @@ function fill(template: string, token: string, value: string): string {
   return template.split(token).join(value);
 }
 
-Deno.serve(async (req: Request) => {
+const handleRequest = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS_HEADERS });
   if (req.method !== "POST") return jsonResponse({ detail: "Method not allowed" }, 405);
 
@@ -341,4 +389,10 @@ Deno.serve(async (req: Request) => {
     none_reason: matches.length ? "" : asText(parsed.none_reason, 300),
     analysis: asText(parsed.analysis, 400),
   });
+};
+
+Deno.serve(async (req: Request) => {
+  const res = await handleRequest(req);
+  await scheduleCallLogFlush();
+  return res;
 });
