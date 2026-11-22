@@ -4300,6 +4300,35 @@ button[title]:hover::before {
 .admin-log-del:active { background: rgba(200,40,40,.22); }
 .qw-ai { display: inline-block; margin-inline-start: 6px; padding: 1px 8px; border-radius: 99px; background: #fff7e6; color: #9a6a00; font-size: 11px; font-weight: 800; }
 .qw-f.ai input, .qw-f.ai select { border-color: #f0c768 !important; background: #fffdf6 !important; }
+.bk-intro { background: var(--f-em, #0a6b4f); color: #fff; border-radius: 18px; padding: 12px 16px; margin-bottom: 12px; line-height: 1.7; }
+.bk-intro b { display: block; font-size: 16px; font-weight: 900; }
+.bk-intro span { font-size: 13px; opacity: .92; }
+.bk-gate { border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; font-size: 13.5px; line-height: 1.8; }
+.bk-gate.bad { background: #fef2f2; color: #991b1b; }
+.bk-gate.info { background: #eef7f3; color: #0d4f3b; }
+.bk-row { background: var(--f-surface, #fff); border: 1px solid var(--f-line, #e3e8e6); border-radius: 16px; padding: 10px 12px; margin-bottom: 10px; }
+.bk-row.off { opacity: .5; }
+.bk-row.ok { border-color: #86d3b5; }
+.bk-row.err { border-color: #fca5a5; }
+.bk-head { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; font-weight: 800; color: var(--f-muted, #5d6e68); margin-bottom: 6px; }
+.bk-head input { margin-top: 3px; width: 18px; height: 18px; accent-color: #0d6b4f; }
+.bk-head span { flex: 1; line-height: 1.6; }
+.bk-title { width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--f-line, #e3e8e6); background: var(--f-bg, #f7f9f8); font: inherit; font-size: 14.5px; font-weight: 800; color: var(--f-text, #0d1f19); }
+.bk-title.ai { border-color: #f0c768; background: #fffdf6; }
+.bk-meta { display: flex; align-items: center; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.bk-meta select { flex: 1 1 140px; min-width: 0; padding: 8px; border-radius: 10px; border: 1px solid var(--f-line, #e3e8e6); font: inherit; font-size: 13px; background: #fff; }
+.bk-ph { width: 46px; height: 46px; border-radius: 10px; border: 1.5px dashed #9fc9b8; background: #f3faf7 center/cover no-repeat; color: #0d6b4f; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; }
+.bk-ph.has { border-style: solid; color: transparent; }
+.bk-st { font-size: 12.5px; font-weight: 800; margin-inline-start: auto; }
+.bk-st.ok { color: #047857; } .bk-st.err { color: #b91c1c; } .bk-st.run { color: #92400e; }
+.bk-progress { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; font-weight: 800; }
+.bk-bar { flex: 1; height: 8px; border-radius: 99px; background: #e5ece9; overflow: hidden; }
+.bk-bar i { display: block; height: 100%; width: 0; background: #0d6b4f; transition: width .3s; }
+.mc-hint { font-size: 12px; color: #8a6a00; background: #fffaeb; border-radius: 10px; padding: 6px 10px; margin-bottom: 8px; }
+.mc-row { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, .7fr) minmax(0, .7fr) auto; gap: 6px; margin-bottom: 6px; align-items: center; }
+.mc-row select, .mc-row input { width: 100%; box-sizing: border-box; padding: 9px 8px; border-radius: 10px; border: 1px solid var(--line-warm, #ddd); font: inherit; font-size: 14px; background: #fff; }
+.mc-del { border: 0; background: #fef2f2; color: #b91c1c; border-radius: 10px; width: 38px; height: 38px; cursor: pointer; }
+.mc-add { border: 1px dashed rgba(13,107,79,.45); background: transparent; color: #0d6b4f; border-radius: 10px; padding: 8px 12px; font: inherit; font-weight: 800; cursor: pointer; }
 .cls-bar { margin: 0 0 12px; padding: 10px 12px; border: 1px dashed rgba(13,107,79,.35); border-radius: 14px; background: rgba(13,107,79,.04); }
 .cls-bar.compact { margin: 10px 0 0; padding: 8px 10px; }
 .cls-h { font-size: 13px; font-weight: 800; color: var(--f-em, #0d6b4f); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -8585,6 +8614,7 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
       <div class="account-row"><i class="fas fa-university"></i><span class="account-row-label">إدارة التعليم</span><span class="account-row-value" id="accountViewEducation">—</span></div>
       <div class="account-row"><i class="fas fa-school"></i><span class="account-row-label">المدرسة / المكتب</span><span class="account-row-value" id="accountViewSchool">—</span></div>
       <div class="account-row"><i class="fas fa-book"></i><span class="account-row-label">التخصص / المادة</span><span class="account-row-value" id="accountViewSubject">—</span></div>
+      <div class="account-row"><i class="fas fa-users-rectangle"></i><span class="account-row-label">صفوفي</span><span class="account-row-value" id="accountViewClasses">—</span></div>
       <div class="account-row"><i class="fas fa-user-cog"></i><span class="account-row-label">صفة المدير (تلقائي)</span><span class="account-row-value" id="accountViewPrincipalType">—</span></div>
       <div class="account-row"><i class="fas fa-user-cog"></i><span class="account-row-label">اسم المدير / المسؤول</span><span class="account-row-value" id="accountViewPrincipal">—</span></div>
     </div>
@@ -8625,6 +8655,11 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
         <label for="teacherSubject"><i class="fas fa-book"></i> التخصص / المادة</label>
         <input id="teacherSubject" list="teacherSubjectList" placeholder="مثال: اللغة الإنجليزية" oninput="updateReport()">
         <datalist id="teacherSubjectList"><option value="اللغة العربية"><option value="اللغة الإنجليزية"><option value="الرياضيات"><option value="العلوم"><option value="الدراسات الإسلامية"><option value="الدراسات الاجتماعية"><option value="المهارات الرقمية"><option value="التربية الفنية"><option value="التربية البدنية والدفاع عن النفس"><option value="المهارات الحياتية والأسرية"><option value="التفكير الناقد"><option value="الفيزياء"><option value="الكيمياء"><option value="الأحياء"><option value="التربية الخاصة"><option value="رياض الأطفال"></datalist>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-users-rectangle"></i> صفوفي <small style="font-weight:600;color:var(--text-light,#667)">(اختياري) — الصف والفصل وعدد الطلاب، تُعبّأ بها التقارير تلقائياً</small></label>
+        <div id="myClassesEditor"></div>
       </div>
 
       <div class="form-row">
@@ -9821,8 +9856,30 @@ function afFill() {
 const CLS_KEY = 'enjaz_classes_v1';
 const CLS_FIELD_IDS = ['grade', 'classSection', 'count', 'target', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience'];
 const CLS_STEP_IDS = ['grade', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience'];
-function clsList() { try { const v = JSON.parse(localStorage.getItem(CLS_KEY)); return Array.isArray(v) ? v.filter(c => c && c.grade) : []; } catch (_) { return []; } }
-function clsSaveList(list) { try { localStorage.setItem(CLS_KEY, JSON.stringify(list.slice(0, 8))); } catch (_) { /* تجاهل */ } }
+// أرقام الفصول المكتوبة بالحروف («واحد»، «ثلاثة») تُحوَّل لأرقام
+const CLS_NUM_WORDS = { 'واحد': '1', 'واحده': '1', 'اول': '1', 'اثنين': '2', 'اثنان': '2', 'ثنين': '2', 'ثاني': '2', 'ثلاث': '3', 'ثلاثه': '3', 'ثالث': '3', 'اربع': '4', 'اربعه': '4', 'رابع': '4', 'خمس': '5', 'خمسه': '5', 'خامس': '5', 'ست': '6', 'سته': '6', 'سادس': '6', 'سبع': '7', 'سبعه': '7', 'ثمان': '8', 'ثمانيه': '8', 'تسع': '9', 'تسعه': '9', 'عشر': '10', 'عشره': '10' };
+function clsNormSection(sec) {
+    let v = String(sec || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+    const w = normalizeArabicForVoice(v);
+    if (CLS_NUM_WORDS[w]) v = CLS_NUM_WORDS[w];
+    return v;
+}
+// تنظيف القائمة: الفصل الكبير (> ٢٠) عدد طلاب لا فصل، ودمج المكرر، وحذف الصف بلا فصل إن وُجد نفسه بفصل
+function clsNormalize(list) {
+    const out = [];
+    list.forEach(c => {
+        if (!c || !c.grade) return;
+        let section = clsNormSection(c.section), count = String(c.count || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^0-9]/g, '');
+        if (/^[0-9]+$/.test(section) && +section > 20) { if (!count) count = section; section = ''; }
+        const dup = out.find(x => x.grade === c.grade && x.section === section);
+        if (dup) { if (!dup.count && count) dup.count = count; return; }
+        out.push({ grade: c.grade, section, count, manual: !!c.manual, at: c.at || 0 });
+    });
+    return out.filter(c => c.section || !out.some(x => x !== c && x.grade === c.grade && x.section));
+}
+function clsList() { try { const v = JSON.parse(localStorage.getItem(CLS_KEY)); return Array.isArray(v) ? clsNormalize(v) : []; } catch (_) { return []; } }
+function clsSaveList(list) { try { localStorage.setItem(CLS_KEY, JSON.stringify(list.slice(0, 12))); } catch (_) { /* تجاهل */ } }
+function clsIsManual() { return clsList().some(c => c.manual); }
 function clsGradeOptions() { return Array.from(document.querySelectorAll('#grade option')).map(o => o.value).filter(Boolean); }
 // يحوّل نصاً حراً («الثالث المتوسط ٢»، «ثالث متوسط/أ») إلى صف معروف + فصل.
 function clsParse(text) {
@@ -9832,16 +9889,24 @@ function clsParse(text) {
     const n = norm(raw);
     const grade = clsGradeOptions().find(g => { const w = norm(g).split(' '); return w.every(x => n.split(' ').includes(x)); });
     if (!grade) return null;
-    const m = raw.match(/(?:\/|-|،|\s)\s*([0-9]{1,2}|[أ-ي])\s*$/);
+    const m = raw.match(/(?:\/|-|،|\s)\s*([0-9]{1,2}|[أ-ي]|[\u0621-\u064A]{3,6})\s*$/);
     const cm = raw.match(/\(?\s*([0-9]{1,3})\s*(?:طالب|طالبة|طلاب|طالبات)/);
-    return { grade, section: m && !/^[0-9]{3}$/.test(m[1]) ? m[1] : '', count: cm ? cm[1] : '' };
+    let section = m ? clsNormSection(m[1]) : '';
+    if (section && !/^[0-9]{1,2}$/.test(section) && section.length > 1) section = '';
+    return { grade, section, count: cm ? cm[1] : '' };
 }
 function clsRemember(c) {
     if (!c || !c.grade) return;
     const list = clsList();
-    const i = list.findIndex(x => x.grade === c.grade && (x.section || '') === (c.section || ''));
+    // «صفوفي» يحرّرها المعلم: لا نضيف لها تلقائياً، نحدّث العدد فقط إن كان فارغاً
+    if (list.some(x => x.manual)) {
+        const hit = list.find(x => x.grade === c.grade && x.section === clsNormSection(c.section));
+        if (hit && !hit.count && c.count) { hit.count = String(c.count); clsSaveList(list); }
+        return;
+    }
+    const i = list.findIndex(x => x.grade === c.grade && (x.section || '') === clsNormSection(c.section));
     const prev = i >= 0 ? list.splice(i, 1)[0] : {};
-    list.unshift({ grade: c.grade, section: c.section || '', count: String(c.count || prev.count || ''), at: Date.now() });
+    list.unshift({ grade: c.grade, section: clsNormSection(c.section), count: String(c.count || prev.count || ''), at: Date.now() });
     clsSaveList(list);
 }
 function clsLabel(c) { return c.grade + (c.section ? ' / ' + c.section : ''); }
@@ -9907,6 +9972,43 @@ function clsAddNew() {
     clsRemember(c);
     clsApply(0);
 }
+// ===== «صفوفي» في البيانات الأساسية =====
+const CLS_U_KEY = 'enjaz_classes_u';
+function clsSetManual(list, u) {
+    clsSaveList(clsNormalize(list.map(c => ({ grade: c.grade, section: c.section, count: c.count, manual: true, at: c.at || Date.now() }))));
+    try { localStorage.setItem(CLS_U_KEY, String(u || Date.now())); } catch (_) { /* تجاهل */ }
+    if (!u && typeof rsSchedule === 'function') { try { rsSchedule(); } catch (_) { /* تجاهل */ } }
+    if (typeof renderAccountSummary === 'function') { try { renderAccountSummary(); } catch (_) { /* تجاهل */ } }
+}
+function clsEditorRender() {
+    const box = document.getElementById('myClassesEditor');
+    if (!box) return;
+    clsSeedFromReports();
+    const list = clsList(), opts = clsGradeOptions();
+    const gradeSel = g => `<select data-mc="grade"><option value="">الصف</option>${opts.map(o => `<option value="${pfEsc(o)}"${o === g ? ' selected' : ''}>${pfEsc(o)}</option>`).join('')}</select>`;
+    box.innerHTML = (list.length && !list.some(c => c.manual) ? '<div class="mc-hint"><i class="fas fa-lightbulb"></i> هذه صفوف استنتجناها من تقاريرك؛ عدّلها أو احذف ما لا يلزم.</div>' : '')
+        + list.map(c => `<div class="mc-row">${gradeSel(c.grade)}<input data-mc="section" value="${pfEsc(c.section)}" placeholder="الفصل" inputmode="numeric"><input data-mc="count" value="${pfEsc(c.count)}" placeholder="العدد" inputmode="numeric"><button type="button" class="mc-del" data-mcdel aria-label="حذف"><i class="fas fa-trash"></i></button></div>`).join('')
+        + `<button type="button" class="mc-add" data-mcadd><i class="fas fa-plus"></i> إضافة صف</button>`;
+}
+function clsEditorCollect() {
+    const rows = Array.from(document.querySelectorAll('#myClassesEditor .mc-row'));
+    return rows.map(r => ({ grade: r.querySelector('[data-mc="grade"]').value, section: r.querySelector('[data-mc="section"]').value, count: r.querySelector('[data-mc="count"]').value })).filter(c => c.grade);
+}
+document.addEventListener('change', e => { if (e.target.closest && e.target.closest('#myClassesEditor') && e.target.matches('[data-mc]')) clsSetManual(clsEditorCollect()); });
+document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#myClassesEditor') && e.target.matches('input[data-mc]')) { clearTimeout(window.__mcT); window.__mcT = setTimeout(() => clsSetManual(clsEditorCollect()), 500); } });
+document.addEventListener('click', e => {
+    const box = document.getElementById('myClassesEditor');
+    if (!box || !e.target.closest || !box.contains(e.target)) return;
+    if (e.target.closest('[data-mcdel]')) { e.target.closest('.mc-row').remove(); clsSetManual(clsEditorCollect()); clsEditorRender(); }
+    else if (e.target.closest('[data-mcadd]')) {
+        const row = document.createElement('div');
+        row.className = 'mc-row';
+        row.innerHTML = `<select data-mc="grade"><option value="">الصف</option>${clsGradeOptions().map(o => `<option value="${pfEsc(o)}">${pfEsc(o)}</option>`).join('')}</select><input data-mc="section" placeholder="الفصل" inputmode="numeric"><input data-mc="count" placeholder="العدد" inputmode="numeric"><button type="button" class="mc-del" data-mcdel aria-label="حذف"><i class="fas fa-trash"></i></button>`;
+        e.target.closest('[data-mcadd]').before(row);
+        row.querySelector('select').focus();
+    }
+});
+
 // هل القالب الحالي يحوي خانة صف؟
 function clsTemplateHasClass() { return !isShortTemplate() || ['general', 'visit', 'strategy', 'tool', 'parents'].includes(window.__shortVariant); }
 function clsBarHtml(compact) {
@@ -10058,6 +10160,10 @@ async function rsRun() {
             const pr = await rsFetch('/v1/profile', { headers: H });
             const rp = pr.ok ? await pr.json() : null, lp = tsGet();
             if (rp && rp.subject !== undefined && (+rp.u || 0) > (lp.u || 0)) tsSave(rp.subject, +rp.u, true);
+            // «صفوفي»: الأحدث يغلب أيضاً
+            const lcu = +(localStorage.getItem(CLS_U_KEY) || 0);
+            if (rp && Array.isArray(rp.classes) && (+rp.cu || 0) > lcu) { clsSetManual(rp.classes, +rp.cu); try { clsEditorRender(); } catch (_) { /* تجاهل */ } }
+            else if (lcu && (!rp || lcu > (+rp.cu || 0))) await rsFetch('/v1/profile', { method: 'PUT', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify({ classes: clsList().filter(c => c.manual).map(c => ({ grade: c.grade, section: c.section, count: c.count })), cu: lcu }) });
             else if (lp.u && (!rp || (lp.u > (+rp.u || 0)))) await rsFetch('/v1/profile', { method: 'PUT', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify({ subject: lp.v, u: lp.u }) });
         } catch (e) { console.warn('rsRun profile:', e); }
         const remote = {};
@@ -11265,7 +11371,8 @@ function applyPdfFieldVisibility() {
     setInfoBoxVisibility('gradeBox', isPdfFieldVisible('grade'));
     setInfoBoxVisibility('classSectionBox', isVoiceFieldEffectivelyVisible('classSection'));
     setInfoBoxVisibility('subjectBox', isPdfFieldVisible('subject'));
-    setInfoBoxVisibility('lessonBox', isVoiceFieldEffectivelyVisible('lesson'));
+    // الدرس لا يظهر في التقرير ما دام فارغاً؛ يضيفه المعلم متى شاء من خانته فيظهر
+    setInfoBoxVisibility('lessonBox', isVoiceFieldEffectivelyVisible('lesson') && !!String(document.getElementById('lesson')?.value || '').trim());
     setInfoBoxVisibility('targetBox', isPdfFieldVisible('target'));
     setInfoBoxVisibility('countBox', isPdfFieldVisible('count'));
     reflowEqualInfoGrid(document.querySelector('#report-content .info-grid'));
@@ -14882,8 +14989,226 @@ function dashRender() {
         list = `<div class="dash-card"><h3><i class="fas fa-list-check"></i> المعايير وأوزانها</h3><div class="dash-crit-sum"><span>معايير فيها شواهد: <b>${pfNum(T.covered)} من ${pfNum(T.total)}</b></span><b>${pfNum(pct)}٪</b></div><div class="dash-crit-bar"><i style="width:${pct}%"></i></div><ul class="dash-list">${rows.map(x => { const on = x.c.reports.length > 0; return `<li class="dash-row${on ? ' on' : ''}"><span class="n">${on ? '<i class="fas fa-check"></i>' : pfNum(x.i + 1)}</span><span class="t">${pfEsc(x.c.name)}<small>${meta(x.c)}</small></span><button type="button" class="dash-btn ghost" data-dash-add="${pfEsc(x.c.id)}"><i class="fas fa-plus"></i> إضافة</button></li>`; }).join('')}</ul>${all.length > 6 ? `<button type="button" class="dash-btn ghost wide" style="margin-top:10px" onclick="window.__dashShowAll=!window.__dashShowAll;dashRender()">${showAll ? 'عرض أقل' : 'عرض كل المعايير (' + pfNum(all.length) + ')'}</button>` : ''}</div>`;
     }
     const portfolio = `<button type="button" class="dash-btn wide" onclick="openPortfolio()"><i class="fas fa-award"></i> ملف الإنجاز</button>`;
-    box.innerHTML = hero + cov + next + analysis + goal + list + portfolio;
+    const bulk = T.total ? `<div class="dash-card"><div class="dash-analysis"><i class="fas fa-bolt"></i><div><h3 style="margin:0">تقرير لكل معيار بضغطة واحدة</h3><small>عناوين مقترحة لكل معيار، وأرفق صورتين لكل تقرير الآن أو لاحقاً</small></div></div><button type="button" class="dash-btn wide" onclick="openBulk()"><i class="fas fa-bolt"></i> ابدأ</button></div>` : '';
+    box.innerHTML = hero + cov + next + bulk + analysis + goal + list + portfolio;
 }
+// ===== تقرير لكل معيار بضغطة واحدة =====
+// مرة واحدة لكل معيار في دورة الاشتراك (يفرضها الخادم: bulk_status/bulk_claim/bulk_mark)، والمالك بلا حد.
+// لكل معيار: عنوان مقترح (قابل للتعديل)، وصف من «صفوفي»، وصورتان اختياريتان تُرفقان الآن أو لاحقاً.
+window.__bk = { rows: [], running: false, status: null };
+function bkIsOpen() { const pg = document.getElementById('bulkPage'); return !!pg && pg.style.display !== 'none'; }
+async function openBulk() {
+    if (window.__subExpired) { showNotification(window.__subExpiredMsg || 'انتهى اشتراكك', 'warning'); return; }
+    if (typeof blockExportIfBasicDataIncomplete === 'function' && blockExportIfBasicDataIncomplete()) return;
+    const crits = window.allCriteria || [];
+    if (!crits.length) { showNotification('جارٍ تحميل المعايير، حاول بعد لحظات', 'warning'); return; }
+    const pg = document.getElementById('bulkPage');
+    pg.style.display = 'flex';
+    document.body.classList.add('mp-open');
+    try { history.pushState({ bk: 1 }, ''); } catch (_) { /* تجاهل */ }
+    document.getElementById('bkGate').innerHTML = '<div class="bk-gate info"><i class="fas fa-spinner fa-spin"></i> جارٍ التحقق من الإتاحة...</div>';
+    document.getElementById('bkList').innerHTML = '';
+    document.getElementById('bkGo').disabled = true;
+    document.getElementById('bkGo').onclick = bulkRun;
+    document.getElementById('bkProgress').hidden = true;
+    let st = null;
+    try { const r = await supabaseClient.rpc('bulk_status'); if (r.error) throw r.error; st = r.data; } catch (e) { console.warn('bulk_status:', e); }
+    window.__bk.status = st;
+    const gate = document.getElementById('bkGate');
+    if (!st) { gate.innerHTML = '<div class="bk-gate bad">تعذّر التحقق من الإتاحة. تأكد من الاتصال ثم حاول مرة أخرى.</div>'; return; }
+    if (!st.ok) {
+        gate.innerHTML = st.reason === 'used'
+            ? `<div class="bk-gate bad"><i class="fas fa-lock"></i> استخدمت «تقرير لكل معيار» في دورة اشتراكك الحالية (${pfEsc(new Date(st.used_at).toLocaleDateString('ar-SA'))}). يتاح مرة واحدة في كل دورة اشتراك، ويمكنك إصدار أي تقرير منفرداً كالمعتاد.</div>`
+            : `<div class="bk-gate bad"><i class="fas fa-lock"></i> ${pfEsc(window.__subExpiredMsg || 'اشتراكك غير نشط')}</div>`;
+        return;
+    }
+    const done = new Set(st.done || []);
+    // الرصيد المتبقي
+    let remaining = null;
+    try {
+        const { data: sess } = await supabaseClient.auth.getSession();
+        const { data: ent } = await supabaseClient.from('entitlements').select('usage_count, usage_limit').eq('user_id', sess.session.user.id).maybeSingle();
+        if (ent && ent.usage_limit !== null && ent.usage_limit !== undefined) remaining = Math.max(0, ent.usage_limit - ent.usage_count);
+    } catch (_) { /* تجاهل */ }
+    window.__bk.remaining = st.unlimited ? null : remaining;
+    const classes = clsList();
+    window.__bk.rows = crits.filter(c => !done.has(String(c.id))).map((c, i) => {
+        const cand = (dvsCandidates(c.id) || [])[0];
+        return { crit: c.id, name: c.name, weight: c.weight, title: cand ? cand.title : '', subId: cand ? cand.subId : '', ai: false, touched: false, on: true, cls: classes.length ? i % classes.length : -1, photos: [], key: '', state: '' };
+    });
+    const notes = [];
+    if (st.unlimited) notes.push('حساب المالك: بلا حد.');
+    else notes.push('يتاح مرة واحدة لكل معيار في دورة اشتراكك.' + (done.size ? ` صدرت ${pfNum(done.size)} معايير سابقاً في هذه الدورة.` : ''));
+    if (remaining !== null && !st.unlimited) notes.push(`رصيدك المتبقي: ${pfNum(remaining)} تقرير.`);
+    if (!classes.length) notes.push('أضف «صفوفي» في البيانات الأساسية لتُعبّأ الصفوف والأعداد تلقائياً.');
+    gate.innerHTML = window.__bk.rows.length ? `<div class="bk-gate info">${notes.map(pfEsc).join('<br>')}</div>` : '<div class="bk-gate info">صدرت تقارير جميع المعايير في هذه الدورة.</div>';
+    bkRender();
+    document.getElementById('bkGo').disabled = !window.__bk.rows.length;
+    bkFetchTitles();
+}
+function closeBulk(fromHistory) {
+    if (!bkIsOpen()) return;
+    if (window.__bk.running && !confirm('الإصدار جارٍ. هل تريد الخروج؟ ستتوقف التقارير المتبقية (يمكنك إكمالها لاحقاً في نفس الدورة).')) { try { history.pushState({ bk: 1 }, ''); } catch (_) { /* تجاهل */ } return; }
+    window.__bk.stop = true;
+    document.getElementById('bulkPage').style.display = 'none';
+    if (!mpIsOpen() && !qwIsOpen()) document.body.classList.remove('mp-open');
+    if (!fromHistory && history.state && history.state.bk) { try { history.back(); } catch (_) { /* تجاهل */ } }
+    if (typeof dashRender === 'function') { try { dashRender(); } catch (_) { /* تجاهل */ } }
+}
+window.addEventListener('popstate', () => closeBulk(true));
+function bkRender() {
+    const classes = clsList();
+    const st = { ok: '<span class="bk-st ok"><i class="fas fa-check"></i> صدر</span>', run: '<span class="bk-st run"><i class="fas fa-spinner fa-spin"></i> يُكتب...</span>', wait: '<span class="bk-st">بالانتظار</span>' };
+    document.getElementById('bkList').innerHTML = window.__bk.rows.map((r, i) => `<div class="bk-row${r.on ? '' : ' off'}${r.state === 'ok' ? ' ok' : ''}${r.state === 'err' ? ' err' : ''}" data-bk="${i}">
+        <label class="bk-head">${r.state === 'ok' ? '<i class="fas fa-circle-check" style="color:#047857;font-size:18px;margin-top:2px"></i>' : `<input type="checkbox" data-bkon ${r.on ? 'checked' : ''} ${r.state === 'run' ? 'disabled' : ''}>`}<span>${pfEsc(r.name)} <small>(الوزن ${pfEsc(pfNum(typeof formatWeight === 'function' ? formatWeight(r.weight) : r.weight))})</small></span></label>
+        <input class="bk-title${r.ai ? ' ai' : ''}" data-bktitle value="${pfEsc(r.title)}" placeholder="عنوان التقرير" ${r.state === 'ok' ? 'readonly' : ''}>
+        <div class="bk-meta">
+            ${classes.length ? `<select data-bkcls ${r.state === 'ok' ? 'disabled' : ''}><option value="-1">بدون صف</option>${classes.map((c, k) => `<option value="${k}"${k === r.cls ? ' selected' : ''}>${pfEsc(clsLabel(c))}${c.count ? ' (' + pfEsc(c.count) + ')' : ''}</option>`).join('')}</select>` : ''}
+            ${[0, 1].map(k => `<button type="button" class="bk-ph${r.photos[k] ? ' has' : ''}" data-bkph="${k}" title="صورة ${k + 1}"${r.photos[k] ? ` style="background-image:url('${r.photos[k]}')"` : ''}><i class="fas fa-camera"></i></button>`).join('')}
+            ${r.state === 'ok' ? st.ok : r.state === 'run' ? st.run : r.state === 'err' ? `<span class="bk-st err" title="${pfEsc(r.err || '')}"><i class="fas fa-triangle-exclamation"></i> تعذّر</span>` : (window.__bk.running && r.on ? st.wait : '')}
+        </div>
+    </div>`).join('');
+    const n = window.__bk.rows.filter(r => r.on && r.state !== 'ok').length;
+    const anyOk = window.__bk.rows.some(r => r.state === 'ok');
+    const go = document.getElementById('bkGo');
+    if (!window.__bk.running) {
+        go.querySelector('span').textContent = n ? `إصدار ${pfNum(n)} تقارير` : (anyOk ? 'ملف الإنجاز' : 'إصدار التقارير');
+        go.onclick = n ? bulkRun : (anyOk ? () => { closeBulk(); openPortfolio(); } : bulkRun);
+    }
+}
+// عنوان مقترح بالذكاء الاصطناعي لكل معيار (يستبدل عنوان البنك ما لم يعدّله المعلم)
+async function bkFetchTitles() {
+    const rows = window.__bk.rows.slice();
+    let i = 0;
+    const worker = async () => {
+        while (i < rows.length && bkIsOpen()) {
+            const r = rows[i++];
+            try {
+                await dvsFetchAiTitles(r.crit);
+                const ai = (window.__aiTitles[dvsAiKey(r.crit)] || {}).list || [];
+                const used = new Set(window.__bk.rows.map(x => dvsNorm(x.title)));
+                const pick = ai.find(t => !used.has(dvsNorm(t.title))) || ai[0];
+                if (pick && !r.touched && !r.state) { r.title = pick.title; r.subId = pick.subId || r.subId; r.ai = true; bkRender(); }
+            } catch (_) { /* تبقى عناوين البنك */ }
+        }
+    };
+    await Promise.all([worker(), worker(), worker()]);
+}
+document.addEventListener('input', e => {
+    const row = e.target.closest && e.target.closest('#bkList [data-bk]');
+    if (!row || !e.target.matches('[data-bktitle]')) return;
+    const r = window.__bk.rows[+row.getAttribute('data-bk')];
+    r.title = e.target.value; r.touched = true; r.ai = false; e.target.classList.remove('ai');
+});
+document.addEventListener('change', e => {
+    const row = e.target.closest && e.target.closest('#bkList [data-bk]');
+    if (!row) return;
+    const r = window.__bk.rows[+row.getAttribute('data-bk')];
+    if (e.target.matches('[data-bkon]')) { r.on = e.target.checked; bkRender(); }
+    else if (e.target.matches('[data-bkcls]')) r.cls = +e.target.value;
+});
+document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('#bkList [data-bkph]');
+    if (!b) return;
+    const row = b.closest('[data-bk]');
+    window.__bkPhotoTarget = { i: +row.getAttribute('data-bk'), k: +b.getAttribute('data-bkph') };
+    const inp = document.getElementById('bkPhotoInput');
+    inp.value = '';
+    inp.click();
+});
+document.addEventListener('change', async e => {
+    if (e.target.id !== 'bkPhotoInput' || !window.__bkPhotoTarget) return;
+    const { i, k } = window.__bkPhotoTarget, r = window.__bk.rows[i];
+    const files = Array.from(e.target.files || []).slice(0, 2);
+    if (!files.length || !r) return;
+    try {
+        const urls = await Promise.all(files.map(f => compressImageFile(f)));
+        urls.forEach((u, j) => { r.photos[Math.min(1, k + j)] = u; });
+        r.photos = r.photos.filter(Boolean).slice(0, 2);
+        bkRender();
+        if (r.state === 'ok' && r.key) await bkAttachPhotos(r);
+    } catch (err) { console.warn('bk photo:', err); showNotification('تعذّرت قراءة الصورة', 'warning'); }
+});
+// إرفاق الصور بتقرير صدر سابقاً: تُحدَّث صوره وصورة قالبه الرسمي (لرمز QR) دون إنشاء تقرير جديد
+async function bkAttachPhotos(r) {
+    const rec = getSavedReportsMap()[r.key];
+    if (!rec) return;
+    rec.images = r.photos.slice(0, 2);
+    await reportsStorePut(r.key, rec);
+    try {
+        if (loadSavedReport(r.key)) {
+            setReportImages(r.photos);
+            const c = await renderShortReportCanvas();
+            pfStoreSnapshot(c, r.key);
+        }
+    } catch (e) { console.warn('bk snapshot:', e); }
+    showNotification('أُرفقت الصور بتقرير «' + r.title + '»');
+}
+async function bkGenerateRow(r) {
+    const set = (id, v) => { const el = document.getElementById(id); if (el) { el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); } };
+    try { resetFormFieldsForVoiceFreeCapture(); } catch (_) { /* تجاهل */ }
+    try { resetReportImagesForNewReport(); } catch (_) { /* تجاهل */ }
+    if (document.getElementById('voiceExtraNotesInput')) document.getElementById('voiceExtraNotesInput').value = '';
+    setReportTemplateStyle('short', { skipSave: true });
+    setShortVariant('general');
+    dvsApplyCriterion(r.crit, r.subId);
+    set('manualReportTitle', r.title);
+    try { autoSelectShortVariantFromText(r.title); } catch (_) { /* تجاهل */ }
+    // استمارة تبادل الزيارات تحتاج اسم المعلم المستضيف: في الإصدار الجماعي نستخدم القالب العام
+    if (isVisitTemplate()) setShortVariant('general');
+    if (document.getElementById('manualReportTitle').value.trim() !== r.title.trim()) set('manualReportTitle', r.title);
+    await new Promise(res => setTimeout(res, 50));
+    window.__clsPicked = '';
+    tsFill();
+    if (r.cls >= 0) clsApply(r.cls);
+    window.__aiInferKey = ''; window.__aiFieldIds = new Set();
+    await Promise.race([aiInferFields(r.title), new Promise(res => setTimeout(res, 9000))]);
+    if (r.photos.length) setReportImages(r.photos);
+    window.__bulkMode = true; window.__bulkError = ''; window.__bulkLastKey = '';
+    try { await fillWithAI(); } finally { window.__bulkMode = false; }
+    if (!window.__bulkLastKey) throw new Error(window.__bulkError || 'تعذّر إصدار التقرير');
+    r.key = window.__bulkLastKey;
+    try { await supabaseClient.rpc('bulk_mark', { p_criterion: String(r.crit), p_role: 'teacher' }); } catch (e) { console.warn('bulk_mark:', e); }
+}
+async function bulkRun() {
+    const bk = window.__bk;
+    if (bk.running) return;
+    const todo = bk.rows.filter(r => r.on && r.state !== 'ok' && r.title.trim());
+    if (!todo.length) { closeBulk(); openPortfolio(); return; }
+    if (bk.remaining !== null && bk.remaining !== undefined && bk.remaining < todo.length) {
+        if (!bk.remaining) { showNotification('رصيدك لا يكفي لإصدار تقارير جديدة', 'warning'); return; }
+        if (!confirm(`رصيدك يكفي ${bk.remaining} تقارير فقط من ${todo.length}. هل تريد إصدار أول ${bk.remaining}؟`)) return;
+        todo.splice(bk.remaining);
+    }
+    let claim = null;
+    try { const r = await supabaseClient.rpc('bulk_claim'); if (r.error) throw r.error; claim = r.data; } catch (e) { console.warn('bulk_claim:', e); }
+    if (!claim || !claim.ok) { showNotification('تعذّر بدء الإصدار' + (claim && claim.reason === 'used' ? ': استُخدم في هذه الدورة' : ''), 'warning'); return; }
+    bk.running = true; bk.stop = false;
+    const go = document.getElementById('bkGo');
+    go.disabled = true;
+    const prog = document.getElementById('bkProgress'), fill = document.getElementById('bkBarFill'), txt = document.getElementById('bkProgressText');
+    prog.hidden = false;
+    let n = 0, ok = 0;
+    for (const r of todo) {
+        if (bk.stop) break;
+        r.state = 'run'; bkRender();
+        txt.textContent = `${pfNum(n + 1)} من ${pfNum(todo.length)}`;
+        go.querySelector('span').textContent = 'جارٍ الإصدار...';
+        try { await bkGenerateRow(r); r.state = 'ok'; ok++; if (bk.remaining) bk.remaining--; } catch (e) { r.state = 'err'; r.err = e.message; console.warn('bulk row:', e); }
+        n++;
+        fill.style.width = Math.round(n * 100 / todo.length) + '%';
+        bkRender();
+        const el = document.querySelector(`#bkList [data-bk="${bk.rows.indexOf(r)}"]`);
+        if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    bk.running = false;
+    txt.textContent = `صدر ${pfNum(ok)} من ${pfNum(todo.length)}`;
+    go.disabled = false;
+    bkRender();
+    showNotification(ok ? `صدر ${ok} تقريراً. أرفق الصور متى شئت من نفس القائمة.` : 'تعذّر إصدار التقارير', ok ? 'success' : 'warning');
+    try { rsSchedule(1500); } catch (_) { /* تجاهل */ }
+}
+
 // ===== تقرير جديد لمعيار محدد: الصوتي أولاً مع عناوين مقترحة من بنك المعيار =====
 window.__dvs = { crit: '', page: 0, list: [] };
 const dvsNorm = t => String(t || '').replace(/[\u064B-\u0652]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/\s+/g, ' ').trim();
@@ -19449,6 +19774,12 @@ async function fillWithAI() {
         showPage('home');
     }
     const { data: sessionData } = await supabaseClient.auth.getSession();
+    // الإصدار الجماعي: الأخطاء تُرمى لمحرّك الدفعة بدل نوافذ التنبيه
+    if (window.__bulkMode) {
+        if (!sessionData?.session) throw new Error('الرجاء تسجيل الدخول أولاً');
+        if (!navigator.onLine) throw new Error('لا يوجد اتصال بالإنترنت.');
+        if (!document.getElementById('manualReportTitle').value.trim()) throw new Error('عنوان التقرير فارغ');
+    }
     if (!sessionData?.session) { alert('الرجاء تسجيل الدخول أولاً'); showAuthScreen(); return; }
     if (!navigator.onLine) { alert('لا يوجد اتصال بالإنترنت.'); return; }
     const reportTitle = document.getElementById('manualReportTitle').value.trim();
@@ -19545,6 +19876,7 @@ async function fillWithAI() {
         // الخادم يُعيد ai_model لحساب المالك فقط؛ يُحفظ مع التقرير ويظهر في شاشة الإصدار.
         window.__pendingAiModel = (data && data.ai_model) || '';
         saveCurrentReport();
+        if (window.__bulkMode) { window.__bulkLastKey = window.__curReportKey; return; }
         mpAfterGenerate();
         // نربط تقييم "رأيك" (إن استخدمه المستخدم) بمعرّف هذا التقرير فقط عندما يكون معياراً
         // فعلياً من هيكل الـ11 معياراً (criterionSelect) - وليس تقريراً يدوياً بالكامل، لتفادي
@@ -19555,6 +19887,7 @@ async function fillWithAI() {
     } catch (error) {
         console.error('خطأ في الذكاء الاصطناعي:', error);
         window.__ttsVoiceSession = false;
+        if (window.__bulkMode) { window.__bulkError = error.message || 'تعذر تنفيذ الطلب.'; return; }
         alert(error.message || "تعذر تنفيذ الطلب.");
     } finally {
         aiButton.classList.remove('loading');
@@ -20000,6 +20333,7 @@ function showPage(name) {
     if (admin) admin.style.display = (name === 'admin') ? 'block' : 'none';
     if (name === 'account') renderAccountSummary();
     if (name === 'admin') { loadAdminFeedbackData(); loadAdminReportLog(); loadAdminKeyUsage(); }
+    if (name === 'account') { try { clsEditorRender(); } catch (_) { /* تجاهل */ } }
 
     document.getElementById('navHome')?.classList.toggle('active', name === 'home' || name === 'dash');
     document.getElementById('navAccount')?.classList.toggle('active', name === 'account');
@@ -20660,6 +20994,7 @@ function renderAccountSummary() {
     setView('accountViewEducation', document.getElementById('education')?.value);
     setView('accountViewSchool', document.getElementById('school')?.value);
     setView('accountViewSubject', document.getElementById('teacherSubject')?.value);
+    try { setView('accountViewClasses', clsList().map(c => clsLabel(c) + (c.count ? ' (' + c.count + ')' : '')).join('، ')); } catch (_) { /* تجاهل */ }
     setView('accountViewPrincipalType', document.getElementById('principalTypeDisplay')?.value);
     setView('accountViewPrincipal', document.getElementById('principal')?.value);
     updateBasicDataAlert();
@@ -20925,6 +21260,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         <button type="button" class="mp-go" id="qwGo" onclick="qwGenerate()"><i class="fas fa-wand-magic-sparkles"></i> <span>توليد التقرير</span></button>
     </footer>
 </div>
+
+<!-- ========== تقرير لكل معيار بضغطة واحدة ========== -->
+<div id="bulkPage" class="mp qw" role="dialog" aria-modal="true" aria-labelledby="bkHead" style="display:none;">
+    <header class="mp-bar">
+        <button type="button" class="mp-back" onclick="closeBulk()" aria-label="رجوع"><i class="fas fa-arrow-right"></i></button>
+        <div class="mp-bar-title" id="bkHead">تقرير لكل معيار</div>
+        <span class="mp-bar-sp"></span>
+    </header>
+    <main class="mp-body qw-body" id="bkBody">
+        <div class="bk-intro"><b><i class="fas fa-bolt"></i> تقرير لكل معيار بضغطة واحدة</b><span id="bkIntroText">راجع العناوين والصفوف، وأرفق صورتين لكل تقرير الآن أو لاحقاً، ثم اضغط «إصدار».</span></div>
+        <div id="bkGate"></div>
+        <div id="bkList"></div>
+    </main>
+    <footer class="mp-foot">
+        <div class="bk-progress" id="bkProgress" hidden><div class="bk-bar"><i id="bkBarFill"></i></div><span id="bkProgressText"></span></div>
+        <button type="button" class="mp-go" id="bkGo" onclick="bulkRun()"><i class="fas fa-bolt"></i> <span>إصدار التقارير</span></button>
+    </footer>
+</div>
+<input type="file" id="bkPhotoInput" accept="image/*" multiple hidden>
 
 <!-- ========== شاشة «تم إصدار تقريرك» ========== -->
 <div id="doneSheet" class="ds" role="dialog" aria-modal="true" aria-labelledby="dsHead" style="display:none;">

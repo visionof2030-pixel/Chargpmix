@@ -9,7 +9,7 @@
 //   GET    /v1/sync/item?k=      التقرير كاملاً
 //   PUT    /v1/sync/item?k=&u=   حفظ التقرير (JSON) بوقت تعديله
 //   DELETE /v1/sync/item?k=&u=   حذف (يبقى أثر حذف حتى تحذفه أجهزته الأخرى)
-//   GET/PUT /v1/profile          بيانات إضافية للمعلم (التخصص) { subject, u }
+//   GET/PUT /v1/profile          بيانات إضافية للمعلم (التخصص و«صفوفي») { subject, u, classes, cu }
 //
 // يتحقق من المعلم تلقائياً بجلسة دخوله الحالية في الأداة (رمز الجلسة يُرسل في Authorization)،
 // بسؤال خدمة تسجيل الدخول عن صاحب الرمز (قراءة فقط). لا يحتاج المعلم أي مفتاح إضافي.
@@ -271,9 +271,17 @@ async function profile(req, env, cors) {
     }
     if (req.method === 'PUT') {
         let b; try { b = JSON.parse(await req.text()); } catch (_) { return json({ error: 'bad_json' }, 400, cors); }
-        const rec = { subject: str(b && b.subject, 120), u: Math.max(0, Math.floor(+(b && b.u) || 0)) || Date.now() };
+        if (!b || typeof b !== 'object') return json({ error: 'bad_json' }, 400, cors);
+        // دمج مع السجل الحالي: التخصص و«صفوفي» يُحدَّثان كلٌّ على حدة
+        const obj = await env.REPORTS.get(key);
+        const rec = (obj ? await obj.json().catch(() => null) : null) || {};
+        if (b.subject !== undefined) { rec.subject = str(b.subject, 120); rec.u = Math.max(0, Math.floor(+b.u || 0)) || Date.now(); }
+        if (Array.isArray(b.classes)) {
+            rec.classes = b.classes.slice(0, 12).map(c => ({ grade: str(c && c.grade, 40), section: str(c && c.section, 10), count: str(c && c.count, 4) })).filter(c => c.grade);
+            rec.cu = Math.max(0, Math.floor(+b.cu || 0)) || Date.now();
+        }
         await env.REPORTS.put(key, JSON.stringify(rec), { httpMetadata: { contentType: 'application/json; charset=utf-8' } });
-        return json({ ok: true, u: rec.u }, 200, cors);
+        return json({ ok: true, u: rec.u, cu: rec.cu }, 200, cors);
     }
     return json({ error: 'not_found' }, 404, cors);
 }
