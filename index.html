@@ -2303,7 +2303,7 @@ button[title]:hover::before {
 .reports-backup-info.warn { color: #b8860b; opacity: 1; font-weight: 700; }
 
 /* ==================== الصفحة الرئيسية الجديدة (لوحة المعلم) ==================== */
-#dashPage { padding: 14px 12px 110px; max-width: 760px; margin: 0 auto; }
+#dashPage { padding: 74px 12px 110px; max-width: 760px; margin: 0 auto; } /* 60px للرأس الثابت + 14 */
 .dash-hero { background: var(--grad-emerald, linear-gradient(140deg, #065f46, #053d2f)); color: #fff; border-radius: 20px; padding: 18px 18px 16px; margin-bottom: 12px; border-bottom: 4px solid var(--ui-gold, #f5c451); }
 .dash-hero h2 { margin: 0; font-size: 21px; font-weight: 900; }
 .dash-hero p { margin: 4px 0 0; font-size: 13px; opacity: .9; }
@@ -3984,7 +3984,7 @@ button[title]:hover::before {
 }
 .app-header-text { display: flex; flex-direction: column; min-width: 0; }
 .app-header-greeting { color: #fff; font-weight: 800; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 45vw; }
-.app-header-role { color: rgba(255,255,255,0.8); font-size: 11px; }
+.app-header-role { color: rgba(255,255,255,0.8); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60vw; }
 .app-header-actions { display: flex; align-items: center; gap: 6px; }
 .app-header-icon-btn {
     width: 36px; height: 36px;
@@ -15130,10 +15130,9 @@ function dashRender() {
     const missing = dashNextCriteria(data);
     const noImg = dashNoImageReports(data);
     const w = c => (typeof formatWeight === 'function' ? formatWeight(c.weight) : c.weight);
-    const sub1 = [prof.role, prof.subject].filter(Boolean).join(' • ');
-    const sub2 = [prof.school, prof.term].filter(Boolean).join(' • ');
-    // الترحيب موجود في الشريط العلوي، فالبطاقة تعرض الاسم والبيانات فقط.
-    const hero = `<div class="dash-hero"><h2>${pfEsc(prof.name || 'لوحة إنجازك')}</h2>${sub1 ? `<p>${pfEsc(sub1)}</p>` : ''}${sub2 ? `<p>${pfEsc(sub2)}</p>` : ''}</div>`;
+    // الاسم والصفة والمادة والمدرسة في الشريط العلوي، فلا بطاقة ترحيب هنا.
+    try { headerRoleUpdate(); } catch (_) { /* تجاهل */ }
+    const hero = '';
     // بطاقة واحدة: التغطية + الخطوة التالية (تُحسب حسب الوضع) + الأرقام.
     let sum;
     if (!T.total) {
@@ -21171,6 +21170,15 @@ async function saveAccountEdits() {
     }
 }
 
+// السطر الثاني في الرأس العلوي: «معلم اللغة الإنجليزية · سعيد بن العاص» (يغني عن بطاقة الترحيب في الرئيسية).
+function headerRoleUpdate() {
+    const el = document.getElementById('headerRole'); if (!el) return;
+    const type = document.getElementById('reporterType')?.value || 'المعلم';
+    const role = type === 'المعلمة' ? 'معلمة' : 'معلم';
+    const subj = (document.getElementById('teacherSubject')?.value || (typeof tsValue === 'function' ? tsValue() : '') || '').trim();
+    const school = (document.getElementById('school')?.value || '').trim();
+    el.textContent = [subj ? role + ' ' + subj : role, school].filter(Boolean).join(' · ');
+}
 // يحدّث كلاً من: رأس التطبيق العلوي، القائمة الجانبية، وصفحة "حسابي" - من نفس
 // الحقول المستخدمة فعلياً في التقرير (لا يمثل مصدر بيانات إضافي).
 function renderAccountSummary() {
@@ -21182,7 +21190,8 @@ function renderAccountSummary() {
     ['headerAvatar', 'accountAvatar', 'drawerAvatar'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = initial; });
     const headerGreeting = document.getElementById('headerGreeting');
     if (headerGreeting) headerGreeting.textContent = 'أهلاً ' + name;
-    ['headerRole', 'accountSummaryRole', 'drawerRole'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = roleLabel; });
+    ['accountSummaryRole', 'drawerRole'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = roleLabel; });
+    headerRoleUpdate();
     const accountSummaryName = document.getElementById('accountSummaryName');
     if (accountSummaryName) accountSummaryName.textContent = name;
     const drawerName = document.getElementById('drawerName');
