@@ -8359,6 +8359,10 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
           <input id="shortDomain" placeholder="مثال: المواطنة" oninput="updateReport()">
         </div>
       </div>
+      <div class="form-group">
+        <label for="shortLesson"><i class="fas fa-book-open"></i> الدرس <small style="font-weight:600;color:var(--text-light,#667)">(اختياري — لا يظهر في التقرير إن تُرك فارغاً)</small></label>
+        <input id="shortLesson" placeholder="مثال: Unit 3 — Reading" oninput="updateReport()">
+      </div>
       </div>
       <div class="visit-hint" style="display:none;"></div>
     </div>
@@ -11582,6 +11586,7 @@ const SHORT_TEMPLATE_FIELDS = [
     { id: 'shortDate', key: 'date', label: 'تاريخ التنفيذ', box: 'shortDateBox', field: 'shortDateField' },
     { id: 'shortBeneficiaries', key: 'beneficiaries', label: 'المستفيدون / العدد', box: 'shortBeneficiariesBox', field: 'shortBeneficiariesField' },
     { id: 'shortDomain', key: 'domain', label: 'المجال', box: 'shortDomainBox', field: 'shortDomainField' },
+    { id: 'shortLesson', key: 'lesson', label: 'الدرس', box: 'shortLessonBox', field: 'shortLessonField' },
 ];
 const SHORT_TEMPLATE_TEXT_IDS = ['shortSteps', 'shortGoals'];
 const VOICE_CHECKLIST_TEXT = {
@@ -11964,7 +11969,7 @@ function collectShortPdfData() {
         rows: [
             [['المنفذ/ون:', val('shortExecutors')], ['المشارك/ون:', val('shortParticipants')]],
             [['مكان التنفيذ:', val('shortPlace')], ['مدة التنفيذ:', val('shortDuration')], ['تاريخ التنفيذ:', val('shortDate')]],
-            [['المستفيدون / العدد:', val('shortBeneficiaries')], ['المجال:', val('shortDomain')]],
+            [['المستفيدون / العدد:', val('shortBeneficiaries')], ['المجال:', val('shortDomain')], ['الدرس:', val('shortLesson')]],
         ],
         steps: shortTextLines(val('shortSteps')),
         goals: shortTextLines(val('shortGoals')),
@@ -12458,6 +12463,8 @@ async function renderDocReportCanvas(scale) {
     const infoRows = v.layout[0].rows;
     let y = pillY + pillH + 28;
     infoRows.forEach((row, ri) => {
+        // الخانة الاختيارية (الدرس) لا تُرسم ما دامت فارغة، والباقي يتقاسم العرض
+        row = row.filter(k => { const f = v.fields.find(x => x.k === k); return !(f && f.optional && !d.fields[k]); });
         const n = row.length, bw = (W - PAD * 2 - GAP * (n - 1)) / n;
         row.forEach((k, i) => {
             const f = v.fields.find(x => x.k === k);
@@ -12859,6 +12866,7 @@ function buildShortReportData(reportTitle, extraNotes) {
     const val = id => (document.getElementById(id)?.value || '').trim();
     const data = { title: reportTitle, extra_notes: extraNotes || '' };
     SHORT_TEMPLATE_FIELDS.forEach(f => { data[f.key] = val(f.id); });
+    if (data.lesson) data.extra_notes = ('الدرس: ' + data.lesson + (data.extra_notes ? '\n' + data.extra_notes : ''));
     return data;
 }
 
@@ -13247,6 +13255,7 @@ const DOC_VARIANTS = {
             { k: 'type', ek: 'strategy_type', label: 'نوع الاستراتيجية', icon: 'fa-shapes', ph: 'مثال: استراتيجيات متقدمة', words: ['نوع الاستراتيجيه', 'من نوع', 'نوعها'] },
             { k: 'grade', ek: 'grade', label: 'الصف / الفصل', icon: 'fa-users', ph: 'مثال: خامس ابتدائي ١', words: ['للصف', 'بالصف', 'الصف', 'والصف'] },
             { k: 'effect', ek: 'effectiveness', label: 'الفعالية', icon: 'fa-gauge-high', ph: 'مثال: استراتيجية فعالة جداً', words: ['الفعاليه', 'فعاليتها', 'والفعاليه', 'مستوى الفعاليه'] },
+            { k: 'lesson', ek: 'lesson', label: 'الدرس', icon: 'fa-book-open', ph: 'مثال: Unit 3 — Reading', optional: true, words: ['عنوان الدرس', 'الدرس', 'درس', 'الوحده'] },
         ],
         sections: [
             { k: 'desc', label: 'الوصف', icon: 'fa-align-right', kind: 'para', heads: ['الوصف', 'النبذة'] },
@@ -13254,7 +13263,7 @@ const DOC_VARIANTS = {
             { k: 'impact', label: 'الأثر', icon: 'fa-seedling', kind: 'list', mark: 'num', heads: ['الأثر'] },
             { k: 'recs', label: 'التوصيات والتحسينات', icon: 'fa-lightbulb', kind: 'list', mark: 'num', heads: ['التوصيات والتحسينات', 'التوصيات', 'التحسينات'] },
         ],
-        layout: [{ t: 'info', rows: [['type', 'grade', 'effect']] }, { t: 'pair', a: 'desc', b: 'steps' }, { t: 'pair', a: 'impact', b: 'recs' }],
+        layout: [{ t: 'info', rows: [['type', 'grade', 'effect', 'lesson']] }, { t: 'pair', a: 'desc', b: 'steps' }, { t: 'pair', a: 'impact', b: 'recs' }],
         detect(t) {
             for (let i = 0; i < t.length; i++) {
                 if (!/^(?:و|ب|ل|لل|ال|وال|بال|فال)?استراتيجي(?:ه|ات)$/.test(t[i])) continue;
@@ -13279,6 +13288,7 @@ const DOC_VARIANTS = {
             { k: 'subject', ek: 'subject', label: 'المادة', icon: 'fa-book', ph: 'مثال: القرآن الكريم والدراسات الإسلامية', words: ['في ماده', 'بماده', 'لماده', 'الماده', 'ماده', 'والماده'] },
             { k: 'audience', ek: 'audience', label: 'الفئة المستهدفة', icon: 'fa-bullseye', ph: 'مثال: الطلاب', words: ['الفئه المستهدفه', 'للفئه', 'الفئه', 'المستهدفين', 'المستهدفه', 'والفئه'] },
             { k: 'time', ek: 'usage_time', label: 'وقت الاستخدام', icon: 'fa-clock', ph: 'مثال: أثناء حصص الحفظ والتلاوة', words: ['وقت الاستخدام', 'وقت التنفيذ', 'اثناء', 'خلال'] },
+            { k: 'lesson', ek: 'lesson', label: 'الدرس', icon: 'fa-book-open', ph: 'مثال: Unit 3 — Reading', optional: true, words: ['عنوان الدرس', 'الدرس', 'درس', 'الوحده'] },
         ],
         sections: [
             { k: 'desc', label: 'وصف الاستخدام', icon: 'fa-align-right', kind: 'para', heads: ['وصف الاستخدام', 'الوصف'] },
@@ -13287,7 +13297,7 @@ const DOC_VARIANTS = {
             { k: 'impact', label: 'الأثر التعليمي', icon: 'fa-seedling', kind: 'list', mark: 'check', heads: ['الأثر التعليمي', 'الأثر'] },
             { k: 'recs', label: 'التوصيات', icon: 'fa-lightbulb', kind: 'list', mark: 'bullet', heads: ['التوصيات'] },
         ],
-        layout: [{ t: 'info', rows: [['subject', 'audience', 'time']] }, { t: 'full', s: 'desc' }, { t: 'pair', a: 'goals', b: 'steps' }, { t: 'pair', a: 'impact', b: 'recs' }],
+        layout: [{ t: 'info', rows: [['subject', 'audience', 'time', 'lesson']] }, { t: 'full', s: 'desc' }, { t: 'pair', a: 'goals', b: 'steps' }, { t: 'pair', a: 'impact', b: 'recs' }],
         detect(t) {
             const VERB = /^(?:و|ب|ل)?(?:استخدام|استخدمت|استخدم|نستخدم|توظيف|وظفت|استعمال|استعملت|تفعيل|فعلت|تشغيل)$/;
             const NOUN = /^(?:ال|لل|و|ب|ل|وال|بال)?(?:ادوات|اداه|وسايل|وسيله|وسائل|تطبيق|تطبيقات|منصه|منصات|برنامج|برامج|موقع|تقنيه|تقنيات|لعبه|العاب|سبوره|جهاز|اجهزه|برمجيات|حاسوب|حاسب|تابلت|ايباد|بروجكتر)$/;
@@ -13360,10 +13370,12 @@ function currentTemplateKey() { return isVisitTemplate() ? 'visit' : (isDocVaria
 function voiceVariantKey() { return isShortTemplate() ? (currentTemplateKey() || 'short') : 'long'; }
 // خانات لا يُطلب من المعلم ذكرها صوتياً: تعبّئها الأداة (البيانات الأساسية/التاريخ/الفصل الدراسي)
 // أو يستنتجها الذكاء الاصطناعي من العنوان (✨)، والدرس اختياري لا يظهر فارغاً.
-const VOICE_AUTO_FIELD_IDS = ['term', 'shortExecutors', 'shortDate', 'visitVisitor', 'visitDate', 'dv_parents_resp', 'dv_parents_period', 'lesson', 'visitLesson', 'detailedPlaceInput'];
+const VOICE_AUTO_FIELD_IDS = ['term', 'shortExecutors', 'shortDate', 'visitVisitor', 'visitDate', 'dv_parents_resp', 'dv_parents_period', 'detailedPlaceInput'];
+const VOICE_LESSON_FIELD_IDS = ['lesson', 'visitLesson', 'shortLesson', 'dv_strategy_lesson', 'dv_tool_lesson'];
 function voiceAutoIdsNow() {
     const ids = new Set(VOICE_AUTO_FIELD_IDS.concat(TS_FIELD_IDS));
-    try { Object.values(AI_FIELD_MAP[aiTplKey()] || {}).forEach(id => ids.add(id)); } catch (_) { /* تجاهل */ }
+    // الدرس لا يُستنتج إلا إن ذُكر في العنوان؛ فيبقى بنداً اختيارياً يُذكَّر به
+    try { Object.values(AI_FIELD_MAP[aiTplKey()] || {}).forEach(id => { if (!VOICE_LESSON_FIELD_IDS.includes(id)) ids.add(id); }); } catch (_) { /* تجاهل */ }
     return ids;
 }
 function voiceClassFieldIds() { return ['grade', 'classSection', 'count', 'target', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience']; }
@@ -13381,7 +13393,7 @@ function voiceChecklistTextFor(key) {
                 labels.push(hasCls ? 'الصف (أو اختره من «صفوفك»)' : (st.elId === 'grade' ? 'الصف والفصل والعدد' : st.label));
                 return;
             }
-            labels.push(st.label);
+            labels.push(VOICE_LESSON_FIELD_IDS.includes(st.elId) ? 'عنوان الدرس (اختياري)' : st.label);
         });
         if (!labels.length) return 'يكفي أن تذكر العنوان وما حدث في النشاط؛ بقية الخانات تُعبّأ تلقائياً ✨';
         return 'لا تنسَ ذكر: ' + labels.join('، ') + '، والملاحظات الإضافية — وبقية الخانات تُعبّأ تلقائياً ✨';
@@ -13630,6 +13642,7 @@ function buildDocReportData(reportTitle, extraNotes) {
     const v = currentDocVariant();
     const data = { title: reportTitle, extra_notes: extraNotes || '' };
     v.fields.forEach(f => { data[f.ek] = (document.getElementById(f.id)?.value || '').trim(); });
+    if (data.lesson) data.extra_notes = ('الدرس: ' + data.lesson + (data.extra_notes ? '\n' + data.extra_notes : ''));
     return data;
 }
 // رد الذكاء الاصطناعي: أقسام بعناوين بين قوسين مربعين ([الوصف] ... ) كما في تعليمات القالب.
@@ -13665,7 +13678,7 @@ function parseDocAIResponse(response) {
 let __docWizardCache = {};
 function docWizardSteps(v) {
     if (!__docWizardCache[v.key]) {
-        const steps = v.fields.map(f => Object.assign({ elId: f.id, label: f.label, icon: f.icon, kind: 'text', placeholder: f.ph }, f.auto ? { skipIf: () => true } : {}));
+        const steps = v.fields.map(f => Object.assign({ elId: f.id, label: f.label + (f.optional ? ' (اختياري)' : ''), icon: f.icon, kind: 'text', placeholder: f.ph }, f.auto ? { skipIf: () => true } : {}));
         steps.push({ elId: 'voiceExtraNotesInput', label: 'ملاحظات إضافية (اختياري)', icon: 'fa-comment-dots', kind: 'notes', placeholder: v.notesPh, autoAdvanceMs: VOICE_FIELD_NOTES_AUTO_ADVANCE_MS });
         __docWizardCache[v.key] = steps;
     }
@@ -17819,6 +17832,7 @@ const VOICE_FIELD_WIZARD_STEPS_SHORT = [
     { elId: 'shortDate', label: 'تاريخ التنفيذ', icon: 'fa-calendar-day', kind: 'text', skipIf: () => true },
     { elId: 'shortBeneficiaries', label: 'المستفيدون / العدد', icon: 'fa-bullseye', kind: 'text', placeholder: 'مثال: طلاب الصف الثالث وعددهم خمسة وعشرون' },
     { elId: 'shortDomain', label: 'المجال', icon: 'fa-layer-group', kind: 'text', placeholder: 'مثال: المواطنة' },
+    { elId: 'shortLesson', label: 'الدرس (اختياري)', icon: 'fa-book-open', kind: 'text', placeholder: 'مثال: Unit 3 — Reading' },
     { elId: 'voiceExtraNotesInput', label: 'ملاحظات إضافية (اختياري)', icon: 'fa-comment-dots', kind: 'notes', placeholder: 'مثال: مشاركة واسعة من أولياء الأمور، تكريم المتميزين، أو أي نقطة تستحق الذكر', autoAdvanceMs: VOICE_FIELD_NOTES_AUTO_ADVANCE_MS },
 ];
 // خطوات استمارة تبادل الزيارات (نوع من القالب القصير) - انظر قسمها أعلاه.
@@ -19209,7 +19223,7 @@ function localParseShortTranscript(transcript, opts = {}) {
 // يضع ما التقطه التحليل المحلي في خاناته - فقط الفارغ منها إن طُلب ذلك (عند
 // فحص العنوان: ما استخرجه الذكاء الاصطناعي صراحةً يبقى هو المرجع).
 function applyShortLocalFields(local, onlyIfEmpty) {
-    const keyToElId = { executors: 'shortExecutors', participants: 'shortParticipants', beneficiaries: 'shortBeneficiaries', domain: 'shortDomain', duration: 'shortDuration', place: 'shortPlace', date: 'shortDate', notes: 'voiceExtraNotesInput' };
+    const keyToElId = { executors: 'shortExecutors', participants: 'shortParticipants', beneficiaries: 'shortBeneficiaries', domain: 'shortDomain', duration: 'shortDuration', place: 'shortPlace', date: 'shortDate', lesson: 'shortLesson', notes: 'voiceExtraNotesInput' };
     const steps = getVoiceWizardSteps();
     Object.entries(keyToElId).forEach(([key, elId]) => {
         const v = (local[key] || '').trim();
@@ -19718,7 +19732,7 @@ function retryVoiceFreeExtraction() {
 // ناقصة). تُحترم شروط التخطي نفسها المستخدمة في المعالج التدريجي: خارج الصف
 // لا يُسأل عن الصف/المادة، والشعبة تتبع الصف، والدرس يتبع المادة.
 const VOICE_FREE_REMIND_FIELD_IDS = ['term', 'place', 'grade', 'classSection', 'target', 'count', 'subject', 'lesson'];
-const VOICE_FREE_REMIND_FIELD_IDS_SHORT = ['shortExecutors', 'shortParticipants', 'shortPlace', 'shortDuration', 'shortBeneficiaries', 'shortDomain'];
+const VOICE_FREE_REMIND_FIELD_IDS_SHORT = ['shortExecutors', 'shortParticipants', 'shortPlace', 'shortDuration', 'shortBeneficiaries', 'shortDomain', 'shortLesson'];
 const VOICE_FREE_MISSING_EXAMPLE = {
     long: 'الفصل الدراسي الأول داخل الصف الثالث متوسط اثنين المستهدفون الطلاب عددهم خمسة وعشرون',
     short: 'المنفذون جميع منسوبي المدرسة والمشاركون أولياء الأمور في فناء المدرسة لمدة يوم واحد والمجال المواطنة',

@@ -37,7 +37,7 @@ let lastGeminiModel = "";
 
 const EXTRACT_KEYS = [
   "title", "executors", "participants", "place", "duration", "date",
-  "beneficiaries", "count", "domain", "notes",
+  "beneficiaries", "count", "domain", "lesson", "notes",
 ];
 const EXTRACT_KEYS_VISIT = [
   "title", "visitor", "host", "grade", "subject", "lesson", "date", "notes",
@@ -58,11 +58,11 @@ const GENERATE_VARS_VISIT: Record<string, string> = {
 
 const EXTRA_TEMPLATES: Record<string, { extract: string[]; vars: Record<string, string> }> = {
   strategy: {
-    extract: ["title", "strategy_type", "grade", "effectiveness", "notes"],
+    extract: ["title", "strategy_type", "grade", "effectiveness", "lesson", "notes"],
     vars: { report_name: "title", strategy_type: "strategy_type", grade: "grade", effectiveness: "effectiveness", extra_notes: "extra_notes" },
   },
   tool: {
-    extract: ["title", "subject", "audience", "usage_time", "notes"],
+    extract: ["title", "subject", "audience", "usage_time", "lesson", "notes"],
     vars: { report_name: "title", subject: "subject", audience: "audience", usage_time: "usage_time", extra_notes: "extra_notes" },
   },
   parents: {
