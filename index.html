@@ -2345,12 +2345,15 @@ button[title]:hover::before {
 .dash-sum .dash-next { border-radius: 14px; padding: 12px 14px; }
 .dash-sum .dash-next h3 { font-size: 15px; margin-bottom: 6px; }
 .dash-sum .dash-next p small { font-weight: 500; }
-.dash-tool .dash-analysis { margin-bottom: 10px; }
+.dash-tool .dash-analysis, .dash-photos .dash-analysis { margin-bottom: 10px; }
+.dash-photos { background: linear-gradient(135deg, #fff8e1, #fff3c4); border: 1.5px solid #f5c451; }
+.dash-photos .dash-analysis > i { color: #b7791f; }
+.dash-photos h3 { color: #8a6100; }
 .dash-pf { margin-bottom: 12px; }
 /* الجوال: عمود واحد بترتيب: الملخص، الأدوات، المعايير، ملف الإنجاز */
 .dash-grid { display: flex; flex-direction: column; }
 .dash-main, .dash-side { display: contents; }
-.dash-sum { order: 1; } .dash-tool { order: 2; } .dash-crits { order: 3; } .dash-pf { order: 4; }
+.dash-sum { order: 1; } .dash-photos { order: 1; } .dash-tool { order: 2; } .dash-crits { order: 3; } .dash-pf { order: 4; }
 .dash-grid.full .dash-tool:last-child { order: 5; }
 @media (min-width: 1024px) {
     #dashPage { max-width: 1180px; padding: 22px 24px 40px; }
@@ -15140,13 +15143,13 @@ function dashRender() {
         if (missing.length) {
             const m = missing[0].c;
             step = `<p>أصدر تقريراً للمعيار: ${pfEsc(m.name)} <small>(${pfEsc(w(m))})</small></p><button type="button" class="dash-btn gold" data-dash-add="${pfEsc(m.id)}"><i class="fas fa-plus"></i> إضافة تقرير</button>`;
-        } else if (noImg.length) {
-            step = `<p>${pfNum(noImg.length)} ${noImg.length === 1 ? 'تقرير' : 'تقارير'} بلا صور — أرفق صور الشواهد</p><button type="button" class="dash-btn gold" onclick="openSavedReports(true)"><i class="fas fa-images"></i> عرضها وإرفاق الصور</button>`;
         } else {
-            step = `<p>ملفك مكتمل المعايير والصور. راجعه ونزّله بصيغة PDF.</p><button type="button" class="dash-btn gold" onclick="openPortfolio()"><i class="fas fa-award"></i> افتح ملف الإنجاز</button>`;
+            step = `<p>ملفك مكتمل المعايير. راجعه ونزّله بصيغة PDF.</p><button type="button" class="dash-btn gold" onclick="openPortfolio()"><i class="fas fa-award"></i> افتح ملف الإنجاز</button>`;
         }
         sum = `<div class="dash-card dash-sum"><div class="dash-cov">${pfRing(pct, 96, '#065f46')}<div class="dash-cov-text"><h3 style="margin-bottom:2px"><i class="fas fa-bullseye"></i> تغطية المعايير</h3><b>${pfNum(pct)}٪ — ${pfNum(T.covered)}/${pfNum(T.total)} معياراً</b><span>${missing.length ? 'أصدر تقريراً على الأقل لكل معيار ليكتمل ملفك' : 'غطّيت جميع المعايير، أحسنت!'}</span></div></div><div class="dash-goal-stats"><div><b>${pfNum(T.evidence)}</b>تقرير محفوظ</div><div><b>${pfNum(T.images)}</b>صورة مرفقة</div><div><b>${pfNum(noImg.length)}</b>بلا صور</div></div><div class="dash-next"><h3><i class="fas fa-flag-checkered"></i> الخطوة التالية</h3>${step}</div></div>`;
     }
+    // بطاقة منفصلة لإرفاق الصور: تظهر فقط لمن عنده تقارير بلا صور.
+    const photos = noImg.length ? `<div class="dash-card dash-photos"><div class="dash-analysis"><i class="fas fa-images"></i><div><h3 style="margin:0">${noImg.length === 1 ? 'تقرير واحد' : noImg.length === 2 ? 'تقريران' : pfNum(noImg.length) + (noImg.length <= 10 ? ' تقارير' : ' تقريراً')} بلا صور</h3><small>أرفق صور الشواهد لتكتمل تقاريرك</small></div></div><button type="button" class="dash-btn gold wide" onclick="openSavedReports(true)"><i class="fas fa-images"></i> عرضها وإرفاق الصور</button></div>` : '';
     const tool = (icon, title, desc, action, label) => `<div class="dash-card dash-tool"><div class="dash-analysis"><i class="fas ${icon}"></i><div><h3 style="margin:0">${title}</h3><small>${desc}</small></div></div><button type="button" class="dash-btn wide" onclick="${action}"><i class="fas ${icon}"></i> ${label}</button></div>`;
     const bulk = T.total ? tool('fa-bolt', 'تقرير لكل معيار بضغطة واحدة', 'عناوين مقترحة لكل معيار، وأرفق صورتين لكل تقرير الآن أو لاحقاً', 'openBulk()', 'ابدأ') : '';
     const analysis = tool('fa-chart-column', 'تحليل نتائج طلابك', 'ارفع كشف الدرجات (PDF أو صورة) واحصل على نموذج تحليل جاهز للطباعة', 'openResultsAnalysis()', 'ابدأ التحليل');
@@ -15161,7 +15164,7 @@ function dashRender() {
     // عند اكتمال التغطية تنزل بطاقة «بضغطة واحدة» بعد قائمة المعايير على الجوال وآخر العمود الجانبي على الكمبيوتر.
     const full = T.total && !missing.length;
     const side = full ? analysis + portfolio + bulk : bulk + analysis + portfolio;
-    box.innerHTML = hero + `<div class="dash-grid${full ? ' full' : ''}"><div class="dash-main">${sum}${list}</div><div class="dash-side">${side}</div></div>`;
+    box.innerHTML = hero + `<div class="dash-grid${full ? ' full' : ''}"><div class="dash-main">${sum}${photos}${list}</div><div class="dash-side">${side}</div></div>`;
 }
 // ===== تقرير لكل معيار بضغطة واحدة =====
 // مرة واحدة لكل معيار في دورة الاشتراك (يفرضها الخادم: bulk_status/bulk_claim/bulk_mark)، والمالك بلا حد.
