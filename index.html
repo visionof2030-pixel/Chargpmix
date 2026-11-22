@@ -2385,8 +2385,13 @@ button[title]:hover::before {
 .ra-tbl td { padding: 6px 8px; text-align: center; border-bottom: 1px solid #e5e7eb; }
 .ra-tbl td:first-child { text-align: right; font-weight: 800; }
 .ra-dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-left: 6px; vertical-align: middle; }
-.ra-charts { display: grid; grid-template-columns: 1fr 1.25fr; gap: 14px; align-items: start; }
-.ra-chart-box { border: 2px solid var(--pf-s); border-radius: 14px; padding: 10px; }
+.ra-charts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 14px; align-items: start; }
+.ra-chart-box { border: 2px solid var(--pf-s); border-radius: 14px; padding: 10px; min-width: 0; }
+.ra-donut { position: relative; width: 190px; max-width: 100%; aspect-ratio: 1 / 1; margin: 0 auto; }
+.ra-donut img { display: block; width: 100%; height: 100%; }
+.ra-donut-c { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.15; }
+.ra-donut-c b { font-size: 35px; font-weight: 900; color: #1f2937; }
+.ra-donut-c small { font-size: 16px; color: #6b7280; }
 .ra-chart-box h4 { margin: 0 0 4px; text-align: center; font-size: 13px; color: #374151; }
 .ra-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; justify-content: center; font-size: 11.5px; margin-top: 4px; }
 .ra-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 40px 60px 0; text-align: center; font-size: 14px; }
@@ -15220,26 +15225,33 @@ function raCompute(scores, max, pass) {
     return { n, sum, hi: n ? Math.max(...scores) : 0, lo: n ? Math.min(...scores) : 0, avg: n ? sum / n : 0, passN, failN: n - passN, passPct: n ? passN / n * 100 : 0, levels, max, pass };
 }
 function raDonut(levels, n) {
-    // الحلقة مرسومة بقطاعات (path) لا بخطوط متقطعة (stroke-dasharray/dashoffset):
-    // html2canvas لا يرسم الإزاحة السالبة للخط المتقطع بدقة، فكانت أجزاء من الدائرة تختفي في PDF.
-    const cx = 70, cy = 70, ro = 65, ri = 43;
-    const pt = (r, a) => (cx + r * Math.sin(a)).toFixed(3) + ' ' + (cy - r * Math.cos(a)).toFixed(3);
+    // الحلقة تُرسم على canvas وتُدرج صورة PNG، والرقم في الوسط نص HTML عادي:
+    // html2canvas كان يقصّ رسم SVG المضمّن (ويخطئ في الخط المتقطع) فتظهر الدائرة ناقصة في PDF،
+    // وصور SVG تتعطل في PDF الآيفون — أما PNG فتُرسم كما هي في كل الأجهزة.
+    const S = 380, cx = S / 2, ro = S * 0.465, ri = S * 0.307;
     const shown = n ? levels.filter(l => l.count) : [];
-    let segs;
-    if (!shown.length) {
-        segs = `<circle cx="${cx}" cy="${cy}" r="${(ro + ri) / 2}" fill="none" stroke="#e5e7eb" stroke-width="${ro - ri}"/>`;
-    } else if (shown.length === 1) {
-        segs = `<circle cx="${cx}" cy="${cy}" r="${(ro + ri) / 2}" fill="none" stroke="${shown[0].color}" stroke-width="${ro - ri}"/>`;
-    } else {
-        let a0 = 0;
-        segs = shown.map(l => {
-            const a1 = a0 + 2 * Math.PI * l.count / n, big = a1 - a0 > Math.PI ? 1 : 0;
-            const d = `M ${pt(ro, a0)} A ${ro} ${ro} 0 ${big} 1 ${pt(ro, a1)} L ${pt(ri, a1)} A ${ri} ${ri} 0 ${big} 0 ${pt(ri, a0)} Z`;
-            a0 = a1;
-            return `<path d="${d}" fill="${l.color}"/>`;
-        }).join('');
-    }
-    return `<svg width="190" height="190" viewBox="0 0 140 140" style="display:block;margin:0 auto">${segs}<text x="70" y="66" text-anchor="middle" font-size="26" font-weight="900" fill="#1f2937">${pfNum(n)}</text><text x="70" y="86" text-anchor="middle" font-size="12" fill="#6b7280">طالب</text></svg>`;
+    let src = '';
+    try {
+        const cv = document.createElement('canvas');
+        cv.width = S; cv.height = S;
+        const g = cv.getContext('2d');
+        const ring = (a0, a1, color) => {
+            g.beginPath();
+            g.arc(cx, cx, ro, a0, a1, false);
+            g.arc(cx, cx, ri, a1, a0, true);
+            g.closePath();
+            g.fillStyle = color;
+            g.fill();
+        };
+        const top = -Math.PI / 2;
+        if (!shown.length) ring(0, 2 * Math.PI, '#e5e7eb');
+        else {
+            let a0 = top;
+            shown.forEach(l => { const a1 = a0 + 2 * Math.PI * l.count / n; ring(a0, a1, l.color); a0 = a1; });
+        }
+        src = cv.toDataURL('image/png');
+    } catch (_) { src = ''; }
+    return `<div class="ra-donut">${src ? `<img src="${src}" alt="">` : ''}<div class="ra-donut-c"><b>${pfNum(n)}</b><small>طالب</small></div></div>`;
 }
 function raBars(levels) {
     const maxC = Math.max(1, ...levels.map(l => l.count)), W = 340, H = 215, bw = 40, gap = (W - bw * levels.length) / (levels.length + 1);
