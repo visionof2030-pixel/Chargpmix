@@ -15220,8 +15220,25 @@ function raCompute(scores, max, pass) {
     return { n, sum, hi: n ? Math.max(...scores) : 0, lo: n ? Math.min(...scores) : 0, avg: n ? sum / n : 0, passN, failN: n - passN, passPct: n ? passN / n * 100 : 0, levels, max, pass };
 }
 function raDonut(levels, n) {
-    const R = 54, C = 2 * Math.PI * R; let off = 0;
-    const segs = n ? levels.filter(l => l.count).map(l => { const len = C * l.count / n; const s = `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${l.color}" stroke-width="22" stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 70 70)"/>`; off += len; return s; }).join('') : `<circle cx="70" cy="70" r="${R}" fill="none" stroke="#e5e7eb" stroke-width="22"/>`;
+    // الحلقة مرسومة بقطاعات (path) لا بخطوط متقطعة (stroke-dasharray/dashoffset):
+    // html2canvas لا يرسم الإزاحة السالبة للخط المتقطع بدقة، فكانت أجزاء من الدائرة تختفي في PDF.
+    const cx = 70, cy = 70, ro = 65, ri = 43;
+    const pt = (r, a) => (cx + r * Math.sin(a)).toFixed(3) + ' ' + (cy - r * Math.cos(a)).toFixed(3);
+    const shown = n ? levels.filter(l => l.count) : [];
+    let segs;
+    if (!shown.length) {
+        segs = `<circle cx="${cx}" cy="${cy}" r="${(ro + ri) / 2}" fill="none" stroke="#e5e7eb" stroke-width="${ro - ri}"/>`;
+    } else if (shown.length === 1) {
+        segs = `<circle cx="${cx}" cy="${cy}" r="${(ro + ri) / 2}" fill="none" stroke="${shown[0].color}" stroke-width="${ro - ri}"/>`;
+    } else {
+        let a0 = 0;
+        segs = shown.map(l => {
+            const a1 = a0 + 2 * Math.PI * l.count / n, big = a1 - a0 > Math.PI ? 1 : 0;
+            const d = `M ${pt(ro, a0)} A ${ro} ${ro} 0 ${big} 1 ${pt(ro, a1)} L ${pt(ri, a1)} A ${ri} ${ri} 0 ${big} 0 ${pt(ri, a0)} Z`;
+            a0 = a1;
+            return `<path d="${d}" fill="${l.color}"/>`;
+        }).join('');
+    }
     return `<svg width="190" height="190" viewBox="0 0 140 140" style="display:block;margin:0 auto">${segs}<text x="70" y="66" text-anchor="middle" font-size="26" font-weight="900" fill="#1f2937">${pfNum(n)}</text><text x="70" y="86" text-anchor="middle" font-size="12" fill="#6b7280">طالب</text></svg>`;
 }
 function raBars(levels) {
