@@ -2298,6 +2298,8 @@ button[title]:hover::before {
 .reports-backup-bar { display: flex; gap: 8px; margin: 10px 0 6px; flex-wrap: wrap; }
 .reports-backup-btn { flex: 1 1 140px; border: 1px solid rgba(128,128,128,.35); background: transparent; color: inherit; border-radius: 12px; padding: 10px 12px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .reports-backup-info { font-size: 12px; opacity: .8; margin-bottom: 10px; }
+.sr-filter-bar { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #fff8e1; border: 1.5px solid #f5c451; color: #6b4b00; border-radius: 12px; padding: 8px 12px; font-size: 13px; font-weight: 800; }
+.sr-filter-bar button { border: 0; background: #065f46; color: #fff; border-radius: 10px; padding: 6px 12px; font-family: inherit; font-weight: 800; cursor: pointer; }
 .reports-backup-info.warn { color: #b8860b; opacity: 1; font-weight: 700; }
 
 /* ==================== الصفحة الرئيسية الجديدة (لوحة المعلم) ==================== */
@@ -2339,6 +2341,24 @@ button[title]:hover::before {
 .dash-crit-bar { height: 7px; border-radius: 999px; background: #e5efeb; overflow: hidden; margin-bottom: 12px; }
 .dash-crit-bar i { display: block; height: 100%; border-radius: 999px; background: #065f46; }
 .dash-done { text-align: center; font-weight: 800; color: #065f46; padding: 10px; }
+.dash-sum .dash-goal-stats { margin: 12px 0 10px; padding: 10px 0; border-top: 1px solid #edf2ef; border-bottom: 1px solid #edf2ef; }
+.dash-sum .dash-next { border-radius: 14px; padding: 12px 14px; }
+.dash-sum .dash-next h3 { font-size: 15px; margin-bottom: 6px; }
+.dash-sum .dash-next p small { font-weight: 500; }
+.dash-tool .dash-analysis { margin-bottom: 10px; }
+.dash-pf { margin-bottom: 12px; }
+/* الجوال: عمود واحد بترتيب: الملخص، الأدوات، المعايير، ملف الإنجاز */
+.dash-grid { display: flex; flex-direction: column; }
+.dash-main, .dash-side { display: contents; }
+.dash-sum { order: 1; } .dash-tool { order: 2; } .dash-crits { order: 3; } .dash-pf { order: 4; }
+.dash-grid.full .dash-tool:last-child { order: 5; }
+@media (min-width: 1024px) {
+    #dashPage { max-width: 1180px; padding: 22px 24px 40px; }
+    .dash-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+    .dash-main, .dash-side { display: block; }
+    .dash-side { position: sticky; top: 16px; }
+    #aiFillFloatingBtn { display: none !important; }
+}
 
 
 /* ==================== تحليل نتائج الطلاب ==================== */
@@ -9063,7 +9083,6 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
         <button type="button" onclick="showPage('home'); closeDrawer();"><i class="fas fa-plus"></i> إنشاء تقرير</button>
         <button type="button" onclick="openPortfolio(); closeDrawer();"><i class="fas fa-award"></i> ملف الإنجاز</button>
         <button type="button" onclick="openSavedReports(); closeDrawer();"><i class="fas fa-folder-open"></i> التقارير المحفوظة</button>
-        <button type="button" onclick="openFontPicker(); closeDrawer();"><i class="fas fa-font"></i> الخط</button>
         <button type="button" onclick="showPage('account'); closeDrawer();"><i class="fas fa-user"></i> حسابي</button>
         <button type="button" onclick="openFeedbackPage(); closeDrawer();"><i class="fas fa-star"></i> رأيك</button>
         <button type="button" id="drawerAdminBtn" style="display:none;" onclick="openAdminDashboard(); closeDrawer();"><i class="fas fa-shield-halved"></i> إدارة النسخة التجريبية</button>
@@ -9089,7 +9108,6 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
         <button type="button" class="desktop-sidebar-item" onclick="showPage('home')"><i class="fas fa-plus"></i> إنشاء تقرير</button>
         <button type="button" class="desktop-sidebar-item" id="dsNavPortfolio" onclick="openPortfolio()"><i class="fas fa-award"></i> ملف الإنجاز</button>
         <button type="button" class="desktop-sidebar-item" onclick="openSavedReports()"><i class="fas fa-folder-open"></i> التقارير المحفوظة</button>
-        <button type="button" class="desktop-sidebar-item" onclick="openFontPicker()"><i class="fas fa-font"></i> الخط</button>
         <button type="button" class="desktop-sidebar-item" id="dsNavAccount" onclick="showPage('account')"><i class="fas fa-user"></i> حسابي</button>
         <button type="button" class="desktop-sidebar-item" onclick="openSettings()"><i class="fas fa-cog"></i> الإعدادات</button>
         <button type="button" class="desktop-sidebar-item" onclick="contactForTrial()"><i class="fas fa-headset"></i> الدعم والمساعدة</button>
@@ -9636,6 +9654,9 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
     <h4 style="color:#991b1b; margin-bottom:6px;"><i class="fas fa-triangle-exclamation"></i> حذف جميع التقارير</h4>
     <p style="font-size:12.5px; color:#6b4a4a; line-height:1.7; margin:0 0 10px;">يحذف كل التقارير التربوية المحفوظة من هذا الجهاز ومن حسابك وملف الإنجاز، وتتوقف رموز QR الخاصة بها. لا يمكن التراجع.</p>
     <button type="button" id="deleteAllReportsBtn" onclick="deleteAllReports()" style="background:#b91c1c;color:#fff;border:none;"><i class="fas fa-trash-can"></i> حذف جميع التقارير</button>
+    <hr>
+    <h4 style="color:#044a35; margin-bottom:10px;"><i class="fas fa-font"></i> الخط</h4>
+    <button type="button" class="btn-secondary" onclick="closeSettings(); openFontPicker()"><i class="fas fa-font"></i> تغيير خط التطبيق</button>
     <hr>
     <h4 style="color:#044a35; margin-bottom:10px;"><i class="fas fa-palette"></i> تغيير الثيمات</h4>
     <div style="background:#f8fdfa; padding:15px; border-radius:10px; border:1px solid #d4ebe2; margin-bottom:15px;">
@@ -14280,7 +14301,9 @@ function loadSavedReport(criterionId) {
     return true;
 }
 
-function openSavedReports() {
+function openSavedReports(noImagesOnly) {
+    if (typeof noImagesOnly === 'boolean') window.__srNoImg = noImagesOnly;
+    const noImgOnly = !!window.__srNoImg;
     const savedReports = getSavedReportsMap();
     updateBackupInfo();
     const reportsList = document.getElementById('savedReportsList');
@@ -14291,7 +14314,8 @@ function openSavedReports() {
         reportsList.innerHTML = '';
         Object.values(savedReports).sort((a,b)=>Number(b.id)-Number(a.id)).forEach(report => {
             // نعرض فقط التقارير التي دورها teacher
-            if (report.role === 'teacher') {
+            const hasImg = Array.isArray(report.images) && report.images.some(x => typeof x === 'string' && x);
+            if (report.role === 'teacher' && !(noImgOnly && hasImg)) {
                 const card = document.createElement('div');
                 card.className = 'report-card completed';
                 const rImgs = Array.isArray(report.images) ? report.images.filter(Boolean) : [];
@@ -14316,8 +14340,11 @@ function openSavedReports() {
             }
         });
         if (reportsList.innerHTML === '') {
-            reportsList.innerHTML = `<div class="empty-reports"><i class="fas fa-folder-open"></i><p>لا توجد تقارير محفوظة لدور المعلم</p></div>`;
+            reportsList.innerHTML = noImgOnly
+                ? `<div class="empty-reports"><i class="fas fa-images"></i><p>كل تقاريرك فيها صور، أحسنت!</p></div>`
+                : `<div class="empty-reports"><i class="fas fa-folder-open"></i><p>لا توجد تقارير محفوظة لدور المعلم</p></div>`;
         }
+        if (noImgOnly) reportsList.insertAdjacentHTML('afterbegin', `<div class="sr-filter-bar"><span><i class="fas fa-filter"></i> التقارير التي بلا صور فقط</span><button type="button" onclick="openSavedReports(false)">عرض الكل</button></div>`);
     }
     document.getElementById('savedReportsModal').style.display = 'flex';
 }
@@ -15015,44 +15042,52 @@ function dashNextCriteria(data) {
     return data.crits.map((c, i) => ({ c, i })).filter(x => !x.c.reports.length)
         .sort((a, b) => a.i - b.i);
 }
+function dashNoImageReports(data) {
+    return data.reports.filter(r => !(Array.isArray(r.images) && r.images.some(x => typeof x === 'string' && x)));
+}
 function dashRender() {
     const box = document.getElementById('dashPage');
     if (!box) return;
     const prof = pfProfile(), data = pfCollect(), T = data.totals;
     const pct = T.total ? Math.round(T.covered / T.total * 100) : 0;
     const missing = dashNextCriteria(data);
+    const noImg = dashNoImageReports(data);
     const w = c => (typeof formatWeight === 'function' ? formatWeight(c.weight) : c.weight);
     const sub1 = [prof.role, prof.subject].filter(Boolean).join(' • ');
     const sub2 = [prof.school, prof.term].filter(Boolean).join(' • ');
-    const hero = `<div class="dash-hero"><h2>أهلاً ${pfEsc(prof.name || 'بك')}</h2>${sub1 ? `<p>${pfEsc(sub1)}</p>` : ''}${sub2 ? `<p>${pfEsc(sub2)}</p>` : ''}</div>`;
-    let cov;
+    // الترحيب موجود في الشريط العلوي، فالبطاقة تعرض الاسم والبيانات فقط.
+    const hero = `<div class="dash-hero"><h2>${pfEsc(prof.name || 'لوحة إنجازك')}</h2>${sub1 ? `<p>${pfEsc(sub1)}</p>` : ''}${sub2 ? `<p>${pfEsc(sub2)}</p>` : ''}</div>`;
+    // بطاقة واحدة: التغطية + الخطوة التالية (تُحسب حسب الوضع) + الأرقام.
+    let sum;
     if (!T.total) {
-        cov = `<div class="dash-card"><h3><i class="fas fa-bullseye"></i> تغطية المعايير</h3><div class="dash-done">جارٍ تحميل معايير الأداء…</div></div>`;
+        sum = `<div class="dash-card"><h3><i class="fas fa-bullseye"></i> تغطية المعايير</h3><div class="dash-done">جارٍ تحميل معايير الأداء…</div></div>`;
     } else {
-        cov = `<div class="dash-card"><div class="dash-cov">${pfRing(pct, 96, '#065f46')}<div class="dash-cov-text"><h3 style="margin-bottom:2px"><i class="fas fa-bullseye"></i> تغطية المعايير</h3><b>${pfNum(pct)}٪ — ${pfNum(T.covered)}/${pfNum(T.total)} معياراً</b><span>${missing.length ? 'لكل معيار تقرير واحد على الأقل يكتمل ملفك' : 'غطّيت جميع المعايير، أحسنت!'}</span></div></div></div>`;
-    }
-    let next = '';
-    if (T.total) {
+        let step;
         if (missing.length) {
             const m = missing[0].c;
-            next = `<div class="dash-card dash-next"><h3><i class="fas fa-flag-checkered"></i> الخطوة التالية</h3><p>أصدر تقريراً تربوياً للمعيار: ${pfEsc(m.name)} <small style="font-weight:500">(${pfEsc(w(m))})</small></p><button type="button" class="dash-btn gold" data-dash-add="${pfEsc(m.id)}"><i class="fas fa-plus"></i> إضافة</button></div>`;
+            step = `<p>أصدر تقريراً للمعيار: ${pfEsc(m.name)} <small>(${pfEsc(w(m))})</small></p><button type="button" class="dash-btn gold" data-dash-add="${pfEsc(m.id)}"><i class="fas fa-plus"></i> إضافة تقرير</button>`;
+        } else if (noImg.length) {
+            step = `<p>${pfNum(noImg.length)} ${noImg.length === 1 ? 'تقرير' : 'تقارير'} بلا صور — أرفق صور الشواهد</p><button type="button" class="dash-btn gold" onclick="openSavedReports(true)"><i class="fas fa-images"></i> عرضها وإرفاق الصور</button>`;
         } else {
-            next = `<div class="dash-card dash-next"><h3><i class="fas fa-flag-checkered"></i> الخطوة التالية</h3><p>ملفك مكتمل المعايير. راجعه ونزّله بصيغة PDF.</p><button type="button" class="dash-btn gold" onclick="openPortfolio()"><i class="fas fa-award"></i> افتح ملف الإنجاز</button></div>`;
+            step = `<p>ملفك مكتمل المعايير والصور. راجعه ونزّله بصيغة PDF.</p><button type="button" class="dash-btn gold" onclick="openPortfolio()"><i class="fas fa-award"></i> افتح ملف الإنجاز</button>`;
         }
+        sum = `<div class="dash-card dash-sum"><div class="dash-cov">${pfRing(pct, 96, '#065f46')}<div class="dash-cov-text"><h3 style="margin-bottom:2px"><i class="fas fa-bullseye"></i> تغطية المعايير</h3><b>${pfNum(pct)}٪ — ${pfNum(T.covered)}/${pfNum(T.total)} معياراً</b><span>${missing.length ? 'أصدر تقريراً على الأقل لكل معيار ليكتمل ملفك' : 'غطّيت جميع المعايير، أحسنت!'}</span></div></div><div class="dash-goal-stats"><div><b>${pfNum(T.evidence)}</b>تقرير محفوظ</div><div><b>${pfNum(T.images)}</b>صورة مرفقة</div><div><b>${pfNum(noImg.length)}</b>بلا صور</div></div><div class="dash-next"><h3><i class="fas fa-flag-checkered"></i> الخطوة التالية</h3>${step}</div></div>`;
     }
-    const analysis = `<div class="dash-card"><div class="dash-analysis"><i class="fas fa-chart-column"></i><div><h3 style="margin:0"> تحليل نتائج طلابك</h3><small>ارفع كشف الدرجات (PDF أو صورة) واحصل على نموذج تحليل جاهز للطباعة</small></div><button type="button" class="dash-btn" onclick="openResultsAnalysis()">ابدأ</button></div></div>`;
-    const goal = `<div class="dash-card dash-goal"><q>أصدر تقريراً على الأقل لكل معيار</q><div class="dash-goal-stats"><div><b>${pfNum(T.evidence)}</b>تقرير محفوظ</div><div><b>${pfNum(T.images)}</b>صورة مرفقة</div><div><b>${pfNum(T.covered)}/${pfNum(T.total)}</b>معيار مغطّى</div></div></div>`;
-    // كل المعايير بترتيب أرقامها: الوزن، عدد الشواهد، والبنود الموثّقة؛ والموثّق منها بعلامة صح.
+    const tool = (icon, title, desc, action, label) => `<div class="dash-card dash-tool"><div class="dash-analysis"><i class="fas ${icon}"></i><div><h3 style="margin:0">${title}</h3><small>${desc}</small></div></div><button type="button" class="dash-btn wide" onclick="${action}"><i class="fas ${icon}"></i> ${label}</button></div>`;
+    const bulk = T.total ? tool('fa-bolt', 'تقرير لكل معيار بضغطة واحدة', 'عناوين مقترحة لكل معيار، وأرفق صورتين لكل تقرير الآن أو لاحقاً', 'openBulk()', 'ابدأ') : '';
+    const analysis = tool('fa-chart-column', 'تحليل نتائج طلابك', 'ارفع كشف الدرجات (PDF أو صورة) واحصل على نموذج تحليل جاهز للطباعة', 'openResultsAnalysis()', 'ابدأ التحليل');
     let list = '';
     if (T.total) {
         const all = data.crits.map((c, i) => ({ c, i }));
         const showAll = !!window.__dashShowAll, rows = showAll ? all : all.slice(0, 6);
         const meta = c => [`الوزن ${pfEsc(pfNum(w(c)))}`, `عدد الشواهد: ${pfNum(c.reports.length)}`, (c.reports.length && c.subs) ? `بنود موثّقة: ${pfNum(c.subsCovered)} من ${pfNum(c.subs)}` : ''].filter(Boolean).join(' · ');
-        list = `<div class="dash-card"><h3><i class="fas fa-list-check"></i> المعايير وأوزانها</h3><div class="dash-crit-sum"><span>معايير فيها شواهد: <b>${pfNum(T.covered)} من ${pfNum(T.total)}</b></span><b>${pfNum(pct)}٪</b></div><div class="dash-crit-bar"><i style="width:${pct}%"></i></div><ul class="dash-list">${rows.map(x => { const on = x.c.reports.length > 0; return `<li class="dash-row${on ? ' on' : ''}"><span class="n">${on ? '<i class="fas fa-check"></i>' : pfNum(x.i + 1)}</span><span class="t">${pfEsc(x.c.name)}<small>${meta(x.c)}</small></span><button type="button" class="dash-btn ghost" data-dash-add="${pfEsc(x.c.id)}"><i class="fas fa-plus"></i> إضافة</button></li>`; }).join('')}</ul>${all.length > 6 ? `<button type="button" class="dash-btn ghost wide" style="margin-top:10px" onclick="window.__dashShowAll=!window.__dashShowAll;dashRender()">${showAll ? 'عرض أقل' : 'عرض كل المعايير (' + pfNum(all.length) + ')'}</button>` : ''}</div>`;
+        list = `<div class="dash-card dash-crits"><h3><i class="fas fa-list-check"></i> المعايير وأوزانها</h3><div class="dash-crit-sum"><span>معايير فيها شواهد: <b>${pfNum(T.covered)} من ${pfNum(T.total)}</b></span><b>${pfNum(pct)}٪</b></div><div class="dash-crit-bar"><i style="width:${pct}%"></i></div><ul class="dash-list">${rows.map(x => { const on = x.c.reports.length > 0; return `<li class="dash-row${on ? ' on' : ''}"><span class="n">${on ? '<i class="fas fa-check"></i>' : pfNum(x.i + 1)}</span><span class="t">${pfEsc(x.c.name)}<small>${meta(x.c)}</small></span><button type="button" class="dash-btn ghost" data-dash-add="${pfEsc(x.c.id)}"><i class="fas fa-plus"></i> إضافة</button></li>`; }).join('')}</ul>${all.length > 6 ? `<button type="button" class="dash-btn ghost wide" style="margin-top:10px" onclick="window.__dashShowAll=!window.__dashShowAll;dashRender()">${showAll ? 'عرض أقل' : 'عرض كل المعايير (' + pfNum(all.length) + ')'}</button>` : ''}</div>`;
     }
-    const portfolio = `<button type="button" class="dash-btn wide" onclick="openPortfolio()"><i class="fas fa-award"></i> ملف الإنجاز</button>`;
-    const bulk = T.total ? `<div class="dash-card"><div class="dash-analysis"><i class="fas fa-bolt"></i><div><h3 style="margin:0">تقرير لكل معيار بضغطة واحدة</h3><small>عناوين مقترحة لكل معيار، وأرفق صورتين لكل تقرير الآن أو لاحقاً</small></div></div><button type="button" class="dash-btn wide" onclick="openBulk()"><i class="fas fa-bolt"></i> ابدأ</button></div>` : '';
-    box.innerHTML = hero + cov + next + bulk + analysis + goal + list + portfolio;
+    const portfolio = `<button type="button" class="dash-btn wide dash-pf" onclick="openPortfolio()"><i class="fas fa-award"></i> ملف الإنجاز</button>`;
+    // عند اكتمال التغطية تنزل بطاقة «بضغطة واحدة» بعد قائمة المعايير على الجوال وآخر العمود الجانبي على الكمبيوتر.
+    const full = T.total && !missing.length;
+    const side = full ? analysis + portfolio + bulk : bulk + analysis + portfolio;
+    box.innerHTML = hero + `<div class="dash-grid${full ? ' full' : ''}"><div class="dash-main">${sum}${list}</div><div class="dash-side">${side}</div></div>`;
 }
 // ===== تقرير لكل معيار بضغطة واحدة =====
 // مرة واحدة لكل معيار في دورة الاشتراك (يفرضها الخادم: bulk_status/bulk_claim/bulk_mark)، والمالك بلا حد.
@@ -16068,6 +16103,7 @@ async function pfPrint(pages) {
 }
 
 function closeSavedReports() {
+    window.__srNoImg = false;
     document.getElementById('savedReportsModal').style.display = 'none';
 }
 
