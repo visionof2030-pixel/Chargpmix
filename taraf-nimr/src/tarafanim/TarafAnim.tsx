@@ -25,7 +25,7 @@ const B = {
   title: 9.8,
 };
 
-const Room: React.FC<{t: number}> = ({t}) => (
+export const Room: React.FC<{t: number}> = ({t}) => (
   <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{position: 'absolute', inset: 0}}>
     <defs>
       <linearGradient id="ta-wall" x1="0" y1="0" x2="0" y2="1">
