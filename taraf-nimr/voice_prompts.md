@@ -11,8 +11,8 @@
 ## الجمل
 | # | الشخصية | النص مع المشاعر |
 |---|---|---|
-| L1 | لين | [excited, pointing, squealing] شوفوا! قطوة! قطوة صغيرة! |
-| F1 | فارس | [curious, leaning closer] وش هالقطوة؟ [puzzled] نقطها غريبة! |
+| L1 | لين | [excited, pointing, squealing] شوفوا! بسة! بسة صغيرة! |
+| F1 | فارس | [curious, leaning closer] وش هالبسة؟ [puzzled] نقطها غريبة! |
 | T1 | ترف | [sweet, soft, coaxing] تعالي يا بسبوسة.. تعالي.. |
 | M1 | ملاذ | [laughing] ههههه! تحسب نفسها أسد! |
 | S1 | سحاب | [excited, bossy] خلونا نمسكها! [stubborn] أنا أبيها لي! |
@@ -22,8 +22,8 @@
 | S2 | سحاب | [eager, pointing] بس شوي! شوفوها هناك! دخلت بين الصخور! |
 | L2 | لين | [whiny, tired, shivering] أنا تعبت.. وبردانة.. |
 | F3 | فارس | [stops suddenly, nervous] لحظة.. هذي آثار رجول؟ [scared] ليش كبيرة كذا؟! |
-| T3 | ترف | [nervous laugh] يمكن.. قطوة سمينة؟ |
-| M3 | ملاذ | [whispering, terrified] هذي.. مو قطوة.. |
+| T3 | ترف | [nervous laugh] يمكن.. بسة سمينة؟ |
+| M3 | ملاذ | [whispering, terrified] هذي.. مو بسة.. |
 | S3 | سحاب | [whispering, shocked] هذا.. نمر صغير! |
 | L3 | لين | [trembling, about to cry] ماما... |
 | T4 | ترف | [screaming] اركضوووووا!! |
@@ -37,5 +37,5 @@
 | T6 | ترف | [shocked, relieved] جسار؟! وش تسوي هنا؟! |
 | J3 | جسار | [casual, slightly proud] كنت أصيد في الوادي.. [serious] وسمعت صراخكم من بعيد! |
 | F5 | فارس | [relieved, admiring] جيت في الوقت المناسب يا بطل! |
-| L5 | لين | [squealing, pointing] قطـــوة!! |
+| L5 | لين | [squealing, pointing] بِســـة!! |
 | ALL | الكل | [all screaming together, running away] لاااااااا!! |
