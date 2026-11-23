@@ -38,11 +38,13 @@ export const Leopard: React.FC<{
   const head = cub ? 1.45 : 1; // cubs have big heads
   const legLen = cub ? 0.8 : 1;
   const bodyDrop = crouch ? 70 : sit ? 40 : 0;
-  const bob = run ? Math.abs(Math.sin(ph)) * 26 : walk ? Math.abs(Math.sin(ph)) * 6 : 0;
-  const stretch = (run ? 1 + Math.sin(ph) * 0.08 : 1) * (cub ? 0.7 : 1);
+  // rotary gallop: body extends (flight) when the front legs reach forward and the hind legs push back
+  const bob = run ? Math.max(0, Math.sin(ph)) * 46 + 6 : walk ? Math.abs(Math.sin(ph)) * 6 : 0;
+  const pitch = run ? -Math.cos(ph) * 5 : 0;
+  const stretch = (run ? 1 + Math.sin(ph) * 0.13 : 1) * (cub ? 0.7 : 1);
   const breathe = 1 + Math.sin(t * (crouch ? 6 : 2.2)) * (crouch ? 0.03 : 0.015);
   const tailSw = Math.sin(t * (crouch ? 7 : 2.2)) * (crouch ? 26 : 16);
-  const legSwing = (k: number) => (run ? Math.sin(ph + k) * 38 : walk ? Math.sin(ph + k) * 20 : 0);
+  const legSwing = (k: number) => (run ? Math.sin(ph + k) * 50 : walk ? Math.sin(ph + k) * 20 : 0);
   const bodyY = -(cub ? 175 : 270) - bodyDrop;
   void legLen;
 
@@ -101,7 +103,7 @@ export const Leopard: React.FC<{
         </clipPath>
       </defs>
       <ellipse cx={0} cy={6} rx={260} ry={26} fill="#000" opacity={0.25 * (1 - bob / 80)} />
-      <g transform={`translate(0,${-bob})`} opacity={1}>
+      <g transform={`translate(0,${-bob}) rotate(${pitch},0,${bodyY})`} opacity={1}>
         {/* tail */}
         <path
           d={`M ${-220 * stretch} ${bodyY - 20} Q ${-340} ${bodyY + 40 + tailSw} ${-380} ${bodyY + (sit ? 160 : 60)} Q ${-410} ${bodyY - 40 + tailSw} ${-360} ${bodyY - 110 + tailSw}`}
@@ -119,8 +121,8 @@ export const Leopard: React.FC<{
           strokeDasharray="40 22"
         />
         {/* far legs */}
-        {leg(-150 * stretch, Math.PI, true)}
-        {leg(150 * stretch, 0, true)}
+        {leg(-150 * stretch, run ? 0.4 : Math.PI, true)}
+        {leg(150 * stretch, run ? Math.PI + 0.4 : 0, true)}
         {/* body */}
         <ellipse cx={0} cy={bodyY} rx={240 * stretch} ry={(cub ? 88 : 104) * breathe} fill={fur} stroke={OUT} strokeWidth={6} />
         <g clipPath={`url(#${id}-body)`}>
@@ -129,8 +131,8 @@ export const Leopard: React.FC<{
           <ellipse cx={-40} cy={bodyY - 60} rx={180} ry={24} fill="#fff4d6" opacity={0.25} />
         </g>
         {/* near legs */}
-        {leg(-170 * stretch, Math.PI * 0.6, false)}
-        {leg(170 * stretch, Math.PI * 1.6, false)}
+        {leg(-170 * stretch, run ? 0 : Math.PI * 0.6, false)}
+        {leg(170 * stretch, run ? Math.PI : Math.PI * 1.6, false)}
         {/* neck */}
         <path d={`M ${110 * stretch} ${bodyY - 80} Q ${headX - R * 0.6} ${headY - R * 0.5} ${headX} ${headY} L ${headX + R * 0.2} ${headY + R * 0.7} Q ${headX - R * 0.4} ${bodyY + 40} ${160 * stretch} ${bodyY + 70} Z`} fill={fur} stroke={OUT} strokeWidth={6} strokeLinejoin="round" />
         {/* head */}

@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Kid, LOOKS, Rifle, Expr} from './Kid';
+import {SideKid} from './SideKid';
 import {Leopard} from './Animals';
 import {YardBG, MountainBG, CaveBG} from './bg';
 import {Caption, Flash, FONT, Pow, Tint, Vignette, World} from './ui';
@@ -33,7 +34,7 @@ type KidOpts = {
   headlamp?: boolean;
   runSpeed?: number;
 };
-const kid = (sc: SceneTL, key: string, t: number, o: KidOpts) => (
+const kidFront = (sc: SceneTL, key: string, t: number, o: KidOpts) => (
   <Kid
     key={key}
     id={`${sc.name}-${key}`}
@@ -44,8 +45,7 @@ const kid = (sc: SceneTL, key: string, t: number, o: KidOpts) => (
     s={o.s ?? 0.46}
     expr={o.expr}
     mouth={mouthOf(sc, key, t)}
-    run={o.run}
-    face={o.face}
+    run={false}
     armL={o.armL}
     armR={o.armR}
     bendL={o.bendL}
@@ -58,10 +58,44 @@ const kid = (sc: SceneTL, key: string, t: number, o: KidOpts) => (
     shiver={o.shiver}
     propR={o.propR}
     headlamp={o.headlamp}
-    runSpeed={o.runSpeed}
     blinkSeed={key.length + key.charCodeAt(0) * 0.1}
   />
 );
+
+/** moving kids use the side-view rig with real walk / run cycles (+ a faint motion trail when running) */
+const kid = (sc: SceneTL, key: string, t: number, o: KidOpts) => {
+  if (!o.run) return kidFront(sc, key, t, o);
+  const L = LOOKS[key];
+  const walking = (o.runSpeed ?? 14) < 10;
+  const period = walking ? 0.9 : 0.46;
+  const seed = (key.charCodeAt(0) % 7) * 0.13;
+  const s = (o.s ?? 0.46) * L.height;
+  const y = o.y - (o.jump ?? 0);
+  const poseAt = (tt: number) => ({
+    phase: tt / period + seed,
+    walk: walking ? 1 : 0,
+    run: walking ? 0 : 1,
+    t: tt,
+    vel: walking ? 230 : 900,
+    mouth: mouthOf(sc, key, tt),
+    expr: o.expr,
+    blink: (tt + seed * 3) % 3.3 < 0.13 ? 1 : 0,
+    lamp: o.headlamp ? 1 : undefined,
+  });
+  const face = o.face ?? 1;
+  return (
+    <g key={key}>
+      {!walking
+        ? [0.04, 0.02].map((g, i) => (
+            <g key={i} opacity={0.14}>
+              <SideKid id={`${sc.name}-${key}-g${i}`} L={L} x={o.x - face * g * 300} y={y} s={s} facing={face} pose={poseAt(t - g)} />
+            </g>
+          ))
+        : null}
+      <SideKid id={`${sc.name}-${key}-side`} L={L} x={o.x} y={y} s={s} facing={face} pose={poseAt(t)} />
+    </g>
+  );
+};
 
 /** draw kids back-to-front (smaller y first) */
 const byDepth = (els: {y: number; el: React.ReactNode}[]) => els.sort((a, b) => a.y - b.y).map((e) => e.el);
@@ -164,8 +198,10 @@ export const YardScene: React.FC = () => {
     fares: [0.2, -40, 140],
   };
   const chasing = c >= 0 && t < exit[0];
-  const exiting = t >= exit[0] - 0.3;
-  const pos = (k: string) => {
+  const posAt = (k: string, t: number) => {
+    const c = t - c0;
+    const chasing = c >= 0 && t < exit[0];
+    const exiting = t >= exit[0] - 0.3;
     if (exiting) {
       const k2 = smooth((t - exit[0] + 0.3) / 1.6);
       const [bx, by] = base[k];
@@ -176,6 +212,12 @@ export const YardScene: React.FC = () => {
     const p = track(t - lg, cubPts);
     const blend = smooth(c / 0.6) * (1 - smooth((c - 5.6) / 1.0));
     return {x: lerp(base[k][0], Math.max(80, Math.min(1000, p.x + dx)), blend), y: lerp(base[k][1], Math.max(1440, Math.min(1800, p.y + dy)), blend)};
+  };
+  const pos = (k: string) => posAt(k, t);
+  const moving = (k: string) => {
+    const a = posAt(k, t);
+    const b = posAt(k, t - 0.12);
+    return {dx: a.x - b.x, sp: Math.hypot(a.x - b.x, a.y - b.y) / 0.12};
   };
   const scaleAt = (y: number) => lerp(0.4, 0.5, clamp01((y - 1400) / 380));
   const faresLying = on(c, 1.2, 2.6);
@@ -209,8 +251,8 @@ export const YardScene: React.FC = () => {
       y: lying ? 1470 : p.y,
       s: scaleAt(lying ? 1470 : p.y),
       expr: lying ? 'curious' : exprFor(k),
-      run: (chasing && !lying && Math.abs(c - 5.8) > 0) || exiting,
-      face: 1,
+      run: !lying && moving(k).sp > 70,
+      face: moving(k).dx < -1 ? -1 : 1,
       lean: lying ? -84 : 0,
       armR:
         k === 'leen' && sp('leen') ? 110 : k === 'taraf' && sp('taraf') ? (Ln(sc, 'T2')[0] <= t ? 100 : 60) : k === 'fares' && sp('fares') ? 140 : k === 'sahab' && sp('sahab') ? 120 : undefined,
@@ -503,7 +545,7 @@ export const ChaseScene: React.FC = () => {
   return (
     <AbsoluteFill style={{background: '#101536', overflow: 'hidden'}}>
       <World cam={cam}>
-        <MountainBG t={t} dusk={1} scroll={scroll} wall={wall} />
+        <MountainBG t={t} dusk={1} scroll={scroll} wall={wall} blur={runningA || runningB ? 9 : 0} />
         <svg width={W} height={H} style={{position: 'absolute', inset: 0}}>
           {byDepth(kids)}
           <Leopard id="ch-mom" x={momX} y={1760} s={0.85} t={t} facing={-1} mode={momMode as 'run' | 'walk' | 'crouch'} snarl={stuck ? 0.9 : 0.5} glow={0.5} />

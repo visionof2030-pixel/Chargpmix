@@ -114,7 +114,7 @@ export const YardBG: React.FC<{t: number; night?: number; gateOpen?: number; bar
 };
 
 /* ------------------------------------------------------------------ mountain: path at dusk / chase at night */
-export const MountainBG: React.FC<{t: number; dusk: number; scroll?: number; wall?: number}> = ({t, dusk, scroll = 0, wall = 0}) => {
+export const MountainBG: React.FC<{t: number; dusk: number; scroll?: number; wall?: number; blur?: number}> = ({t, dusk, scroll = 0, wall = 0, blur = 0}) => {
   const sky0 = dusk < 0.5 ? '#ff9a55' : '#101536';
   const sky1 = dusk < 0.5 ? '#ffcf87' : '#2b2a5a';
   const layer = (seed: number, y: number, amp: number, color: string, speed: number) => {
@@ -136,6 +136,9 @@ export const MountainBG: React.FC<{t: number; dusk: number; scroll?: number; wal
           <stop offset="0.6" stopColor={sky1} />
           <stop offset="1" stopColor={dusk < 0.5 ? '#c96a7a' : '#3a2a5a'} />
         </linearGradient>
+        <filter id="mblur" x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur stdDeviation={`${blur} 0`} />
+        </filter>
         <radialGradient id="moonG" cx="0.5" cy="0.5" r="0.5">
           <stop offset="0" stopColor="#e8eeff" stopOpacity="0.8" />
           <stop offset="1" stopColor="#e8eeff" stopOpacity="0" />
@@ -157,15 +160,17 @@ export const MountainBG: React.FC<{t: number; dusk: number; scroll?: number; wal
       )}
       {layer(1, 1000, 340, dusk < 0.5 ? '#a0566e' : '#1c1f45', 0.15)}
       {layer(2, 1200, 300, dusk < 0.5 ? '#7a3f5e' : '#151838', 0.35)}
-      {layer(3, 1420, 220, dusk < 0.5 ? '#5a2f4a' : '#0f1129', 0.7)}
+      <g filter={blur > 0.5 ? 'url(#mblur)' : undefined}>{layer(3, 1420, 220, dusk < 0.5 ? '#5a2f4a' : '#0f1129', 0.7)}</g>
       {/* ground */}
       <path d={`M 0 1560 Q 540 1500 1080 1560 L 1080 ${H} L 0 ${H} Z`} fill={dusk < 0.5 ? '#8a5a4a' : '#232036'} />
+      <g filter={blur > 0.5 ? 'url(#mblur)' : undefined}>
       {Array.from({length: 14}).map((_, i) => {
         const x = ((rnd(i) * 1500 - scroll * 1.1) % 1500 + 1500) % 1500 - 200;
         const y = 1580 + rnd(i + 4) * 300;
         const r = 30 + rnd(i + 2) * 70;
         return <ellipse key={i} cx={x} cy={y} rx={r} ry={r * 0.55} fill={dusk < 0.5 ? '#6e4638' : '#191628'} stroke={OUT} strokeWidth={4} />;
       })}
+      </g>
       {wall > 0 ? (
         <path d={`M ${-400 + wall * 400} 400 Q ${-100 + wall * 400} 700 ${-60 + wall * 400} 1100 Q ${-20 + wall * 400} 1500 ${-120 + wall * 400} ${H} L -400 ${H} Z`} fill="#141226" stroke="#2c2846" strokeWidth={8} />
       ) : null}

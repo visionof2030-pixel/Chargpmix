@@ -118,7 +118,7 @@ const Limb: React.FC<{d: string; w: number; color: string}> = ({d, w, color}) =>
 );
 
 /* ------------------------------------------------------------------ pattern defs */
-const PatternDefs: React.FC<{id: string; look: Look}> = ({id, look}) => {
+export const PatternDefs: React.FC<{id: string; look: Look}> = ({id, look}) => {
   const {pattern, topColor, topShade} = look;
   if (pattern === 'teddy')
     return (

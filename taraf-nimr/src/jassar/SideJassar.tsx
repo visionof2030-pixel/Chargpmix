@@ -51,7 +51,7 @@ const Leg: React.FC<{thigh: number; knee: number; far?: boolean}> = ({thigh, kne
         <path d="M -40 -6 Q -46 -44 -10 -46 L 40 -40 Q 96 -30 104 4 Q 106 22 84 24 L -34 24 Q -48 22 -40 -6 Z" fill={far ? '#cfd8e6' : '#eef3fb'} stroke={OUT} strokeWidth={5} />
         <path d="M -42 14 L 104 14" stroke="#9fb8dc" strokeWidth={12} />
         <path d="M 8 -36 l 16 10 M 26 -36 l 16 10" stroke="#7c93b8" strokeWidth={4} strokeLinecap="round" />
-        <path d="M -44 -30 L 22 -30" stroke={mix(col, '#000', 0.1)} strokeWidth={26} strokeLinecap="round" />
+        <path d="M -44 -30 L 22 -30" stroke={mix(col, '#000000', 0.1)} strokeWidth={26} strokeLinecap="round" />
       </g>
     </g>
   );
@@ -70,7 +70,7 @@ const Arm: React.FC<{sh: number; el: number; far?: boolean; children?: React.Rea
       <path d={`M 0 0 L ${ex} ${ey} L ${hx} ${hy}`} fill="none" stroke={skin} strokeWidth={44} strokeLinecap="round" strokeLinejoin="round" />
       <circle cx={hx} cy={hy} r={28} fill={skin} stroke={OUT} strokeWidth={5} />
       <g transform={`rotate(${sh})`}>
-        <path d="M -38 -18 Q 0 -34 38 -18 L 36 66 Q 0 76 -36 66 Z" fill={far ? mix(SHIRT, '#000', 0.3) : SHIRT} stroke={OUT} strokeWidth={5} strokeLinejoin="round" />
+        <path d="M -38 -18 Q 0 -34 38 -18 L 36 66 Q 0 76 -36 66 Z" fill={far ? mix(SHIRT, '#000000', 0.3) : SHIRT} stroke={OUT} strokeWidth={5} strokeLinejoin="round" />
       </g>
       {children ? <g transform={`translate(${hx},${hy}) rotate(${a2})`}>{children}</g> : null}
     </g>
