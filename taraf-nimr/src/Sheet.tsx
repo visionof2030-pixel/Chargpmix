@@ -13,7 +13,7 @@ export const Sheet: React.FC = () => {
   return (
     <AbsoluteFill style={{background: 'linear-gradient(180deg,#fff6e8 0%,#f3dfc6 60%,#2a1d3a 60.2%,#120c1e 100%)'}}>
       <div dir="rtl" style={{position: 'absolute', top: 30, width: W, textAlign: 'center', fontFamily: 'Cairo', fontWeight: 700, fontSize: 84, color: '#3b2a4a'}}>
-        القطة اللي مو قطة! — الشخصيات
+        البسة اللي مو بسة! — الشخصيات
       </div>
       <svg width={W} height={1600} style={{position: 'absolute', inset: 0}}>
         {ORDER.map((k, i) => {

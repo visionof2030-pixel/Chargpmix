@@ -1,4 +1,4 @@
-# «القطة اللي مو قطة!» — برومتات الأصوات
+# «البسة اللي مو بسة!» — برومتات الأصوات
 
 ## وصف الأصوات
 - **ترف:** Young Saudi girl, about 7 years old. Bright, playful and cheeky voice, energetic, giggles easily. Saudi dialect.
