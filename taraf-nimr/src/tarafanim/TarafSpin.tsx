@@ -9,8 +9,8 @@ import {Room} from './TarafAnim';
    Neighbouring angles are cross-faded, so the spin looks continuous. */
 const TOTAL = 10.0;
 export const TARAF_SPIN_FRAMES = Math.round(TOTAL * 30);
-// one full turn, in order (angles 4, 10 and 16 are skipped)
-const RING = [1, 2, 3, 5, 6, 7, 9, 8, 11, 12, 13];
+// one full turn, in order (angle 16 is a top view, not part of the turn)
+const RING = [1, 2, 3, 4, 5, 6, 7, 9, 8, 10, 11, 12, 13];
 
 const SPINS = [
   {start: 2.0, dur: 1.2},

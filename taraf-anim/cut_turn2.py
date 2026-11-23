@@ -1,16 +1,11 @@
 """Cut all 16 poses from the turnaround sheet in one pass and normalise them."""
 import cv2, numpy as np, json, os
 from PIL import Image
-from rembg import remove, new_session
-src = cv2.imread('turnaround.png')
+rgba_src = cv2.imread('turnaround.png', cv2.IMREAD_UNCHANGED)  # the sheet already has transparency
+src = rgba_src[:, :, :3]
 H, W = src.shape[:2]
-sess = new_session('isnet-anime')
-# run at 2x for finer curls
-big = cv2.resize(src, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-a = np.array(remove(Image.fromarray(cv2.cvtColor(big, cv2.COLOR_BGR2RGB)), session=sess))[:, :, 3]
-a = cv2.resize(a, (W, H), interpolation=cv2.INTER_AREA).astype(float)
-# curly hair comes out half transparent: push it solid, keep a soft 1-2 px edge
-solid = np.clip((a - 12) / 45, 0, 1)
+a = rgba_src[:, :, 3].astype(float)
+solid = a / 255.0
 mask = (a > 18).astype(np.uint8)
 mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((7, 7), np.uint8))
 mask[int(H / 2) - 2:int(H / 2) + 2, :] = 0  # never let the two rows merge
@@ -41,14 +36,13 @@ for i in range(1, 17):
     cnts, _ = cv2.findContours(m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     fill = np.zeros_like(m)
     cv2.drawContours(fill, cnts, -1, 1, -1)
-    alpha = np.where(fill > 0, np.maximum(solid, cv2.erode(fill, np.ones((3, 3), np.uint8)).astype(float)), 0)
-    alpha = cv2.GaussianBlur((alpha * 255).astype(np.uint8), (3, 3), 0)
+    alpha = np.where(np.isin(lab, ks) | (cv2.dilate(m, np.ones((5, 5), np.uint8)) > 0), rgba_src[:, :, 3], 0).astype(np.uint8)
     ys, xs = np.where(alpha > 128)
     top, bot = ys.min(), ys.max()
     low = alpha[int(top + (bot - top) * 0.6): bot + 1] > 128
     cx = np.where(low.any(axis=0))[0].mean()
     s = TARGET / (bot - top) * (0.93 if i == 15 else 0.8 if i == 16 else 1.0)
-    rgba = cv2.cvtColor(src, cv2.COLOR_BGR2BGRA)
+    rgba = rgba_src.copy()
     rgba[:, :, 3] = alpha
     x0, x1 = max(0, xs.min() - 4), min(W, xs.max() + 5)
     y0, y1 = max(0, top - 4), min(H, bot + 5)
