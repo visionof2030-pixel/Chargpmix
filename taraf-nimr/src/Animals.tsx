@@ -22,17 +22,19 @@ export const Leopard: React.FC<{
   glow?: number; // 0..1 eyes glow (darkness)
   lookUp?: number;
   silhouette?: number; // 0..1 darken into the shadows
-}> = ({id, x, y, s = 1, t, facing = 1, mode = 'stand', cub = false, snarl = 0, glow = 0, lookUp = 0, silhouette = 0}) => {
+  colors?: {fur: string; furShade: string; belly: string; spot: string};
+  hideSpots?: boolean;
+}> = ({id, x, y, s = 1, t, facing = 1, mode = 'stand', cub = false, snarl = 0, glow = 0, lookUp = 0, silhouette = 0, colors, hideSpots = false}) => {
   const run = mode === 'run';
   const walk = mode === 'walk';
   const crouch = mode === 'crouch';
   const sit = mode === 'sit';
   const speed = run ? 14 : 6;
   const ph = t * speed;
-  const fur = cub ? '#e6cf9f' : '#e3c48a';
-  const furShade = cub ? '#c9ad7a' : '#c29a5e';
-  const belly = '#f7ecd2';
-  const spot = '#5a3a1e';
+  const fur = colors?.fur ?? (cub ? '#e6cf9f' : '#e3c48a');
+  const furShade = colors?.furShade ?? (cub ? '#c9ad7a' : '#c29a5e');
+  const belly = colors?.belly ?? '#f7ecd2';
+  const spot = colors?.spot ?? '#5a3a1e';
   const head = cub ? 1.45 : 1; // cubs have big heads
   const legLen = cub ? 0.8 : 1;
   const bodyDrop = crouch ? 70 : sit ? 40 : 0;
@@ -64,7 +66,7 @@ export const Leopard: React.FC<{
     );
   };
 
-  const spots = Array.from({length: cub ? 16 : 26}).map((_, i) => {
+  const spots = Array.from({length: hideSpots ? 0 : cub ? 16 : 26}).map((_, i) => {
     const sx = -190 + rnd(i) * 360;
     const sy = bodyY - 60 + rnd(i + 40) * 110;
     const r = cub ? 9 + rnd(i + 2) * 4 : 11 + rnd(i + 2) * 6;
