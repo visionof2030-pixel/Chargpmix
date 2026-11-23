@@ -1,0 +1,12 @@
+__pycache__/
+scenes/
+list.txt
+v_noaudio.mp4
+audio2.wav
+Taraf_Ep1.mp4
+
+# Remotion
+remotion/node_modules/
+remotion/out/
+remotion/public/audio.wav
+remotion/public/ep2_audio.wav
