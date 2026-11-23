@@ -20,10 +20,10 @@ const SW = 5;
 
 /* ------------------------------------------------------------------ looks */
 export type Hair = 'longCurly' | 'messyBun' | 'pulledBack' | 'wavyShort' | 'boyQuiff' | 'boyCurly';
-export type Top = 'fluffyJacket' | 'fluffyHoodie' | 'hoodie' | 'pajama' | 'sweatshirt' | 'thobe';
-export type Pattern = 'none' | 'hearts' | 'teddy' | 'cat' | 'dino';
+export type Top = 'fluffyJacket' | 'fluffyHoodie' | 'hoodie' | 'pajama' | 'sweatshirt' | 'thobe' | 'tee';
+export type Pattern = 'none' | 'hearts' | 'teddy' | 'cat' | 'dino' | 'deer';
 export type Bottom = 'jeans' | 'wideJeans' | 'pajama' | 'cargo' | 'none';
-export type Feet = 'whiteSocks' | 'pinkSocks' | 'stripeSocks' | 'bare' | 'sandals';
+export type Feet = 'whiteSocks' | 'pinkSocks' | 'stripeSocks' | 'bare' | 'sandals' | 'sneakers';
 
 export type Look = {
   key: string;
@@ -92,11 +92,11 @@ export const LOOKS: Record<string, Look> = {
   },
   jassar: {
     key: 'jassar', name: 'جسار', boy: true, height: 1.12,
-    skin: '#cf9a70', skinShade: '#b07a50', blush: '#e8887a',
-    hair: 'boyCurly', hairColor: '#1a110d', hairHi: '#4a3328',
-    top: 'thobe', topColor: '#fbfbf7', topShade: '#dcded6', pattern: 'none',
-    bottom: 'none', bottomColor: '#fbfbf7', bottomShade: '#dcded6',
-    feet: 'sandals', iris: '#2a170d', color: '#c2410c',
+    skin: '#e0b08a', skinShade: '#c38f66', blush: '#ee8c80',
+    hair: 'boyCurly', hairColor: '#1e1410', hairHi: '#4e382c',
+    top: 'tee', topColor: '#1b1c20', topShade: '#0f1013', pattern: 'deer',
+    bottom: 'wideJeans', bottomColor: '#8db4de', bottomShade: '#6d93c0',
+    feet: 'sneakers', iris: '#2a170d', color: '#c2410c',
   },
 };
 
@@ -534,6 +534,15 @@ export const Kid: React.FC<KidProps> = (p) => {
           <path d="M -22 -10 Q 4 -24 30 -10" stroke="#8a5a32" strokeWidth={12} fill="none" />
         </g>
       );
+    if (L.feet === 'sneakers')
+      return (
+        <g transform={`translate(${x},-24)`}>
+          <path d="M -44 12 Q -48 -32 -14 -36 L 18 -36 Q 52 -30 54 8 Q 54 26 30 26 L -30 26 Q -48 26 -44 12 Z" fill="#eef3fb" stroke={OUT} strokeWidth={SW} />
+          <path d="M -44 14 L 54 14" stroke="#9fb8dc" strokeWidth={12} />
+          <path d="M -20 -24 Q 6 -10 36 -20" stroke="#9fb8dc" strokeWidth={8} fill="none" />
+          <path d="M -6 -32 l 14 8 M 6 -34 l 14 8" stroke="#7c93b8" strokeWidth={4} strokeLinecap="round" />
+        </g>
+      );
     const sock = L.feet === 'pinkSocks' ? '#fde2ee' : '#f7f5f2';
     return (
       <g transform={`translate(${x},-24)`}>
@@ -548,15 +557,15 @@ export const Kid: React.FC<KidProps> = (p) => {
     const b = (bend * Math.PI) / 180;
     const hx = side * Math.sin(b) * FORE;
     const hy = UPPER + Math.cos(b) * FORE;
-    const long = L.top !== 'thobe' || true; // all outfits have long sleeves
     return (
       <g transform={`translate(${side * SH_X},${SH_Y}) rotate(${side * -raise})`}>
-        <Limb d={`M 0 0 L 0 ${UPPER} L ${hx} ${hy}`} w={long ? 50 : 40} color={L.topColor} />
+        <Limb d={`M 0 0 L 0 ${UPPER} L ${hx} ${hy}`} w={L.top === 'tee' ? 42 : 50} color={L.top === 'tee' ? skin : L.topColor} />
+        {L.top === 'tee' ? <path d="M -32 -14 Q 0 -30 32 -14 L 34 62 Q 0 72 -34 62 Z" fill={L.topColor} stroke={OUT} strokeWidth={SW} strokeLinejoin="round" /> : null}
         {L.pattern === 'teddy' ? <path d={`M 0 0 L 0 ${UPPER} L ${hx} ${hy}`} stroke={`url(#${id}-pat)`} strokeWidth={50} fill="none" strokeLinecap="round" /> : null}
         {fluffy ? <path d={`M 0 0 L 0 ${UPPER} L ${hx * 0.85} ${hy * 0.9}`} stroke={L.topShade} strokeWidth={6} strokeDasharray="2 12" strokeLinecap="round" fill="none" /> : null}
         <circle cx={hx} cy={hy} r={25} fill={skin} stroke={OUT} strokeWidth={SW} />
         <path d={`M ${hx - side * 8} ${hy + 10} q ${side * 8} 8 ${side * 16} 0`} stroke={OUT} strokeWidth={3} fill="none" opacity={0.5} />
-        <ellipse cx={hx * 0.93} cy={hy * 0.93 - 2} rx={27} ry={10} fill={L.top === 'fluffyJacket' || L.top === 'fluffyHoodie' ? L.topShade : L.topShade} stroke={OUT} strokeWidth={3} transform={`rotate(${(bend * side) / 1},${hx * 0.93},${hy * 0.93})`} />
+        {L.top === 'tee' ? null : <ellipse cx={hx * 0.93} cy={hy * 0.93 - 2} rx={27} ry={10} fill={L.top === 'fluffyJacket' || L.top === 'fluffyHoodie' ? L.topShade : L.topShade} stroke={OUT} strokeWidth={3} transform={`rotate(${(bend * side) / 1},${hx * 0.93},${hy * 0.93})`} />}
         {prop ? <g transform={`translate(${hx},${hy}) rotate(${side * raise})`}>{prop}</g> : null}
       </g>
     );
@@ -603,6 +612,16 @@ export const Kid: React.FC<KidProps> = (p) => {
             <path d="M -86 -636 Q -130 -680 -96 -720 Q 0 -760 96 -720 Q 130 -680 86 -636" fill={L.topShade} stroke={OUT} strokeWidth={4} />
             <path d="M -40 -630 L -46 -560 M 40 -630 L 46 -560" stroke={L.top === 'hoodie' ? '#e7dcd2' : '#fff'} strokeWidth={5} strokeLinecap="round" />
             <path d="M -124 -410 Q 0 -394 124 -410" stroke={L.topShade} strokeWidth={14} fill="none" />
+          </>
+        );
+      case 'tee':
+        return (
+          <>
+            <path d="M -50 -630 Q 0 -596 50 -630" fill="none" stroke="#2c2d33" strokeWidth={9} />
+            <g transform="translate(-52,-540) scale(0.9)">
+              <path d="M -16 6 L -12 -6 L 6 -6 L 12 -16 L 18 -12 L 14 -4 L 16 6 L 12 6 L 10 0 L -6 0 L -8 6 Z" fill="#f4f4f4" />
+              <path d="M 12 -16 L 8 -28 M 12 -16 L 16 -30 M 8 -24 L 2 -28 M 15 -24 L 22 -28" stroke="#f4f4f4" strokeWidth={2.5} strokeLinecap="round" />
+            </g>
           </>
         );
       case 'pajama':
