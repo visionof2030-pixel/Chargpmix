@@ -232,7 +232,11 @@ sfx = sfx * (1 - 0.35 * np.clip(act * 3, 0, 1))
 mix = voice + music * 0.6 + sfx * 0.55
 mix = mix[:int(total * SR)]
 mix[-int(1.2 * SR):] *= np.linspace(1, 0, int(1.2 * SR))
-mix = mix / (np.abs(mix).max() + 1e-9) * 0.92
+# loudness: bring the speech up to a comfortable level and soft-limit the gunshots/roars
+vr = np.sqrt(np.mean(voice[np.abs(voice) > .02] ** 2)) if np.any(np.abs(voice) > .02) else .1
+mix = mix * (0.16 / (vr + 1e-9))
+mix = np.tanh(mix * 1.6) / np.tanh(1.6)
+mix = mix / (np.abs(mix).max() + 1e-9) * 0.95
 with wave.open(os.path.join(HERE, 'public', 'audio.wav'), 'wb') as w:
     w.setnchannels(1)
     w.setsampwidth(2)
