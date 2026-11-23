@@ -288,23 +288,18 @@ export const Kid: React.FC<KidProps> = (p) => {
       case 'messyBun':
         return (
           <>
-            <path d="M 0 -1060 Q -130 -1050 -180 -960 Q -200 -900 -196 -840 L -150 -900 Q -110 -990 0 -1000 Q 110 -990 150 -900 L 196 -840 Q 200 -900 180 -960 Q 130 -1050 0 -1060 Z" fill={hairFill} stroke={OUT} strokeWidth={SW} strokeLinejoin="round" />
-            {/* loose strands framing the face */}
-            <path d={`M -168 -920 Q ${-200 + sway * 0.3} -820 ${-176 + sway * 0.5} -700`} stroke={hc} strokeWidth={14} fill="none" strokeLinecap="round" />
-            <path d={`M 168 -920 Q ${206 + sway * 0.3} -830 ${184 + sway * 0.5} -730`} stroke={hc} strokeWidth={12} fill="none" strokeLinecap="round" />
-            {[0, 1, 2, 3, 4].map((i) => (
-              <path key={i} d={`M ${-120 + i * 60} -1040 q ${10 + i * 4} -40 ${-20 + i * 12} -70`} stroke={hc} strokeWidth={6} fill="none" strokeLinecap="round" opacity={0.9} />
-            ))}
+            <path d="M 0 -1060 Q -130 -1050 -180 -960 Q -200 -900 -194 -840 L -160 -890 Q -120 -985 0 -996 Q 120 -985 160 -890 L 194 -840 Q 200 -900 180 -960 Q 130 -1050 0 -1060 Z" fill={hairFill} stroke={OUT} strokeWidth={SW} strokeLinejoin="round" />
+            <path d="M -20 -1050 Q -130 -1030 -172 -930" stroke={hh} strokeWidth={10} fill="none" strokeLinecap="round" opacity={0.6} />
+            <path d="M 30 -1048 Q 120 -1030 160 -950" stroke={hh} strokeWidth={7} fill="none" strokeLinecap="round" opacity={0.45} />
           </>
         );
       case 'pulledBack':
         return (
           <>
-            <path d="M 0 -1076 Q -140 -1066 -186 -960 Q -200 -900 -192 -830 L -160 -900 Q -110 -990 0 -996 Q 110 -990 160 -900 L 192 -830 Q 200 -900 186 -960 Q 140 -1066 0 -1076 Z" fill={hairFill} stroke={OUT} strokeWidth={SW} strokeLinejoin="round" />
-            {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-              <path key={i} d={`M ${-150 + i * 50} ${-1050 - (i % 2) * 10} q ${-14 + rnd(i) * 28} ${-24 - rnd(i + 3) * 14} ${-6 + rnd(i + 5) * 18} ${-40}`} stroke={hc} strokeWidth={5} fill="none" strokeLinecap="round" />
+            <path d="M 0 -1076 Q -140 -1066 -186 -960 Q -200 -900 -192 -840 L -162 -900 Q -112 -992 0 -998 Q 112 -992 162 -900 L 192 -840 Q 200 -900 186 -960 Q 140 -1066 0 -1076 Z" fill={hairFill} stroke={OUT} strokeWidth={SW} strokeLinejoin="round" />
+            {[-60, -20, 20, 60].map((x, i) => (
+              <path key={i} d={`M ${x * 0.5} -1012 Q ${x * 1.1} -1046 ${x * 1.6} -1046`} stroke={hh} strokeWidth={5} fill="none" strokeLinecap="round" opacity={0.5} />
             ))}
-            <path d={`M -186 -880 Q ${-230 + sway * 0.3} -800 ${-206 + sway * 0.5} -720`} stroke={hc} strokeWidth={8} fill="none" strokeLinecap="round" />
           </>
         );
       case 'wavyShort':
@@ -319,44 +314,56 @@ export const Kid: React.FC<KidProps> = (p) => {
       case 'boyQuiff':
         return (
           <>
-            <path d="M -170 -900 Q -180 -1020 -100 -1060 Q 0 -1100 100 -1060 Q 180 -1020 170 -900 Q 150 -960 120 -980 Q 0 -1010 -120 -980 Q -150 -960 -170 -900 Z" fill={hairFill} stroke={OUT} strokeWidth={SW} />
-            {/* curly quiff on top */}
-            {[-70, -20, 30, 80, -40, 10, 60].map((x, i) => (
-              <circle key={i} cx={x + Math.sin(t * 2 + i) * 2} cy={i < 4 ? -1060 : -1092} r={i < 4 ? 40 : 34} fill={hc} stroke={OUT} strokeWidth={4} />
-            ))}
-            <path d="M -40 -1150 q 30 -20 60 0" stroke={hh} strokeWidth={6} fill="none" />
-            <path d="M -170 -900 L -176 -820 M 170 -900 L 176 -820" stroke={mix(hc, skin, 0.55)} strokeWidth={16} strokeLinecap="round" />
+            <path d="M -178 -870 Q -190 -1040 -60 -1092 Q 50 -1124 140 -1070 Q 196 -1030 178 -870 Q 164 -950 124 -978 Q 60 -1004 -20 -998 Q -112 -992 -150 -950 Q -170 -916 -178 -870 Z" fill={hairFill} stroke={OUT} strokeWidth={SW} strokeLinejoin="round" />
+            <path d="M -140 -980 Q -40 -1080 140 -1020 Q 40 -1046 -60 -1016 Z" fill={hc} stroke={OUT} strokeWidth={4} strokeLinejoin="round" />
+            <path d="M -100 -1050 Q 0 -1100 110 -1060 M -60 -1020 Q 20 -1060 100 -1036" stroke={hh} strokeWidth={6} fill="none" strokeLinecap="round" opacity={0.7} />
+            <path d="M -176 -900 L -180 -820 M 176 -900 L 180 -820" stroke={mix(hc, skin, 0.5)} strokeWidth={14} strokeLinecap="round" />
           </>
         );
-      case 'boyCurly':
+      case 'boyCurly': {
+        let edge = 'M -182 -860 Q -204 -1010 -118 -1086';
+        for (let i = 0; i < 8; i++) {
+          const a0 = Math.PI * (1.18 + (i / 8) * 0.64);
+          const a1 = Math.PI * (1.18 + ((i + 1) / 8) * 0.64);
+          const x1 = Math.cos(a1) * 200;
+          const y1 = -880 + Math.sin(a1) * 250;
+          const xm = Math.cos((a0 + a1) / 2) * 232;
+          const ym = -880 + Math.sin((a0 + a1) / 2) * 282;
+          edge += ` Q ${xm} ${ym} ${x1} ${y1}`;
+        }
+        edge += ' Q 200 -1000 182 -860 Q 166 -950 116 -980 Q 0 -1004 -116 -980 Q -166 -950 -182 -860 Z';
         return (
           <>
-            {Array.from({length: 13}).map((_, i) => {
-              const a = Math.PI * (1.05 + (i / 12) * 0.9);
-              return <circle key={i} cx={Math.cos(a) * 176} cy={-900 + Math.sin(a) * 186} r={52 + rnd(i) * 10} fill={hc} stroke={OUT} strokeWidth={4} />;
+            <clipPath id={`${id}-curl`}>
+              <path d={edge} />
+            </clipPath>
+            <path d={edge} fill={hairFill} stroke={OUT} strokeWidth={SW} strokeLinejoin="round" />
+            <g clipPath={`url(#${id}-curl)`}>
+            {Array.from({length: 9}).map((_, i) => {
+              const x = -130 + (i % 5) * 64 + (i > 4 ? 32 : 0);
+              const y = i > 4 ? -1060 : -1100;
+              return <path key={i} d={`M ${x - 14} ${y + 6} q 14 -22 28 0`} stroke={hh} strokeWidth={6} fill="none" strokeLinecap="round" opacity={0.7} />;
             })}
-            {[-90, -30, 30, 90].map((x, i) => (
-              <circle key={`f${i}`} cx={x} cy={-1030 + (i % 2) * 12} r={42} fill={hc} stroke={OUT} strokeWidth={4} />
-            ))}
-            {[-60, 40].map((x, i) => (
-              <path key={`h${i}`} d={`M ${x} -1060 q 20 -16 40 0`} stroke={hh} strokeWidth={6} fill="none" />
-            ))}
+            </g>
+            <path d="M -182 -880 L -184 -820 M 182 -880 L 184 -820" stroke={mix(hc, skin, 0.5)} strokeWidth={12} strokeLinecap="round" />
           </>
         );
+      }
     }
   })();
 
   const bun =
     L.hair === 'messyBun' ? (
       <g>
-        <circle cx={10 + sway * 0.2} cy={-1110} r={70} fill={hairFill} stroke={OUT} strokeWidth={SW} />
-        {[0, 1, 2, 3].map((i) => (
-          <path key={i} d={`M ${-30 + i * 24 + sway * 0.2} -1150 q ${-10 + i * 8} -40 ${10 + i * 6} -70`} stroke={hc} strokeWidth={5} fill="none" strokeLinecap="round" />
-        ))}
-        <path d="M -40 -1060 Q 10 -1046 60 -1060" stroke="#f05a8a" strokeWidth={10} fill="none" />
+        <circle cx={0} cy={-1112} r={66} fill={hairFill} stroke={OUT} strokeWidth={SW} />
+        <path d="M -44 -1132 Q 0 -1170 44 -1132 M -50 -1104 Q 0 -1140 50 -1104" stroke={hh} strokeWidth={6} fill="none" strokeLinecap="round" opacity={0.6} />
+        <path d="M -46 -1056 Q 0 -1044 46 -1056" stroke="#f05a8a" strokeWidth={12} fill="none" strokeLinecap="round" />
       </g>
     ) : L.hair === 'pulledBack' ? (
-      <path d={`M 150 -980 Q ${260 + sway} -900 ${230 + sway * 1.4} -760 Q ${200 + sway * 1.4} -700 ${170 + sway} -760 Q 200 -880 140 -950 Z`} fill={hairFill} stroke={OUT} strokeWidth={SW} />
+      <g>
+        <path d={`M 150 -990 Q ${250 + sway} -930 ${236 + sway * 1.3} -780 Q ${226 + sway * 1.4} -700 ${196 + sway * 1.2} -690 Q ${186 + sway} -760 ${196 + sway * 0.6} -860 Q 200 -930 140 -960 Z`} fill={hairFill} stroke={OUT} strokeWidth={SW} />
+        <ellipse cx={168} cy={-972} rx={20} ry={14} fill="#f05a8a" stroke={OUT} strokeWidth={4} transform="rotate(30,168,-972)" />
+      </g>
     ) : null;
 
   /* ---------- eyes */
