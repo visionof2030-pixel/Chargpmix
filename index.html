@@ -18621,11 +18621,22 @@ const VOICE_REVIEW_FIELD_MAP = { subject: 'subject', lesson: 'lesson', target: '
 // طبيعية طويلة أقل عرضة لأن تكون كلمة مفردة أُسيء سماعها بالكامل.
 const VOICE_REVIEW_WORD_LIMIT = 3;
 
+// خانة الدرس الظاهرة في القالب القصير الحالي (أو '' إن لم توجد)
+function voiceLessonFieldId() {
+    if (!isShortTemplate()) return 'lesson';
+    if (isVisitTemplate()) return 'visitLesson';
+    const v = currentDocVariant();
+    if (v) return v.fieldById['dv_' + v.key + '_lesson'] ? 'dv_' + v.key + '_lesson' : '';
+    return 'shortLesson';
+}
 function getVoiceReviewCandidates() {
     const candidates = {};
     // في القالب القصير لا تُراجَع خانات القالب الطويل (مخفية، وقد تحمل قيماً
     // قديمة من تقرير سابق) - تبقى مراجعة الملاحظات الإضافية فقط.
     const reviewMap = isShortTemplate() ? { voiceExtraNotesInput: 'extra_notes' } : VOICE_REVIEW_FIELD_MAP;
+    // خانة الدرس في القالب القصير الحالي تُراجَع أيضاً (أسماء الدروس كثيراً ما تُلتقط مبتورة أو مشوّهة)
+    const lessonId = isShortTemplate() ? voiceLessonFieldId() : '';
+    if (lessonId) reviewMap[lessonId] = 'lesson';
     Object.entries(reviewMap).forEach(([domId, key]) => {
         const val = (document.getElementById(domId)?.value || '').trim();
         if (val && val.split(/\s+/).filter(Boolean).length <= VOICE_REVIEW_WORD_LIMIT) {
@@ -18649,6 +18660,8 @@ async function reviewVoiceFieldsWithAI() {
         if (!sessionData?.session) return; // لا نُعطّل تدفق إصدار التقرير لمجرد تعذر هذه الميزة المساعدة
         const context = isShortTemplate() ? {
             title: document.getElementById('manualReportTitle')?.value || '',
+            subject: (typeof tsValue === 'function' ? tsValue() : '') || '',
+            lesson: (voiceLessonFieldId() && document.getElementById(voiceLessonFieldId())?.value) || '',
             place: document.getElementById('shortPlace')?.value || '',
             target: document.getElementById('shortBeneficiaries')?.value || '',
             extra_notes: document.getElementById('voiceExtraNotesInput')?.value || ''
@@ -20018,6 +20031,10 @@ function voiceFreeFillSingleMissing(step, text) {
     try { renderVoiceFreeConfirmSummary(); } catch (_) { /* تجاهل */ }
     try { renderVoiceFreeMissingReminder(); } catch (_) { /* تجاهل */ }
     showNotification('✓ ' + label + ': ' + v);
+    // الدرس: مراجعة الذكاء الاصطناعي تصحّح الكلمة المبتورة أو المسموعة خطأ (Gramm ← Grammar)
+    if (step.elId === voiceLessonFieldId()) {
+        reviewVoiceFieldsWithAI().then(() => { try { renderVoiceFreeConfirmSummary(); } catch (_) { /* تجاهل */ } });
+    }
     return true;
 }
 function getVoiceFreeMissingSteps() {
