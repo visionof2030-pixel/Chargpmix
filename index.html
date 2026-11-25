@@ -10173,10 +10173,18 @@ async function aiInferFields(title) {
     return window.__aiInferP;
 }
 // العنوان في صفحة الإدخال اليدوي
-document.addEventListener('input', e => {
-    if (!e.target || e.target.id !== 'manualReportTitle' || !mpIsOpen()) return;
+// أي تغيّر في العنوان وصفحة الإدخال اليدوي مفتوحة (كتابة، اختيار من القائمة، استرجاع...) يطلب الاستنتاج
+function mpScheduleInfer(title) {
+    if (!mpIsOpen()) return;
+    const t = String(title || '').trim();
+    if (!t || t === window.__mpInferLast) return;
+    window.__mpInferLast = t;
     clearTimeout(window.__mpInferT);
-    window.__mpInferT = setTimeout(() => aiInferFields(e.target.value), 1200);
+    window.__mpInferT = setTimeout(() => aiInferFields(document.getElementById('manualReportTitle')?.value || t), 1200);
+}
+document.addEventListener('input', e => {
+    if (!e.target || e.target.id !== 'manualReportTitle') return;
+    mpScheduleInfer(e.target.value);
 });
 
 document.addEventListener('click', e => {
@@ -13271,6 +13279,7 @@ function activateVisitTemplate(opts = {}) { activateShortVariant('visit', opts);
 // اقتراح تحت خانة العنوان عند الكتابة اليدوية: "يبدو أن عنوانك عن ..." مع زر لاختيار القالب المناسب.
 function updateVisitHint() {
     const title = document.getElementById('manualReportTitle')?.value || '';
+    try { mpScheduleInfer(title); } catch (_) { /* تجاهل */ }
     const found = detectShortVariant(title);
     const cur = isShortTemplate() ? window.__shortVariant : 'general';
     const showFor = (found && found !== cur) ? found : '';
@@ -17560,7 +17569,7 @@ function openManualPage(opts) {
     mpMountForm();
     tsFill();
     const review = !!(opts && opts.review);
-    if (!review) { window.__clsPicked = ''; window.__aiInferKey = ''; window.__aiFieldIds = new Set(); }
+    if (!review) { window.__clsPicked = ''; window.__aiInferKey = ''; window.__aiFieldIds = new Set(); window.__mpInferLast = ''; }
     clsSeedFromReports();
     const mpCls = document.getElementById('mpClsSlot');
     if (mpCls) mpCls.innerHTML = clsBarHtml();
@@ -20102,6 +20111,10 @@ async function fillWithAI() {
     if (!reportTitle) {
         if (!mpIsOpen()) { openManualPage(); showNotification('اكتب عنوان التقرير أولاً', 'warning'); return; }
         alert('الرجاء إدخال عنوان التقرير أولاً'); return;
+    }
+    // قبل التوليد: الذكاء الاصطناعي يحدد القالب ويعبّئ الخانات الفارغة إن لم يفعل بعد (يعيد الوعد نفسه إن سبق)
+    if (!window.__bulkMode && !window.__subExpired) {
+        try { await Promise.race([aiInferFields(reportTitle), new Promise(r => setTimeout(r, 8000))]); } catch (e) { console.warn('pre-generate infer:', e); }
     }
     const criterionId = document.getElementById('criterionSelect').value || null;
     const subcategoryId = document.getElementById('subcategorySelect').value || null;
