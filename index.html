@@ -19032,6 +19032,8 @@ function startVoiceFreeHold(event) {
             return;
         }
         if (appendMode) {
+            // بند واحد ناقص: ما يقوله المعلم هو قيمته مباشرة (مثل «grammar» للدرس) بلا إعادة تحليل
+            try { const miss = getVoiceFreeMissingSteps(); if (miss.length === 1 && voiceFreeFillSingleMissing(miss[0], finalTranscript)) return; } catch (e) { console.warn('single missing:', e); }
             // الإضافة تُلحق بالنص السابق كاملاً ثم يُعاد التحليل على المجموع،
             // فيُوزَّع كل ما قيل (القديم والجديد) على البنود من جديد بدقة.
             const base = (window.__voiceFreeLastTranscript || '').trim();
@@ -19995,6 +19997,29 @@ const VOICE_FREE_MISSING_EXAMPLE = {
     short: 'المنفذون جميع منسوبي المدرسة والمشاركون أولياء الأمور في فناء المدرسة لمدة يوم واحد والمجال المواطنة',
     visit: 'المعلم المستضيف الأستاذ محمد العتيبي في الصف الثاني متوسط اثنين مادة العلوم والدرس الطاقة وتحولاتها',
 };
+// يضع ما قاله المعلم في البند الناقص الوحيد، بعد حذف اسم البند إن بدأ به («الدرس هو ...»).
+function voiceFreeFillSingleMissing(step, text) {
+    const el = document.getElementById(step.elId);
+    if (!el) return false;
+    const label = String(step.label || '').replace(/\(.*?\)/g, '').trim();
+    let v = String(text || '').trim();
+    const heads = [label, 'عنوان الدرس', 'اسم الدرس', 'الدرس', 'درس', 'الوحدة', 'عنوان'].filter(Boolean)
+        .map(h => h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    for (let i = 0; i < 3; i++) {
+        v = v.replace(new RegExp('^(?:' + heads.join('|') + ')\\s*(?:هو|هي|:|،|-)?\\s*'), '').replace(/^(?:هو|هي)\s+/, '').trim();
+    }
+    v = v.replace(/[.،]+$/, '').trim();
+    if (!v) return false;
+    el.value = v;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    // يبقى في النص المحفوظ بصيغة صريحة، فلا يضيع إن أُعيد التحليل لاحقاً
+    window.__voiceFreeLastTranscript = ((window.__voiceFreeLastTranscript || '') + ' ' + label + ': ' + v).trim();
+    try { if (typeof updateReport === 'function') updateReport(); } catch (_) { /* تجاهل */ }
+    try { renderVoiceFreeConfirmSummary(); } catch (_) { /* تجاهل */ }
+    try { renderVoiceFreeMissingReminder(); } catch (_) { /* تجاهل */ }
+    showNotification('✓ ' + label + ': ' + v);
+    return true;
+}
 function getVoiceFreeMissingSteps() {
     const remindIds = isVisitTemplate() ? VOICE_FREE_REMIND_FIELD_IDS_VISIT : isDocVariant() ? docRemindIds(currentDocVariant()) : (isShortTemplate() ? VOICE_FREE_REMIND_FIELD_IDS_SHORT : VOICE_FREE_REMIND_FIELD_IDS);
     const auto = voiceAutoIdsNow(), clsIds = voiceClassFieldIds(), hasCls = clsList().length > 0;
