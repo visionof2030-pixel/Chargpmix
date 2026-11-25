@@ -21,7 +21,7 @@ const SW = 5;
 /* ------------------------------------------------------------------ looks */
 export type Hair = 'longCurly' | 'messyBun' | 'pulledBack' | 'wavyShort' | 'boyQuiff' | 'boyCurly';
 export type Top = 'fluffyJacket' | 'fluffyHoodie' | 'hoodie' | 'pajama' | 'sweatshirt' | 'thobe' | 'tee';
-export type Pattern = 'none' | 'hearts' | 'teddy' | 'cat' | 'dino' | 'deer';
+export type Pattern = 'none' | 'hearts' | 'teddy' | 'cat' | 'dino' | 'deer' | 'jersey';
 export type Bottom = 'jeans' | 'wideJeans' | 'pajama' | 'cargo' | 'none';
 export type Feet = 'whiteSocks' | 'pinkSocks' | 'stripeSocks' | 'bare' | 'sandals' | 'sneakers';
 
@@ -89,6 +89,22 @@ export const LOOKS: Record<string, Look> = {
     top: 'sweatshirt', topColor: '#1d2026', topShade: '#121419', pattern: 'dino',
     bottom: 'cargo', bottomColor: '#d8cfb4', bottomShade: '#b8ad8e',
     feet: 'bare', iris: '#2a170d', color: '#22a06b',
+  },
+  azzam: {
+    key: 'azzam', name: 'عزام', boy: true, height: 0.82,
+    skin: '#d39a6e', skinShade: '#b47b50', blush: '#ec8a7e',
+    hair: 'boyCurly', hairColor: '#141014', hairHi: '#3e3238',
+    top: 'tee', topColor: '#1e2a6e', topShade: '#141d50', pattern: 'jersey',
+    bottom: 'pajama', bottomColor: '#1c1c22', bottomShade: '#111116',
+    feet: 'bare', iris: '#2a170d', color: '#f5c518',
+  },
+  taraf2: {
+    key: 'taraf2', name: 'ترف', height: 0.98,
+    skin: '#e8b48c', skinShade: '#c99068', blush: '#f08a8a',
+    hair: 'pulledBack', hairColor: '#3a2216', hairHi: '#6e4a34',
+    top: 'sweatshirt', topColor: '#5f6b30', topShade: '#4a5424', pattern: 'none',
+    bottom: 'pajama', bottomColor: '#5f6b30', bottomShade: '#4a5424',
+    feet: 'sneakers', iris: '#3a2416', color: '#E24682',
   },
   jassar: {
     key: 'jassar', name: 'جسار', boy: true, height: 1.12,
@@ -579,6 +595,14 @@ export const Kid: React.FC<KidProps> = (p) => {
   };
 
   const chest = (() => {
+    if (L.pattern === 'jersey')
+      return (
+        <g>
+          <path d="M -46 -630 L 0 -586 L 46 -630" fill="none" stroke="#f5c518" strokeWidth={12} strokeLinejoin="round" />
+          <path d="M -118 -560 L -122 -410 M 118 -560 L 122 -410" stroke="#f5c518" strokeWidth={14} />
+          <path d="M -100 -620 L -60 -560 M 100 -620 L 60 -560" stroke="#6f8fe0" strokeWidth={6} />
+        </g>
+      );
     if (L.pattern === 'cat')
       return (
         <g transform="translate(0,-500)">
