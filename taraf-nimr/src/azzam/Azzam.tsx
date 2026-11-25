@@ -162,7 +162,7 @@ export const AzzamHero: React.FC = () => {
 
   /* ---------------- camera */
   const target = (tt: number): Cam => {
-    if (tt >= AB.outro) return {zoom: 1.3, cx: 520, cy: 1500};
+    if (tt >= AB.outro) return {zoom: 1.18, cx: 470, cy: 1480};
     if (tt >= AB.door) return {zoom: 1.0, cx: 540, cy: 1150};
     if (tt >= AB.siren) return {zoom: 1.25, cx: 420, cy: 900};
     if (tt >= AB.freeze) return {zoom: 1.15, cx: 640, cy: 1300};
@@ -259,13 +259,9 @@ export const AzzamHero: React.FC = () => {
                 );
               })
             : null}
-          {t >= AB.door + 0.5 && !outside ? (
-            <Adult x={lerp(790, 520, easeOut(famK(0.5)))} y={lerp(1300, 1800, easeOut(famK(0.5)))} s={0.36} t={t} kind="father" run={famK(0.5) < 1 ? 1 : 0} expr={famK(0.5) < 1 ? 'shock' : 'happy'} headTurn={-1} armR={famK(0.5) < 1 ? 0 : 150} />
-          ) : null}
           {/* outro: everybody on the pavement */}
           {outside ? (
             <g>
-              <Adult x={860} y={1640} s={0.36} t={t} kind="father" expr="happy" armL={60} bendL={-80} headTurn={-0.5} />
               <Kid id="az-o-j" look={LOOKS.jassar} x={150} y={1760} s={0.38} t={t} expr="laugh" armR={150 + Math.sin(t * 10) * 15} armL={60} bendL={-80} />
               <Kid id="az-o-t" look={LOOKS.taraf2} x={310} y={1840} s={0.38} t={t} expr="happy" armL={70 + Math.abs(Math.sin(t * 9)) * 40} armR={70 + Math.abs(Math.sin(t * 9)) * 40} bendL={-100} bendR={-100} jump={Math.abs(Math.sin(t * 7)) * 20} />
               <Kid id="az-o-s" look={LOOKS.sahab} x={760} y={1860} s={0.38} t={t} expr="laugh" armL={70 + Math.abs(Math.sin(t * 9 + 1)) * 40} armR={70 + Math.abs(Math.sin(t * 9 + 1)) * 40} bendL={-100} bendR={-100} />
