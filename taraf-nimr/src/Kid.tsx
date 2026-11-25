@@ -91,7 +91,7 @@ export const LOOKS: Record<string, Look> = {
     feet: 'bare', iris: '#2a170d', color: '#22a06b',
   },
   azzam: {
-    key: 'azzam', name: 'عزام', boy: true, height: 0.82,
+    key: 'azzam', name: 'عزام', boy: true, height: 0.74, // the youngest: shorter than everyone
     skin: '#d39a6e', skinShade: '#b47b50', blush: '#ec8a7e',
     hair: 'boyCurly', hairColor: '#141014', hairHi: '#3e3238',
     top: 'tee', topColor: '#1e2a6e', topShade: '#141d50', pattern: 'jersey',

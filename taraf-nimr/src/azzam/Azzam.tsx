@@ -162,7 +162,7 @@ export const AzzamHero: React.FC = () => {
 
   /* ---------------- camera */
   const target = (tt: number): Cam => {
-    if (tt >= AB.outro) return {zoom: 1.1, cx: 540, cy: 1330};
+    if (tt >= AB.outro) return {zoom: 1.3, cx: 520, cy: 1500};
     if (tt >= AB.door) return {zoom: 1.0, cx: 540, cy: 1150};
     if (tt >= AB.siren) return {zoom: 1.25, cx: 420, cy: 900};
     if (tt >= AB.freeze) return {zoom: 1.15, cx: 640, cy: 1300};
@@ -189,7 +189,7 @@ export const AzzamHero: React.FC = () => {
           look={LOOKS.azzam}
           x={lerp(330, 420, leanOut)}
           y={1000 + ducked * 520 - leanOut * 60 + pressNose * 0}
-          s={0.62}
+          s={0.68}
           t={t}
           expr={azExpr}
           mouth={azMouth}
@@ -273,8 +273,8 @@ export const AzzamHero: React.FC = () => {
                 id="az-o-a"
                 look={LOOKS.azzam}
                 x={540}
-                y={1780}
-                s={0.62}
+                y={1880}
+                s={0.38}
                 t={t}
                 expr={t >= AB.L3[1] ? 'laugh' : 'happy'}
                 mouth={azMouth}
