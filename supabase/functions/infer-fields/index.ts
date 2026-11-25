@@ -1,7 +1,8 @@
 // infer-fields: يستنتج من عنوان التقرير وتخصص المعلم خانات يمكن استنتاجها بثقة
 // (المكان، المجال، المدة، نوع الاستراتيجية، وقت الاستخدام، وسيلة التواصل...) لتقليل الأسئلة.
 // لا يخترع حقائق لا يعرفها إلا المعلم (الأسماء، الأعداد، الصف): تلك تبقى أسئلة أو من ذاكرة الصفوف.
-// المدخلات: { template: long|short|visit|strategy|tool|parents, title, subject?, gender?, notes? }
+// المدخلات: { template: long|short|visit|strategy|tool|parents|remedial|enrichment|applied|initiative|program|auto, current?, title, subject?, gender?, notes? }
+// template:"auto" (القوالب القصيرة): يختار النموذج القالب ويعبّئ خاناته معاً، والمخرجات { template, fields }.
 // المخرجات: { fields: { <key>: <value> } } — مفاتيح القالب فقط، والقيمة الفارغة تعني «لا أعرف».
 // لا يستهلك رصيد التقارير، لكنه يتحقق من check_report_access (الاشتراك المنتهي لا يُستنتج له).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -105,6 +106,41 @@ const SPECS: Record<string, Spec[]> = {
     { key: "medium", desc: "وسيلة التواصل؛ إن لم تُذكر في العنوان اكتب: منصة مدرستي", max: 40 },
     { key: "domain", desc: "مجال التواصل باختصار (مثل: متابعة وإرشاد، تحصيل دراسي، سلوك وانضباط، تعزيز وتحفيز)", max: 40 },
   ],
+  remedial: [
+    { key: "audience", desc: "الفئة المستهدفة بوصف عام دون ذكر صف (مثل: الطلاب المتعثرون في القراءة، الطلاب ذوو التحصيل المنخفض)", max: 50 },
+    { key: "duration", desc: "مدة الخطة التقديرية المعقولة (مثل: أربعة أسابيع، شهر، الفصل الدراسي الأول)", max: 40 },
+  ],
+  enrichment: [
+    { key: "audience", desc: "الفئة المستهدفة بوصف عام دون ذكر صف (مثل: الطلاب الموهوبون، الطلاب المتقدمون في الرياضيات)", max: 50 },
+    { key: "duration", desc: "مدة الخطة التقديرية المعقولة (مثل: شهر، الفصل الدراسي الأول)", max: 40 },
+  ],
+  applied: [
+    { key: "audience", desc: "الفئة المستهدفة بوصف عام دون ذكر صف (مثل: الطلاب، معلمو القسم)", max: 50 },
+    { key: "duration", desc: "زمن الدرس (مثل: حصة دراسية (45 دقيقة)، حصتان)", max: 40 },
+    { key: "lesson", desc: "عنوان الدرس أو الوحدة — فقط إن كان مذكوراً صراحة في العنوان، وإلا فارغ", max: 80 },
+  ],
+  initiative: [
+    { key: "audience", desc: "الفئة المستهدفة بوصف عام دون ذكر صف (مثل: طلاب المدرسة، الطلاب، منسوبو المدرسة)", max: 50 },
+    { key: "duration", desc: "مدة المبادرة التقديرية المعقولة (مثل: أسبوع، أسبوعان، شهر)", max: 40 },
+  ],
+  program: [
+    { key: "audience", desc: "الفئة المستهدفة بوصف عام دون ذكر صف (مثل: طلاب الصفوف الأولية، الطلاب، طلاب المدرسة)", max: 50 },
+    { key: "duration", desc: "مدة البرنامج التقديرية المعقولة (مثل: أسبوعان، شهر، الفصل الدراسي الأول)", max: 40 },
+  ],
+};
+
+// القوالب القصيرة التي يختار النموذج بينها من العنوان (template: "auto").
+const SHORT_KINDS: Record<string, string> = {
+  short: "تقرير عام: نشاط أو فعالية أو مناسبة أو مسابقة أو إذاعة أو ورشة أو حصة أو أي شيء لا ينطبق عليه قالب أخص (هو الافتراضي)",
+  visit: "تبادل الزيارات بين المعلمين أو حضور حصة لزميل",
+  strategy: "تنفيذ استراتيجية تدريس محددة باسمها (مثل المقعد الساخن، الرؤوس المرقمة، التعلم التعاوني)",
+  tool: "استخدام أداة أو وسيلة أو تطبيق أو منصة أو برنامج حاسوبي في التعليم",
+  parents: "التواصل مع أولياء الأمور",
+  remedial: "خطة أو برنامج علاجي للطلاب المتعثرين أو لعلاج ضعف مهارة",
+  enrichment: "خطة أو برنامج إثرائي للطلاب الموهوبين أو المتقدمين",
+  applied: "درس تطبيقي أو نموذجي يقدّمه المعلم",
+  initiative: "مبادرة يطلقها المعلم أو المدرسة",
+  program: "برنامج تربوي أو تعليمي ممتد له أهداف وفعاليات (وليس برنامجاً حاسوبياً)",
 };
 
 function buildPrompt(tpl: string, title: string, subject: string, female: boolean, notes: string): string {
@@ -122,6 +158,27 @@ ${lines}
 - إن لم يكن الاستنتاج معقولاً وواضحاً لخانة فاجعل قيمتها "".
 ${female ? "- استخدم صيغ المؤنث (الطالبات، المعلمات، رائدات النشاط...).\n" : ""}
 أعد JSON فقط بالمفاتيح المذكورة أعلاه.`;
+}
+
+function buildAutoPrompt(title: string, subject: string, female: boolean, notes: string): string {
+  const kinds = Object.entries(SHORT_KINDS).map(([k, d]) => `- "${k}": ${d}`).join("\n");
+  const specs = Object.keys(SHORT_KINDS).map((k) => `«${k}»:\n` + SPECS[k].map((s) => `  - "${s.key}": ${s.desc}${s.choices ? ` (اختر حرفياً واحدة من: ${s.choices.join("، ")})` : ""}`).join("\n")).join("\n");
+  return `أنت مساعد لمعلم${female ? "ة" : ""} في مدرسة سعودية يعبّئ بيانات تقرير شواهد أداء وظيفي.
+عنوان التقرير: «${title}»
+التخصص/المادة: ${subject || "غير محدد"}
+${notes ? "ملاحظات المعلم: " + notes + "\n" : ""}
+الخطوة ١: اختر نوع القالب الأنسب لهذا العنوان من القائمة:
+${kinds}
+لا تختر قالباً أخص إلا إذا كان العنوان عنه بوضوح؛ وإن تردّدت فاختر "short".
+
+الخطوة ٢: استنتج من العنوان والتخصص قيم خانات القالب الذي اخترته فقط، بالعربية الفصحى وباختصار شديد كما تُكتب في خانة رسمية. خانات كل قالب:
+${specs}
+
+قواعد:
+- لا تخترع أسماء أشخاص أو أعداداً أو صفوفاً دراسية.
+- إن لم يكن الاستنتاج معقولاً وواضحاً لخانة فاجعل قيمتها "".
+${female ? "- استخدم صيغ المؤنث (الطالبات، المعلمات، رائدات النشاط...).\n" : ""}
+أعد JSON فقط بهذا الشكل: {"template": "<مفتاح القالب>", "fields": { <خانات ذلك القالب> }}`;
 }
 
 async function callGemini(prompt: string): Promise<string | null> {
@@ -181,7 +238,8 @@ const handleRequest = async (req: Request): Promise<Response> => {
   try { body = await req.json(); } catch { return jsonResponse({ detail: "Bad request", code: "bad_request" }, 400); }
   const tpl = asText(body.template, 20);
   const title = asText(body.title, 200);
-  if (!SPECS[tpl] || !title) return jsonResponse({ detail: "template and title are required", code: "bad_request" }, 400);
+  const auto = tpl === "auto";
+  if ((!auto && !SPECS[tpl]) || !title) return jsonResponse({ detail: "template and title are required", code: "bad_request" }, 400);
   const subject = asText(body.subject, 80);
   const notes = asText(body.notes, 300);
   const female = body.gender === "female";
@@ -191,7 +249,7 @@ const handleRequest = async (req: Request): Promise<Response> => {
   if (accessError) return jsonResponse({ detail: accessError.message }, 403);
   if (!GEMINI_KEYS.length) return jsonResponse({ fields: {}, failed: true, reason: "not_configured" });
 
-  const raw = await callGemini(buildPrompt(tpl, title, subject, female, notes));
+  const raw = await callGemini(auto ? buildAutoPrompt(title, subject, female, notes) : buildPrompt(tpl, title, subject, female, notes));
   if (!raw) return jsonResponse({ fields: {}, failed: true, reason: "no_answer" });
   let parsed: Record<string, unknown> = {};
   try {
@@ -200,8 +258,15 @@ const handleRequest = async (req: Request): Promise<Response> => {
     parsed = v && typeof v === "object" && !Array.isArray(v) ? v : {};
   } catch { return jsonResponse({ fields: {}, failed: true, reason: "unparsable" }); }
 
+  let useTpl = tpl;
+  if (auto) {
+    const t = asText(parsed.template, 20);
+    useTpl = Object.prototype.hasOwnProperty.call(SHORT_KINDS, t) ? t : (asText(body.current, 20) in SHORT_KINDS ? asText(body.current, 20) : "short");
+    const f = parsed.fields;
+    parsed = f && typeof f === "object" && !Array.isArray(f) ? f as Record<string, unknown> : {};
+  }
   const fields: Record<string, string> = {};
-  for (const s of SPECS[tpl]) {
+  for (const s of SPECS[useTpl]) {
     let val = asText(parsed[s.key], s.max).replace(/[.،؛]+$/g, "").trim();
     if (!val) continue;
     if (s.choices && !s.choices.includes(val)) {
@@ -211,7 +276,7 @@ const handleRequest = async (req: Request): Promise<Response> => {
     }
     fields[s.key] = val;
   }
-  return jsonResponse({ fields });
+  return jsonResponse(auto ? { template: useTpl, fields } : { fields });
 };
 
 Deno.serve(async (req: Request) => {

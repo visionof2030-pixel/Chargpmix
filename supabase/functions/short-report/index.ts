@@ -72,6 +72,26 @@ const EXTRA_TEMPLATES: Record<string, { extract: string[]; vars: Record<string, 
       medium: "medium", period: "period", domain: "domain", extra_notes: "extra_notes",
     },
   },
+  remedial: {
+    extract: ["title", "audience", "beneficiaries_count", "duration", "lesson", "notes"],
+    vars: { report_name: "title", audience: "audience", beneficiaries_count: "beneficiaries_count", duration: "duration", lesson: "lesson", extra_notes: "extra_notes" },
+  },
+  enrichment: {
+    extract: ["title", "audience", "beneficiaries_count", "duration", "lesson", "notes"],
+    vars: { report_name: "title", audience: "audience", beneficiaries_count: "beneficiaries_count", duration: "duration", lesson: "lesson", extra_notes: "extra_notes" },
+  },
+  applied: {
+    extract: ["title", "audience", "beneficiaries_count", "duration", "lesson", "notes"],
+    vars: { report_name: "title", audience: "audience", beneficiaries_count: "beneficiaries_count", duration: "duration", lesson: "lesson", extra_notes: "extra_notes" },
+  },
+  initiative: {
+    extract: ["title", "audience", "beneficiaries_count", "duration", "lesson", "notes"],
+    vars: { report_name: "title", audience: "audience", beneficiaries_count: "beneficiaries_count", duration: "duration", lesson: "lesson", extra_notes: "extra_notes" },
+  },
+  program: {
+    extract: ["title", "audience", "beneficiaries_count", "duration", "lesson", "notes"],
+    vars: { report_name: "title", audience: "audience", beneficiaries_count: "beneficiaries_count", duration: "duration", lesson: "lesson", extra_notes: "extra_notes" },
+  },
 };
 
 const GENERATE_VARS: Record<string, string> = {

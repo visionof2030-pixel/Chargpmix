@@ -8323,11 +8323,16 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
     <div class="short-variant-switch" id="shortVariantSwitch">
       <span class="short-variant-label">نوع القالب:</span>
       <div class="short-variant-pills">
-        <button type="button" class="short-variant-pill active" data-short-variant="general" onclick="setShortVariant('general')"><i class="fas fa-file-lines"></i> تقرير عام</button>
-        <button type="button" class="short-variant-pill" data-short-variant="visit" onclick="setShortVariant('visit')"><i class="fas fa-people-arrows"></i> استمارة تبادل الزيارات</button>
-        <button type="button" class="short-variant-pill" data-short-variant="strategy" onclick="setShortVariant('strategy')"><i class="fas fa-chalkboard-user"></i> تنفيذ استراتيجية</button>
-        <button type="button" class="short-variant-pill" data-short-variant="tool" onclick="setShortVariant('tool')"><i class="fas fa-mobile-screen-button"></i> استخدام أداة / تطبيق</button>
-        <button type="button" class="short-variant-pill" data-short-variant="parents" onclick="setShortVariant('parents')"><i class="fas fa-people-roof"></i> التواصل مع أولياء الأمور</button>
+        <button type="button" class="short-variant-pill active" data-short-variant="general" onclick=\"tplPickManual('general')\"><i class="fas fa-file-lines"></i> تقرير عام</button>
+        <button type="button" class="short-variant-pill" data-short-variant="visit" onclick=\"tplPickManual('visit')\"><i class="fas fa-people-arrows"></i> استمارة تبادل الزيارات</button>
+        <button type="button" class="short-variant-pill" data-short-variant="strategy" onclick=\"tplPickManual('strategy')\"><i class="fas fa-chalkboard-user"></i> تنفيذ استراتيجية</button>
+        <button type="button" class="short-variant-pill" data-short-variant="tool" onclick=\"tplPickManual('tool')\"><i class="fas fa-mobile-screen-button"></i> استخدام أداة / تطبيق</button>
+        <button type="button" class="short-variant-pill" data-short-variant="parents" onclick=\"tplPickManual('parents')\"><i class="fas fa-people-roof"></i> التواصل مع أولياء الأمور</button>
+        <button type="button" class="short-variant-pill" data-short-variant="remedial" onclick=\"tplPickManual('remedial')\"><i class="fas fa-kit-medical"></i> خطة علاجية</button>
+        <button type="button" class="short-variant-pill" data-short-variant="enrichment" onclick=\"tplPickManual('enrichment')\"><i class="fas fa-gem"></i> خطة إثرائية</button>
+        <button type="button" class="short-variant-pill" data-short-variant="applied" onclick=\"tplPickManual('applied')\"><i class="fas fa-person-chalkboard"></i> درس تطبيقي</button>
+        <button type="button" class="short-variant-pill" data-short-variant="initiative" onclick=\"tplPickManual('initiative')\"><i class="fas fa-hand-holding-heart"></i> مبادرة</button>
+        <button type="button" class="short-variant-pill" data-short-variant="program" onclick=\"tplPickManual('program')\"><i class="fas fa-diagram-project"></i> برنامج</button>
       </div>
     </div>
 
@@ -8838,6 +8843,11 @@ body.theme-dark .ds-info li { color: #e2e8f0; }
         <option value="strategy">استراتيجية</option>
         <option value="tool">أداة / تطبيق</option>
         <option value="parents">تواصل أولياء الأمور</option>
+        <option value="remedial">خطة علاجية</option>
+        <option value="enrichment">خطة إثرائية</option>
+        <option value="applied">درس تطبيقي</option>
+        <option value="initiative">مبادرة</option>
+        <option value="program">برنامج</option>
       </select>
       <select id="adminLogFilterMethod" onchange="renderAdminReportLog()">
         <option value="">كل الطرق</option>
@@ -9895,8 +9905,8 @@ function afFill() {
 
 // ذاكرة الصفوف: صفوف المعلم الثابتة (الصف + الفصل + العدد) تُتعلَّم من تقاريره وتُعرض أزراراً سريعة.
 const CLS_KEY = 'enjaz_classes_v1';
-const CLS_FIELD_IDS = ['grade', 'classSection', 'count', 'target', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience'];
-const CLS_STEP_IDS = ['grade', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience'];
+const CLS_FIELD_IDS = ['grade', 'classSection', 'count', 'target', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience', 'dv_remedial_audience', 'dv_remedial_count', 'dv_enrichment_audience', 'dv_enrichment_count', 'dv_applied_audience', 'dv_applied_count', 'dv_initiative_audience', 'dv_initiative_count', 'dv_program_audience', 'dv_program_count'];
+const CLS_STEP_IDS = ['grade', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience', 'dv_remedial_audience', 'dv_remedial_count', 'dv_enrichment_audience', 'dv_enrichment_count', 'dv_applied_audience', 'dv_applied_count', 'dv_initiative_audience', 'dv_initiative_count', 'dv_program_audience', 'dv_program_count'];
 // أرقام الفصول المكتوبة بالحروف («واحد»، «ثلاثة») تُحوَّل لأرقام
 const CLS_NUM_WORDS = { 'واحد': '1', 'واحده': '1', 'اول': '1', 'اثنين': '2', 'اثنان': '2', 'ثنين': '2', 'ثاني': '2', 'ثلاث': '3', 'ثلاثه': '3', 'ثالث': '3', 'اربع': '4', 'اربعه': '4', 'رابع': '4', 'خمس': '5', 'خمسه': '5', 'خامس': '5', 'ست': '6', 'سته': '6', 'سادس': '6', 'سبع': '7', 'سبعه': '7', 'ثمان': '8', 'ثمانيه': '8', 'تسع': '9', 'تسعه': '9', 'عشر': '10', 'عشره': '10' };
 function clsNormSection(sec) {
@@ -9997,6 +10007,7 @@ function clsApply(i) {
     else if (window.__shortVariant === 'strategy') put('dv_strategy_grade', lbl);
     else if (window.__shortVariant === 'tool') put('dv_tool_audience', 'طلاب ' + t);
     else if (window.__shortVariant === 'parents') put('dv_parents_audience', 'أولياء أمور طلاب ' + t);
+    else if (PLAN_VARIANTS.includes(window.__shortVariant)) { put('dv_' + window.__shortVariant + '_audience', 'طلاب ' + t); if (c.count) put('dv_' + window.__shortVariant + '_count', c.count + ' طالباً'); }
     else put('shortBeneficiaries', 'طلاب ' + t + (c.count ? ' (' + c.count + ' طالباً)' : ''));
     clsRemember(c);
     window.__clsPicked = clsLabel(c);
@@ -10051,7 +10062,8 @@ document.addEventListener('click', e => {
 });
 
 // هل القالب الحالي يحوي خانة صف؟
-function clsTemplateHasClass() { return !isShortTemplate() || ['general', 'visit', 'strategy', 'tool', 'parents'].includes(window.__shortVariant); }
+const PLAN_VARIANTS = ['remedial', 'enrichment', 'applied', 'initiative', 'program'];
+function clsTemplateHasClass() { return !isShortTemplate() || ['general', 'visit', 'strategy', 'tool', 'parents'].concat(PLAN_VARIANTS).includes(window.__shortVariant); }
 function clsBarHtml(compact) {
     if (!clsTemplateHasClass()) return '';
     const list = clsList();
@@ -10083,6 +10095,11 @@ const AI_FIELD_MAP = {
     strategy: { strategy_type: 'dv_strategy_type', effectiveness: 'dv_strategy_effect' },
     tool: { usage_time: 'dv_tool_time' },
     parents: { activity_type: 'dv_parents_type', medium: 'dv_parents_medium', domain: 'dv_parents_domain' },
+    remedial: { audience: 'dv_remedial_audience', duration: 'dv_remedial_duration' },
+    enrichment: { audience: 'dv_enrichment_audience', duration: 'dv_enrichment_duration' },
+    applied: { audience: 'dv_applied_audience', duration: 'dv_applied_duration', lesson: 'dv_applied_lesson' },
+    initiative: { audience: 'dv_initiative_audience', duration: 'dv_initiative_duration' },
+    program: { audience: 'dv_program_audience', duration: 'dv_program_duration' },
 };
 window.__aiFieldIds = window.__aiFieldIds || new Set();
 function aiTplKey() {
@@ -10091,28 +10108,64 @@ function aiTplKey() {
     return DOC_VARIANTS[window.__shortVariant] ? window.__shortVariant : 'short';
 }
 function afIsAI(id) { return window.__aiFieldIds.has(id) && afIsAuto(id); }
+// القوالب القصيرة التي يختار الذكاء الاصطناعي بينها من العنوان (القالب الطويل يختاره المعلم بنفسه).
+const AI_SHORT_TEMPLATES = ['short', 'visit', 'strategy', 'tool', 'parents', 'remedial', 'enrichment', 'applied', 'initiative', 'program'];
+function tplNormTitle(t) { return String(t || '').replace(/\s+/g, ' ').trim(); }
+function tplCurrentTitle() {
+    const q = document.getElementById('qwTitle');
+    if (q && typeof qwIsOpen === 'function' && qwIsOpen() && q.value.trim()) return q.value;
+    return document.getElementById('manualReportTitle')?.value || '';
+}
+// اختيار المعلم للقالب بنفسه يُحترم ما دام العنوان نفسه، فلا يغيّره الذكاء الاصطناعي.
+function tplPickManual(vk) {
+    window.__tplManualAt = tplNormTitle(tplCurrentTitle()) || '*';
+    setShortVariant(vk);
+}
+function tplIsManual(title) { const m = window.__tplManualAt; return !!m && (m === '*' || m === tplNormTitle(title)); }
+function tplApplyAI(vk) {
+    if (!AI_SHORT_TEMPLATES.includes(vk) || !isShortTemplate()) return false;
+    if (vk === 'visit' && window.__bulkMode) return false;
+    if (vk === aiTplKey()) return false;
+    if (vk === 'short') setShortVariant('general');
+    else activateShortVariant(vk, { silent: true, auto: true });
+    try { tsFill(); } catch (_) { /* تجاهل */ }
+    // الصف المختار من «صفوفي» يُعاد إلى خانات القالب الجديد
+    try { if (window.__clsPicked) { const i = clsList().findIndex(c => clsLabel(c) === window.__clsPicked); if (i >= 0) clsApply(i); } } catch (_) { /* تجاهل */ }
+    if (!window.__bulkMode) showNotification('✨ اختير قالب «' + (vk === 'short' ? 'تقرير عام' : vk === 'visit' ? 'استمارة تبادل الزيارات' : DOC_VARIANTS[vk].pill) + '» المناسب لعنوانك، ويمكنك تغييره.');
+    return true;
+}
 async function aiInferFields(title) {
     title = String(title || '').trim();
     if (!title || window.__subExpired) return;
-    const tpl = aiTplKey(), map = AI_FIELD_MAP[tpl];
-    if (!map) return;
-    const empty = Object.values(map).filter(id => { const el = document.getElementById(id); return el && !String(el.value || '').trim(); });
-    if (!empty.length) return;
-    const key = tpl + '|' + title;
+    const tpl = aiTplKey();
+    // في القالب القصير: الذكاء الاصطناعي يحدد القالب المناسب ويعبّئ خاناته في الطلب نفسه
+    const auto = isShortTemplate() && !tplIsManual(title);
+    const map = AI_FIELD_MAP[tpl];
+    if (!map && !auto) return;
+    if (!auto) {
+        const empty = Object.values(map).filter(id => { const el = document.getElementById(id); return el && !String(el.value || '').trim(); });
+        if (!empty.length) return;
+    }
+    const key = (auto ? 'auto' : tpl) + '|' + title;
     if (window.__aiInferKey === key) return window.__aiInferP;
     window.__aiInferKey = key;
     window.__aiInferP = (async () => {
         try {
             const { data: sess } = await supabaseClient.auth.getSession();
             if (!sess || !sess.session) return;
-            const call = supabaseClient.functions.invoke('infer-fields', { body: { template: tpl, title, subject: tsValue(), gender: reporterGender(), notes: String(document.getElementById('voiceExtraNotesInput')?.value || '').slice(0, 300) } });
+            const body = { template: auto ? 'auto' : tpl, current: tpl, title, subject: tsValue(), gender: reporterGender(), notes: String(document.getElementById('voiceExtraNotesInput')?.value || '').slice(0, 300) };
+            const call = supabaseClient.functions.invoke('infer-fields', { body });
             const timeout = new Promise(res => setTimeout(() => res({ data: null, error: new Error('timeout') }), 10000));
             const { data, error } = await Promise.race([call, timeout]);
             if (error || !data || !data.fields) return;
-            if (window.__aiInferKey !== key || aiTplKey() !== tpl) return; // تغيّر العنوان أو القالب أثناء الانتظار
-            let n = 0;
-            Object.entries(data.fields).forEach(([k, v]) => { const id = map[k]; if (id && afSet(id, String(v))) { window.__aiFieldIds.add(id); n++; } });
-            if (!n) return;
+            if (window.__aiInferKey !== key) return; // تغيّر العنوان أثناء الانتظار
+            if (auto && data.template && !tplIsManual(title)) tplApplyAI(data.template);
+            const useTpl = aiTplKey();
+            // الخانات تخص القالب الذي رجع به الرد؛ لا تُوضع في قالب آخر
+            const respTpl = auto ? (data.template || tpl) : tpl;
+            if (useTpl !== respTpl) { if (typeof updateReport === 'function') updateReport(); return; }
+            const m = AI_FIELD_MAP[useTpl] || {};
+            Object.entries(data.fields).forEach(([k, v]) => { const id = m[k]; if (id && afSet(id, String(v))) window.__aiFieldIds.add(id); });
             if (typeof updateReport === 'function') updateReport();
             if (qwIsOpen()) qwFieldsRender();
         } catch (e) { console.warn('infer-fields:', e); }
@@ -11742,7 +11795,7 @@ function clsRefreshManualSlot() {
     // الصف المختار يبقى مختاراً عند تبديل القالب: تُعبّأ خانة الصف في القالب الجديد إن كانت فارغة
     if (window.__clsPicked && typeof clsList === 'function' && !window.__clsReapplying) {
         const i = clsList().findIndex(c => clsLabel(c) === window.__clsPicked);
-        const ids = ['grade', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience'];
+        const ids = ['grade', 'shortBeneficiaries', 'visitGrade', 'dv_strategy_grade', 'dv_tool_audience', 'dv_parents_audience', 'dv_remedial_audience', 'dv_remedial_count', 'dv_enrichment_audience', 'dv_enrichment_count', 'dv_applied_audience', 'dv_applied_count', 'dv_initiative_audience', 'dv_initiative_count', 'dv_program_audience', 'dv_program_count'];
         const target = ids.map(id => document.getElementById(id)).find(el => el && el.offsetParent !== null);
         if (i >= 0 && (!target || !String(target.value || '').trim())) {
             window.__clsReapplying = true;
@@ -13229,7 +13282,7 @@ function updateVisitHint() {
         const info = showFor === 'visit'
             ? { icon: 'fa-people-arrows', hint: 'يبدو أن عنوانك عن تبادل الزيارات بين المعلمين.', btn: 'استخدم استمارة تبادل الزيارات' }
             : { icon: DOC_VARIANTS[showFor].pillIcon, hint: DOC_VARIANTS[showFor].hint, btn: DOC_VARIANTS[showFor].hintBtn };
-        el.innerHTML = '<span><i class="fas ' + info.icon + '"></i> ' + info.hint + '</span><button type="button" onclick="activateShortVariant(\'' + showFor + '\')">' + info.btn + '</button>';
+        el.innerHTML = '<span><i class="fas ' + info.icon + '"></i> ' + info.hint + '</span><button type="button" onclick="window.__tplManualAt=tplNormTitle(tplCurrentTitle())||\'*\';activateShortVariant(\'' + showFor + '\')">' + info.btn + '</button>';
     });
 }
 
@@ -13460,6 +13513,54 @@ const DOC_VARIANTS = {
         },
     },
 };
+// ----- قوالب الخطط والبرامج: نفس الترتيب (الفئة، العدد، المدة ثم الأهداف والإجراءات) بعناوين مختلفة -----
+(function addPlanVariants() {
+    const W_AUD = ['الفئه المستهدفه', 'للفئه', 'الفئه', 'المستهدفين', 'المستهدفه', 'والفئه'];
+    const W_CNT = ['عدد المستفيدين', 'عدد الطلاب', 'عددهم', 'العدد', 'عدد'];
+    const mk = o => {
+        const fields = [
+            { k: 'audience', ek: 'audience', label: 'الفئة المستهدفة', icon: 'fa-bullseye', ph: o.audPh, words: W_AUD },
+            { k: 'count', ek: 'beneficiaries_count', label: 'عدد المستفيدين', icon: 'fa-users', ph: 'مثال: ٢٥ طالباً', words: W_CNT },
+            { k: 'duration', ek: 'duration', label: o.dur, icon: 'fa-hourglass-half', ph: o.durPh, words: o.durWords },
+        ];
+        if (o.lesson) fields.push({ k: 'lesson', ek: 'lesson', label: 'الدرس', icon: 'fa-book-open', ph: 'مثال: درس الكسور العشرية', words: ['عنوان الدرس', 'الدرس', 'درس', 'الوحده'] });
+        return Object.assign({
+            key: o.key, pill: o.pill, pillIcon: o.icon,
+            formTitle: 'بيانات ' + o.noun,
+            defaultTitle: o.defaultTitle, criterionName: o.defaultTitle,
+            hint: 'يبدو أن عنوانك عن ' + o.about + '.', hintBtn: 'استخدم قالب ' + o.pill,
+            picked: 'تم اختيار قالب ' + o.pill + '.',
+            notice: 'اكتب عنوان التقرير (مثل: ' + o.example + ') ثم اضغط زر التوليد بالأسفل: يكتب الذكاء الاصطناعي "' + o.goals + '" و"' + o.procs + '"، ويمكنك تعديلها.',
+            checklist: 'لا تنسَ ذكر: ' + (o.lesson ? 'عنوان الدرس، ' : '') + 'الفئة المستهدفة، عدد المستفيدين، ' + o.dur + '، والملاحظات الإضافية',
+            missingExample: o.missingExample,
+            notesPh: 'مثال: تحسّن مستوى الطلاب بشكل واضح، أو أي نقطة تستحق الذكر',
+            fields,
+            sections: [
+                { k: 'goals', label: o.goals, icon: 'fa-flag', kind: 'list', mark: 'numP', heads: [o.goals, 'الأهداف'] },
+                { k: 'procs', label: o.procs, icon: 'fa-list-check', kind: 'list', mark: 'bullet', heads: [o.procs].concat(o.procsAlt || []) },
+            ],
+            layout: [{ t: 'info', rows: [o.lesson ? ['lesson', 'audience', 'count', 'duration'] : ['audience', 'count', 'duration']] }, { t: 'pair', a: 'goals', b: 'procs' }],
+            detect() { return -1; },
+        });
+    };
+    Object.assign(DOC_VARIANTS, {
+        remedial: mk({ key: 'remedial', pill: 'خطة علاجية', icon: 'fa-kit-medical', noun: 'الخطة', about: 'خطة علاجية للطلاب', defaultTitle: 'تقرير خطة علاجية',
+            example: 'خطة علاجية لضعف القراءة', audPh: 'مثال: الطلاب المتعثرون في القراءة', dur: 'مدة الخطة', durPh: 'مثال: أربعة أسابيع', durWords: ['مده الخطه', 'المده', 'مدتها', 'لمده'],
+            goals: 'أهداف الخطة', procs: 'الإجراءات العلاجية', procsAlt: ['الإجراءات'], missingExample: 'خطة علاجية لطلاب الصف الثالث المتعثرين في القراءة عددهم ثمانية لمدة شهر' }),
+        enrichment: mk({ key: 'enrichment', pill: 'خطة إثرائية', icon: 'fa-gem', noun: 'الخطة', about: 'خطة إثرائية للطلاب', defaultTitle: 'تقرير خطة إثرائية',
+            example: 'الخطة الإثرائية للطلاب الموهوبين', audPh: 'مثال: الطلاب الموهوبون', dur: 'مدة الخطة', durPh: 'مثال: الفصل الدراسي الأول', durWords: ['مده الخطه', 'المده', 'مدتها', 'لمده'],
+            goals: 'أهداف الخطة', procs: 'الأنشطة الإثرائية', procsAlt: ['الأنشطة', 'الإجراءات'], missingExample: 'خطة إثرائية للطلاب الموهوبين في الصف الخامس عددهم ستة لمدة الفصل الدراسي' }),
+        applied: mk({ key: 'applied', pill: 'درس تطبيقي', icon: 'fa-person-chalkboard', noun: 'الدرس', about: 'درس تطبيقي', defaultTitle: 'تقرير درس تطبيقي', lesson: true,
+            example: 'درس تطبيقي في الكسور العشرية', audPh: 'مثال: طلاب الصف الخامس', dur: 'زمن الدرس', durPh: 'مثال: حصة دراسية (٤٥ دقيقة)', durWords: ['زمن الدرس', 'الزمن', 'مده الدرس', 'المده'],
+            goals: 'أهداف الدرس', procs: 'خطوات التنفيذ', procsAlt: ['الخطوات', 'الإجراءات'], missingExample: 'درس تطبيقي عن الكسور العشرية لطلاب الصف الخامس عددهم ثلاثون في حصة واحدة' }),
+        initiative: mk({ key: 'initiative', pill: 'مبادرة', icon: 'fa-hand-holding-heart', noun: 'المبادرة', about: 'مبادرة', defaultTitle: 'تقرير مبادرة',
+            example: 'مبادرة نظافة الفصل', audPh: 'مثال: طلاب المدرسة', dur: 'مدة المبادرة', durPh: 'مثال: أسبوعان', durWords: ['مده المبادره', 'المده', 'مدتها', 'لمده'],
+            goals: 'أهداف المبادرة', procs: 'البرامج والفعاليات', procsAlt: ['الفعاليات', 'الإجراءات'], missingExample: 'مبادرة نظافة الفصل لطلاب الصف الأول عددهم خمسة وعشرون لمدة أسبوعين' }),
+        program: mk({ key: 'program', pill: 'برنامج', icon: 'fa-diagram-project', noun: 'البرنامج', about: 'برنامج تربوي أو تعليمي', defaultTitle: 'تقرير برنامج',
+            example: 'برنامج تعزيز القراءة', audPh: 'مثال: طلاب الصفوف الأولية', dur: 'مدة البرنامج', durPh: 'مثال: شهر', durWords: ['مده البرنامج', 'المده', 'مدته', 'لمده'],
+            goals: 'أهداف البرنامج', procs: 'البرامج والفعاليات', procsAlt: ['الفعاليات', 'الإجراءات'], missingExample: 'برنامج تعزيز القراءة لطلاب الصف الثاني عددهم عشرون لمدة شهر' }),
+    });
+})();
 Object.values(DOC_VARIANTS).forEach(v => {
     v.fieldById = {};
     v.fields.forEach(f => { f.id = 'dv_' + v.key + '_' + f.k; v.fieldById[f.id] = f; });
@@ -13623,7 +13724,22 @@ const KW = (() => {
         if (kwFirst(t, kwTok('مدرستي')) >= 0) sig.push([1, kwFirst(t, kwTok('مدرستي'))]);
         return sig;
     };
-    return { visit, parents, strategy, tool, T_SUPPORT };
+    // ---- الخطط والبرامج ----
+    const P_REM = kwTok('علاجي|علاجيه|علاج|معالجه|متعثر\\S*|التعثر|تعثر');
+    const P_ENR = kwTok('اثرائي|اثرائيه|اثراء|موهوب\\S*|الموهبه|موهبه');
+    const P_LESSON = kwTok('درس|دروس|حصه|حصص');
+    const P_APPLIED = kwTok('تطبيقي|تطبيقيه|نموذجي|نموذجيه');
+    const P_INIT = kwTok('مبادره|مبادرات');
+    const P_PROG = kwTok('برنامج|برامج');
+    const P_TOOLV = kwTok('استخدام|استخدمت|توظيف|تفعيل|تشغيل|تثبيت|تحميل');
+    const first = (t, re) => { const i = kwFirst(t, re); return i >= 0 ? [[4, i]] : []; };
+    const remedial = t => first(t, P_REM);
+    const enrichment = t => first(t, P_ENR);
+    const applied = t => { const i = kwNear(t, P_LESSON, P_APPLIED, 2); return i >= 0 ? [[4, i]] : []; };
+    const initiative = t => { const i = kwFirst(t, P_INIT); return i >= 0 ? [[3, i]] : []; };
+    // «برنامج» بعد فعل استخدام = تطبيق حاسوبي (قالب الأدوات)
+    const program = t => { const i = kwFirst(t, P_PROG); return (i >= 0 && !(i > 0 && P_TOOLV.test(t[i - 1]))) ? [[3, i]] : []; };
+    return { visit, parents, strategy, tool, remedial, enrichment, applied, initiative, program, T_SUPPORT };
 })();
 
 // يعيد { visit|strategy|tool|parents: {score,pos} } لنصٍّ واحد (للاختبار والتشخيص أيضاً).
@@ -13638,9 +13754,10 @@ function scoreShortVariants(text) {
     // الإشارة القوية القديمة للأدوات (فعل استخدام + اسم أداة بقرب) تبقى معتمدة.
     const ti = DOC_VARIANTS.tool.detect(t);
     if (ti >= 0) toolSigs.push([3, ti]);
-    return { visit: tally(visitSigs), parents: tally(KW.parents(t, s)), strategy: tally(KW.strategy(t, s)), tool: tally(toolSigs) };
+    return { visit: tally(visitSigs), parents: tally(KW.parents(t, s)), strategy: tally(KW.strategy(t, s)), tool: tally(toolSigs),
+        remedial: tally(KW.remedial(t)), enrichment: tally(KW.enrichment(t)), applied: tally(KW.applied(t)), initiative: tally(KW.initiative(t)), program: tally(KW.program(t)) };
 }
-const SHORT_VARIANT_PRIORITY = ['visit', 'parents', 'strategy', 'tool'];
+const SHORT_VARIANT_PRIORITY = ['visit', 'parents', 'remedial', 'enrichment', 'applied', 'strategy', 'tool', 'initiative', 'program'];
 // يعيد 'visit' أو أحد مفاتيح DOC_VARIANTS أو null.
 function detectShortVariant(text) {
     if (!docTokens(text).length) return null;
@@ -17080,6 +17197,7 @@ const TTS_Q_BY_LABEL = {
     'تاريخ التنفيذ': 'q_date', 'المستفيدون / العدد': 'q_beneficiaries', 'المجال': 'q_field', 'المعلم الزائر': 'q_visitor',
     'المعلم المستضيف': 'q_host', 'الصف / الفصل': 'q_grade_class', 'الوحدة / عنوان الدرس': 'q_unit', 'اليوم / التاريخ': 'q_when',
     'نوع الاستراتيجية': 'q_strategy_type', 'الفعالية': 'q_effectiveness', 'الفئة المستهدفة': 'q_audience', 'وقت الاستخدام': 'q_usage_time',
+    'عدد المستفيدين': 'q_count', 'مدة الخطة': 'q_duration', 'مدة المبادرة': 'q_duration', 'مدة البرنامج': 'q_duration', 'زمن الدرس': 'q_duration',
     'نوع النشاط': 'q_activity_type', 'المسؤول عن التواصل': 'q_responsible', 'وسيلة التواصل': 'q_channel', 'الفترة الزمنية': 'q_period',
 };
 window.__ttsClipMissing = new Set();
@@ -20828,8 +20946,8 @@ function renderAdminFeedbackList() {
 
 // ==================== سجل التقارير (لوحة الإدارة) ====================
 // القراءة والحذف يمرّان عبر سياستي RLS الخاصتين بالأدمن على report_generation_log؛ المستخدم العادي لا يرى إلا صفوفه.
-const ADMIN_LOG_KIND_LABELS = { long: 'طويل', short: 'قصير', visit: 'تبادل زيارات', strategy: 'استراتيجية', tool: 'أداة / تطبيق', parents: 'تواصل أولياء الأمور' };
-const ADMIN_LOG_SHORT_KINDS = ['short', 'visit', 'strategy', 'tool', 'parents'];
+const ADMIN_LOG_KIND_LABELS = { long: 'طويل', short: 'قصير', visit: 'تبادل زيارات', strategy: 'استراتيجية', tool: 'أداة / تطبيق', parents: 'تواصل أولياء الأمور' , remedial: 'خطة علاجية', enrichment: 'خطة إثرائية', applied: 'درس تطبيقي', initiative: 'مبادرة', program: 'برنامج' };
+const ADMIN_LOG_SHORT_KINDS = ['short', 'visit', 'strategy', 'tool', 'parents', 'remedial', 'enrichment', 'applied', 'initiative', 'program'];
 // ==================== استهلاك مفاتيح Gemini (للمالك فقط) ====================
 // المصدر: سجل ai_call_log الذي تكتبه دوال الخادم (رقم خانة المفتاح فقط). الدالة ai_key_usage ترفض غير المالك.
 const KU_LIMITS = { 'gemini-3.1-flash-lite': 500, 'gemini-2.5-flash-lite': 20, 'gemini-2.5-flash': 20 };
