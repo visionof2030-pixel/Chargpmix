@@ -10126,8 +10126,9 @@ function tplApplyAI(vk) {
     if (!AI_SHORT_TEMPLATES.includes(vk) || !isShortTemplate()) return false;
     if (vk === 'visit' && window.__bulkMode) return false;
     if (vk === aiTplKey()) return false;
-    if (vk === 'short') setShortVariant('general');
-    else activateShortVariant(vk, { silent: true, auto: true });
+    // keepVoice: لا تُغلق نوافذ الصوت المفتوحة (كان ذلك يُرجع المعلم لصفحة اختيار طريقة الإدخال)
+    if (vk === 'short') setShortVariant('general', { keepVoice: true });
+    else activateShortVariant(vk, { silent: true, auto: true, keepVoice: true });
     try { tsFill(); } catch (_) { /* تجاهل */ }
     // الصف المختار من «صفوفي» يُعاد إلى خانات القالب الجديد
     try { if (window.__clsPicked) { const i = clsList().findIndex(c => clsLabel(c) === window.__clsPicked); if (i >= 0) clsApply(i); } } catch (_) { /* تجاهل */ }
@@ -10165,6 +10166,7 @@ async function aiInferFields(title) {
             const respTpl = auto ? (data.template || tpl) : tpl;
             if (useTpl !== respTpl) { if (typeof updateReport === 'function') updateReport(); return; }
             const m = AI_FIELD_MAP[useTpl] || {};
+            window.__aiLastFields = { tpl: useTpl, title, fields: data.fields };
             Object.entries(data.fields).forEach(([k, v]) => { const id = m[k]; if (id && afSet(id, String(v))) window.__aiFieldIds.add(id); });
             if (typeof updateReport === 'function') updateReport();
             if (qwIsOpen()) qwFieldsRender();
@@ -19898,7 +19900,9 @@ async function handleVoiceFreeTranscript(transcript) {
     window.__voiceFreeMissingDismissed = false;
     window.__voiceFreeEditingField = null;
     // ذكر نوع خاص من التقارير بأي صيغة (تبادل الزيارات، تنفيذ استراتيجية، استخدام أداة أو تطبيق، التواصل مع أولياء الأمور) يضعه في قالبه تلقائياً.
-    autoSelectShortVariantFromText((window.__vmPresetTitle ? window.__vmPresetTitle + ' ' : '') + transcript);
+    // إعادة القراءة بعد أن اختار الذكاء الاصطناعي قالباً آخر: يبقى قالبه ولا تُعيده الكلمات المفتاحية
+    const reread = window.__vfRereadFor === transcript;
+    if (!reread) autoSelectShortVariantFromText((window.__vmPresetTitle ? window.__vmPresetTitle + ' ' : '') + transcript);
     // أمر جديد يبدأ بلا صور؛ أما الإضافة/إعادة المحاولة (والبانر مفتوح) فتحتفظ بما اختاره المعلم.
     if (!document.getElementById('voiceFreeConfirmBanner').classList.contains('show')) resetReportImagesForNewReport();
     resetFormFieldsForVoiceFreeCapture();
@@ -19962,8 +19966,14 @@ async function handleVoiceFreeTranscript(transcript) {
     suggestCriterionForTitle({ auto: true });
     // الخانات التلقائية والمستنتجة (✨) قبل حساب البنود الناقصة
     try { tsFill(); } catch (_) { /* تجاهل */ }
-    window.__aiInferKey = '';
-    const inferP = (!extractionFailed && title) ? Promise.race([aiInferFields(title), new Promise(r => setTimeout(r, 7000))]) : null;
+    if (!reread) window.__aiInferKey = '';
+    const tplAtExtract = aiTplKey();
+    // إعادة القراءة: خانات الذكاء الاصطناعي (المدة، الفئة...) تُعاد من الرد السابق بلا طلب جديد
+    if (reread && window.__aiLastFields && window.__aiLastFields.tpl === tplAtExtract) {
+        const m = AI_FIELD_MAP[tplAtExtract] || {};
+        Object.entries(window.__aiLastFields.fields || {}).forEach(([k, v]) => { const id = m[k]; if (id && afSet(id, String(v))) window.__aiFieldIds.add(id); });
+    }
+    const inferP = (!extractionFailed && title && !reread) ? Promise.race([aiInferFields(title), new Promise(r => setTimeout(r, 7000))]) : null;
     if (extractionFailed) {
         // مراجعتا الذكاء الاصطناعي تعتمدان على نفس الخدمة المتعذّرة الآن -
         // لا داعي لانتظارهما؛ المعلم يراجع بنفسه أو يضغط "إعادة المحاولة".
@@ -19973,6 +19983,11 @@ async function handleVoiceFreeTranscript(transcript) {
         await runVoiceFreeReviewPasses(title);
     }
     if (inferP) { await inferP; renderVoiceFreeConfirmSummary(); }
+    // اختار الذكاء الاصطناعي قالباً غير الذي استُخرجت به البنود: نعيد قراءة الكلام نفسه بالقالب الجديد مرة واحدة
+    if (!reread && !extractionFailed && aiTplKey() !== tplAtExtract && document.getElementById('voiceFreeConfirmBanner').classList.contains('show')) {
+        window.__vfRereadFor = transcript;
+        try { return await handleVoiceFreeTranscript(transcript); } finally { window.__vfRereadFor = ''; }
+    }
     renderVoiceFreeMissingReminder();
     const yesBtn = document.getElementById('voiceFreeConfirmYesBtn');
     if (yesBtn) yesBtn.disabled = false;
