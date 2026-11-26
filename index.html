@@ -10667,14 +10667,14 @@ function clearAuthMessage() {
     el.className = '';
 }
 
-// تسجيل الدخول يقبل البريد الإلكتروني أو اسم المستخدم - إذا لم يكن المُدخل بريداً
-// نحوّله إلى البريد المرتبط به عبر دالة username_to_email، ثم نسجّل الدخول بالبريد
-// وكلمة المرور دائماً (Supabase Auth لا يدعم تسجيل الدخول باسم المستخدم مباشرة).
-async function resolveLoginEmail(identifier) {
-    if (identifier.includes('@')) return identifier;
-    const { data, error } = await supabaseClient.rpc('username_to_email', { p_username: identifier });
-    if (error || !data) return null;
-    return data;
+// تسجيل الدخول يقبل البريد الإلكتروني أو اسم المستخدم. باسم المستخدم: يتم الدخول على الخادم
+// (دالة login-username) فلا يصل بريد المعلم للمتصفح أبداً، ويعود رمزا الجلسة فقط.
+async function loginWithUsername(username, password) {
+    const { data, error } = await supabaseClient.functions.invoke('login-username', { body: { username, password } });
+    if (error || !data) return { ok: false, code: 'network' };
+    if (!data.ok || !data.session) return { ok: false, code: data.code || 'invalid' };
+    const { error: setErr } = await supabaseClient.auth.setSession(data.session);
+    return setErr ? { ok: false, code: 'invalid' } : { ok: true };
 }
 
 async function handleLogin() {
@@ -10686,13 +10686,17 @@ async function handleLogin() {
     const originalBtnHTML = btn ? btn.innerHTML : null;
     if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner"></i> جارٍ تسجيل الدخول...'; }
     try {
-        const email = await resolveLoginEmail(identifier);
-        if (!email) {
-            // لا نكشف أبداً إن كانت المشكلة في اسم المستخدم أو كلمة المرور
-            showAuthMessage('بيانات الدخول غير صحيحة', 'error');
+        if (!identifier.includes('@')) {
+            const r = await loginWithUsername(identifier, password);
+            if (!r.ok) {
+                // لا نكشف أبداً إن كانت المشكلة في اسم المستخدم أو كلمة المرور
+                showAuthMessage(r.code === 'too_many' ? 'محاولات دخول كثيرة. انتظر ربع ساعة ثم حاول مجدداً' : r.code === 'network' ? 'تعذّر الاتصال، تحقق من الإنترنت وحاول مجدداً' : 'بيانات الدخول غير صحيحة', 'error');
+                return;
+            }
+            onAuthenticated();
             return;
         }
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email: identifier, password });
         if (error || !data?.session) {
             showAuthMessage('بيانات الدخول غير صحيحة', 'error');
             return;
