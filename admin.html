@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>لوحة تحكم الاشتراكات - إنجاز</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
+
+:root{
+    --primary:#066d4d;
+    --primary-dark:#044d36;
+    --secondary:#ffd166;
+    --white:#ffffff;
+    --gray-light:#f8fdfa;
+    --text-dark:#083024;
+    --text-light:#666;
+    --border:#d4ebe2;
+    --danger:#d64545;
+    --danger-dark:#b23a3a;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+    font-family:'Cairo', sans-serif;
+    background:var(--gray-light);
+    color:var(--text-dark);
+    min-height:100vh;
+    padding:20px;
+}
+.topbar{
+    max-width:1200px; margin:0 auto 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:12px;
+}
+.topbar h1{
+    font-size:20px; font-weight:800; color:var(--primary-dark);
+    display:flex; align-items:center; gap:10px;
+}
+.topbar h1 i{color:var(--secondary); -webkit-text-stroke:1px var(--primary-dark);}
+.btn{
+    border:none; border-radius:10px; padding:9px 16px; font-family:'Cairo',sans-serif;
+    font-weight:700; font-size:13.5px; cursor:pointer; display:inline-flex; align-items:center; gap:7px;
+    transition:all .15s;
+}
+.btn-primary{background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color:#fff;}
+.btn-primary:hover{filter:brightness(1.08);}
+.btn-outline{background:#fff; color:var(--text-dark); border:2px solid var(--border);}
+.btn-outline:hover{border-color:var(--primary);}
+.btn-danger{background:var(--danger); color:#fff;}
+.btn-danger:hover{background:var(--danger-dark);}
+.btn-sm{padding:6px 11px; font-size:12.5px; border-radius:8px;}
+.btn:disabled{opacity:.55; cursor:not-allowed;}
+
+/* ---- Gate screen ---- */
+#gateScreen{
+    max-width:420px; margin:80px auto; background:#fff; border-radius:20px;
+    box-shadow:0 20px 50px rgba(0,0,0,.12); padding:34px 30px; text-align:center;
+    border-top:4px solid var(--secondary);
+}
+#gateScreen i.fa-shield-halved{font-size:34px; color:var(--primary); margin-bottom:10px;}
+#gateScreen h2{font-size:19px; font-weight:800; margin-bottom:6px;}
+#gateScreen p{font-size:13px; color:var(--text-light); margin-bottom:20px;}
+#gateScreen input{
+    width:100%; padding:12px 15px; border:2px solid var(--border); border-radius:12px;
+    font-size:14.5px; text-align:center; font-family:'Cairo',sans-serif; margin-bottom:12px;
+    letter-spacing:1px;
+}
+#gateScreen input:focus{outline:none; border-color:var(--primary);}
+#gateScreen label.remember{
+    display:flex; align-items:center; justify-content:center; gap:7px; font-size:12.5px;
+    color:var(--text-light); margin-bottom:16px; cursor:pointer;
+}
+#gateScreen .btn{width:100%; justify-content:center; padding:12px;}
+#gateError{color:var(--danger); font-size:13px; font-weight:700; margin-top:12px; min-height:18px;}
+
+/* ---- Main panel ---- */
+#panel{display:none; max-width:1200px; margin:0 auto;}
+.tabs{display:flex; gap:8px; margin-bottom:18px; border-bottom:2px solid var(--border);}
+.tab-btn{
+    background:none; border:none; font-family:'Cairo',sans-serif; font-weight:700; font-size:14.5px;
+    padding:12px 18px; cursor:pointer; color:var(--text-light); border-bottom:3px solid transparent; margin-bottom:-2px;
+}
+.tab-btn.active{color:var(--primary-dark); border-bottom-color:var(--primary);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+.toolbar{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap;}
+.search-box{position:relative; flex:1; min-width:220px; max-width:340px;}
+.search-box i{position:absolute; right:13px; top:50%; transform:translateY(-50%); color:var(--text-light); font-size:13px;}
+.search-box input{
+    width:100%; padding:9px 38px 9px 12px; border:2px solid var(--border); border-radius:10px;
+    font-family:'Cairo',sans-serif; font-size:13.5px;
+}
+.search-box input:focus{outline:none; border-color:var(--primary);}
+
+.card{background:#fff; border-radius:16px; box-shadow:0 6px 24px rgba(0,0,0,.06); overflow:hidden; margin-bottom:20px;}
+.table-wrap{overflow-x:auto;}
+table{width:100%; border-collapse:collapse; min-width:760px;}
+th, td{padding:12px 14px; text-align:right; font-size:13px; border-bottom:1px solid var(--border); white-space:nowrap;}
+th{background:var(--gray-light); font-weight:800; color:var(--primary-dark); font-size:12.5px;}
+tbody tr:hover{background:#fafffd;}
+.badge{display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:11.5px; font-weight:800;}
+.badge-active{background:#e3f7ec; color:#0d8a4f;}
+.badge-suspended{background:#fdeaea; color:var(--danger-dark);}
+.badge-expired{background:#fff2e0; color:#b8710f;}
+.badge-on{background:#e3f7ec; color:#0d8a4f;}
+.badge-off{background:#f1f1f1; color:#888;}
+select.type-select{
+    padding:6px 9px; border:2px solid var(--border); border-radius:8px; font-family:'Cairo',sans-serif;
+    font-size:12.5px; font-weight:600; color:var(--text-dark); background:#fff;
+}
+.row-actions{display:flex; gap:6px; flex-wrap:wrap;}
+.usage-cell{font-weight:700;}
+.muted{color:var(--text-light); font-weight:500;}
+.empty-state{text-align:center; padding:40px 20px; color:var(--text-light);}
+.empty-state i{font-size:30px; margin-bottom:10px; display:block; color:var(--border);}
+
+.gen-form{display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; padding:18px; background:var(--gray-light); border-radius:14px; margin-bottom:18px;}
+.gen-form .field{display:flex; flex-direction:column; gap:5px;}
+.gen-form label{font-size:12px; font-weight:700; color:var(--text-light);}
+.gen-form select, .gen-form input{
+    padding:9px 12px; border:2px solid var(--border); border-radius:10px; font-family:'Cairo',sans-serif; font-size:13px;
+    background:#fff;
+}
+#newCodeResult{
+    display:none; margin-top:14px; padding:14px 16px; background:#fff; border:2px dashed var(--primary);
+    border-radius:12px; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+}
+#newCodeResult code{font-size:17px; font-weight:800; color:var(--primary-dark); letter-spacing:1px;}
+
+.toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--text-dark); color:#fff; padding:12px 22px; border-radius:12px; font-size:13.5px;
+    font-weight:700; opacity:0; transition:all .25s; z-index:999; pointer-events:none; box-shadow:0 10px 30px rgba(0,0,0,.25);
+    display:flex; align-items:center; gap:8px; max-width:90vw; text-align:center;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+.toast.err{background:var(--danger-dark);}
+.toast.ok{background:var(--primary-dark);}
+
+.spin{animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-row td{text-align:center; padding:30px; color:var(--text-light);}
+
+.stats-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px;}
+.stat-card{background:#fff; border-radius:14px; box-shadow:0 6px 24px rgba(0,0,0,.06); padding:14px 16px; border-top:3px solid var(--secondary);}
+.stat-card .stat-value{font-size:22px; font-weight:800; color:var(--primary-dark);}
+.stat-card .stat-label{font-size:12px; color:var(--text-light); margin-top:2px;}
+.filters{display:flex; gap:8px; flex-wrap:wrap;}
+.filters select{padding:8px 10px; border:2px solid var(--border); border-radius:10px; font-family:'Cairo',sans-serif; font-size:13px; background:#fff; color:var(--text-dark);}
+.badge-voice{background:#e3f7ec; color:#0d8a4f;}
+.badge-typed{background:#f1f1f1; color:#555;}
+.log-title{max-width:340px; white-space:normal; font-weight:700; line-height:1.6;}
+.log-note{font-size:12px; color:var(--text-light); padding:10px 14px;}
+@media (max-width:640px){
+    body{padding:12px;}
+    .topbar h1{font-size:17px;}
+    th, td{font-size:12px; padding:9px 10px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <h1><i class="fas fa-shield-halved"></i> لوحة تحكم الاشتراكات</h1>
+    <button class="btn btn-outline btn-sm" id="logoutBtn" style="display:none;" onclick="logout()">
+        <i class="fas fa-right-from-bracket"></i> خروج
+    </button>
+</div>
+
+<!-- Gate -->
+<div id="gateScreen">
+    <i class="fas fa-shield-halved"></i>
+    <h2>الدخول للوحة التحكم</h2>
+    <p>أدخل رمز الإدارة الخاص بمنصة إنجاز للمتابعة</p>
+    <input type="password" id="tokenInput" placeholder="رمز الإدارة" autocomplete="off">
+    <label class="remember">
+        <input type="checkbox" id="rememberCheck" checked style="width:auto;">
+        تذكرني على هذا الجهاز
+    </label>
+    <button class="btn btn-primary" onclick="attemptLogin()">
+        <i class="fas fa-arrow-left"></i> دخول
+    </button>
+    <div id="gateError"></div>
+</div>
+
+<!-- Main panel -->
+<div id="panel">
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="accountsTab" onclick="switchTab('accountsTab')">
+            <i class="fas fa-users"></i> الحسابات
+        </button>
+        <button class="tab-btn" data-tab="codesTab" onclick="switchTab('codesTab')">
+            <i class="fas fa-key"></i> أكواد التفعيل
+        </button>
+        <button class="tab-btn" data-tab="logTab" onclick="switchTab('logTab')">
+            <i class="fas fa-clock-rotate-left"></i> سجل التقارير
+        </button>
+    </div>
+
+    <!-- Accounts tab -->
+    <div class="tab-panel active" id="accountsTab">
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="accountSearch" placeholder="ابحث بالاسم أو البريد..." oninput="renderAccounts()">
+                <i class="fas fa-magnifying-glass"></i>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="loadAccounts()"><i class="fas fa-rotate"></i> تحديث</button>
+        </div>
+        <div class="card">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المستخدم</th>
+                            <th>البريد</th>
+                            <th>الاسم في التقرير</th>
+                            <th>نوع الحساب</th>
+                            <th>الحالة</th>
+                            <th>الانتهاء</th>
+                            <th>الاستخدام</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accountsBody">
+                        <tr class="loading-row"><td colspan="8"><i class="fas fa-circle-notch spin"></i> جارِ التحميل...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Codes tab -->
+    <div class="tab-panel" id="codesTab">
+        <div class="gen-form">
+            <div class="field">
+                <label>نوع الكود</label>
+                <select id="planSelect">
+                    <option value="5min_1">5 دقائق - استخدام واحد</option>
+                    <option value="15min_2">15 دقيقة - استخدامان</option>
+                    <option value="30min_3">30 دقيقة - 3 استخدامات</option>
+                    <option value="1day_6" selected>يوم واحد - 6 استخدامات</option>
+                    <option value="3day_15">3 أيام - 15 استخدام</option>
+                    <option value="7day_25">7 أيام - 25 استخدام</option>
+                    <option value="1m_45">شهر - 45 استخدام</option>
+                    <option value="2m_65">شهرين - 65 استخدام</option>
+                    <option value="3m_120">3 أشهر - 120 استخدام</option>
+                    <option value="5m_200">5 أشهر - 200 استخدام</option>
+                </select>
+            </div>
+            <div class="field" style="flex:1; min-width:160px;">
+                <label>تسمية (اختياري)</label>
+                <input type="text" id="labelInput" placeholder="مثال: كود لمعلمة الرياض">
+            </div>
+            <button class="btn btn-primary" id="genBtn" onclick="generateCode()">
+                <i class="fas fa-plus"></i> توليد كود
+            </button>
+        </div>
+        <div id="newCodeResult">
+            <div>كود جديد: <code id="newCodeValue"></code></div>
+            <button class="btn btn-outline btn-sm" onclick="copyNewCode()"><i class="fas fa-copy"></i> نسخ</button>
+        </div>
+
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="codeSearch" placeholder="ابحث بالكود أو التسمية..." oninput="renderCodes()">
+                <i class="fas fa-magnifying-glass"></i>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="loadCodes()"><i class="fas fa-rotate"></i> تحديث</button>
+        </div>
+        <div class="card">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>التسمية</th>
+                            <th>الحالة</th>
+                            <th>المدة</th>
+                            <th>الاستخدام</th>
+                            <th>آخر استخدام</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="codesBody">
+                        <tr class="loading-row"><td colspan="7"><i class="fas fa-circle-notch spin"></i> جارِ التحميل...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report log tab -->
+    <div class="tab-panel" id="logTab">
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-value" id="logStatTotal">—</div><div class="stat-label">إجمالي التقارير المسجّلة</div></div>
+            <div class="stat-card"><div class="stat-value" id="logStatToday">—</div><div class="stat-label">تقارير اليوم</div></div>
+            <div class="stat-card"><div class="stat-value" id="logStatVoice">—</div><div class="stat-label">أُصدرت بالأمر الصوتي</div></div>
+            <div class="stat-card"><div class="stat-value" id="logStatShort">—</div><div class="stat-label">بالقالب القصير وما يتفرع منه</div></div>
+        </div>
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="logSearch" placeholder="ابحث بالعنوان أو اسم المُصدِر..." oninput="renderLog()">
+                <i class="fas fa-magnifying-glass"></i>
+            </div>
+            <div class="filters">
+                <select id="logFilterKind" onchange="renderLog()">
+                    <option value="">كل القوالب</option>
+                    <option value="long">طويل</option>
+                    <option value="short_all">قصير (كل أنواعه)</option>
+                    <option value="short">قصير عام</option>
+                    <option value="visit">تبادل زيارات</option>
+                    <option value="strategy">استراتيجية</option>
+                    <option value="tool">أداة / تطبيق</option>
+                    <option value="parents">تواصل أولياء الأمور</option>
+                    <option value="remedial">خطة علاجية</option>
+                    <option value="enrichment">خطة إثرائية</option>
+                    <option value="applied">درس تطبيقي</option>
+                    <option value="initiative">مبادرة</option>
+                    <option value="program">برنامج</option>
+                </select>
+                <select id="logFilterMethod" onchange="renderLog()">
+                    <option value="">كل الطرق</option>
+                    <option value="voice">أمر صوتي</option>
+                    <option value="typed">كتابة</option>
+                </select>
+                <select id="logFilterDate" onchange="renderLog()">
+                    <option value="">كل التواريخ</option>
+                    <option value="1">اليوم</option>
+                    <option value="7">آخر 7 أيام</option>
+                    <option value="30">آخر 30 يوماً</option>
+                </select>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="loadLog()"><i class="fas fa-rotate"></i> تحديث</button>
+            <button class="btn btn-danger btn-sm" onclick="clearLog()"><i class="fas fa-trash"></i> مسح السجل بالكامل</button>
+        </div>
+        <div class="card">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>عنوان التقرير</th>
+                            <th>المُصدِر</th>
+                            <th>القالب</th>
+                            <th>الطريقة</th>
+                            <th>الوقت</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logBody">
+                        <tr class="loading-row"><td colspan="6"><i class="fas fa-circle-notch spin"></i> جارِ التحميل...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="log-note" id="logNote"></div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = "https://exulmefyudxtvybadnds.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4dWxtZWZ5dWR4dHZ5YmFkbmRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5NTgyNTMsImV4cCI6MjEwNDUzNDI1M30.bsFEzJIcB622-THJzqTYi0rbr7GYO0iS1aAhR5khsLI";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const TOKEN_STORAGE_KEY = "enjaz_admin_token";
+let ADMIN_TOKEN = null;
+let accountsCache = [];
+let codesCache = [];
+
+const ACCOUNT_TYPE_LABELS = {
+    trial_1d: "تجربة يوم واحد",
+    trial_3d: "تجربة 3 أيام",
+    trial_7d: "تجربة 7 أيام",
+    permanent: "اشتراك دائم"
+};
+
+// أمان: كل نص يكتبه المعلمون (اسم المستخدم، الاسم في التقرير، البريد، العنوان...) يُعرض
+// كنص فقط وليس كـ HTML. بدون ذلك يستطيع معلم أن يضع في «الاسم في التقرير» كوداً يعمل
+// عند فتح هذه اللوحة فيسرق رمز الإدارة المحفوظ على الجهاز.
+function esc(v){
+    return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+// المعرّفات تُستخدم داخل onclick: نقبل فقط الصيغة المتوقعة
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function safeUid(v){ return UUID_RE.test(String(v || '')) ? String(v) : ''; }
+
+function showToast(msg, type){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = "toast show" + (type ? " " + type : "");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(()=>{ t.className = "toast"; }, 3200);
+}
+
+function fmtDate(iso){
+    if(!iso) return '<span class="muted">بدون انتهاء</span>';
+    const d = new Date(iso);
+    if(isNaN(d.getTime())) return '<span class="muted">-</span>';
+    return d.toLocaleDateString('ar-SA', {year:'numeric', month:'short', day:'numeric'}) + ' ' +
+           d.toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'});
+}
+
+async function rpc(name, params){
+    const { data, error } = await supabaseClient.rpc(name, { p_token: ADMIN_TOKEN, ...params });
+    if(error){
+        if((error.message || '').includes('Unauthorized')){
+            throw new Error('رمز الإدارة غير صحيح');
+        }
+        throw new Error(error.message || 'حدث خطأ غير متوقع');
+    }
+    return data;
+}
+
+// ---------- Auth gate ----------
+function logout(){
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    ADMIN_TOKEN = null;
+    document.getElementById('panel').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'none';
+    document.getElementById('gateScreen').style.display = 'block';
+    document.getElementById('tokenInput').value = '';
+    document.getElementById('gateError').textContent = '';
+}
+
+async function attemptLogin(){
+    const val = document.getElementById('tokenInput').value.trim();
+    const errBox = document.getElementById('gateError');
+    errBox.textContent = '';
+    if(!val){ errBox.textContent = 'الرجاء إدخال رمز الإدارة'; return; }
+    ADMIN_TOKEN = val;
+    try{
+        await rpc('admin_list_accounts', {});
+        if(document.getElementById('rememberCheck').checked){
+            localStorage.setItem(TOKEN_STORAGE_KEY, val);
+        }
+        enterPanel();
+    }catch(e){
+        ADMIN_TOKEN = null;
+        errBox.textContent = e.message;
+    }
+}
+
+function enterPanel(){
+    document.getElementById('gateScreen').style.display = 'none';
+    document.getElementById('panel').style.display = 'block';
+    document.getElementById('logoutBtn').style.display = 'inline-flex';
+    loadAccounts();
+    loadCodes();
+    loadLog();
+}
+
+function switchTab(id){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active', p.id===id));
+}
+
+// ---------- Accounts ----------
+async function loadAccounts(){
+    const body = document.getElementById('accountsBody');
+    body.innerHTML = '<tr class="loading-row"><td colspan="8"><i class="fas fa-circle-notch spin"></i> جارِ التحميل...</td></tr>';
+    try{
+        accountsCache = await rpc('admin_list_accounts', {}) || [];
+        renderAccounts();
+    }catch(e){
+        body.innerHTML = `<tr><td colspan="8" class="empty-state"><i class="fas fa-triangle-exclamation"></i>${esc(e.message)}</td></tr>`;
+        showToast(e.message, 'err');
+    }
+}
+
+function renderAccounts(){
+    const q = (document.getElementById('accountSearch').value || '').trim().toLowerCase();
+    const body = document.getElementById('accountsBody');
+    let list = accountsCache;
+    if(q){
+        list = list.filter(a =>
+            (a.username||'').toLowerCase().includes(q) ||
+            (a.email||'').toLowerCase().includes(q) ||
+            (a.reporter_name||'').toLowerCase().includes(q)
+        );
+    }
+    if(!list.length){
+        body.innerHTML = `<tr><td colspan="8" class="empty-state"><i class="fas fa-user-slash"></i>لا توجد حسابات مطابقة</td></tr>`;
+        return;
+    }
+    body.innerHTML = list.map(a => {
+        const uid = safeUid(a.user_id);
+        if(!uid) return '';
+        const typeOptions = Object.keys(ACCOUNT_TYPE_LABELS).map(k =>
+            `<option value="${k}" ${a.account_type===k?'selected':''}>${ACCOUNT_TYPE_LABELS[k]}</option>`
+        ).join('');
+        let statusBadge = a.status === 'suspended'
+            ? '<span class="badge badge-suspended"><i class="fas fa-ban"></i> موقوف</span>'
+            : (a.expired ? '<span class="badge badge-expired"><i class="fas fa-clock"></i> منتهي</span>'
+                          : '<span class="badge badge-active"><i class="fas fa-check"></i> نشط</span>');
+        const usageText = a.usage_limit === null
+            ? 'غير محدود'
+            : `${esc(a.usage_count)} / ${esc(a.usage_limit)}`;
+        const toggleBtn = a.status === 'suspended'
+            ? `<button class="btn btn-outline btn-sm" onclick="reactivateAccount('${uid}')"><i class="fas fa-play"></i> تفعيل</button>`
+            : `<button class="btn btn-danger btn-sm" onclick="suspendAccount('${uid}')"><i class="fas fa-pause"></i> إيقاف</button>`;
+        return `
+        <tr data-uid="${uid}">
+            <td>${a.username ? esc(a.username) : '<span class="muted">-</span>'}</td>
+            <td>${a.email ? esc(a.email) : '<span class="muted">-</span>'}</td>
+            <td>${a.reporter_name ? esc(a.reporter_name) : '<span class="muted">-</span>'}</td>
+            <td>
+                <select class="type-select" id="type-${uid}">${typeOptions}</select>
+            </td>
+            <td>${statusBadge}</td>
+            <td>${fmtDate(a.expires_at)}</td>
+            <td class="usage-cell">${usageText}</td>
+            <td>
+                <div class="row-actions">
+                    <button class="btn btn-primary btn-sm" onclick="applyType('${uid}')"><i class="fas fa-check"></i> تطبيق</button>
+                    ${toggleBtn}
+                    <button class="btn btn-outline btn-sm" onclick="resetUsage('${uid}')" title="تصفير الاستخدام"><i class="fas fa-rotate-left"></i></button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+async function applyType(userId){
+    const sel = document.getElementById('type-' + userId);
+    const newType = sel.value;
+    try{
+        await rpc('admin_change_account_type', { p_user_id: userId, p_new_type: newType });
+        showToast('تم تحديث نوع الحساب بنجاح', 'ok');
+        await loadAccounts();
+    }catch(e){ showToast(e.message, 'err'); }
+}
+
+async function suspendAccount(userId){
+    try{
+        await rpc('admin_suspend_account', { p_user_id: userId });
+        showToast('تم إيقاف الحساب', 'ok');
+        await loadAccounts();
+    }catch(e){ showToast(e.message, 'err'); }
+}
+
+async function reactivateAccount(userId){
+    try{
+        await rpc('admin_reactivate_account', { p_user_id: userId });
+        showToast('تم تفعيل الحساب', 'ok');
+        await loadAccounts();
+    }catch(e){ showToast(e.message, 'err'); }
+}
+
+async function resetUsage(userId){
+    try{
+        await rpc('admin_reset_usage_count', { p_user_id: userId });
+        showToast('تم تصفير عداد الاستخدام', 'ok');
+        await loadAccounts();
+    }catch(e){ showToast(e.message, 'err'); }
+}
+
+// ---------- Codes ----------
+async function loadCodes(){
+    const body = document.getElementById('codesBody');
+    body.innerHTML = '<tr class="loading-row"><td colspan="7"><i class="fas fa-circle-notch spin"></i> جارِ التحميل...</td></tr>';
+    try{
+        codesCache = await rpc('admin_list_codes', {}) || [];
+        renderCodes();
+    }catch(e){
+        body.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-triangle-exclamation"></i>${esc(e.message)}</td></tr>`;
+        showToast(e.message, 'err');
+    }
+}
+
+function durationLabel(c){
+    if(c.duration_minutes) return `${esc(c.duration_minutes)} دقيقة`;
+    if(c.duration_days) return `${esc(c.duration_days)} يوم`;
+    return '<span class="muted">-</span>';
+}
+
+function renderCodes(){
+    const q = (document.getElementById('codeSearch').value || '').trim().toLowerCase();
+    const body = document.getElementById('codesBody');
+    let list = codesCache;
+    if(q){
+        list = list.filter(c =>
+            (c.code||'').toLowerCase().includes(q) ||
+            (c.label||'').toLowerCase().includes(q)
+        );
+    }
+    if(!list.length){
+        body.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-key"></i>لا توجد أكواد مطابقة</td></tr>`;
+        return;
+    }
+    body.innerHTML = list.map(c => {
+        const id = Number(c.id);
+        if(!Number.isFinite(id)) return '';
+        const statusBadge = c.expired
+            ? '<span class="badge badge-expired"><i class="fas fa-clock"></i> منتهي</span>'
+            : (c.is_active ? '<span class="badge badge-on"><i class="fas fa-check"></i> فعّال</span>' : '<span class="badge badge-off"><i class="fas fa-ban"></i> معطل</span>');
+        const toggleLabel = c.is_active ? 'تعطيل' : 'تفعيل';
+        return `
+        <tr>
+            <td><code>${esc(c.code)}</code></td>
+            <td>${c.label ? esc(c.label) : '<span class="muted">-</span>'}</td>
+            <td>${statusBadge}</td>
+            <td>${durationLabel(c)}</td>
+            <td class="usage-cell">${esc(c.usage_count)} / ${esc(c.usage_limit ?? '∞')}</td>
+            <td>${c.last_used_at ? fmtDate(c.last_used_at) : '<span class="muted">لم يُستخدم</span>'}</td>
+            <td>
+                <div class="row-actions">
+                    <button class="btn btn-outline btn-sm" onclick="toggleCode(${id})"><i class="fas fa-toggle-on"></i> ${toggleLabel}</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteCode(${id})"><i class="fas fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+async function generateCode(){
+    const plan = document.getElementById('planSelect').value;
+    const label = document.getElementById('labelInput').value.trim() || null;
+    const btn = document.getElementById('genBtn');
+    btn.disabled = true;
+    try{
+        const result = await rpc('admin_generate_code', { p_plan: plan, p_label: label });
+        document.getElementById('newCodeValue').textContent = result.code;
+        document.getElementById('newCodeResult').style.display = 'flex';
+        document.getElementById('labelInput').value = '';
+        showToast('تم توليد الكود بنجاح', 'ok');
+        await loadCodes();
+    }catch(e){ showToast(e.message, 'err'); }
+    finally{ btn.disabled = false; }
+}
+
+function copyNewCode(){
+    const code = document.getElementById('newCodeValue').textContent;
+    navigator.clipboard.writeText(code).then(()=> showToast('تم نسخ الكود', 'ok'))
+        .catch(()=> showToast('تعذر النسخ - انسخه يدوياً', 'err'));
+}
+
+async function toggleCode(id){
+    try{
+        await rpc('admin_toggle_code', { p_id: id });
+        showToast('تم تحديث حالة الكود', 'ok');
+        await loadCodes();
+    }catch(e){ showToast(e.message, 'err'); }
+}
+
+async function deleteCode(id){
+    if(!confirm('هل تريد حذف هذا الكود نهائياً؟')) return;
+    try{
+        await rpc('admin_delete_code', { p_id: id });
+        showToast('تم حذف الكود', 'ok');
+        await loadCodes();
+    }catch(e){ showToast(e.message, 'err'); }
+}
+
+// ---------- Report log ----------
+let logCache = [];
+let logTotal = 0;
+const LOG_KIND_LABELS = { long:'طويل', short:'قصير', visit:'تبادل زيارات', strategy:'استراتيجية', tool:'أداة / تطبيق', parents:'تواصل أولياء الأمور', remedial:'خطة علاجية', enrichment:'خطة إثرائية', applied:'درس تطبيقي', initiative:'مبادرة', program:'برنامج' };
+const LOG_SHORT_KINDS = ['short','visit','strategy','tool','parents','remedial','enrichment','applied','initiative','program'];
+
+async function loadLog(){
+    const body = document.getElementById('logBody');
+    body.innerHTML = '<tr class="loading-row"><td colspan="6"><i class="fas fa-circle-notch spin"></i> جارِ التحميل...</td></tr>';
+    try{
+        const res = await rpc('admin_list_report_log', { p_limit: 1000 }) || {};
+        logCache = res.rows || [];
+        logTotal = res.total || logCache.length;
+        renderLog();
+    }catch(e){
+        body.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-triangle-exclamation"></i>${esc(e.message)}</td></tr>`;
+        showToast(e.message, 'err');
+    }
+}
+
+function renderLog(){
+    const body = document.getElementById('logBody');
+    const startOfToday = new Date(); startOfToday.setHours(0,0,0,0);
+    const setText = (id, v) => { document.getElementById(id).textContent = v; };
+    setText('logStatTotal', logTotal);
+    setText('logStatToday', logCache.filter(r => new Date(r.created_at).getTime() >= startOfToday.getTime()).length);
+    const known = logCache.filter(r => r.input_method);
+    setText('logStatVoice', known.length ? Math.round(known.filter(r => r.input_method === 'voice').length * 100 / known.length) + '%' : '—');
+    setText('logStatShort', logCache.filter(r => LOG_SHORT_KINDS.includes(r.template_kind)).length);
+
+    const q = (document.getElementById('logSearch').value || '').trim().toLowerCase();
+    const kindF = document.getElementById('logFilterKind').value;
+    const methodF = document.getElementById('logFilterMethod').value;
+    const dateF = document.getElementById('logFilterDate').value;
+    const list = logCache.filter(r => {
+        if(q && !((r.title||'').toLowerCase().includes(q) || (r.reporter_name||'').toLowerCase().includes(q) || (r.email||'').toLowerCase().includes(q))) return false;
+        if(kindF === 'short_all' ? !LOG_SHORT_KINDS.includes(r.template_kind) : (kindF && r.template_kind !== kindF)) return false;
+        if(methodF && r.input_method !== methodF) return false;
+        if(dateF){
+            const cutoff = dateF === '1' ? startOfToday.getTime() : Date.now() - parseInt(dateF, 10) * 86400000;
+            if(new Date(r.created_at).getTime() < cutoff) return false;
+        }
+        return true;
+    });
+    document.getElementById('logNote').textContent = logTotal > logCache.length
+        ? `يظهر أحدث ${logCache.length} سجل من أصل ${logTotal}.`
+        : 'التقارير التي أُصدرت قبل تفعيل السجل تظهر بلا عنوان ولا قالب ولا طريقة.';
+    if(!list.length){
+        body.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-clock-rotate-left"></i>لا توجد تقارير مطابقة</td></tr>';
+        return;
+    }
+    body.innerHTML = list.slice(0, 300).map(r => {
+        const method = r.input_method === 'voice'
+            ? '<span class="badge badge-voice"><i class="fas fa-microphone"></i> أمر صوتي</span>'
+            : (r.input_method === 'typed' ? '<span class="badge badge-typed"><i class="fas fa-keyboard"></i> كتابة</span>' : '<span class="muted">-</span>');
+        const who = r.reporter_name || r.email;
+        return `
+        <tr>
+            <td class="log-title">${r.title ? esc(r.title) : '<span class="muted">(غير مسجّل)</span>'}</td>
+            <td>${who ? esc(who) : '<span class="muted">-</span>'}</td>
+            <td>${LOG_KIND_LABELS[r.template_kind] || '<span class="muted">-</span>'}</td>
+            <td>${method}</td>
+            <td>${fmtDate(r.created_at)}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteLogRow(${Number(r.id)})" title="حذف هذا السجل"><i class="fas fa-trash"></i></button></td>
+        </tr>`;
+    }).join('');
+}
+
+async function deleteLogRow(id){
+    if(!confirm('حذف هذا السجل نهائياً؟ (لا يؤثر على حصة استخدام المستخدم)')) return;
+    try{
+        await rpc('admin_delete_report_log', { p_id: id });
+        showToast('تم حذف السجل', 'ok');
+        await loadLog();
+    }catch(e){ showToast(e.message, 'err'); }
+}
+
+async function clearLog(){
+    if(!confirm('سيُمسح سجل التقارير بالكامل (' + logTotal + ' سجل) ولا يمكن التراجع. لا يؤثر ذلك على حصص الاستخدام ولا على الحسابات. هل أنت متأكد؟')) return;
+    try{
+        const res = await rpc('admin_clear_report_log', {});
+        showToast('تم مسح السجل (' + ((res && res.count) || 0) + ' سجل)', 'ok');
+        await loadLog();
+    }catch(e){ showToast(e.message, 'err'); }
+}
+
+// ---------- Boot ----------
+(async function boot(){
+    const saved = localStorage.getItem(TOKEN_STORAGE_KEY);
+    if(saved){
+        ADMIN_TOKEN = saved;
+        try{
+            await rpc('admin_list_accounts', {});
+            enterPanel();
+        }catch(e){
+            localStorage.removeItem(TOKEN_STORAGE_KEY);
+            ADMIN_TOKEN = null;
+        }
+    }
+})();
+
+document.getElementById('tokenInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') attemptLogin();
+});
+</script>
+</body>
+</html>
