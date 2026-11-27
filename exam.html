@@ -344,13 +344,16 @@ table.marks td{border:1px solid #000;padding:1px 4px;text-align:center;min-width
 .ash{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
 .ash .asec{margin:0}
 /* نموذج الإجابة */
-.sheet .ka,.sheet .ka *{color:#c00000 !important;font-weight:700}
+.sheet .ka,.sheet .ka *,.sheet .art.red{color:#c00000 !important;font-weight:700}
 .sheet td.kc{background:#fde8e8 !important}
 .keyban{text-align:center;font-weight:700;font-size:14pt;color:#c00000 !important;border:2px solid #c00000;border-radius:8px;padding:3px;margin-bottom:6px}
 .kline{min-height:22px;border-bottom:1px dotted #000;padding:1px 0}
 .kmodel{border:1px dashed #c00000;border-radius:6px;padding:5px 8px;margin:4px 0;line-height:1.6}
 /* بيانات الطالب بالعربية */
-.sname[dir=rtl]{text-align:right;font-family:Arial,Tahoma,sans-serif}
+.sname[dir=rtl]{direction:rtl;display:flex;gap:22px;text-align:right;font-family:Arial,Tahoma,sans-serif}
+.sname .af{unicode-bidi:isolate;white-space:nowrap}
+.sname .dl{letter-spacing:-1px}
+table.ai[dir=rtl]{direction:rtl}
 td.ar{direction:rtl;text-align:center;font-family:Arial,Tahoma,sans-serif}
 /* لا ينقسم أي سؤال بين صفحتين — في المعاينة والطباعة وPDF */
 .keep,.pi,table.at,.ppic,.match,.passage,.box,table.ak{break-inside:avoid;page-break-inside:avoid}
@@ -1020,6 +1023,7 @@ function ensureOrders() {
 const LT = 'ABCD';
 const RED = 'C00000';
 const AR_INFO = { name: 'اسم الطالب', cls: 'الفصل', seat: 'رقم الجلوس' };
+const art = (t) => `<span class="art">${t}</span>`; // نص عربي يُرسم صورةً في PDF (مكتبة PDF تخلط ترتيب الكلمات العربية)
 function passageParas(r) {
   const s = String(r.passage || '');
   if (r.numbered) return [s.split(/\n+/).map((x) => x.trim()).filter(Boolean).join(' ')]; // اختبارات قديمة بأسطر مرقّمة
@@ -1027,7 +1031,7 @@ function passageParas(r) {
 }
 function passageHTML(r) { return `<div class="passage">${passageParas(r).map((p) => `<p>${esc(p)}</p>`).join('')}</div>`; }
 const frac = (mark) => `<span class="frac"><span class="fn"></span><span class="fd">${mark}</span></span>`;
-const keyBanner = () => `<div class="keyban">Answer Key — نموذج الإجابة</div>`; // يأتي أول عنصر في صفحة نموذج الإجابة
+const keyBanner = () => `<div class="keyban">Answer Key — <span class="art red">نموذج الإجابة</span></div>`; // يأتي أول عنصر في صفحة نموذج الإجابة
 function formLine(m) { return EXAM_FORMS().length > 1 ? `<br><b>Form ${esc(m.form || 'A')}</b>` : ''; }
 
 function paperHTML(withKey) {
@@ -1046,7 +1050,7 @@ function ministryBody(ka) {
     <div><img class="logo" src="${LOGO}" alt="" style="height:44px;margin-bottom:3px"><table class="marks"><tr><td>Q.</td><td>Q1</td><td>Q2</td><td>Q3</td><td>Q4</td><td>Q5</td><td>Total</td></tr><tr><td>Mark</td><td>8</td><td>9</td><td>9</td><td>9</td><td>5</td><td><b>40</b></td></tr><tr><td>Student</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>
     <div class="r">${esc(book.name)} – English Language<br>${GRADE_EN[m.grade]}<br>${termTxt} Term Final Exam ${esc(m.year || '')}<br>Time: ${esc(m.time || '')}${formLine(m)}</div>
   </div>
-  <div class="sname" dir="rtl">${AR_INFO.name}: …………………………………………… &nbsp;&nbsp; ${AR_INFO.cls}: ……………… &nbsp;&nbsp; ${AR_INFO.seat}: ………………</div>`;
+  <div class="sname" dir="rtl"><span class="af" style="flex:1">${art(AR_INFO.name + ':')} <span class="dl">……………………………………………</span></span><span class="af">${art(AR_INFO.cls + ':')} <span class="dl">………………</span></span><span class="af">${art(AR_INFO.seat + ':')} <span class="dl">………………</span></span></div>`;
   const qh = (n, name, mark) => `<div class="qhead"><b>Q${n} / ${name}</b>${frac(mark)}</div>`;
   const opt = (it, j, o) => (it.ans === j ? A(o) : o);
 
@@ -1154,8 +1158,8 @@ function autoBody(ka) {
     <img class="logo" src="${LOGO}" alt="">
     <div class="bx">${esc(book.name)} – English Language<br>${GRADE_EN[m.grade]}<br>${termTxt} Term Final Exam ${esc(m.year || '')}<br>Time: ${esc(m.time || '')}${formLine(m)}</div>
   </div>
-  <table class="ai"><tr><td class="lb ar">${AR_INFO.name}</td><td colspan="3"></td><td class="lb ar">${AR_INFO.cls}</td><td style="width:12%"></td><td class="lb ar">${AR_INFO.seat}</td><td style="width:12%"></td></tr>
-  <tr><td class="lb">Mark</td><td style="width:13%">&nbsp;&nbsp;&nbsp;&nbsp;/ 40</td><td class="lb">Corrector</td><td colspan="2"></td><td class="lb">Reviewer</td><td colspan="2"></td></tr></table>`;
+  <table class="ai" dir="rtl"><tr><td class="lb ar" style="width:15%">${art(AR_INFO.name)}</td><td></td><td class="lb ar" style="width:10%">${art(AR_INFO.cls)}</td><td style="width:13%"></td><td class="lb ar" style="width:13%">${art(AR_INFO.seat)}</td><td style="width:13%"></td></tr></table>
+  <table class="ai" style="margin-top:-1px"><tr><td class="lb">Mark</td><td style="width:13%">&nbsp;&nbsp;&nbsp;&nbsp;/ 40</td><td class="lb">Corrector</td><td colspan="2"></td><td class="lb">Reviewer</td><td colspan="2"></td></tr></table>`;
   if (gm.length) {
     h += `<div class="keep">${sec('Grammar', 9, `Choose the correct answer: <span style="font-weight:400">(${mk.gEach} mark each)</span>`)}${mcq(1, gm[0])}</div>`;
     gm.slice(1).forEach((q, i) => { h += mcq(i + 2, q); });
@@ -1258,7 +1262,8 @@ function ministryDocx(D, ka) {
     new D.TableRow({ children: ['Mark', '8', '9', '9', '9', '5', '40'].map((x) => cell(x, { bold: x === '40' })) }),
     new D.TableRow({ children: ["Student's mark", '', '', '', '', '', ''].map((x) => cell(x)) }),
   ] }));
-  kids.push(P([T(`${AR_INFO.name}: ……………………………………   ${AR_INFO.cls}: ……………   ${AR_INFO.seat}: ……………`, { rtl: true })], { rtl: true, align: R, before: 120, after: 60, border: { bottom: { style: D.BorderStyle.SINGLE, size: 8, color: '000000' } } }));
+  const arRuns = [[AR_INFO.name, '……………………………………'], [AR_INFO.cls, '……………'], [AR_INFO.seat, '……………']].flatMap(([lbl, dots], i) => [T((i ? '     ' : '') + lbl + ': ', { rtl: true, bold: true }), T(dots, { rtl: true })]);
+  kids.push(P(arRuns, { rtl: true, align: R, before: 120, after: 60, border: { bottom: { style: D.BorderStyle.SINGLE, size: 8, color: '000000' } } }));
 
   const c = EXAM.composition;
   kids.push(qh(1, 'Composition', 8));
@@ -1359,9 +1364,13 @@ function autoDocx(D, ka) {
   ] })] }));
   kids.push(P('', { after: 60 }));
   const arL = (t) => TC([T(t, { bold: true, rtl: true })], { sh: true, align: CTR, rtl: true });
-  kids.push(new D.Table({ ...fixedW([1500, 1700, 1400, 1200, 1100, 1100, 1200, 1100]), rows: [
-    new D.TableRow({ children: [arL(AR_INFO.name), TC('', { span: 3 }), arL(AR_INFO.cls), TC(''), arL(AR_INFO.seat), TC('')] }),
-    new D.TableRow({ children: [TC('Mark', { bold: true, sh: true }), TC('      / 40'), TC('Corrector', { bold: true, sh: true }), TC('', { span: 2 }), TC('Reviewer', { bold: true, sh: true }), TC('', { span: 2 })] }),
+  // صف البيانات العربية: جدول من اليمين إلى اليسار (اسم الطالب في أقصى اليمين)
+  kids.push(new D.Table({ ...fixedW([1500, 3500, 1100, 1400, 1400, 1400]), visuallyRightToLeft: true, rows: [
+    new D.TableRow({ children: [arL(AR_INFO.name), TC(''), arL(AR_INFO.cls), TC(''), arL(AR_INFO.seat), TC('')] }),
+  ] }));
+  kids.push(new D.Paragraph({ spacing: { before: 0, after: 0, line: 40, lineRule: D.LineRuleType.EXACT }, children: [new D.TextRun({ text: '', size: 2 })] })); // يمنع دمج الجدولين
+  kids.push(new D.Table({ ...fixedW([1200, 1300, 1500, 2300, 1500, 2500]), rows: [
+    new D.TableRow({ children: [TC('Mark', { bold: true, sh: true }), TC('      / 40'), TC('Corrector', { bold: true, sh: true }), TC(''), TC('Reviewer', { bold: true, sh: true }), TC('')] }),
   ] }));
   // عنوان القسم (خلفية خضراء) + كسر الدرجة، مربوط بما بعده
   const secHead = (name, mark, title) => {
@@ -1477,6 +1486,23 @@ async function copyExam() {
   holder.remove();
   toast(ok ? 'تم نسخ الاختبار — الصقه في Word أو Google Docs.' + (withKey ? ' (مع نموذج الإجابة)' : '') : 'تعذّر النسخ في هذا المتصفح — استخدم تنزيل Word.', 4000);
 }
+// يرسم نصاً عربياً على canvas (يدعم الاتجاه والتشكيل) ويعيده صورة بنفس حجم الخط
+function arabicToImages(html) {
+  const cache = {};
+  return html.replace(/<span class="art( red)?">([^<]*)<\/span>/g, (m0, isRed, t) => {
+    const key = t + (isRed ? '|r' : '');
+    if (!cache[key]) {
+      const fs = 40; const cv = document.createElement('canvas'); const cx = cv.getContext('2d');
+      const font = `bold ${fs}px Arial, Tahoma, sans-serif`; cx.font = font;
+      const w = Math.ceil(cx.measureText(t).width) + 8; cv.width = w; cv.height = Math.ceil(fs * 1.35);
+      const c2 = cv.getContext('2d'); c2.font = font; c2.direction = 'rtl'; c2.textAlign = 'right'; c2.textBaseline = 'middle'; c2.fillStyle = isRed ? '#c00000' : '#000';
+      c2.fillText(t, w - 4, cv.height / 2 + 1);
+      cache[key] = { src: cv.toDataURL('image/png'), ratio: w / cv.height };
+    }
+    const c = cache[key];
+    return `<img src="${c.src}" alt="" style="height:1.15em;width:${(1.15 * c.ratio).toFixed(2)}em;vertical-align:-0.22em">`;
+  });
+}
 // تقسيم الصفحات: يمر على وحدات الورقة بالترتيب؛ أي وحدة (سؤال مع خياراته، كتلة توصيل/صور، عنوان مع أول فقرة)
 // تعبر حدّ الصفحة تُنقل كاملة للصفحة التالية، وصفحة نموذج الإجابة تبدأ دائماً بصفحة جديدة.
 function paginate(root, pageH) {
@@ -1497,7 +1523,7 @@ async function exportPDF() {
   try {
     if (!window.html2pdf) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
     // فاصل صفحة نموذج الإجابة نضبطه بأنفسنا (مكتبة PDF تضيف صفحة فارغة إذا وقع الفاصل على حد الصفحة تماماً)
-    const html = `<div class="sheet exp${isAuto() ? ' auto' : ''}" dir="ltr">${paperHTML($('withKey').checked).replace('class="pbreak keypage"', 'class="keypage" style="break-before:auto;page-break-before:auto"')}</div>`;
+    const html = `<div class="sheet exp${isAuto() ? ' auto' : ''}" dir="ltr">${arabicToImages(paperHTML($('withKey').checked)).replace('class="pbreak keypage"', 'class="keypage" style="break-before:auto;page-break-before:auto"')}</div>`;
     const worker = window.html2pdf().set({
       margin: isAuto() ? [6, 7, 6, 7] : [8, 8, 8, 8], filename: fileBase() + '.pdf',
       image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 },
