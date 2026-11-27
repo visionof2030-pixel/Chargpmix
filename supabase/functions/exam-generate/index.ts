@@ -21,8 +21,8 @@ for (let n = 1; n <= 10; n++) {
   const k = Deno.env.get("GEMINI_API_KEY_" + n);
   if (k && !KEY_SLOT.has(k)) { GEMINI_KEYS.push(k); KEY_SLOT.set(k, n); }
 }
-// جودة الأسئلة أهم من السرعة هنا: 2.5-flash أولاً، ثم البدائل الأخف.
-const MODELS = ["gemini-2.5-flash", "gemini-3.1-flash-lite", "gemini-2.5-flash-lite"];
+// gemini-2.5-flash غير متاح لهذه المفاتيح (404)، فنبدأ بـ 3.1-flash-lite ثم 2.5-flash-lite.
+const MODELS = ["gemini-3.1-flash-lite", "gemini-2.5-flash-lite"];
 
 // ===== سجل الاستهلاك (رقم خانة المفتاح فقط) =====
 const CALL_LOG: Array<Record<string, unknown>> = [];
@@ -164,7 +164,7 @@ async function callGemini(prompt: string, deadlineMs: number): Promise<string | 
       const remaining = deadline - Date.now();
       if (remaining < 3000) return null;
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), Math.min(40000, remaining));
+      const timer = setTimeout(() => controller.abort(), Math.min(model === MODELS[0] ? 25000 : 40000, remaining));
       try {
         const generationConfig: Record<string, unknown> = { responseMimeType: "application/json" };
         if (!model.startsWith("gemini-3")) generationConfig.temperature = 0.8;
