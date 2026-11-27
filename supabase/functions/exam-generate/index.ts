@@ -73,23 +73,36 @@ function readSpecs(v: unknown): Spec[] {
     const o = (s && typeof s === "object" ? s : {}) as Record<string, unknown>;
     return {
       kind: txt(o.kind, 30), unit: Number(o.unit) || 0, unitTitle: txt(o.unitTitle, 80), target: txt(o.target, 160),
-      words: Array.isArray(o.words) ? o.words.slice(0, 40).map((w) => txt(w, 40)).filter(Boolean) : [],
+      words: Array.isArray(o.words) ? o.words.slice(0, 50).map((w) => txt(w, 40)).filter(Boolean) : [],
     };
   });
 }
 
+// ستة مستويات — كل مستوى يغيّر طول الجمل وقرب المشتتات ونوع أسئلة القراءة فعلاً (والمنهج نفسه لا يتغير)
 const LEVEL: Record<string, string> = {
-  easy: "EASY: short simple sentences, very familiar words, distractors clearly wrong.",
-  medium: "MEDIUM: typical end-of-term level, distractors plausible but only one correct.",
-  hard: "HARD: longer sentences, close distractors (same word family / similar form), still strictly within the curriculum.",
+  veasy: "VERY EASY (level 1 of 6): very short sentences (5–7 words), only the most frequent unit words, one clear context clue in every item, distractors obviously wrong (different form/meaning that clearly does not fit).",
+  easy: "EASY (level 2 of 6): short simple sentences (6–9 words), familiar unit words, a clear context clue, distractors clearly wrong.",
+  medium: "MEDIUM (level 3 of 6): typical end-of-term level, sentences of 8–12 words, distractors plausible but only one correct.",
+  mhard: "MEDIUM-HARD (level 4 of 6): sentences of 10–14 words with fewer direct clues, distractors close (similar forms of the same point), the student must read the whole sentence to decide.",
+  hard: "HARD (level 5 of 6): longer sentences (12–16 words), compound sentences, close distractors (same word family / similar form), clue placed away from the blank.",
+  vhard: "VERY HARD (level 6 of 6): the longest and most demanding sentences in the curriculum (14–18 words), subtle clues, the closest possible distractors (same word family, same verb in different forms), but STILL strictly within the curriculum — never harder grammar or vocabulary than the units.",
 };
+const READ_MIX: Record<string, string> = {
+  veasy: "5 multiple-choice questions: 4 direct detail questions whose answers use the exact words of the passage, 1 simple best-title question",
+  easy: "5 multiple-choice questions: 4 direct detail questions, 1 best-title question",
+  medium: "5 multiple-choice questions: 3 detail questions, 1 reference question (\"The word '<pronoun>' in paragraph N refers to:\" — the pronoun must really appear in that paragraph), 1 main-idea / best-title question",
+  mhard: "5 multiple-choice questions: 2 detail questions (answers paraphrased, not copied), 1 reference question (pronoun really in that paragraph), 1 simple inference question, 1 main-idea question",
+  hard: "5 multiple-choice questions: 2 paraphrased detail questions, 1 reference question (pronoun really in that paragraph), 1 inference question, 1 word-meaning-from-context question (a unit word in the passage)",
+  vhard: "5 multiple-choice questions: 1 paraphrased detail question, 1 reference question (pronoun really in that paragraph), 1 inference question, 1 word-meaning-from-context question, 1 main-idea / writer's purpose question",
+};
+const lvl = (d: string) => (LEVEL[d] ? d : d === "easy" || d === "hard" ? d : "medium");
 
 function header(grade: string, term: string, difficulty: string) {
   return `You write questions for a Saudi Ministry of Education English final exam.
 Students: ${grade} (intermediate stage, Super Goal series), term ${term}. Learners are Saudi teenagers (A1–A2).
-Difficulty: ${LEVEL[difficulty] || LEVEL.medium}
+Difficulty: ${LEVEL[lvl(difficulty)]}
 Rules:
-- Use ONLY the grammar and vocabulary of the given units. Never test anything outside them.
+- Use ONLY the grammar and vocabulary of the given units. Never test anything outside them, and never invent a grammar rule or structure that is not in the given points.
 - Natural, correct English; culturally appropriate for Saudi Arabia (Saudi names, places, food). No music, dating or inappropriate content.
 - Exactly one correct answer per item. Shuffle the position of the correct option.
 - Return JSON only, no markdown.`;
@@ -103,15 +116,24 @@ function buildPrompt(section: string, h0: string, specs: Spec[], ctx: Record<str
   const lines = specLines(specs);
   // نموذج بديل: نصوص النموذج الأول التي يجب ألا تتكرر
   const avoid = Array.isArray(ctx.avoid) ? (ctx.avoid as unknown[]).slice(0, 40).map((x) => txt(x, 200)).filter(Boolean) : [];
-  const h = avoid.length ? `${h0}
+  const h1 = avoid.length ? `${h0}
 This is an ALTERNATIVE exam form. Do NOT reuse, copy or lightly paraphrase any of these existing items/texts from the first form — write completely new sentences, contexts, names and distractors (same grammar points / words where required):
 ${avoid.map((a) => "- " + a).join("\n")}` : h0;
+  // التنويع: أسماء ومواقف عشوائية من الصفحة + ما ورد في الاختبارات السابقة حتى لا يتكرر
+  const recent = Array.isArray(ctx.recent) ? (ctx.recent as unknown[]).slice(0, 40).map((x) => txt(x, 160)).filter(Boolean) : [];
+  const names = Array.isArray(ctx.names) ? (ctx.names as unknown[]).slice(0, 8).map((x) => txt(x, 30)).filter(Boolean) : [];
+  const scenes = Array.isArray(ctx.scenes) ? (ctx.scenes as unknown[]).slice(0, 6).map((x) => txt(x, 60)).filter(Boolean) : [];
+  const vary = `${names.length ? "\nVariety: when a sentence needs people, prefer these names: " + names.join(", ") + "." : ""}${scenes.length ? "\nVariety: set the sentences in varied everyday situations such as: " + scenes.join("; ") + " (only where they fit the target naturally)." : ""}
+Vary sentence patterns: statements, questions, short dialogues (A: … B: …), first and third person — do not start items the same way.${recent.length ? "\nThese items/texts appeared in this teacher's recent exams — do NOT repeat them or write close paraphrases; use new sentences, contexts and distractors:\n" + recent.map((a) => "- " + a).join("\n") : ""}`;
+  const h = h1 + vary;
   // عدد الخيارات: 4 (قالب الوزارة) أو 3 (قالب التصحيح الآلي A/B/C)
   const no = Number(ctx.nopts) === 3 ? 3 : 4;
   const oj = JSON.stringify(Array(no).fill(""));
   if (section === "grammar") {
     return `${h}
 Write one grammar item for EACH line below, in the same order, testing exactly the given target point.
+Allowed grammar points (the ONLY grammar this exam may test): ${txt(ctx.allowed, 1500) || "the targets below"}.
+- Be very careful: the item must test ONLY its target point. The sentence may contain any simple everyday words, but answering must never depend on a grammar rule outside the allowed points, and never invent a rule.
 - Grammar items test GRAMMAR only: all options must be forms/variants of the same grammar point (e.g. big / bigger / biggest; is / are / am; who / which / where) — never vocabulary words with different meanings. Exactly one option is grammatically correct in the sentence.
 - kind "mcq": a sentence with ONE blank "____" and ${no} options (all the same word class / verb forms of the same verb).
 - kind "do": a "do as shown" task. Pick the instruction that best fits the target, e.g. "Correct the mistake", "Rearrange", "Make a Yes/No question", "Make a question", "Change into negative", "Change into passive", "Join using who/which", "Use the correct form of the verb". For "Rearrange" give the words separated by " – ". For "Correct the mistake" the sentence must contain exactly one error in the target point.
@@ -120,13 +142,28 @@ Return valid JSON: {"items":[ ...one object per line above, in order... ]}
 Object for kind "mcq": {"kind":"mcq","stem":"...","options":${oj},"answer":"<exact option>"}
 Object for kind "do": {"kind":"do","sentence":"...","instruction":"...","answer":"<the full correct answer>"}`;
   }
+  if (section === "grammar_review") {
+    const its = Array.isArray(ctx.review) ? (ctx.review as unknown[]).slice(0, 20).map((x) => txt(x, 400)) : [];
+    return `You are a strict curriculum checker for a Saudi intermediate-stage English exam (Super Goal series).
+Allowed grammar points (the ONLY grammar the exam may test): ${txt(ctx.allowed, 1500)}.
+For EACH numbered item below (it shows its intended target point), decide "ok": true ONLY if ALL are true:
+1) it tests exactly its target point, and that point is in the allowed list;
+2) answering it does not require any grammar rule outside the allowed list, and no new/invented rule is used;
+3) for multiple choice: the options are forms/variants of the same grammar point (not different vocabulary), exactly ONE option is correct, and the marked answer is that correct option;
+4) for "do as shown": the instruction fits the target point and the given answer is correct;
+5) the English is natural and correct.
+Ordinary everyday words in the sentence are fine — judge the GRAMMAR only.
+${its.map((x, i) => `${i + 1}. ${x}`).join("\n")}
+Return valid JSON: {"items":[{"ok":true,"why":""}, ...one per item, in order]} — "why" is a short reason when ok is false.`;
+  }
   if (section === "vocab") {
     return `${h}
 Write one vocabulary item for EACH line below, in the same order, testing the given target word (a word from that unit).
+STRICT CURRICULUM VOCABULARY: every option, distractor and odd-one-out word MUST be taken ONLY from the unit words given on that line or from this word pool of the same book: ${txt(ctx.pool, 2500) || "(unit words only)"}. Never use any English word outside these lists as an option. The correct answer is the target word itself (you may change its form: plural / -ed / -ing).
 - kind "mcq": a sentence with ONE blank "____" where the target word is the answer; ${no} options from the same unit/word class.
 - kind "match": give a short simple meaning/definition (max 5 words) or synonym of the target word.
 - kind "picture": just return the word (it must be a concrete, picturable noun or action; if the target is not picturable choose another picturable word from the unit words).
-- kind "odd": 4 words where 3 belong to one category from the unit and 1 (the target or another word) is the odd one; give the odd word as answer.
+- kind "odd": 4 words (all from the lists above) where 3 belong to one category from the unit and 1 (the target or another word) is the odd one; give the odd word as answer.
 ${lines}
 Return valid JSON: {"items":[ ...one object per line above, in order... ]}
 Object for kind "mcq": {"kind":"mcq","stem":"...","options":${oj},"answer":"<exact option>"}
@@ -144,11 +181,11 @@ JSON: {"items":[{"word":"<the target word exactly>","sentence":"<sentence contai
     const s = specs[0];
     const n = Number(ctx.words) || 120;
     return `${h}
-Write an ORIGINAL reading passage (about ${n} words, with a title) on the theme of Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Use the unit vocabulary: ${(s?.words || []).join(", ")}.
+Write an ORIGINAL reading passage${ctx.genre ? " in the form of " + txt(ctx.genre, 80) : ""} (about ${n} words, with a title) on the theme of Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Use the unit vocabulary: ${(s?.words || []).join(", ")}.
 Use mainly these structures from the term: ${txt(ctx.grammar, 600)}.
 Then write:
 Give the passage as an array "paragraphs" of 2–3 normal paragraphs (ordinary prose with normal commas and full stops; no line numbers, no labels).
-- 5 multiple-choice questions (${no} options each) about the passage: 3 detail questions, 1 reference question ("The word '<pronoun>' in paragraph N refers to:" — the pronoun must really appear in that paragraph), 1 main-idea / best-title question.
+- ${READ_MIX[lvl(txt(ctx.level, 10))]}. Each question has ${no} options.
 - 4 true/false statements: 2 TRUE (stated directly in the passage) and 2 FALSE (clearly contradicting one fact stated in the passage — never something the passage simply does not mention). Mix the order.
 JSON: {"data":{"title":"...","paragraphs":["",""],"mcq":[{"q":"...","options":${oj},"answer":"..."}],"tf":[{"s":"...","answer":true}]}}`;
   }
@@ -187,7 +224,7 @@ function parseLoose(raw: string): any {
   return null;
 }
 
-async function callGemini(prompt: string, deadlineMs: number): Promise<string | null> {
+async function callGemini(prompt: string, deadlineMs: number, temp = 0.9): Promise<string | null> {
   const n = GEMINI_KEYS.length;
   if (!n) return null;
   const start = Math.floor(Math.random() * n);
@@ -202,7 +239,7 @@ async function callGemini(prompt: string, deadlineMs: number): Promise<string | 
       const timer = setTimeout(() => controller.abort(), Math.min(model === MODELS[0] ? 25000 : 40000, remaining));
       try {
         const generationConfig: Record<string, unknown> = { responseMimeType: "application/json" };
-        if (!model.startsWith("gemini-3")) generationConfig.temperature = 0.8;
+        generationConfig.temperature = model.startsWith("gemini-3") ? Math.max(temp, 0.3) : temp;
         if (model === "gemini-2.5-flash") generationConfig.thinkingConfig = { thinkingBudget: 1024 };
         const resp = await geminiFetch(keys[i], model, {
           method: "POST",
@@ -241,7 +278,7 @@ const handleRequest = async (req: Request): Promise<Response> => {
 
   let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return jsonResponse({ detail: "Bad request", code: "bad_request" }, 400); }
-  const section = txt(body.section, 20);
+  const section = txt(body.section, 24);
   const specs = readSpecs(body.items);
   const ctx = (body.ctx && typeof body.ctx === "object" ? body.ctx : {}) as Record<string, unknown>;
   const h = header(txt(body.grade, 40) || "Intermediate", txt(body.term, 10) || "1", txt(body.difficulty, 10));
@@ -249,7 +286,7 @@ const handleRequest = async (req: Request): Promise<Response> => {
   if (!prompt) return jsonResponse({ detail: "Bad request", code: "bad_request" }, 400);
   if (!GEMINI_KEYS.length) return jsonResponse({ failed: true, reason: "not_configured" });
 
-  const raw = await callGemini(prompt, 95000);
+  const raw = await callGemini(prompt, 95000, section === "grammar_review" ? 0.1 : 0.95);
   if (!raw) return jsonResponse({ failed: true, reason: "no_answer" });
   const v = parseLoose(raw);
   if (!v) {

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>مِحَكّ — منشئ الاختبارات</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@500;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -207,129 +207,139 @@ window.EXAM_CURRICULUM = {
 
 </script>
 <style>
-/* ===== واجهة «مِحَكّ» — بهوية إنجاز: الأخضر الزمردي والذهبي، خط تجوال، بطاقات هادئة ===== */
-:root{--bg:#f4f6f5;--card:#fff;--card2:#f7f9f8;--ink:#0d1f19;--mut:#5d6e68;--acc:#0a6b4f;--acc-h:#075a42;--accs:#e5f2ed;--accs2:#d3e9e0;--gold:#c99a2e;--gold-h:#a87b17;--golds:#fbf4e2;--goldl:#ecd9a8;--line:#e3e8e6;--line2:#d5ddd9;--warn:#a15c07;--warns:#fff6e6;--bad:#b42318;--bads:#fdecea;--chip:#eef2f0;--ring:0 0 0 3px rgba(10,107,79,.16);--sh:0 1px 2px rgba(13,31,25,.04),0 6px 20px rgba(13,31,25,.05);--font:'Tajawal','Cairo',system-ui,"Segoe UI",Tahoma,sans-serif}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1513;--card:#161e1b;--card2:#1b2420;--ink:#e7eeeb;--mut:#9cada7;--acc:#2bb38a;--acc-h:#4cc9a1;--accs:#15322a;--accs2:#1c4136;--gold:#e0b552;--gold-h:#f0c766;--golds:#2e2714;--goldl:#5a4a20;--line:#26312d;--line2:#2f3c37;--warn:#f0a54a;--warns:#33260f;--bad:#f2766b;--bads:#3a1916;--chip:#1f2a26;--sh:0 1px 2px rgba(0,0,0,.3)}}
+/* ===== واجهة «مِحَكّ» — طابع دفتر المعلم: ورق دافئ، حبر أخضر، علامة تصحيح بالقلم الأحمر ===== */
+:root{--bg:#f5f1e8;--card:#fffdf8;--card2:#faf6ee;--ink:#22302a;--mut:#6f6a5e;--acc:#24624b;--acc-h:#1b4d3b;--accs:#e6eee6;--accs2:#d2e0d4;--gold:#a7782a;--gold-h:#86601f;--golds:#f6ecd6;--goldl:#e6d3a8;--pen:#b8322a;--pens:#f8e3df;--line:#e6dfcf;--line2:#d8cfbb;--warn:#9a5b0b;--warns:#fbf0da;--bad:#a8291f;--bads:#f8e1dd;--chip:#efe9dc;--ring:0 0 0 3px rgba(36,98,75,.15);--sh:0 1px 0 rgba(60,45,20,.05),0 2px 10px rgba(60,45,20,.04);--font:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;--head:'Noto Naskh Arabic','IBM Plex Sans Arabic',serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171612;--card:#1f1d18;--card2:#24221c;--ink:#ebe6da;--mut:#a59f90;--acc:#6fbf9b;--acc-h:#8fd3b3;--accs:#22322b;--accs2:#2b4236;--gold:#d7ad5c;--gold-h:#e8c27a;--golds:#2f2818;--goldl:#54452a;--pen:#e0685d;--pens:#3a201c;--line:#332f27;--line2:#3e392f;--warn:#e9ad57;--warns:#33270f;--bad:#ef7d72;--bads:#3a1c18;--chip:#2a2720;--sh:0 1px 0 rgba(0,0,0,.25)}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none !important}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 var(--font)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 var(--font)}
 button,input,select,textarea{font-family:inherit}
-.fa-solid,.fas{line-height:1}
-/* شريط التطبيق */
-.appbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.appbar-in{max-width:1180px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;display:flex;align-items:center;gap:12px}
-.brand{display:flex;align-items:center;gap:11px;min-width:0;flex:1}
-.brand-ic{width:44px;height:44px;flex:none;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(140deg,var(--acc) 0%,#05402f 100%);color:#f3d48a;font-size:19px;box-shadow:0 6px 16px rgba(4,74,53,.28)}
-.brand-tx{min-width:0;line-height:1.2}
-.brand-tx b{display:block;font-size:21px;font-weight:900;letter-spacing:-.2px}
-.brand-tx small{display:block;font-size:12.5px;color:var(--mut);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.back{display:inline-flex;align-items:center;gap:7px;color:var(--acc);text-decoration:none;font-size:13.5px;font-weight:800;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:8px 12px;white-space:nowrap}
-.back:hover{background:var(--accs)}
-.wrap{max-width:1180px;margin:0 auto;padding:16px 16px 110px}
-/* مؤشر المراحل */
-.stepper{display:flex;align-items:center;gap:8px;margin:4px 0 16px;padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh)}
-.stp{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--mut);white-space:nowrap}
-.stp i{font-style:normal;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--chip);color:var(--mut);font-size:13px;font-weight:800;transition:.25s}
+h1,h2,h3,.hd{font-family:var(--head)}
+/* الشريط العلوي */
+.appbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.appbar-in{max-width:1120px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.stamp{width:44px;height:44px;flex:none;border-radius:50%;border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;position:relative;transform:rotate(-8deg);color:var(--acc);font:700 22px/1 var(--head)}
+.stamp::after{content:"";position:absolute;inset:3px;border-radius:50%;border:1px dashed color-mix(in srgb,var(--acc) 55%,transparent)}
+.brand b{font:700 24px/1.1 var(--head);letter-spacing:0}
+.back{display:inline-flex;align-items:center;gap:7px;color:var(--ink);text-decoration:none;font-size:13.5px;font-weight:600;border:1px solid var(--line2);border-radius:10px;padding:7px 12px;white-space:nowrap;background:var(--card)}
+.back:hover{border-color:var(--acc);color:var(--acc)}
+.wrap{max-width:1120px;margin:0 auto;padding:18px 16px 110px}
+/* المراحل: مثل ترقيم أسئلة الورقة */
+.stepper{display:flex;align-items:center;gap:10px;margin:2px 0 18px}
+.stp{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--mut);white-space:nowrap}
+.stp i{font-style:normal;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid var(--line2);color:var(--mut);font:700 14px/1 var(--head);background:var(--card)}
 .stp.on{color:var(--ink)}
-.stp.on i{background:var(--acc);color:#fff;box-shadow:var(--ring)}
-.stp.done i{background:var(--accs2);color:var(--acc)}
-.stp.done i::before{content:"\2713"}
+.stp.on i{border-color:var(--acc);background:var(--acc);color:#fff}
+.stp.done i{border-color:var(--acc);color:var(--acc)}
+.stp.done i::before{content:"\2713";font-family:var(--font)}
 .stp.done i span{display:none}
-.stepper .ln{flex:1;height:2px;background:var(--line);border-radius:2px;min-width:14px}
-.stepper .ln.done{background:var(--acc)}
+.stepper .ln{flex:1;height:0;border-top:1.5px dashed var(--line2);min-width:12px}
+.stepper .ln.done{border-top-style:solid;border-color:var(--acc)}
 /* البطاقات */
-.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
-.card h2{font-size:16px;font-weight:900;margin:0 0 12px;display:flex;align-items:center;gap:8px;justify-content:space-between}
-.card h2 .mk{font-size:12px;font-weight:800;background:var(--golds);color:var(--gold-h);border:1px solid var(--goldl);border-radius:999px;padding:1px 10px}
-.ch{display:flex;align-items:center;gap:10px;margin:0 0 14px}
-.ch .ci{width:38px;height:38px;flex:none;border-radius:12px;background:var(--accs);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:16px}
-.ch b{display:block;font-size:16px;font-weight:900;line-height:1.3}
-.ch small{display:block;font-size:12.5px;color:var(--mut);line-height:1.4}
-.hero{display:flex;align-items:center;gap:14px;padding:18px;margin-bottom:12px;border-radius:22px;background:linear-gradient(135deg,#0a6b4f 0%,#06422f 100%);color:#fff;position:relative;overflow:hidden}
-.hero::after{content:"";position:absolute;inset:auto -40px -60px auto;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(243,212,138,.28),transparent 65%)}
-.hero h1{margin:0 0 4px;font-size:20px;font-weight:900;line-height:1.35}
-.hero p{margin:0;font-size:13.5px;line-height:1.7;color:rgba(255,255,255,.85)}
-.hero .hi{width:54px;height:54px;flex:none;border-radius:18px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:24px;color:#f3d48a}
-.hero .hb{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.hero .hb span{font-size:11.5px;font-weight:700;background:rgba(255,255,255,.13);border-radius:999px;padding:2px 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+.card h2{font-size:17px;margin:0 0 12px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.card h2 .mk{font:600 12px/1.6 var(--font);background:var(--golds);color:var(--gold-h);border:1px solid var(--goldl);border-radius:999px;padding:1px 10px}
+.ch{display:flex;align-items:baseline;gap:10px;margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.ch .n{width:26px;height:26px;flex:none;border-radius:50%;border:1.5px solid var(--ink);display:inline-flex;align-items:center;justify-content:center;font:700 14px/1 var(--head);transform:translateY(5px)}
+.ch b{display:block;font:700 18px/1.4 var(--head)}
+.ch small{display:block;font-size:13px;color:var(--mut);line-height:1.5}
+.intro{margin:0 2px 16px}
+.intro h1{margin:0;font-size:27px;line-height:1.5;font-weight:700}
+.intro h1 u{text-decoration:none;background:linear-gradient(transparent 62%,var(--golds) 62%)}
+.intro p{margin:2px 0 0;color:var(--mut);font-size:14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:var(--mut)}
-select,input[type=text],textarea{font:inherit;font-weight:500;color:var(--ink);background:var(--card2);border:1.5px solid var(--line);border-radius:12px;padding:9px 11px;min-width:0;width:100%;transition:border-color .15s,box-shadow .15s}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--mut)}
+select,input[type=text],textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line2);border-radius:10px;padding:9px 11px;min-width:0;width:100%;transition:border-color .15s,box-shadow .15s}
 select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),linear-gradient(135deg,var(--mut) 50%,transparent 50%);background-position:14px 55%,9px 55%;background-size:5px 5px;background-repeat:no-repeat;padding-left:26px}
 textarea{resize:vertical;line-height:1.6}
-input:focus,textarea:focus,select:focus{outline:0;border-color:var(--acc);box-shadow:var(--ring);background:var(--card)}
+input:focus,textarea:focus,select:focus{outline:0;border-color:var(--acc);box-shadow:var(--ring)}
 .en{direction:ltr;text-align:left}
-.lbl2{font-size:13px;font-weight:800;color:var(--mut);margin:0 2px 7px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.lbl2{font-size:13px;font-weight:600;color:var(--mut);margin:0 2px 8px;display:flex;align-items:center;gap:8px;justify-content:space-between}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
-.seg button{font:inherit;font-weight:700;font-size:13.5px;border:1.5px solid var(--line);background:var(--card2);color:var(--ink);border-radius:12px;padding:7px 14px;cursor:pointer;transition:.15s}
-.seg button:hover{border-color:var(--line2)}
-.seg button.on{background:var(--acc);border-color:var(--acc);color:#fff;box-shadow:0 4px 12px rgba(10,107,79,.22)}
-.seg.big{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.seg.big button{text-align:right;padding:11px 13px;display:flex;align-items:flex-start;gap:10px;border-radius:14px}
-.seg.big button i{font-size:17px;margin-top:3px;color:var(--acc)}
-.seg.big button.on i{color:#f3d48a}
-.seg.big button b{display:block;font-size:14.5px;font-weight:900}
-.seg.big button small{display:block;font-size:11.5px;font-weight:500;color:var(--mut);line-height:1.45;margin-top:1px}
-.seg.big button.on small{color:rgba(255,255,255,.82)}
-.units{display:flex;flex-wrap:wrap;gap:7px}
-.units label{display:flex;align-items:center;gap:7px;border:1.5px solid var(--line);border-radius:12px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;direction:ltr;background:var(--card2);transition:.15s;user-select:none}
-.units label:has(input:checked){border-color:var(--acc);background:var(--accs);color:var(--acc)}
-.units input{accent-color:var(--acc);width:16px;height:16px;margin:0}
-.linkbtn{border:0;background:none;color:var(--acc);font:inherit;font-size:12.5px;font-weight:800;cursor:pointer;padding:0}
-.hint{font-size:12.5px;color:var(--mut);margin-top:8px;line-height:1.6;background:var(--card2);border:1px dashed var(--line2);border-radius:12px;padding:7px 10px}
+.seg button{font:inherit;font-weight:600;font-size:13.5px;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:10px;padding:7px 14px;cursor:pointer;transition:.15s}
+.seg button:hover{border-color:var(--acc)}
+.seg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.seg.big{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg.big button{text-align:right;padding:12px 14px;display:block;border-radius:12px;position:relative}
+.seg.big button b{display:block;font:700 15.5px/1.5 var(--head)}
+.seg.big button small{display:block;font-size:12px;font-weight:400;color:var(--mut);line-height:1.5}
+.seg.big button.on{background:var(--accs);color:var(--ink);border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.seg.big button.on::after{content:"\2713";position:absolute;top:10px;left:12px;color:var(--acc);font-weight:700}
+/* المادة */
+.subj{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.subj .on{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--acc);background:var(--accs);color:var(--ink);border-radius:10px;padding:8px 14px;font-weight:600}
+.subj .on::before{content:"\2713";color:var(--acc);font-weight:700}
+.subj .soon{display:inline-flex;align-items:center;gap:6px;border:1px dashed var(--line2);color:var(--mut);border-radius:10px;padding:8px 12px;font-size:13px}
+.subj .soon em{font-style:normal;font-size:11px;background:var(--chip);border-radius:999px;padding:0 8px}
+/* الوحدات: شبكة مرتبة تسلسلياً، رقم عربي وعنوان إنجليزي معزول الاتجاه */
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.units label{display:flex;align-items:center;gap:10px;border:1px solid var(--line2);border-radius:10px;padding:8px 10px;cursor:pointer;background:var(--card);transition:.15s;user-select:none;min-width:0}
+.units label:has(input:checked){border-color:var(--acc);background:var(--accs)}
+.units input{accent-color:var(--acc);width:17px;height:17px;margin:0;flex:none}
+.units .un{flex:none;font-size:12px;font-weight:700;color:var(--mut);white-space:nowrap}
+.units label:has(input:checked) .un{color:var(--acc)}
+.units bdi{display:block;flex:1;min-width:0;direction:ltr;text-align:left;font-size:13.5px;font-weight:600;line-height:1.35;overflow-wrap:anywhere;unicode-bidi:isolate}
+.linkbtn{border:0;background:none;color:var(--acc);font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
+.hint{font-size:12.5px;color:var(--mut);margin-top:10px;line-height:1.6;padding:2px 10px;border-right:3px solid var(--goldl)}
+/* مقياس الصعوبة */
+.lvls{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.lvls button{font:inherit;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 4px 7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12.5px;font-weight:600;line-height:1.25;transition:.15s;text-align:center}
+.lvls button .bars{display:flex;gap:2px;align-items:flex-end;height:14px}
+.lvls button .bars i{width:4px;border-radius:1px;background:var(--line2)}
+.lvls button:hover{border-color:var(--acc)}
+.lvls button.on{border-color:var(--acc);background:var(--accs);box-shadow:inset 0 0 0 1px var(--acc)}
+.lvls button.on .bars i.f{background:var(--acc)}
+.lvls button .bars i.f{background:var(--mut)}
 /* مفتاح الاختبار البديل */
-.switch{position:relative;display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 14px;border:1.5px solid var(--line);border-radius:16px;background:var(--card2);transition:.15s}
-.switch:has(input:checked){border-color:var(--gold);background:var(--golds)}
+.switch{position:relative;display:flex;align-items:center;gap:12px;cursor:pointer}
 .switch input{position:absolute;opacity:0;pointer-events:none}
-.switch .tg{width:46px;height:27px;flex:none;border-radius:999px;background:var(--line2);position:relative;transition:.2s}
-.switch .tg::after{content:"";position:absolute;top:3px;right:3px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.2s}
-.switch input:checked + .tg{background:var(--gold)}
-.switch input:checked + .tg::after{right:22px}
+.switch .tg{width:44px;height:26px;flex:none;border-radius:999px;background:var(--line2);position:relative;transition:.2s}
+.switch .tg::after{content:"";position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:.2s}
+.switch input:checked + .tg{background:var(--acc)}
+.switch input:checked + .tg::after{right:21px}
 .switch input:focus-visible + .tg{box-shadow:var(--ring)}
-.switch b{display:block;font-size:14.5px;font-weight:900}
-.switch small{display:block;font-size:12px;color:var(--mut);line-height:1.5}
+.switch b{display:block;font:700 16px/1.5 var(--head)}
+.switch small{display:block;font-size:12.5px;color:var(--mut);line-height:1.5}
+.card.switch:has(input:checked){border-color:var(--acc)}
 /* الأزرار */
-.btn{font:inherit;border:0;border-radius:12px;padding:9px 16px;cursor:pointer;background:var(--acc);color:#fff;font-weight:800;font-size:14px;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;transition:background .15s,transform .1s}
+.btn{font:inherit;border:1px solid var(--acc);border-radius:10px;padding:8px 16px;cursor:pointer;background:var(--acc);color:#fff;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;transition:background .15s}
 .btn:hover{background:var(--acc-h)}
-.btn:active{transform:scale(.98)}
-.btn.sec{background:var(--card);color:var(--ink);border:1.5px solid var(--line);font-weight:700}
-.btn.sec:hover{background:var(--chip)}
+.btn.sec{background:var(--card);color:var(--ink);border-color:var(--line2)}
+.btn.sec:hover{border-color:var(--acc);color:var(--acc)}
 .btn.sec i{color:var(--acc)}
-.btn.gold{background:var(--golds);color:var(--gold-h);border:1.5px solid var(--goldl)}
-.btn.gold:hover{background:color-mix(in srgb,var(--golds) 70%,var(--gold) 30%)}
-.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:10px}
-.btn:disabled{opacity:.5;cursor:default;transform:none}
-.cta{position:sticky;bottom:0;z-index:25;margin:6px -16px 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--bg) 70%,transparent)}
-.cta-in{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:8px;align-items:stretch}
-.go{width:100%;justify-content:center;padding:16px;border-radius:18px;font-size:17px;font-weight:900;background:linear-gradient(135deg,var(--acc) 0%,#06442f 100%);box-shadow:0 10px 24px rgba(6,68,47,.3)}
-.go i{color:#f3d48a;font-size:18px}
-.go:hover{filter:brightness(1.06)}
+.btn.gold{background:var(--card);color:var(--gold-h);border-color:var(--goldl)}
+.btn.gold:hover{background:var(--golds)}
+.btn.sm{padding:4px 10px;font-size:12.5px;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:default}
+.cta{position:sticky;bottom:0;z-index:25;margin:4px -16px 0;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--bg) 72%,transparent)}
+.cta-in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.go{width:100%;justify-content:center;padding:14px;border-radius:12px;font:700 18px/1.4 var(--head);box-shadow:0 6px 16px rgba(36,98,75,.22)}
 .cta .muted{text-align:center}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .muted{color:var(--mut);font-size:13px}
-.gate{text-align:center;padding:48px 16px;font-weight:700}
+.gate{text-align:center;padding:48px 16px;font-weight:600}
 .gate a{color:var(--acc)}
 .prog{display:none}
-/* شريط الأدوات في التحرير */
-.toolbar{position:sticky;top:64px;z-index:20;margin-bottom:10px}
-.tb{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px 12px;box-shadow:0 6px 22px rgba(13,31,25,.08);display:flex;flex-direction:column;gap:8px}
+/* شريط أدوات التحرير */
+.toolbar{position:sticky;top:64px;z-index:20;margin-bottom:12px}
+.tb{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:0 4px 16px rgba(60,45,20,.07);display:flex;flex-direction:column;gap:8px}
 .tb-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .tb-row .sp{flex:1}
-.ftabs{background:var(--card2);border:1.5px solid var(--line);border-radius:14px;padding:3px;gap:3px}
-.ftabs button{border:0;background:transparent;border-radius:11px;padding:6px 14px}
-.ftabs button.on{box-shadow:none}
-.dlpick{font-size:12.5px;color:var(--mut);font-weight:700;gap:6px}
-.dlpick label{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:3px 11px;cursor:pointer;background:var(--card2);color:var(--ink)}
-.dlpick label:has(input:checked){border-color:var(--acc);background:var(--accs);color:var(--acc)}
+.ftabs{border-bottom:1px solid var(--line);gap:0;border-radius:0}
+.ftabs button{border:0;background:transparent;border-radius:0;padding:6px 14px;border-bottom:2.5px solid transparent;margin-bottom:-1px;font:700 15px/1.5 var(--head);color:var(--mut)}
+.ftabs button.on{background:transparent;color:var(--acc);border-bottom-color:var(--acc)}
+.dlpick{font-size:12.5px;color:var(--mut);font-weight:600;gap:6px}
+.dlpick label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line2);border-radius:999px;padding:2px 11px;cursor:pointer;background:var(--card);color:var(--ink)}
+.dlpick label:has(input:checked){border-color:var(--acc);background:var(--accs)}
 .dlpick input{accent-color:var(--acc);margin:0}
-.secnav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.secnav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
 .secnav::-webkit-scrollbar{display:none}
-.secnav button{flex:none;border:1px solid var(--line);background:var(--card2);color:var(--mut);border-radius:999px;padding:3px 11px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
-.secnav button:hover{color:var(--acc);border-color:var(--acc)}
+.secnav button{flex:none;border:0;background:none;color:var(--mut);border-radius:8px;padding:2px 9px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.secnav button:hover{color:var(--acc);background:var(--accs)}
 @media (max-width:700px){
   .appbar-in{padding-left:12px;padding-right:12px}
-  .brand-tx small{max-width:52vw}
   .back span{display:none}
   .stp > span{display:none}
   .stp.on > span{display:inline}
@@ -338,36 +348,42 @@ input:focus,textarea:focus,select:focus{outline:0;border-color:var(--acc);box-sh
   .tb .acts .btn{justify-content:center;padding:8px 6px;font-size:13px}
   .tb .acts #pvBtn,.tb .acts #altBtn{grid-column:span 3}
   .seg.big{grid-template-columns:1fr}
+  .units{grid-template-columns:1fr 1fr}
+  .units label{flex-wrap:wrap;row-gap:2px;align-content:flex-start}
+  .units bdi{flex-basis:100%;font-size:13px}
+  .lvls{grid-template-columns:repeat(3,1fr)}
   .pv-bar{padding:8px 10px;gap:6px}
   .pv-bar .btn{padding:7px 10px;font-size:13px}
   .pv-bar h3{flex-basis:100%;order:-1}
-  .hero{padding:15px}
-  .hero h1{font-size:18px}
+  .intro h1{font-size:23px}
+  .card{padding:15px}
 }
-.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media (max-width:380px){.units{grid-template-columns:1fr}}
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
 @media (min-width:1050px){.layout{grid-template-columns:minmax(0,1fr) 300px}.side .card{position:sticky;top:250px;max-height:calc(100vh - 264px);overflow:auto}}
 /* بطاقات التحرير */
-.sub{font-weight:800;font-size:13.5px;margin:14px 0 7px;color:var(--acc)}
-.it{border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:8px;background:var(--card2)}
-.it.warn{border-color:#e8a33d;background:var(--warns)}
+.sub{font:700 15px/1.5 var(--head);margin:16px 0 7px;color:var(--acc)}
+.it{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:var(--card2)}
+.it.warn{border-color:#d9a24a;background:var(--warns)}
 .it-h{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
-.tag{font-size:12px;color:var(--mut);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{font-size:12px;color:var(--mut);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .tag b{color:var(--acc);font-weight:700}
+.tag .why{display:block;direction:rtl;text-align:right;white-space:normal;font-style:normal;color:var(--warn);font-weight:600;margin-top:2px}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;margin-top:6px;direction:ltr}
-.opt{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:11px;padding:2px 6px 2px 8px;background:var(--card)}
+.opt{display:flex;align-items:center;gap:6px;border:1px solid var(--line2);border-radius:9px;padding:2px 6px 2px 8px;background:var(--card)}
 .opt.ok{border-color:var(--acc);background:var(--accs)}
 .opt input[type=text]{border:0;background:transparent;padding:5px 2px;box-shadow:none}
 .opt input[type=radio]{accent-color:var(--acc);width:17px;height:17px;flex:none;margin:0}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:6px;direction:ltr}
 .tf{display:flex;gap:6px;align-items:center;direction:ltr}
 .tf .seg button{padding:3px 12px}
-.iconbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;width:30px;height:28px;cursor:pointer;flex:none;font-size:14px}
-.iconbtn:hover{background:var(--accs);color:var(--acc)}
+.iconbtn{border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:8px;width:30px;height:28px;cursor:pointer;flex:none;font-size:14px}
+.iconbtn:hover{border-color:var(--acc);color:var(--acc)}
 .busy{opacity:.45;pointer-events:none}
 /* بطاقات الصور */
 .pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.pc{border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden;display:flex;flex-direction:column}
-.pc .drop{aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:var(--card2);border-bottom:1px dashed var(--line);color:var(--mut);text-align:center;padding:8px;position:relative}
+.pc{border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden;display:flex;flex-direction:column}
+.pc .drop{aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:var(--card2);border-bottom:1px dashed var(--line2);color:var(--mut);text-align:center;padding:8px;position:relative}
 .pc .drop:hover,.pc .drop.over{background:var(--accs);color:var(--acc)}
 .pc .drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff}
 .pc .drop svg{width:30px;height:30px}
@@ -380,108 +396,105 @@ input:focus,textarea:focus,select:focus{outline:0;border-color:var(--acc);box-sh
 /* تقرير الشمول */
 table.cov{width:100%;border-collapse:collapse;font-size:13px}
 table.cov th,table.cov td{border-bottom:1px solid var(--line);padding:5px 4px;text-align:center}
-table.cov th{color:var(--mut);font-weight:800;font-size:12px}
+table.cov th{color:var(--mut);font-weight:600;font-size:12px}
 table.cov td:first-child,table.cov th:first-child{text-align:right}
 ul.pts{list-style:none;margin:6px 0 0;padding:0;font-size:12.5px;direction:ltr;text-align:left;max-height:320px;overflow:auto}
 ul.pts li{padding:2px 0}
 ul.pts li.no{color:var(--warn)}
-.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:#0d1f19;color:#fff;padding:11px 18px;border-radius:14px;font-size:14px;font-weight:700;z-index:200;display:none;max-width:90vw;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:tIn .25s ease}
-@keyframes tIn{from{opacity:0;transform:translate(-50%,10px)}}
-/* ===== شاشة التوليد التفاعلية ===== */
-.gv{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(120% 90% at 50% 0%,#0d7a5a 0%,#063b2b 55%,#031f17 100%);overflow:auto;animation:fadeIn .3s ease}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:14px;font-weight:600;z-index:200;display:none;max-width:90vw;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+/* ===== شاشة التحضير: ورقة تُكتب سطراً سطراً ===== */
+.gv{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:16px;background:var(--bg);overflow:auto;animation:fadeIn .25s ease}
 .gv[hidden]{display:none}
 @keyframes fadeIn{from{opacity:0}}
-.gv-card{width:100%;max-width:560px;background:var(--card);border-radius:28px;padding:26px 22px 20px;box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center;position:relative;margin:auto;animation:popIn .4s cubic-bezier(.2,.9,.3,1.2)}
-@keyframes popIn{from{opacity:0;transform:translateY(18px) scale(.97)}}
-.gv-orb{width:96px;height:96px;margin:0 auto 12px;position:relative}
-.gv-orb svg{position:absolute;inset:0;transform:rotate(-90deg)}
-.gv-orb .trk{stroke:var(--accs)}
-.gv-orb .val{stroke:var(--acc);transition:stroke-dashoffset .4s ease}
-.gv-orb .ic{position:absolute;inset:14px;border-radius:50%;background:linear-gradient(140deg,var(--acc),#05402f);display:flex;align-items:center;justify-content:center;color:#f3d48a;font-size:26px;animation:breathe 1.8s ease-in-out infinite}
-.gv-orb .ic i{animation:wig 2.4s ease-in-out infinite}
-@keyframes breathe{50%{transform:scale(.93);box-shadow:0 0 0 10px rgba(10,107,79,.08)}}
-@keyframes wig{0%,100%{transform:rotate(0)}25%{transform:rotate(-14deg)}75%{transform:rotate(10deg)}}
-.gv h2{margin:0 0 4px;font-size:20px;font-weight:900}
-.gv-sub{margin:0 0 14px;color:var(--mut);font-size:13px}
-.gv-bar{height:12px;border-radius:999px;background:var(--accs);overflow:hidden;position:relative}
-.gv-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--acc),#12a37a,var(--acc));background-size:200% 100%;animation:flow 1.6s linear infinite;transition:width .45s ease}
-@keyframes flow{to{background-position:-200% 0}}
-.gv-meta{display:flex;justify-content:space-between;align-items:center;margin:7px 2px 14px;font-size:12.5px;color:var(--mut);font-weight:700}
-.gv-meta b{font-size:15px;color:var(--acc);font-weight:900}
-.gv-grp{text-align:right;margin-bottom:10px}
-.gv-gt{font-size:12.5px;font-weight:900;color:var(--gold-h);margin:0 4px 6px;display:flex;align-items:center;gap:6px}
-.gv-list{border:1px solid var(--line);border-radius:16px;overflow:hidden}
-.gv-r{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--card);transition:background .3s}
-.gv-r + .gv-r{border-top:1px solid var(--line)}
-.gv-r .si{width:32px;height:32px;flex:none;border-radius:10px;background:var(--chip);color:var(--mut);display:flex;align-items:center;justify-content:center;font-size:14px;transition:.3s}
+.gv-card{width:100%;max-width:520px;text-align:center;margin:auto}
+.paper{width:150px;height:186px;margin:0 auto 18px;position:relative}
+.paper .pg{position:absolute;inset:0;background:var(--card);border:1px solid var(--line2);border-radius:4px;box-shadow:0 2px 6px rgba(60,45,20,.08)}
+.paper .pg.b2{transform:rotate(-5deg) translate(-8px,4px)}
+.paper .pg.b1{transform:rotate(3deg) translate(6px,2px)}
+.paper .pg.top{padding:16px 14px;display:flex;flex-direction:column;gap:8px;transform:none}
+.paper .pg.top .hdr{height:10px;width:60%;margin:0 auto 4px;border-radius:2px;background:var(--ink);opacity:.75}
+.paper .pg.top .wl{height:5px;border-radius:2px;background:var(--line2);position:relative;overflow:hidden;direction:ltr}
+.paper .pg.top .wl b{position:absolute;inset:0 auto 0 0;width:0;background:var(--acc);opacity:.8;border-radius:2px;transition:width .6s ease}
+.paper .pen{position:absolute;width:56px;height:8px;border-radius:2px 4px 4px 2px;background:var(--ink);top:40%;right:-34px;transform-origin:left center;transform:rotate(-38deg);animation:write 1.4s ease-in-out infinite}
+.paper .pen::before{content:"";position:absolute;left:-9px;top:0;border:4px solid transparent;border-right:9px solid var(--gold);border-left:0}
+@keyframes write{0%,100%{transform:rotate(-38deg) translate(0,0)}50%{transform:rotate(-34deg) translate(-14px,6px)}}
+.gv h2{margin:0 0 2px;font-size:25px;font-weight:700}
+.gv-sub{margin:0 0 16px;color:var(--mut);font-size:13.5px}
+.gv-bar{height:4px;border-radius:999px;background:var(--line);overflow:hidden}
+.gv-fill{height:100%;width:0;border-radius:999px;background:var(--acc);transition:width .45s ease}
+.gv-meta{display:flex;justify-content:space-between;align-items:center;margin:7px 2px 14px;font-size:12.5px;color:var(--mut);font-weight:600}
+.gv-meta b{font-size:14px;color:var(--ink);font-weight:700}
+.gv-grp{text-align:right;margin-bottom:12px}
+.gv-gt{font:700 15px/1.6 var(--head);color:var(--ink);margin:0 2px 4px;display:flex;align-items:center;gap:6px}
+.gv-list{border-top:1px solid var(--line)}
+.gv-r{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px dashed var(--line)}
+.gv-r .si{width:26px;height:26px;flex:none;border-radius:50%;border:1.5px solid var(--line2);color:var(--mut);display:flex;align-items:center;justify-content:center;font:700 13px/1 var(--head)}
 .gv-r .nm{flex:1;min-width:0}
-.gv-r .nm b{display:block;font-size:14px;font-weight:800}
-.gv-r .nm small{display:block;font-size:11.5px;color:var(--mut)}
-.gv-r .stt{width:26px;height:26px;flex:none;display:flex;align-items:center;justify-content:center}
-.gv-r.wait .stt::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line2)}
-.gv-r.run{background:color-mix(in srgb,var(--accs) 45%,var(--card))}
-.gv-r.run .si{background:var(--accs);color:var(--acc)}
-.gv-r.run .stt::before{content:"";width:20px;height:20px;border-radius:50%;border:2.5px solid var(--accs2);border-top-color:var(--acc);animation:spin .8s linear infinite}
+.gv-r .nm b{display:block;font-size:14.5px;font-weight:600}
+.gv-r .nm small{display:block;font-size:12px;color:var(--mut)}
+.gv-r .stt{width:30px;height:26px;flex:none;display:flex;align-items:center;justify-content:center}
+.gv-r .stt svg{width:28px;height:24px;display:none}
+.gv-r.wait .nm b{color:var(--mut)}
+.gv-r.run .si{border-color:var(--acc);color:var(--acc)}
+.gv-r.run .stt::before{content:"";width:18px;height:18px;border-radius:50%;border:2px solid var(--line2);border-top-color:var(--acc);animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.gv-r.ok .si{background:var(--acc);color:#fff}
-.gv-r.ok .stt::before{content:"\2713";width:24px;height:24px;border-radius:50%;background:var(--acc);color:#fff;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;animation:pop .45s cubic-bezier(.2,.9,.3,1.5)}
-.gv-r.err .si{background:var(--bads);color:var(--bad)}
-.gv-r.err .stt::before{content:"!";width:24px;height:24px;border-radius:50%;background:var(--bad);color:#fff;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.gv-r.ok .si{border-color:var(--acc);background:var(--acc);color:#fff}
+.gv-r.ok .stt svg{display:block}
+.gv-r.ok .stt path{fill:none;stroke:var(--pen);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:draw .45s ease forwards}
+.gv-r.err .si{border-color:var(--bad);color:var(--bad)}
+.gv-r.err .stt::before{content:"!";width:22px;height:22px;border-radius:50%;border:1.5px solid var(--bad);color:var(--bad);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px}
 .gv-r.err .nm small{color:var(--bad)}
-@keyframes pop{from{transform:scale(0)}}
-.gv-tip{margin-top:12px;font-size:12.5px;color:var(--mut);min-height:38px;display:flex;align-items:center;justify-content:center;gap:7px;line-height:1.55;transition:opacity .3s}
-.gv-tip i{color:var(--gold)}
-/* حالة الانتهاء */
-.gv-check{width:104px;height:104px;margin:2px auto 12px;position:relative}
-.gv-check svg{width:100%;height:100%}
-.gv-check .c{fill:none;stroke:var(--acc);stroke-width:5;stroke-dasharray:302;stroke-dashoffset:302;animation:draw .7s ease forwards}
-.gv-check .k{fill:none;stroke:var(--acc);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:80;stroke-dashoffset:80;animation:draw .45s .6s ease forwards}
-.gv-check .bg{fill:var(--accs);transform-origin:center;animation:pop .5s .5s cubic-bezier(.2,.9,.3,1.4) both}
-.gv-done.bad .gv-check .c,.gv-done.bad .gv-check .k{stroke:var(--warn)}
-.gv-done.bad .gv-check .bg{fill:var(--warns)}
 @keyframes draw{to{stroke-dashoffset:0}}
-.gv-done h2{animation:up .5s .7s ease both}
-.gv-done .gv-sub,.gv-stats,.gv-acts,.gv-key,.gv-warn{animation:up .5s .85s ease both}
-@keyframes up{from{opacity:0;transform:translateY(10px)}}
-.gv-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:4px 0 14px}
-.gv-stats div{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:8px 4px}
-.gv-stats b{display:block;font-size:18px;font-weight:900;color:var(--acc);line-height:1.2}
-.gv-stats span{display:block;font-size:11.5px;color:var(--mut);font-weight:700}
-.gv-warn{background:var(--warns);color:var(--warn);border-radius:12px;padding:8px 12px;font-size:12.5px;font-weight:700;margin-bottom:12px;text-align:right}
+.gv-tip{margin-top:10px;font-size:13px;color:var(--mut);min-height:40px;display:flex;align-items:center;justify-content:center;gap:7px;line-height:1.6;transition:opacity .3s}
+.gv-tip i{color:var(--gold)}
+/* حالة الانتهاء: علامة تصحيح بالقلم الأحمر */
+.gv-done{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 20px 20px;position:relative;box-shadow:0 10px 40px rgba(60,45,20,.1);animation:up .4s ease}
+.gv-check{width:120px;height:96px;margin:0 auto 6px;position:relative}
+.gv-check svg{width:100%;height:100%;overflow:visible}
+.gv-check .k{fill:none;stroke:var(--pen);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:190;stroke-dashoffset:190;animation:draw .75s .15s cubic-bezier(.6,.05,.35,1) forwards}
+.gv-done.bad .gv-check .k{stroke:var(--warn)}
+.stampok{position:absolute;right:-34px;bottom:0;transform:rotate(-12deg) scale(1.6);opacity:0;border:2px solid var(--acc);color:var(--acc);border-radius:6px;padding:0 8px;font:700 13px/1.6 var(--head);animation:stamp .35s .9s ease forwards;background:color-mix(in srgb,var(--card) 80%,transparent)}
+@keyframes stamp{to{opacity:1;transform:rotate(-12deg) scale(1)}}
+.gv-done.bad .stampok{display:none}
+.gv-done h2{animation:up .4s .55s ease both}
+.gv-done .gv-sub,.gv-stats,.gv-acts,.gv-key,.gv-warn{animation:up .4s .7s ease both}
+@keyframes up{from{opacity:0;transform:translateY(8px)}}
+.gv-stats{display:grid;grid-template-columns:repeat(4,1fr);margin:2px 0 16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.gv-stats div{padding:9px 4px}
+.gv-stats div + div{border-right:1px solid var(--line)}
+.gv-stats b{display:block;font:700 21px/1.3 var(--head);color:var(--ink)}
+.gv-stats span{display:block;font-size:12px;color:var(--mut);font-weight:600}
+.gv-warn{background:var(--warns);color:var(--warn);border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:600;margin-bottom:12px;text-align:right}
 .gv-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.gv-a{font:inherit;font-weight:800;font-size:14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:12px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
-.gv-a:hover{background:var(--chip)}
-.gv-a i{color:var(--acc);font-size:16px}
-.gv-a.pri{grid-column:1/-1;background:linear-gradient(135deg,var(--acc),#06442f);border-color:transparent;color:#fff;font-size:16px;padding:14px}
-.gv-a.pri i{color:#f3d48a}
-.gv-a.pri:hover{filter:brightness(1.07)}
-.gv-key{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:12px;font-size:13px;color:var(--mut);font-weight:700;cursor:pointer}
-.gv-key input{accent-color:var(--acc);width:16px;height:16px;margin:0}
+.gv-a{font:inherit;font-weight:600;font-size:14px;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:10px;padding:11px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+.gv-a:hover{border-color:var(--acc);color:var(--acc)}
+.gv-a i{color:var(--acc);font-size:15px}
+.gv-a.pri{grid-column:1/-1;background:var(--acc);border-color:var(--acc);color:#fff;font:700 17px/1.4 var(--head);padding:13px}
+.gv-a.pri i{color:#fff}
+.gv-a.pri:hover{background:var(--acc-h);color:#fff}
 .gv-done .badonly{display:none}.gv-done.bad .badonly{display:flex}.gv-done.bad .okonly{display:none}
 .gv-done.bad #gvEdit{grid-column:1/-1}
-.gv-x{position:absolute;top:12px;left:12px;width:36px;height:36px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--mut);cursor:pointer;font-size:15px}
-.gv-x:hover{background:var(--chip)}
-.confetti{position:absolute;top:70px;left:50%;width:0;height:0;pointer-events:none}
-.confetti i{position:absolute;width:8px;height:12px;border-radius:2px;opacity:0;animation:burst 1.1s .55s cubic-bezier(.15,.7,.3,1) forwards}
-@keyframes burst{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r))}}
-@media (max-width:480px){.gv-card{padding:22px 14px 16px;border-radius:24px}.gv-stats{grid-template-columns:repeat(2,1fr)}.gv h2{font-size:18px}}
-@media (prefers-reduced-motion:reduce){.gv *,.gv{animation:none !important;transition:none !important}.gv-check .c,.gv-check .k{stroke-dashoffset:0}}
-/* المعاينة */
-.pv{position:fixed;inset:0;z-index:60;background:rgba(6,25,19,.82);backdrop-filter:blur(3px);display:none;flex-direction:column}
+.gv-key{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:12px;font-size:13px;color:var(--mut);font-weight:600;cursor:pointer}
+.gv-key input{accent-color:var(--acc);width:16px;height:16px;margin:0}
+.gv-x{position:absolute;top:10px;left:10px;width:34px;height:34px;border-radius:10px;border:1px solid var(--line2);background:var(--card);color:var(--mut);cursor:pointer;font-size:15px}
+.gv-x:hover{color:var(--ink)}
+@media (max-width:480px){.gv-done{padding:22px 14px 16px}.gv-stats{grid-template-columns:repeat(2,1fr)}.gv-stats div:nth-child(3){border-right:0}.gv-stats div:nth-child(n+3){border-top:1px solid var(--line)}.gv h2{font-size:22px}}
+@media (prefers-reduced-motion:reduce){.gv *,.gv{animation:none !important;transition:none !important}.gv-check .k,.gv-r.ok .stt path{stroke-dashoffset:0}.stampok{opacity:1;transform:rotate(-12deg)}}
+/* المعاينة: صفحات A4 فعلية مثل ملف PDF */
+.pv{position:fixed;inset:0;z-index:60;background:#5b5850;display:none;flex-direction:column}
 .pv.open{display:flex}
-.pv-bar{background:var(--card);border-bottom:1px solid var(--line);padding:10px 14px calc(10px);padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.pv-bar h3{margin:0;font-size:16px;font-weight:900;flex:1;min-width:120px;display:flex;align-items:center;gap:8px}
-.pv-bar h3 i{color:var(--acc)}
-.pv-bar label{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--mut);border:1.5px solid var(--line);border-radius:999px;padding:4px 11px;cursor:pointer}
+.pv-bar{background:var(--card);border-bottom:1px solid var(--line);padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pv-bar h3{margin:0;font-size:17px;flex:1;min-width:120px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pv-bar h3 .pc-n{font:600 12.5px/1.6 var(--font);color:var(--acc);background:var(--accs);border:1px solid var(--accs2);border-radius:999px;padding:1px 10px}
+.pv-bar label{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--mut);border:1px solid var(--line2);border-radius:999px;padding:3px 11px;cursor:pointer}
 .pv-bar label:has(input:checked){border-color:#c00000;color:#c00000;background:#fdeaea}
 .pv-body{flex:1;overflow:auto;padding:18px 10px 40px}
-.pvwrap{position:relative;margin:0 auto 14px;direction:ltr;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.45);background:#fff;border-radius:2px}
-.pvwrap .sheet{position:absolute;top:0;left:0;margin:0;transform-origin:0 0;width:210mm;max-width:none}
-/* المعاينة بنفس كثافة PDF و Word */
-.sheet.pvsheet{font-size:12pt;line-height:1.28}
-.sheet.pvsheet.auto{font-size:10.5pt;line-height:1.2}
-.sheet.pvsheet .q{margin-top:8px}
-.sheet.pvsheet .pi{padding:1px 0}
+.pvp{margin:0 auto 6px;position:relative;overflow:hidden;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.pvp .pg{position:absolute;top:0;left:0;width:210mm;height:297mm;transform-origin:0 0;background:#fff;overflow:hidden}
+.pvp .pgin{position:absolute;overflow:hidden}
+.pvp .pgin > .sheet{position:absolute;top:0;left:0;margin:0}
+.pvn{text-align:center;color:#ece8dd;font-size:12.5px;font-weight:600;margin:0 0 18px}
+.pvmeasure{position:absolute;left:-10000px;top:0;visibility:hidden}
 /* ===== ورقة الاختبار (للمعاينة والتصدير) ===== */
 .sheet{direction:ltr;text-align:left;background:#fff;color:#000;width:210mm;padding:10mm 12mm;font:12.5pt/1.45 Arial,"Helvetica Neue",sans-serif}
 .sheet *{color:#000}
@@ -581,10 +594,7 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
 </head>
 <body>
 <header class="appbar"><div class="appbar-in">
-  <div class="brand">
-    <div class="brand-ic"><i class="fas fa-feather-pointed"></i></div>
-    <div class="brand-tx"><b>مِحَكّ</b><small>منشئ اختبارات الإنجليزي — المرحلة المتوسطة</small></div>
-  </div>
+  <div class="brand"><span class="stamp" aria-hidden="true">م</span><b>مِحَكّ</b></div>
   <a class="back" href="./"><i class="fas fa-arrow-right"></i><span>العودة لإنجاز</span></a>
 </div></header>
 <div class="wrap">
@@ -599,48 +609,13 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
 
     <!-- ===== المرحلة ١: الإعداد ===== -->
     <section id="setup">
-      <div class="hero">
-        <div class="hi"><i class="fas fa-wand-magic-sparkles"></i></div>
-        <div>
-          <h1>اختبار كامل جاهز للطباعة في أقل من دقيقة</h1>
-          <p>اختر الصف والوحدات، ويُعدّ الذكاء الاصطناعي الأسئلة موزّعة على المنهج بتوزيع الدرجات المعتمد، مع نموذج الإجابة.</p>
-          <div class="hb"><span>Super Goal 1–3</span><span>40 درجة</span><span>PDF و Word</span><span>نموذج إجابة تلقائي</span></div>
-        </div>
+      <div class="intro">
+        <h1>اختبار جديد، <u>جاهز للطباعة</u></h1>
+        <p>حدّد المادة والصف والوحدات، ونجهّز لك ورقة كاملة بتوزيع الدرجات المعتمد ونموذج إجابتها.</p>
       </div>
 
       <div class="card">
-        <div class="ch"><div class="ci"><i class="fas fa-graduation-cap"></i></div><div><b>الصف والوحدات</b><small>الوحدات تُحدَّد تلقائياً حسب الفصل الدراسي، ويمكنك تعديلها.</small></div></div>
-        <div class="grid">
-          <label class="f">الصف
-            <select id="grade"><option value="sg1">أول متوسط — Super Goal 1</option><option value="sg2">ثاني متوسط — Super Goal 2</option><option value="sg3">ثالث متوسط — Super Goal 3</option></select>
-          </label>
-          <label class="f">الفصل الدراسي
-            <select id="term"><option value="1">الأول</option><option value="2">الثاني</option></select>
-          </label>
-        </div>
-        <div style="margin-top:14px">
-          <div class="lbl2"><span>الوحدات المشمولة <span id="uCount" class="muted"></span></span><button type="button" class="linkbtn" id="uAll">تحديد الكل</button></div>
-          <div class="units" id="units"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="ch"><div class="ci"><i class="fas fa-sliders"></i></div><div><b>شكل الاختبار</b><small>القالب ومستوى الصعوبة ونوع سؤال التعبير.</small></div></div>
-        <div class="lbl2">قالب الأسئلة</div>
-        <div class="seg big" id="tmpl">
-          <button data-v="ministry" class="on"><i class="fas fa-landmark"></i><span><b>قالب الوزارة</b><small>اختيار متعدد + افعل كما هو مطلوب + مطابقة وصور</small></span></button>
-          <button data-v="auto"><i class="fas fa-table-cells"></i><span><b>قالب التصحيح الآلي</b><small>جداول A/B/C وصح وخطأ تُصحَّح آلياً</small></span></button>
-        </div>
-        <div class="hint" id="tmplHint"></div>
-        <div class="grid" style="margin-top:14px">
-          <div><div class="lbl2">مستوى الصعوبة</div><div class="seg" id="diff"><button data-v="easy">سهل</button><button data-v="medium" class="on">متوسط</button><button data-v="hard">صعب</button></div></div>
-          <div id="gcountBox" hidden><div class="lbl2">عدد فقرات القواعد</div><div class="seg" id="gcount"><button data-v="9" class="on">9 فقرات (درجة لكل فقرة)</button><button data-v="18">18 فقرة (½ لكل فقرة)</button></div></div>
-          <div id="cmodeBox"><div class="lbl2">نوع سؤال التعبير</div><div class="seg" id="cmode"><button data-v="guided" class="on">أسئلة موجّهة</button><button data-v="wordbox">إكمال من صندوق كلمات</button></div></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="ch"><div class="ci"><i class="fas fa-file-signature"></i></div><div><b>بيانات رأس الورقة</b><small>تُحفظ تلقائياً لاختباراتك القادمة.</small></div></div>
+        <div class="ch"><span class="n">١</span><div><b>بيانات رأس الورقة</b><small>تظهر أعلى ورقة الاختبار، وتُحفظ لاختباراتك القادمة.</small></div></div>
         <div class="grid">
           <label class="f">إدارة التعليم<input type="text" id="directorate" class="en" placeholder="Education Directorate in ..."></label>
           <label class="f">اسم المدرسة<input type="text" id="school" class="en" placeholder="... Intermediate School"></label>
@@ -650,15 +625,51 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
         </div>
       </div>
 
+      <div class="card">
+        <div class="ch"><span class="n">٢</span><div><b>المادة والصف والوحدات</b><small>الوحدات تُحدَّد تلقائياً حسب الفصل الدراسي، ويمكنك تعديلها.</small></div></div>
+        <div class="lbl2">المادة</div>
+        <div class="subj" style="margin-bottom:14px"><span class="on">اللغة الإنجليزية — المرحلة المتوسطة</span><span class="soon">مواد أخرى <em>قريباً</em></span></div>
+        <div class="grid">
+          <label class="f">الصف
+            <select id="grade"><option value="sg1">أول متوسط — Super Goal 1</option><option value="sg2">ثاني متوسط — Super Goal 2</option><option value="sg3">ثالث متوسط — Super Goal 3</option></select>
+          </label>
+          <label class="f">الفصل الدراسي
+            <select id="term"><option value="1">الأول</option><option value="2">الثاني</option></select>
+          </label>
+        </div>
+        <div style="margin-top:16px">
+          <div class="lbl2"><span>الوحدات المشمولة <span id="uCount" class="muted"></span></span><button type="button" class="linkbtn" id="uAll">تحديد الكل</button></div>
+          <div class="units" id="units"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><span class="n">٣</span><div><b>شكل الاختبار</b><small>القالب ومستوى الصعوبة ونوع سؤال التعبير.</small></div></div>
+        <div class="lbl2">قالب الأسئلة</div>
+        <div class="seg big" id="tmpl">
+          <button data-v="ministry" class="on"><b>قالب الوزارة</b><small>اختيار من متعدد، افعل كما هو مطلوب، مطابقة وصور</small></button>
+          <button data-v="auto"><b>قالب التصحيح الآلي</b><small>جداول A/B/C وصح وخطأ تُصحَّح آلياً</small></button>
+        </div>
+        <div class="hint" id="tmplHint"></div>
+        <div style="margin-top:16px">
+          <div class="lbl2"><span>مستوى الصعوبة</span><span class="muted" id="diffHint"></span></div>
+          <div class="lvls" id="diff"></div>
+        </div>
+        <div class="grid" style="margin-top:16px">
+          <div id="gcountBox" hidden><div class="lbl2">عدد فقرات القواعد</div><div class="seg" id="gcount"><button data-v="9" class="on">9 فقرات (درجة لكل فقرة)</button><button data-v="18">18 فقرة (½ لكل فقرة)</button></div></div>
+          <div id="cmodeBox"><div class="lbl2">نوع سؤال التعبير</div><div class="seg" id="cmode"><button data-v="guided" class="on">أسئلة موجّهة</button><button data-v="wordbox">إكمال من صندوق كلمات</button></div></div>
+        </div>
+      </div>
+
       <label class="switch card" style="padding:14px 16px">
         <input type="checkbox" id="twoForms"><span class="tg"></span>
-        <span><b>توليد الاختبار البديل أيضاً</b><small>اختبار ثانٍ بنفس التوزيع والوحدات، وبأسئلة ونصوص وكلمات مختلفة تماماً عن الاختبار الأساسي.</small></span>
+        <span><b>إعداد اختبار بديل أيضاً</b><small>اختبار ثانٍ بنفس التوزيع والوحدات، وبأسئلة ونصوص وكلمات مختلفة تماماً عن الاختبار الأساسي.</small></span>
       </label>
 
       <div class="cta"><div class="cta-in">
-        <button class="btn go" id="genBtn"><i class="fas fa-wand-magic-sparkles"></i> <span>توليد الاختبار</span></button>
+        <button class="btn go" id="genBtn">إعداد الاختبار</button>
         <button class="btn sec" id="backEdit" hidden style="justify-content:center"><i class="fas fa-pen-to-square"></i> متابعة تحرير الاختبار الحالي</button>
-        <span class="muted" id="genHint">يستغرق عادةً ٢٠–٤٠ ثانية.</span>
+        <span class="muted" id="genHint">يستغرق عادةً أقل من دقيقة.</span>
       </div></div>
       <div class="prog" id="prog"></div>
     </section>
@@ -699,8 +710,8 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
 <div class="gv" id="gv" hidden role="dialog" aria-modal="true" aria-live="polite">
   <div class="gv-card">
     <div id="gvRun">
-      <div class="gv-orb"><svg viewBox="0 0 96 96"><circle class="trk" cx="48" cy="48" r="44" fill="none" stroke-width="6"/><circle class="val" id="gvRing" cx="48" cy="48" r="44" fill="none" stroke-width="6" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5"/></svg><div class="ic"><i class="fas fa-wand-magic-sparkles"></i></div></div>
-      <h2 id="gvTitle">يُعدّ الذكاء الاصطناعي اختبارك</h2>
+      <div class="paper" aria-hidden="true"><div class="pg b2"></div><div class="pg b1"></div><div class="pg top"><div class="hdr"></div><div class="wl"><b id="wl0"></b></div><div class="wl"><b id="wl1"></b></div><div class="wl"><b id="wl2"></b></div><div class="wl"><b id="wl3"></b></div><div class="wl"><b id="wl4"></b></div><div class="wl"><b id="wl5"></b></div><div class="wl"><b id="wl6"></b></div></div><span class="pen"></span></div>
+      <h2 id="gvTitle">نُعدّ اختبارك</h2>
       <p class="gv-sub" id="gvSub"></p>
       <div class="gv-bar"><div class="gv-fill" id="gvFill"></div></div>
       <div class="gv-meta"><b id="gvPct">0%</b><span id="gvState"></span><span id="gvTime">0 ث</span></div>
@@ -709,9 +720,8 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
     </div>
     <div class="gv-done" id="gvDone" hidden>
       <button class="gv-x" id="gvX" aria-label="إغلاق"><i class="fas fa-xmark"></i></button>
-      <div class="confetti" id="gvConf"></div>
-      <div class="gv-check"><svg viewBox="0 0 104 104"><circle class="bg" cx="52" cy="52" r="44"/><circle class="c" cx="52" cy="52" r="48"/><path class="k" d="M32 54 l13 13 l27 -29"/></svg></div>
-      <h2 id="gvDoneT">تم توليد الاختبار بنجاح</h2>
+      <div class="gv-check"><svg viewBox="0 0 120 96"><path class="k" d="M14 52 C 22 56, 30 64, 40 80 C 56 52, 78 26, 110 8"/></svg><span class="stampok">جاهز</span></div>
+      <h2 id="gvDoneT">اختبارك جاهز</h2>
       <p class="gv-sub" id="gvDoneSub"></p>
       <div class="gv-stats okonly" id="gvStats"></div>
       <div class="gv-warn" id="gvWarn" hidden></div>
@@ -731,7 +741,7 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
 <!-- ===== المعاينة ===== -->
 <div class="pv" id="pv">
   <div class="pv-bar">
-    <h3><i class="fas fa-file-lines"></i> <span id="pvTitle">معاينة الملف</span></h3>
+    <h3><span id="pvTitle">معاينة الملف</span><span class="pc-n" id="pvCount"></span></h3>
     <label><input type="checkbox" id="pvKey"> نموذج الإجابة</label>
     <button class="btn" id="pvPdf"><i class="fas fa-file-pdf"></i> PDF</button>
     <button class="btn sec" id="pvDoc"><i class="fas fa-file-word"></i> Word</button>
@@ -786,6 +796,111 @@ async function gate() {
   initUI();
 }
 
+// ===================== التنويع والالتزام بالمنهج =====================
+const HIST_KEY = 'enjaz_exam_hist_v1';
+const LEVELS = [['veasy', 'سهل جداً'], ['easy', 'سهل'], ['medium', 'متوسط'], ['mhard', 'متوسط الصعوبة'], ['hard', 'صعب'], ['vhard', 'صعب جداً']];
+const LEVEL_NAME = Object.fromEntries(LEVELS);
+const NAMES_M = ['Fahad', 'Saad', 'Omar', 'Khalid', 'Faisal', 'Turki', 'Nawaf', 'Yousef', 'Majed', 'Hamad', 'Sultan', 'Bader', 'Ziyad', 'Rayan', 'Abdullah', 'Nasser', 'Salem', 'Mishal'];
+const NAMES_F = ['Noura', 'Sara', 'Reem', 'Lama', 'Hessa', 'Maha', 'Dana', 'Jood', 'Layan', 'Ruba', 'Shahad', 'Amal', 'Huda', 'Lulwa', 'Wafa', 'Joud'];
+const SCENES = ['a school trip', 'a family visit on the weekend', 'a desert camp', 'a shopping mall', 'the school canteen', 'a football match', 'a hospital or clinic', 'a trip to AlUla', 'a visit to Riyadh', 'a beach in Jeddah', 'the National Day', 'Eid holiday', 'a science fair', 'a library', 'a farm in Qassim', 'an airport', 'a museum', 'a birthday of a younger brother', 'a cooking competition', 'a park in Abha', 'a sports club', 'a camping trip', 'the classroom', 'a book fair', 'a train trip', 'grandparents\' house'];
+const GENRES = ['a short story', 'an email to a friend', 'a diary entry', 'a short magazine article', 'a blog post', 'a short dialogue turned into a narrative', 'a school newsletter article', 'a personal profile', 'a short report', 'a letter'];
+const READ_WORDS = { veasy: 70, easy: 90, medium: 120, mhard: 140, hard: 160, vhard: 180 };
+const pick = (a, n) => shuffle(a).slice(0, n);
+function histAll() { const h = lsGet(HIST_KEY); return Array.isArray(h) ? h : []; }
+function histFor(grade) { return histAll().filter((h) => h.grade === grade); }
+// يُحفظ ملخص كل اختبار مولَّد (في هذا الجهاز فقط) حتى تكون الاختبارات التالية مختلفة عنه
+function histPush(f) {
+  if (!f) return;
+  const m = f.meta;
+  const e = {
+    grade: m.grade, t: Date.now(),
+    grammar: (f.grammar || []).map((x) => x.stem || x.sentence).filter(Boolean).slice(0, 18),
+    vocab: (f.vocab || []).map((x) => x.stem || x.meaning || '').filter(Boolean).slice(0, 12),
+    words: [...(f.vocab || []).map((x) => x.word || x.target), ...(f.spelling || []).map((x) => x.word || x.target)].filter(Boolean).map((x) => String(x).toLowerCase()),
+    spelling: (f.spelling || []).map((x) => x.sentence).filter(Boolean).slice(0, 10),
+    reading: f.reading ? [f.reading.title] : [], composition: f.composition ? [f.composition.title] : [],
+    ru: f.reading ? f.reading.unit : 0, cu: f.composition ? f.composition.unit : 0,
+  };
+  lsSet(HIST_KEY, [e, ...histAll()].slice(0, 8));
+}
+function recentFor(section, grade) {
+  const out = []; for (const h of histFor(grade).slice(0, 4)) out.push(...(h[section] || []));
+  return out.slice(0, 30);
+}
+const recentWords = (grade) => new Set(histFor(grade).slice(0, 3).flatMap((h) => h.words || []));
+// سياق إضافي لكل طلب: التنويع، والمستوى، وقائمة القواعد المسموحة، ومخزون كلمات المنهج
+function extraCtx(section, p) {
+  const units = C[p.grade].units.filter((u) => (p.units || []).includes(u.u));
+  const x = { level: p.diff, names: [...pick(NAMES_M, 3), ...pick(NAMES_F, 3)], scenes: pick(SCENES, 4) };
+  if (section !== 'grammar_review') x.recent = recentFor(section, p.grade);
+  if (section === 'grammar' || section === 'grammar_review') x.allowed = units.flatMap((u) => u.grammar.map((g) => `U${u.u}: ${g}`)).join('; ');
+  if (section === 'vocab') x.pool = shuffle(units.flatMap((u) => u.vocab)).join(', ');
+  if (section === 'reading') x.genre = pick(GENRES, 1)[0];
+  return x;
+}
+// ===== فحص المفردات: كل الخيارات من كلمات المنهج فقط =====
+const STOPW = new Set('a an the to of in on at for with and or my your his her its our their is are am be was were do does did not no this that these those some any very it he she we they i you me him us them'.split(' '));
+let VOCAB_SET = null; let VOCAB_FOR = '';
+function vocabSet(grade) {
+  if (VOCAB_SET && VOCAB_FOR === grade) return VOCAB_SET;
+  const order = ['sg1', 'sg2', 'sg3']; const s = new Set();
+  for (const g of order.slice(0, order.indexOf(grade) + 1)) for (const u of C[g].units) for (const w of u.vocab) {
+    const l = w.toLowerCase().replace(/[^a-z' -]/g, '').trim(); if (!l) continue; s.add(l); l.split(/[\s-]+/).forEach((t) => t.length > 1 && s.add(t));
+  }
+  VOCAB_SET = s; VOCAB_FOR = grade; return s;
+}
+function wordOK(w, S) {
+  w = w.toLowerCase().replace(/[^a-z' -]/g, '').trim(); if (!w || STOPW.has(w) || S.has(w)) return true;
+  const v = [w.replace(/ies$/, 'y'), w.replace(/es$/, ''), w.replace(/s$/, ''), w.replace(/ed$/, ''), w.replace(/d$/, ''), w.replace(/ied$/, 'y'), w.replace(/ing$/, ''), w.replace(/ing$/, 'e'), w.replace(/([a-z])\1(ed|ing)$/, '$1'), w.replace(/er$/, ''), w.replace(/est$/, ''), w.replace(/ly$/, '')];
+  return v.some((x) => x && S.has(x));
+}
+function phraseOK(o, S) { const l = String(o || '').toLowerCase().replace(/[^a-z' -]/g, ' ').replace(/\s+/g, ' ').trim(); return !l || S.has(l) || l.split(/[\s-]+/).every((t) => wordOK(t, S)); }
+function vocabBad(it, grade) {
+  if (!it || (it.kind !== 'mcq' && it.kind !== 'odd')) return [];
+  const S = vocabSet(grade); return (it.options || []).filter((o) => o && !phraseOK(o, S));
+}
+// ===== المراجعة الثانية للقواعد =====
+function reviewText(it) {
+  if (it.kind === 'do') return `[target: ${it.target}] (do as shown) instruction: ${it.instruction} — sentence: ${it.sentence} — given answer: ${it.answer}`;
+  return `[target: ${it.target}] (multiple choice) ${it.stem} — options: ${(it.options || []).join(' | ')} — marked answer: ${(it.options || [])[it.ans] || ''}`;
+}
+async function grammarReview(items, p) {
+  try {
+    const specs = items.map(({ kind, unit, unitTitle, target }) => ({ kind, unit, unitTitle, target, words: [] }));
+    const r = await callSection('grammar_review', specs, { review: items.map(reviewText) }, p);
+    return items.map((_, i) => { const x = (r.items || [])[i]; return !(x && x.ok === false); });
+  } catch { return items.map(() => true); } // تعذّر الفحص: لا نُسقط الأسئلة
+}
+// بعد توليد القواعد: مراجعة ثانية، وإعادة توليد ما يخرج عن المنهج مرة واحدة، وما بقي يُعلَّم للمراجعة
+async function checkGrammar(list, p, onReview) {
+  const idx = list.map((it, i) => (it.warn ? -1 : i)).filter((i) => i >= 0);
+  if (!idx.length) return list;
+  onReview && onReview();
+  const ok = await grammarReview(idx.map((i) => list[i]), p);
+  const bad = idx.filter((_, j) => !ok[j]);
+  if (!bad.length) return list;
+  const specs = bad.map((i) => { const o = list[i]; return { kind: o.kind, unit: o.unit, unitTitle: o.unitTitle, target: o.target, words: o.words }; });
+  try {
+    const r = await callSection('grammar', specs, {}, p);
+    const fresh = specs.map((s, j) => normGrammar((r.items || [])[j], s));
+    const ok2 = await grammarReview(fresh, p);
+    bad.forEach((i, j) => { list[i] = fresh[j]; if (!ok2[j]) { list[i].warn = true; list[i].why = 'تحقّق: قد يختبر قاعدة من خارج المنهج'; } });
+  } catch { bad.forEach((i) => { list[i].warn = true; list[i].why = 'تحقّق: قد يختبر قاعدة من خارج المنهج'; }); }
+  return list;
+}
+// بعد توليد المفردات: أي خيار من خارج كلمات المنهج يُعاد توليد فقرته مرة، وما بقي يُعلَّم
+async function checkVocab(list, p) {
+  const bad = list.map((it, i) => (vocabBad(it, p.grade).length ? i : -1)).filter((i) => i >= 0);
+  if (!bad.length) return list;
+  const specs = bad.map((i) => { const o = list[i]; return { kind: o.kind, unit: o.unit, unitTitle: o.unitTitle, target: o.target, words: o.words }; });
+  try {
+    const r = await callSection('vocab', specs, {}, p);
+    bad.forEach((i, j) => { list[i] = normVocab((r.items || [])[j], specs[j]); });
+  } catch { /* نُبقي الأصل ونعلّمه */ }
+  bad.forEach((i) => { const w = vocabBad(list[i], p.grade); if (w.length) { list[i].warn = true; list[i].why = 'كلمات من خارج المنهج: ' + w.join('، '); } });
+  return list;
+}
+
 // ===================== شاشة التوليد التفاعلية =====================
 const SECS = ['composition', 'reading', 'grammar', 'vocab', 'spelling'];
 const SEC_META = {
@@ -812,9 +927,9 @@ function genSub(p, units) {
 function gvOpen(labels, sub) {
   GV.groups = labels; GV.st = labels.map(() => null); GV.t0 = labels.map(() => 0); GV.start = Date.now(); GV.tick = 0;
   $('gvRun').hidden = false; $('gvDone').hidden = true;
-  $('gvTitle').textContent = labels.length > 1 ? 'يُعدّ الذكاء الاصطناعي الاختبارين' : 'يُعدّ الذكاء الاصطناعي ' + (labels[0] ? labels[0] : 'اختبارك');
+  $('gvTitle').textContent = labels.length > 1 ? 'نُعدّ الاختبارين' : 'نُعدّ ' + (labels[0] ? labels[0] : 'اختبارك');
   $('gvSub').textContent = sub || '';
-  $('gvSteps').innerHTML = labels.map((lb, gi) => `<div class="gv-grp">${lb ? `<div class="gv-gt"><i class="fas ${gi ? 'fa-clone' : 'fa-file-lines'}"></i> ${lb}</div>` : ''}<div class="gv-list">${SECS.map((k) => `<div class="gv-r wait" id="gvr-${gi}-${k}"><span class="si"><i class="fas ${SEC_META[k][2]}"></i></span><span class="nm"><b>${SEC_META[k][0]}</b><small>${SEC_META[k][1]}</small></span><span class="stt"></span></div>`).join('')}</div></div>`).join('');
+  $('gvSteps').innerHTML = labels.map((lb, gi) => `<div class="gv-grp">${lb ? `<div class="gv-gt">${lb}</div>` : ''}<div class="gv-list">${SECS.map((k, n) => `<div class="gv-r wait" id="gvr-${gi}-${k}"><span class="si">${'١٢٣٤٥'[n]}</span><span class="nm"><b>${SEC_META[k][0]}</b><small>${SEC_META[k][1]}</small></span><span class="stt"><svg viewBox="0 0 28 24"><path d="M4 13 C 7 15, 9 17, 11 21 C 15 13, 20 7, 25 3"/></svg></span></div>`).join('')}</div></div>`).join('');
   GV.tipI = Math.floor(Math.random() * GV_TIPS.length); gvTip();
   $('gv').hidden = false; document.body.style.overflow = 'hidden';
   clearInterval(GV.timer); GV.timer = setInterval(gvTick, 250); gvTick();
@@ -829,6 +944,7 @@ function gvProg(gi, st) {
       r.className = 'gv-r ' + cls;
       if (cls === 'err') r.querySelector('small').textContent = 'تعذّر — أعد توليده من التحرير';
     }
+    if (s === 'rev') r.querySelector('small').textContent = 'مراجعة ثانية: مطابقة القواعد للمنهج…';
   }
   gvTick();
 }
@@ -838,7 +954,7 @@ function gvFrac() {
     const st = GV.st[gi];
     for (const k of SECS) {
       n++; if (!st) continue;
-      if (st[k]) s += 1; else s += 0.9 * (1 - Math.exp(-(Date.now() - GV.t0[gi]) / 13000));
+      if (st[k] === 'ok' || st[k] === 'err') s += 1; else if (st[k] === 'rev') s += 0.9; else s += 0.9 * (1 - Math.exp(-(Date.now() - GV.t0[gi]) / 13000));
     }
   });
   return n ? Math.min(s / n, 0.99) : 0;
@@ -847,13 +963,13 @@ function gvTip() { const t = $('gvTip'); t.style.opacity = 0; setTimeout(() => {
 function gvSetPct(f) {
   const pct = Math.round(f * 100);
   $('gvFill').style.width = pct + '%'; $('gvPct').textContent = pct + '%';
-  $('gvRing').style.strokeDashoffset = String(276.5 * (1 - f));
+  for (let i = 0; i < 7; i++) { const l = $('wl' + i); if (l) l.style.width = Math.round(Math.max(0, Math.min(1, f * 7 - i)) * 100) + '%'; }
 }
 function gvTick() {
   gvSetPct(gvFrac());
   const sec = Math.floor((Date.now() - GV.start) / 1000);
   $('gvTime').textContent = sec < 60 ? `${sec} ث` : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')} د`;
-  let done = 0; let tot = 0; GV.st.forEach((st) => { for (const k of SECS) { tot++; if (st && st[k]) done++; } });
+  let done = 0; let tot = 0; GV.st.forEach((st) => { for (const k of SECS) { tot++; if (st && (st[k] === 'ok' || st[k] === 'err')) done++; } });
   if (!GV.st.some(Boolean)) tot = GV.groups.length * SECS.length;
   $('gvState').textContent = `اكتمل ${done} من ${tot} أقسام`;
   if (++GV.tick % 22 === 0) gvTip();
@@ -872,31 +988,23 @@ function gvFinish() {
     $('gvRun').hidden = true; const d = $('gvDone'); d.hidden = false; d.classList.toggle('bad', bad);
     const m = (groupsForms[0] || EXAM).meta;
     if (bad) {
-      $('gvDoneT').textContent = 'تعذّر توليد الاختبار';
-      $('gvDoneSub').textContent = 'لم يستجب خادم الذكاء الاصطناعي هذه المرة. تأكد من الاتصال ثم حاول مرة أخرى.';
+      $('gvDoneT').textContent = 'تعذّر إعداد الاختبار';
+      $('gvDoneSub').textContent = 'لم يكتمل الإعداد هذه المرة. تأكد من الاتصال بالإنترنت ثم حاول مرة أخرى.';
       $('gvWarn').hidden = true;
       $('gvEdit').innerHTML = '<i class="fas fa-arrow-right"></i> العودة للإعداد';
     } else {
       $('gvEdit').innerHTML = '<i class="fas fa-pen-to-square"></i> مراجعة وتحرير';
-      $('gvDoneT').textContent = groupsForms.length > 1 ? 'تم توليد الاختبارين بنجاح' : `تم توليد ${GV.groups[0] ? GV.groups[0] : 'الاختبار'} بنجاح`;
+      $('gvDoneT').textContent = groupsForms.length > 1 ? 'الاختباران جاهزان' : GV.groups[0] ? GV.groups[0] + ' جاهز' : 'اختبارك جاهز';
       const units = C[m.grade].units.filter((u) => m.units.includes(u.u));
       $('gvDoneSub').textContent = (groupsForms.length > 1 ? 'الاختبار الأساسي + الاختبار البديل · ' : '') + genSub(m, units);
       const f0 = groupsForms[0];
-      $('gvStats').innerHTML = [[40, 'درجة'], [examItems(f0), 'فقرة'], [units.length, 'وحدات'], ['<i class="fas fa-check"></i>', 'نموذج الإجابة']]
+      $('gvStats').innerHTML = [[40, 'درجة'], [examItems(f0), 'فقرة'], [units.length, 'وحدات'], ['✓', 'نموذج الإجابة']]
         .map(([b, s]) => `<div><b>${b}</b><span>${s}</span></div>`).join('');
       $('gvWarn').hidden = !fails.length;
-      if (fails.length) $('gvWarn').innerHTML = `<i class="fas fa-triangle-exclamation"></i> لم يُولَّد: ${fails.map(esc).join('، ')}. أعد توليده من زر «↻ القسم» في صفحة التحرير.`;
-      gvConfetti();
+      if (fails.length) $('gvWarn').innerHTML = `<i class="fas fa-triangle-exclamation"></i> لم يُولَّد: ${fails.map(esc).join('، ')}. أعد إعداده من زر «↻ القسم» في صفحة التحرير.`;
     }
     $('gvKey').checked = $('withKey').checked;
   }, 450);
-}
-function gvConfetti() {
-  const box = $('gvConf'); const cols = ['#0a6b4f', '#c99a2e', '#12a37a', '#f3d48a', '#2bb38a', '#e9c46a'];
-  box.innerHTML = Array.from({ length: 22 }, (_, i) => {
-    const a = (i / 22) * Math.PI * 2 + Math.random() * 0.3; const d = 90 + Math.random() * 80;
-    return `<i style="background:${cols[i % cols.length]};--x:${Math.round(Math.cos(a) * d)}px;--y:${Math.round(Math.sin(a) * d * 0.8)}px;--r:${Math.round(Math.random() * 540 - 270)}deg;animation-delay:${0.5 + Math.random() * 0.15}s"></i>`;
-  }).join('');
 }
 function gvClose() { $('gv').hidden = true; document.body.style.overflow = ''; }
 function gvInit() {
@@ -935,9 +1043,9 @@ function prefs() {
 function termUnits(g, t) { const b = C[g]; const [a, z] = b.terms[t]; return b.units.filter((u) => u.u >= a && u.u <= z); }
 function renderUnits() {
   const p = prefs(); const box = $('units'); box.innerHTML = '';
-  for (const u of termUnits(p.grade, p.term)) {
+  for (const u of termUnits(p.grade, p.term).slice().sort((a, b) => a.u - b.u)) {
     const l = document.createElement('label');
-    l.innerHTML = `<input type="checkbox" checked value="${u.u}"> ${u.u}. ${esc(u.title)}`;
+    l.innerHTML = `<input type="checkbox" checked value="${u.u}"><span class="un">الوحدة ${u.u}</span><bdi dir="ltr">${esc(u.title)}</bdi>`; l.title = u.title;
     box.appendChild(l);
   }
   unitsUI();
@@ -955,12 +1063,13 @@ function initUI() {
   const sp = lsGet(PREF_KEY) || {};
   for (const k of ['grade', 'term', 'directorate', 'school', 'teacher', 'year', 'time']) if (sp[k]) $(k).value = sp[k];
   $('twoForms').checked = !!sp.twoForms; $('twoForms').onchange = savePrefs;
+  $('diff').innerHTML = LEVELS.map(([v, n], i) => `<button data-v="${v}"${v === 'medium' ? ' class="on"' : ''}><span class="bars">${[0, 1, 2, 3, 4, 5].map((j) => `<i class="${j <= i ? 'f' : ''}" style="height:${4 + j * 2}px"></i>`).join('')}</span>${n}</button>`).join('');
   for (const id of ['diff', 'cmode', 'tmpl', 'gcount']) {
     const v = sp[id] != null ? String(sp[id]) : '';
     if (v) document.querySelectorAll('#' + id + ' button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
     $(id).addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $(id).querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); savePrefs(); tmplUI(); });
   }
-  tmplUI();
+  tmplUI(); diffUI();
   renderUnits();
   $('grade').onchange = $('term').onchange = () => { renderUnits(); savePrefs(); };
   for (const k of ['directorate', 'school', 'teacher', 'year', 'time']) $(k).addEventListener('input', () => { savePrefs(); if (EXAM) { FORMS.forEach((f) => { f.meta[k] = $(k).value.trim(); }); saveDraft(); } });
@@ -983,7 +1092,9 @@ function initUI() {
   $('altBtn').onclick = () => generateAlt(false);
   $('formTabs').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setForm(+b.dataset.i); });
 }
-function savePrefs() { lsSet(PREF_KEY, prefs()); }
+function savePrefs() { lsSet(PREF_KEY, prefs()); diffUI(); }
+const DIFF_HINT = { veasy: 'جمل قصيرة جداً وكلمات مألوفة ومشتتات واضحة، ونص قراءة نحو ٧٠ كلمة.', easy: 'جمل قصيرة ومشتتات واضحة، ونص قراءة نحو ٩٠ كلمة.', medium: 'مستوى نهاية الفصل المعتاد، ونص قراءة نحو ١٢٠ كلمة.', mhard: 'جمل أطول ومشتتات قريبة وسؤال استنتاج، ونص نحو ١٤٠ كلمة.', hard: 'جمل مركّبة ومشتتات قريبة جداً واستنتاج ومعنى من السياق، ونص نحو ١٦٠ كلمة.', vhard: 'أصعب ما يسمح به المنهج: مشتتات من عائلة الكلمة نفسها واستنتاج وفكرة رئيسة، ونص نحو ١٨٠ كلمة.' };
+function diffUI() { const d = document.querySelector('#diff .on')?.dataset.v || 'medium'; const h = $('diffNote') || Object.assign(document.createElement('div'), { id: 'diffNote', className: 'hint' }); h.textContent = DIFF_HINT[d] + ' والأسئلة كلها من المنهج في كل المستويات.'; $('diff').after(h); }
 function tmplUI() {
   const auto = prefs().tmpl === 'auto';
   $('gcountBox').hidden = !auto; $('cmodeBox').hidden = auto;
@@ -1034,7 +1145,7 @@ function roundRobin(units, listOf, n, used) {
       if (out.length >= n) break;
       const x = p.list.shift(); if (!x) continue;
       if (used) { if (used.has(x.toLowerCase())) continue; used.add(x.toLowerCase()); }
-      out.push({ unit: p.u.u, unitTitle: p.u.title, target: x, words: p.u.vocab.slice(0, 25) });
+      out.push({ unit: p.u.u, unitTitle: p.u.title, target: x, words: shuffle(p.u.vocab) });
       added = true;
     }
     if (!added) { if (used) break; pools.forEach((p) => { p.list = shuffle(listOf(p.u)); }); }
@@ -1048,39 +1159,44 @@ function buildBlueprint(units, p, exclude) {
   const doIdx = auto ? new Set() : new Set([1, 5, 9, 12]);
   const grammar = g.map((s, i) => ({ ...s, kind: doIdx.has(i) ? 'do' : 'mcq' }));
   const used = new Set(exclude || []); // في النموذج البديل: كلمات النموذج أ مستبعدة
+  // كلمات الاختبارات الأخيرة تُتجنَّب إن أمكن (وإن نفدت كلمات الوحدات نكمل منها)
+  const recentW = recentWords(p.grade);
+  const rr = (us, listOf, n) => { const u2 = new Set([...used, ...recentW]); const a = roundRobin(us, listOf, n, u2); a.forEach((x) => used.add(x.target.toLowerCase())); if (a.length < n) { const b = roundRobin(us, listOf, n - a.length, used); return a.concat(b); } return a; };
   const single = (u) => u.vocab.filter((w) => /^[a-z]{4,}$/i.test(w));
-  const spelling = roundRobin(units, single, 10, used).map((s) => ({ ...s, kind: 'spell' }));
+  const spelling = rr(units, single, 10).map((s) => ({ ...s, kind: 'spell' }));
   const kinds = auto ? [...Array(5).fill('mcq'), ...Array(4).fill('picture')] : [...Array(4).fill('mcq'), ...Array(4).fill('match'), ...Array(6).fill('picture'), ...Array(4).fill('odd')];
   const nPic = kinds.filter((k) => k === 'picture').length;
   // الأولوية لكلمات لها صورة في المكتبة، ثم بقية الكلمات المحسوسة
-  let pw = roundRobin(units, (u) => u.vocab.filter((w) => libImg(w)), nPic, used);
+  let pw = rr(units, (u) => u.vocab.filter((w) => libImg(w)), nPic);
   if (pw.length < nPic) pw = pw.concat(roundRobin(units, (u) => u.vocab.filter((w) => PICTURABLE.has(w.toLowerCase())), nPic - pw.length, used));
   if (pw.length < nPic) { // وحدات قليلة الكلمات المحسوسة: نكمل من كل وحدات الكتاب
     const all = C[p.grade].units; pw = pw.concat(roundRobin(all, (u) => u.vocab.filter((w) => PICTURABLE.has(w.toLowerCase())), nPic - pw.length, used));
   }
-  const vw = roundRobin(units, (u) => u.vocab, kinds.length - nPic, used);
+  const vw = rr(units, (u) => u.vocab, kinds.length - nPic);
   let pi = 0, oi = 0;
   const vocab = kinds.map((k) => ({ ...(k === 'picture' ? (pw[pi++] || vw[oi++ % Math.max(1, vw.length)]) : (vw[oi++] || vw[0])), kind: k }));
-  const order = shuffle(units);
+  const lastR = new Set(histFor(p.grade).slice(0, 2).map((h) => h.ru)); const lastC = new Set(histFor(p.grade).slice(0, 2).map((h) => h.cu));
+  const order = shuffle(units).sort((a, b) => (lastR.has(a.u) ? 1 : 0) - (lastR.has(b.u) ? 1 : 0));
+  if (order.length > 2 && lastC.has(order[1].u)) { const k = order.findIndex((u, i) => i > 1 && !lastC.has(u.u)); if (k > 1) [order[1], order[k]] = [order[k], order[1]]; }
   const ru = order[0]; const cu = order[1] || order[0];
   return {
     grammar: [...grammar.filter((x) => x.kind === 'mcq'), ...grammar.filter((x) => x.kind === 'do')], vocab, spelling,
-    reading: { kind: 'reading', unit: ru.u, unitTitle: ru.title, target: ru.reading, words: ru.vocab.slice(0, 25) },
-    composition: { kind: 'composition', unit: cu.u, unitTitle: cu.title, target: cu.writing, words: cu.vocab.slice(0, 20) },
+    reading: { kind: 'reading', unit: ru.u, unitTitle: ru.title, target: ru.reading, words: shuffle(ru.vocab) },
+    composition: { kind: 'composition', unit: cu.u, unitTitle: cu.title, target: cu.writing, words: shuffle(cu.vocab) },
   };
 }
 
 // ===================== التوليد =====================
 async function callSection(section, items, ctx, meta) {
   const p = meta || (EXAM ? EXAM.meta : prefs());
-  const body = { section, grade: C[p.grade].name + ' (' + GRADE_EN[p.grade] + ')', term: p.term, difficulty: p.diff, items, ctx: { ...(ctx || {}), nopts: p.tmpl === 'auto' ? 3 : 4 } };
+  const body = { section, grade: C[p.grade].name + ' (' + GRADE_EN[p.grade] + ')', term: p.term, difficulty: p.diff, items, ctx: { ...extraCtx(section, p), ...(ctx || {}), nopts: p.tmpl === 'auto' ? 3 : 4 } };
   const { data, error } = await sb.functions.invoke('exam-generate', { body });
   if (error) {
     let code = '';
     try { const j = await error.context.json(); code = j.code || j.detail || ''; } catch {}
     throw new Error(code === 'forbidden' ? 'غير مسموح' : code === 'auth' ? 'انتهت الجلسة — سجّل الدخول من جديد' : 'تعذّر الاتصال');
   }
-  if (!data || data.failed) throw new Error('لم يرد الذكاء الاصطناعي، حاول مرة أخرى');
+  if (!data || data.failed) throw new Error('تعذّر التوليد، حاول مرة أخرى');
   return data;
 }
 const norm = (s) => String(s ?? '').replace(/\s+/g, ' ').trim();
@@ -1148,7 +1264,7 @@ function setProg(states) {
   const names = { composition: 'التعبير', reading: 'القراءة', grammar: 'القواعد', vocab: 'المفردات', spelling: 'الإملاء' };
   $('prog').innerHTML = Object.entries(states).map(([k, s]) => `<span class="${s}">${names[k]} ${s === 'ok' ? '✓' : s === 'err' ? '✗' : '…'}</span>`).join('');
 }
-const readingWords = (d) => (d === 'easy' ? 100 : d === 'hard' ? 150 : 125);
+const readingWords = (d) => READ_WORDS[d] || 120;
 // يولّد الأقسام الخمسة لنموذج واحد (avoid: نصوص النموذج الآخر حتى لا تتكرر)
 async function runSections(ex, bp, units, avoid, onProg) {
   const p = ex.meta; const grammarCtx = units.flatMap((u) => u.grammar).join('; ');
@@ -1158,8 +1274,8 @@ async function runSections(ex, bp, units, avoid, onProg) {
   const jobs = {
     composition: () => callSection('composition', [bp.composition], { mode: cmode, ...av('composition') }, p).then((r) => { ex.composition = normComposition(r.data, bp.composition); }),
     reading: () => callSection('reading', [bp.reading], { words: readingWords(p.diff), grammar: grammarCtx, ...av('reading') }, p).then((r) => { ex.reading = normReading(r.data, bp.reading); }),
-    grammar: () => callSection('grammar', bp.grammar, av('grammar'), p).then((r) => { ex.grammar = bp.grammar.map((s, i) => normGrammar((r.items || [])[i], s)); }),
-    vocab: () => callSection('vocab', bp.vocab, av('vocab'), p).then((r) => { ex.vocab = bp.vocab.map((s, i) => normVocab((r.items || [])[i], s)); }),
+    grammar: () => callSection('grammar', bp.grammar, av('grammar'), p).then((r) => checkGrammar(bp.grammar.map((s, i) => normGrammar((r.items || [])[i], s)), p, () => { st.grammar = 'rev'; onProg && onProg(st); })).then((l) => { ex.grammar = l; }),
+    vocab: () => callSection('vocab', bp.vocab, av('vocab'), p).then((r) => checkVocab(bp.vocab.map((s, i) => normVocab((r.items || [])[i], s)), p)).then((l) => { ex.vocab = l; }),
     spelling: () => callSection('spelling', bp.spelling, av('spelling'), p).then((r) => { ex.spelling = bp.spelling.map((s, i) => normSpell((r.items || [])[i], s)); }),
   };
   const errors = [];
@@ -1182,6 +1298,7 @@ async function generate() {
   FORMS = [ex]; CUR = 0; EXAM = ex;
   saveDraft(); renderEditor(); formsUI(); showStep(2);
   if (p.twoForms) await generateAlt(true); // الاختباران دفعة واحدة
+  FORMS.forEach(histPush);
   $('genBtn').disabled = false;
   gvFinish();
 }
@@ -1208,7 +1325,7 @@ async function generateAlt(auto) {
   btn.disabled = false;
   FORMS[1] = ex; FORMS.forEach((f, i) => { f.meta.form = 'AB'[i]; });
   setForm(auto ? 0 : 1);
-  if (!auto) gvFinish();
+  if (!auto) { histPush(ex); gvFinish(); }
 }
 
 async function regen(section, idx) {
@@ -1227,12 +1344,16 @@ async function regen(section, idx) {
       const specs = src.map(({ kind, unit, unitTitle, target, words }) => ({ kind, unit, unitTitle, target, words }));
       const r = await callSection(section, specs);
       const old = EXAM[section] || [];
-      EXAM[section] = specs.map((s, i) => { const n = f((r.items || [])[i], s); if (old[i]?.img && !old[i].lib && s.kind === 'picture') { n.img = old[i].img; n.word = old[i].word; n.lib = false; } return n; });
+      let fresh = specs.map((s, i) => { const n = f((r.items || [])[i], s); if (old[i]?.img && !old[i].lib && s.kind === 'picture') { n.img = old[i].img; n.word = old[i].word; n.lib = false; } return n; });
+      if (section === 'grammar') fresh = await checkGrammar(fresh, p); else if (section === 'vocab') fresh = await checkVocab(fresh, p);
+      EXAM[section] = fresh;
     } else {
       const old = EXAM[section][idx];
       const spec = { kind: old.kind, unit: old.unit, unitTitle: old.unitTitle, target: old.target, words: old.words };
       const r = await callSection(section, [spec]);
-      EXAM[section][idx] = f((r.items || [])[0], spec);
+      let one = [f((r.items || [])[0], spec)];
+      if (section === 'grammar') one = await checkGrammar(one, p); else if (section === 'vocab') one = await checkVocab(one, p);
+      EXAM[section][idx] = one[0];
     }
     saveDraft(); renderEditor();
   } catch (e) { toast(e.message); host?.classList.remove('busy'); }
@@ -1241,7 +1362,7 @@ async function regen(section, idx) {
 // ===================== المرحلة ٢: بطاقات التحرير =====================
 const inp = (path, val, ph = '', cls = 'en') => `<input type="text" class="${cls}" data-p="${path}" value="${esc(val)}" placeholder="${esc(ph)}">`;
 const area = (path, val, rows = 3) => `<textarea class="en" rows="${rows}" data-p="${path}">${esc(val)}</textarea>`;
-const tagOf = (it) => it && it.unit ? `<span class="tag" title="${esc(it.target)}"><b>U${it.unit}</b> · ${esc(it.target)}</span>` : '<span></span>';
+const tagOf = (it) => it && it.unit ? `<span class="tag" title="${esc(it.target)}"><b>U${it.unit}</b> · ${esc(it.target)}${it.why ? `<em class="why">${esc(it.why)}</em>` : ''}</span>` : '<span></span>';
 const rbtn = (sec, i) => `<button class="iconbtn" data-regen="${sec}"${i != null ? ` data-i="${i}"` : ''} title="إعادة توليد">↻</button>`;
 function optsHTML(path, it, uid) {
   return `<div class="opts">${it.options.map((o, j) => `<label class="opt${it.ans === j ? ' ok' : ''}"><input type="radio" name="${uid}" data-ans="${path}" value="${j}"${it.ans === j ? ' checked' : ''} title="الإجابة الصحيحة"><input type="text" data-p="${path}.options.${j}" value="${esc(o)}"></label>`).join('')}</div>`;
@@ -1879,19 +2000,31 @@ async function exportDOCX() {
 // ===================== المرحلة ٣: المعاينة =====================
 // المعاينة: الورقة تُرسم بعرض A4 الحقيقي ثم تُصغَّر كصورة (transform) لتناسب الشاشة —
 // فلا تتغير أحجام الخطوط ولا يعاد ترتيب النصوص على الجوال.
-function fitPreview() {
-  const body = $('pvBody'); const wrap = body.querySelector('.pvwrap'); const sh = wrap && wrap.querySelector('.sheet'); if (!sh) return;
-  const w = sh.offsetWidth || 794;
-  const s = Math.min(1, (body.clientWidth - 24) / w);
-  sh.style.transform = s < 1 ? `scale(${s})` : '';
-  wrap.style.width = Math.round(w * s) + 'px';
-  wrap.style.height = Math.ceil(sh.offsetHeight * s) + 'px';
+// المعاينة بالصفحات الفعلية: نفس عرض ملف PDF وهوامشه وطريقة تقسيمه (paginate)، ثم تُعرض كل صفحة A4 وحدها
+// وتُصغَّر كصورة لتناسب الشاشة — فما يظهر هنا هو ما سيخرج في الملف صفحةً صفحة.
+const A4W = 210 * 96 / 25.4; const A4H = 297 * 96 / 25.4;
+function pvGeom() {
+  const m = isAuto() ? [6, 7, 6, 7] : [8, 8, 8, 8]; const mm = 96 / 25.4;
+  const iw = (210 - m[1] - m[3]) * mm; const ratio = (297 - m[0] - m[2]) / (210 - m[1] - m[3]);
+  return { m, iw, pageH: Math.floor(2 * iw * ratio) / 2 };
 }
-function renderPreview() {
-  $('pvBody').innerHTML = `<div class="pvwrap"><div class="sheet pvsheet${isAuto() ? ' auto' : ''}" dir="ltr">${paperHTML($('pvKey').checked)}</div></div>`;
+function fitPreview() {
+  const body = $('pvBody'); const s = Math.min(1, (body.clientWidth - 24) / A4W);
+  body.querySelectorAll('.pvp').forEach((pp) => { pp.style.width = Math.round(A4W * s) + 'px'; pp.style.height = Math.round(A4H * s) + 'px'; pp.firstElementChild.style.transform = s < 1 ? `scale(${s})` : ''; });
+}
+let PV_SEQ = 0;
+async function renderPreview() {
+  const seq = ++PV_SEQ; const body = $('pvBody'); const g = pvGeom();
+  body.innerHTML = '<div class="pvn" style="margin-top:30px">جارٍ ترتيب الصفحات…</div>'; $('pvCount').textContent = '';
+  const html = `<div class="sheet exp${isAuto() ? ' auto' : ''}" dir="ltr">${arabicToImages(paperHTML($('pvKey').checked)).replace(/class="pbreak keypage"/g, 'class="keypage" style="break-before:auto;page-break-before:auto"')}</div>`;
+  const meas = document.createElement('div'); meas.className = 'pvmeasure'; meas.style.width = g.iw + 'px'; meas.innerHTML = html; document.body.appendChild(meas);
+  await Promise.all([...meas.querySelectorAll('img')].map((im) => (im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; }))));
+  if (seq !== PV_SEQ) { meas.remove(); return; }
+  paginate(meas, g.pageH);
+  const n = Math.max(1, Math.ceil((meas.scrollHeight - 8) / g.pageH)); const inner = meas.innerHTML; meas.remove();
+  body.innerHTML = Array.from({ length: n }, (_, i) => `<div class="pvp"><div class="pg"><div class="pgin" style="top:${g.m[0]}mm;left:${g.m[3]}mm;width:${g.iw}px;height:${g.pageH}px"><div style="position:absolute;top:${-i * g.pageH}px;left:0;width:${g.iw}px">${inner}</div></div></div></div><div class="pvn">صفحة ${i + 1} من ${n}</div>`).join('');
+  $('pvCount').textContent = n === 1 ? 'صفحة واحدة' : n === 2 ? 'صفحتان' : n <= 10 ? `${n} صفحات` : `${n} صفحة`;
   fitPreview();
-  $('pvBody').querySelectorAll('img').forEach((im) => { if (!im.complete) im.addEventListener('load', fitPreview, { once: true }); });
-  setTimeout(fitPreview, 250);
 }
 function openPreview() {
   if (!EXAM) return;
