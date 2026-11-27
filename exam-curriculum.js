@@ -2,7 +2,7 @@
 // لكل وحدة: العنوان، القواعد (grammar + Form, Meaning and Function)، المفردات الأساسية، موضوع القراءة، مهمة الكتابة.
 window.EXAM_CURRICULUM = {
   sg1: {
-    name: 'Super Goal 1', grade: 'أول متوسط',
+    name: 'Super Goal 1', grade: 'أول متوسط', terms: { 1: [1, 8], 2: [9, 16] },
     units: [
       { u: 1, title: 'Good Morning!',
         grammar: ['Verb be (am / is / are) + contractions', 'Possessive adjectives: my, your, his, her', 'Classroom objects: a / an'],
@@ -71,7 +71,7 @@ window.EXAM_CURRICULUM = {
     ]
   },
   sg2: {
-    name: 'Super Goal 2', grade: 'ثاني متوسط',
+    name: 'Super Goal 2', grade: 'ثاني متوسط', terms: { 1: [1, 8], 2: [9, 16] },
     units: [
       { u: 1, title: 'Are You Here on Vacation?',
         grammar: ['Simple present of be (yes/no questions & short answers)', 'Information questions: How, What, When, Where, Who, Why', 'Prepositions of place: across from, between, next to, on, near, far from', 'Asking for and giving directions'],
@@ -139,5 +139,57 @@ window.EXAM_CURRICULUM = {
         reading: 'Ships of the Desert (camels)', writing: 'Experiences paragraph with linking words' },
     ]
   },
-  sg3: { name: 'Super Goal 3', grade: 'ثالث متوسط', units: [] } // بانتظار الكتاب
+  sg3: {
+    name: 'Super Goal 3', grade: 'ثالث متوسط', terms: { 1: [1, 6], 2: [7, 12] },
+    units: [
+      { u: 1, title: 'Lifestyles',
+        grammar: ['Simple present: habitual activities', 'Adverbs / expressions of frequency (always, usually, occasionally, hardly ever, once in a while…)', 'Questions with How often / How much / How long', 'All / both / neither / none'],
+        vocab: ['lifestyle', 'healthy', 'habits', 'diet', 'vegetarian', 'exercise', 'spend time', 'chatting online', 'Internet addict', 'stay up late', 'once', 'twice', 'rarely', 'seldom', 'hardly ever', 'frequently', 'now and then', 'from time to time'],
+        reading: 'Do College Students Have a Healthy Lifestyle?', writing: 'Report your class survey on young people’s habits' },
+      { u: 2, title: 'Life Stories',
+        grammar: ['Simple past tense', 'Passive expressions: be + born / raised / educated / married', 'Used to', 'Time expressions for the past', 'When clauses'],
+        vocab: ['born', 'raised', 'educated', 'married', 'athlete', 'award', 'blood donation', 'donate', 'donor', 'mobile clinic', 'Red Crescent', 'colleagues', 'twins', 'abroad', 'humanitarian', 'relief', 'appoint', 'metro', 'Custodian of the Two Holy Mosques'],
+        reading: 'The King of Saudi Arabia', writing: 'A short biography in chronological order' },
+      { u: 3, title: 'When Are You Traveling?',
+        grammar: ['Present progressive for future plans', 'Future with going to and will', 'Infinitives of purpose', 'Time clauses: after, as soon as, before, when', 'Prepositions of movement'],
+        vocab: ['passport', 'ticket', 'boarding pass', 'visa', 'gate', 'airport', 'security', 'suitcase', 'luggage', 'belongings', 'checked bags', 'liquids', 'containers', 'remove', 'pockets', 'identification', 'travel agent', 'student exchange', 'unique', 'destination', 'vegetarian meal'],
+        reading: 'Study Arabic in Saudi Arabia', writing: 'Travel advice / an exchange-programme brochure' },
+      { u: 4, title: 'What Do I Need to Buy?',
+        grammar: ['Expressions of quantity: a few, a little, a lot of, much, many, enough', 'Pronouns: something, anything, nothing', 'Sequence words: first, then, after that, finally', 'Reflexive pronouns'],
+        vocab: ['supermarket', 'ingredients', 'recipe', 'dish', 'flour', 'olive oil', 'peppers', 'onions', 'mushrooms', 'beef', 'lamb', 'salmon', 'shrimp', 'crab', 'squid', 'sausage', 'yogurt', 'cereal', 'beans', 'corn', 'mango', 'pineapple', 'strawberries', 'tomatoes', 'avocado', 'guacamole', 'half price', 'native'],
+        reading: 'Foods from the Americas', writing: 'Instructions for a recipe using sequence words' },
+      { u: 5, title: 'Since When?',
+        grammar: ['Present perfect vs. simple past', 'Present perfect with for and since', 'Questions with How long…?', 'Passive: simple present, present perfect, simple past'],
+        vocab: ['invention', 'invent', 'inventor', 'digital', 'portable', 'laptop', 'cell phone', 'microwave oven', 'camera', 'printing', 'high-tech', 'commercially', 'produced', 'appeared', 'special effects', 'technique', 'sequence', 'innovation', 'interrupt'],
+        reading: 'A History of Special Effects', writing: 'Pronoun reference / a paragraph about an invention' },
+      { u: 6, title: 'Do You Know Where It Is?',
+        grammar: ['Comparative & superlative adjectives', 'Comparisons with as… as', 'Indirect questions (Do you know where…? / Can you tell me…?)', 'Definite article: the'],
+        vocab: ['quality of life', 'cost of living', 'housing', 'public transportation', 'subway', 'fares', 'crime rate', 'polluted', 'green areas', 'hospitals', 'noisy', 'crowded', 'global city', 'consecutive', 'fountain', 'Jeddah', 'historic', 'pilgrims'],
+        reading: 'The Bride of the Red Sea (Jeddah)', writing: 'A brochure for an adventure trip / describing a city' },
+      { u: 7, title: "It's a Good Deal, Isn't It?",
+        grammar: ['Tag questions (affirmative / negative)', 'Negative questions', 'Be able to', "Suggestions: should, can, could, why don't…?, let's"],
+        vocab: ['garage sale', 'good deal', 'bargain', 'owner', 'lawn mower', 'vacuum cleaner', 'ladder', 'remote control', 'hose', 'broom', 'teapot', 'forks', 'spoons', 'luggage', 'twins', 'coincidence', 'look alike'],
+        reading: 'You Look Just Like Me! (twins)', writing: 'A strange coincidence or chance meeting' },
+      { u: 8, title: 'Drive Slowly!',
+        grammar: ["Modals: must / mustn't, should / shouldn't", 'Adverbs of manner (slowly, carefully, fast, hard, well)', 'Can / could / will / would: requests and commands', 'Reporting requests and commands (told me to…)'],
+        vocab: ['driver', 'driving instructor', 'driving license', 'traffic signs', 'speed limit', 'pedestrian crossing', 'seat belt', 'steering wheel', 'windshield wipers', 'headlights', 'rearview mirror', 'turn signal', 'obey', 'parking', 'dangerous', 'carefully'],
+        reading: 'Is Right, Right? (driving on the right or left)', writing: 'An essay: should the driving age be raised?' },
+      { u: 9, title: 'All Kinds of People',
+        grammar: ['Relative pronouns: who, that, which', 'Past progressive with when and while', 'Can / may / could (permission & possibility)'],
+        vocab: ['personality', 'character', 'friendly', 'impression', 'tourist', 'police officer', 'thief', 'steal', 'backpack', 'hail a taxi', 'horse carriage', 'charity', 'poverty', 'loan', 'rely on', 'establish', 'unemployment', 'Nobel Peace Prize'],
+        reading: 'Simple Ideas, Big Results (Muhammad Yunus)', writing: 'Your vision of schools or your town in the future' },
+      { u: 10, title: 'Who Used My Toothpaste?',
+        grammar: ['Present perfect with already, yet, just', 'Verb + gerund (enjoy, miss, can’t stand…)', 'Two-word (phrasal) verbs: clean up, give back, call up, give up…', 'So… that / such… that'],
+        vocab: ['complaints', 'irritate', 'mess', 'share', 'toothpaste', 'hair dryer', 'nail polish', 'dishwashing liquid', 'wash the dishes', 'stand in line', 'checkout counter', 'impolite', 'rude', 'homesick', 'clean up', 'give up', 'let out'],
+        reading: 'Complaints (things that irritate people)', writing: 'Impolite behavior and how it affects others' },
+      { u: 11, title: 'Making Choices',
+        grammar: ['Conditional sentences with present and future forms (real)', 'Would rather', 'Conditional sentences: imaginary situations (if + past, would)', 'Wish'],
+        vocab: ['choice', 'decision', 'consequence', 'scenic route', 'highway', 'speeding ticket', 'resort', 'conservationists', 'save money', 'afford', 'work out', 'fulfill', 'ambition', 'professional', 'might'],
+        reading: 'The Right Choice (Albrecht Dürer)', writing: 'Choices you have made and their consequences' },
+      { u: 12, title: 'Culture Shock',
+        grammar: ['Verb + infinitive', 'Verb + noun / pronoun + infinitive', "It's + adjective + infinitive", 'Expressions of advice with infinitives', 'Gerunds as subjects', 'Past perfect'],
+        vocab: ['culture shock', 'customs', 'customary', 'polite', 'impolite', 'rude', 'advisable', 'chopsticks', 'business cards', 'tipping', 'arrive late', 'adapt', 'adjustment', 'flexible', 'frustrating', 'homesick', 'abroad'],
+        reading: 'A Fish Out of Water (culture shock)', writing: 'An email about cultural differences / advice to travelers' },
+    ]
+  }
 };
