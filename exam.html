@@ -562,6 +562,7 @@ td.ar{direction:rtl;text-align:center;font-family:Arial,Tahoma,sans-serif}
 .sheet.exp .ppic .frame{height:100px}
 .sheet.exp.auto{font-size:10.5pt;line-height:1.2}
 .sheet.exp.auto table.at td{padding:0 5px}
+.sheet.exp.auto table.at{line-height:1.12}
 .sheet.exp.auto .passage{font-size:10pt}
 /* قالب التصحيح الآلي */
 .ah{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;font-size:10pt;line-height:1.35}
@@ -586,9 +587,16 @@ table.at td.L{width:22px;text-align:center;font-weight:700;background:#eee}
 table.at + table.at td{border-top:0}
 table.at td.tfc{width:42px;text-align:center;font-weight:700}
 table.at td.img{width:100px;height:56px;text-align:center;padding:1px}
+table.at.pm td.pimg{height:64px;text-align:center;vertical-align:middle;position:relative;padding:3px 4px}
+table.at.pm td.pimg img{max-height:58px;max-width:88%;vertical-align:middle}
+table.at.pm .pn{position:absolute;top:2px;left:5px;font-weight:700}
+table.at.pm td.pans{text-align:center;font-weight:700;height:20px}
 table.at td.img img{max-width:96px;max-height:54px}
 table.at td.nb{width:44px;text-align:center;font-weight:700}
 table.ak{border-collapse:collapse;font-size:10pt;margin:2px 0 8px}
+.sheet.exp.auto table.ak{margin:1px 0 3px;font-size:9.5pt}
+.sheet.exp.auto table.ak td{padding:0 6px}
+.sheet.exp.auto .k{padding:0;line-height:1.15}
 table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24px}
 </style>
 </head>
@@ -1103,7 +1111,8 @@ function tmplUI() {
     : 'نموذج الوزارة المعتاد: تعبير 8 · قراءة 9 · قواعد 9 (اختيار + افعل كما هو مطلوب) · مفردات 9 · إملاء 5.';
 }
 const isAuto = () => (EXAM ? EXAM.meta.tmpl : prefs().tmpl) === 'auto';
-const NOPTS = () => (isAuto() ? 3 : 4);
+let GEN_META = null; // أثناء التوليد: إعدادات الاختبار الجاري توليده (لا المعروض)
+const NOPTS = () => ((GEN_META ? GEN_META.tmpl === 'auto' : isAuto()) ? 3 : 4);
 function saveDraft() {
   if (!EXAM) return;
   const pack = JSON.parse(JSON.stringify({ v: 2, forms: FORMS, cur: CUR }));
@@ -1119,6 +1128,7 @@ function loadDraft(d) {
   const forms = d.v === 2 ? d.forms : d.v === 1 ? [d] : null;
   if (!forms || !forms.length) return false;
   forms.forEach((f, i) => { f.meta.form = f.meta.form || 'AB'[i]; (f.vocab || []).forEach((it) => { if (it.lib && !it.img) it.img = libImg(it.word); }); });
+  forms.forEach(fixOpts);
   FORMS = forms; CUR = Math.min(d.cur || 0, forms.length - 1); EXAM = FORMS[CUR];
   return true;
 }
@@ -1268,6 +1278,7 @@ const readingWords = (d) => READ_WORDS[d] || 120;
 // يولّد الأقسام الخمسة لنموذج واحد (avoid: نصوص النموذج الآخر حتى لا تتكرر)
 async function runSections(ex, bp, units, avoid, onProg) {
   const p = ex.meta; const grammarCtx = units.flatMap((u) => u.grammar).join('; ');
+  GEN_META = p;
   const cmode = p.tmpl === 'auto' ? 'words' : p.cmode;
   const av = (k) => (avoid && avoid[k] && avoid[k].length ? { avoid: avoid[k] } : {});
   const st = { composition: '', reading: '', grammar: '', vocab: '', spelling: '' }; onProg && onProg(st);
@@ -1284,7 +1295,14 @@ async function runSections(ex, bp, units, avoid, onProg) {
       try { await fn(); st[k] = 'ok'; onProg && onProg(st); return; } catch (e) { if (attempt === 1) { st[k] = 'err'; onProg && onProg(st); errors.push(e.message); } }
     }
   }));
+  GEN_META = null;
   return errors;
+}
+// اختبار التصحيح الآلي خياراته ثلاثة (A/B/C): يزيل خانة رابعة فارغة إن وُجدت (من مسودات سابقة)
+function fixOpts(f) {
+  if (!f || f.meta.tmpl !== 'auto') return;
+  const fx = (q) => { if (q && Array.isArray(q.options) && q.options.length > 3 && !q.options.slice(3).some((o) => String(o || '').trim()) && q.ans < 3) q.options = q.options.slice(0, 3); };
+  [...(f.grammar || []), ...(f.vocab || []), ...((f.reading && f.reading.mcq) || [])].forEach(fx);
 }
 async function generate() {
   const units = selectedUnits();
@@ -1722,7 +1740,10 @@ function autoBody(ka) {
     vm.slice(1).forEach((q, i) => { h += mcq(i + 2, q); });
     if (pics.length) {
       h += `<div class="keep">${vm.length ? '<div class="s-sub">B- Match the pictures with the correct words:</div>' : ''}`;
-      pics.forEach((it, k) => { const w = pics[EXAM.picBox[k]]; const right = LT[EXAM.picBox.indexOf(k)]; h += `<table class="at"><tr><td class="nb">(${k + 1})</td><td class="img">${it.img ? `<img src="${it.img}" alt="">` : ''}</td><td class="nb">( ${ka ? A(right) : '…'} )</td><td class="L">${LT[k]}</td><td>${esc(w.word)}</td></tr></table>`; });
+      // جدول واحد بأعمدة متساوية بنفس شبكة جداول الاختيار: الصور ثم مربعات الإجابة ثم الكلمات A/B/C/D
+      h += `<table class="at pm">${cg(pics.length)}<tr>${pics.map((it, k) => `<td colspan="2" class="pimg"><span class="pn">(${k + 1})</span>${it.img ? `<img src="${it.img}" alt="">` : ''}</td>`).join('')}</tr>`
+        + `<tr>${pics.map((it, k) => `<td colspan="2" class="pans${ka ? ' kc' : ''}">( ${ka ? A(LT[EXAM.picBox.indexOf(k)]) : '&nbsp;&nbsp;…&nbsp;&nbsp;'} )</td>`).join('')}</tr>`
+        + `<tr>${pics.map((_, k) => `<td class="L">${LT[k]}</td><td>${esc(pics[EXAM.picBox[k]].word)}</td>`).join('')}</tr></table>`;
       h += '</div>';
     }
   }
@@ -1746,8 +1767,9 @@ function autoBody(ka) {
   h += `<div class="keep" style="text-align:center;margin-top:6px"><b>End of the questions</b></div>`;
   if (!ka) h += endSig(m);
   if (ka) {
-    h += `<div class="keep" style="margin-top:10px"><div class="s-sub">Quick key (for the auto-correction system):</div>`;
-    for (const [title, letters] of autoKeyRows()) h += `<div class="keep"><div class="k"><b>${esc(title)}</b></div><table class="ak"><tr>${letters.map((_, i) => `<td>${i + 1}</td>`).join('')}</tr><tr>${letters.map((l) => `<td>${A(l)}</td>`).join('')}</tr></table></div>`;
+    // مثل Word: كل جدول صغير لا ينقسم، والعنوان مربوط بأولها، ويمكن أن تكمل الجداول في الصفحة التالية
+    h += '<div style="margin-top:10px">';
+    autoKeyRows().forEach(([title, letters], qi) => { h += `<div class="keep">${qi ? '' : '<div class="s-sub">Quick key (for the auto-correction system):</div>'}<div class="k"><b>${esc(title)}</b></div><table class="ak"><tr>${letters.map((_, i) => `<td>${i + 1}</td>`).join('')}</tr><tr>${letters.map((l) => `<td>${A(l)}</td>`).join('')}</tr></table></div>`; });
     h += '</div>';
   }
   return h;
@@ -1935,6 +1957,8 @@ function autoDocx(D, ka) {
   ] }));
   // عنوان القسم (خلفية خضراء) + كسر الدرجة، مربوط بما بعده
   const secHead = (name, mark, title) => {
+    // فاصل صغير: يمنع Word من دمج جدول القسم السابق مع جدول هذا العنوان (فتضيع حدود الجدول السابق)
+    kids.push(new D.Paragraph({ spacing: { before: 0, after: 0, line: 40, lineRule: D.LineRuleType.EXACT }, children: [new D.TextRun({ text: '', size: 2 })] }));
     kids.push(new D.Table({ ...fixedW([W - 760, 760]), borders: noB, rows: [new D.TableRow({ cantSplit: true, children: [
       TC([P([T(` ${name} `, { bold: true, color: 'FFFFFF', size: 22, fill: '1F7A3F' })], { keep: true, after: 20 }), P(title, { bold: true, keep: true, after: 0 })], { borders: { top: K.nb, left: K.nb, right: K.nb, bottom: K.nb } }), fracCell(mark)] })] }));
   };
@@ -1944,11 +1968,14 @@ function autoDocx(D, ka) {
     vm.forEach((q, i) => kids.push(mcqT(i + 1, q)));
     if (pics.length) {
       if (vm.length) kids.push(P('B- Match the pictures with the correct words:', { bold: true, before: 80, keep: true }));
-      const imgCell = (it, keep) => (it.img ? TC([docxImg(D, it.img, 88, 62)], {}) : TC([P(' ', { after: 760, keep })], {}));
-      kids.push(new D.Table({ ...fixedW([800, 2400, 1000, 500, 5600]), rows: Rows(pics.map((it, k) => (keep) => {
-        const right = LT[EXAM.picBox.indexOf(k)];
-        return [TC(`(${k + 1})`, { bold: true, align: CTR, keep }), imgCell(it, keep), TC(ka ? [T('( '), red(right), T(' )')] : '( … )', { align: CTR, keep }), TC(LT[k], { bold: true, sh: true, align: CTR, keep }), TC(pics[EXAM.picBox[k]].word, { keep })];
-      })) }));
+      const n = pics.length; const cw = Math.floor(W / n);
+      const sb = K.sb;
+      kids.push(new D.Table({ ...fixedW(pics.flatMap(() => [450, cw - 450])), borders: { top: sb, bottom: sb, left: sb, right: sb, insideHorizontal: sb, insideVertical: sb }, rows: Rows([
+        (keep) => pics.map((it, k) => TC([P([T(`(${k + 1})`, { bold: true })], { after: 0, keep }), ...(it.img ? [docxImg(D, it.img, 104, 70)] : [P(' ', { after: 900, keep })])], { span: 2 })),
+        (keep) => pics.map((it, k) => { const right = LT[EXAM.picBox.indexOf(k)]; return TC(ka ? [T('( '), red(right), T(' )')] : '(   …   )', { bold: true, align: CTR, span: 2, keep }); }),
+        (keep) => pics.flatMap((_, k) => [TC(LT[k], { bold: true, sh: true, align: CTR, keep }), TC(pics[EXAM.picBox[k]].word, { keep })]),
+      ]) }));
+      kids.push(new D.Paragraph({ spacing: { before: 0, after: 0, line: 40, lineRule: D.LineRuleType.EXACT }, children: [new D.TextRun({ text: '', size: 2 })] })); // يمنع دمجه مع الجدول التالي
     }
   }
   if (r) {
