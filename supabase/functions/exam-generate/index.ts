@@ -107,6 +107,7 @@ function buildPrompt(section: string, h: string, specs: Spec[], ctx: Record<stri
   if (section === "grammar") {
     return `${h}
 Write one grammar item for EACH line below, in the same order, testing exactly the given target point.
+- Grammar items test GRAMMAR only: all options must be forms/variants of the same grammar point (e.g. big / bigger / biggest; is / are / am; who / which / where) — never vocabulary words with different meanings. Exactly one option is grammatically correct in the sentence.
 - kind "mcq": a sentence with ONE blank "____" and ${no} options (all the same word class / verb forms of the same verb).
 - kind "do": a "do as shown" task. Pick the instruction that best fits the target, e.g. "Correct the mistake", "Rearrange", "Make a Yes/No question", "Make a question", "Change into negative", "Change into passive", "Join using who/which", "Use the correct form of the verb". For "Rearrange" give the words separated by " – ". For "Correct the mistake" the sentence must contain exactly one error in the target point.
 ${lines}
@@ -124,20 +125,21 @@ JSON: {"items":[{"kind":"mcq","stem":"...","options":${oj},"answer":"..."} | {"k
   }
   if (section === "spelling") {
     return `${h}
-Orthography: for EACH line write a short sentence that contains the target word with ONE letter missing (write the word with "_" in place of that letter, e.g. "ve_etables"). Give 3 single-letter choices (one correct) — choose distractor letters that are typical spelling confusions for Arab learners (b/p, f/v, c/k/s, e/i, g/j...). The missing letter must not be the first letter if avoidable.
+Orthography: for EACH line write ONE short, simple sentence (6–12 words) that contains the target word written EXACTLY and in full (same spelling, no gaps — the tool will remove a letter itself). The sentence must make the word's meaning clear.
 ${lines}
-JSON: {"items":[{"word":"<full word>","sentence":"<sentence with the gapped word>","choices":["","",""],"answer":"<letter>"}]}`;
+JSON: {"items":[{"word":"<the target word exactly>","sentence":"<sentence containing the full word>"}]}`;
   }
   if (section === "reading") {
     const s = specs[0];
     const n = Number(ctx.words) || 120;
     return `${h}
-Write an ORIGINAL reading passage (about ${n} words, 2 short paragraphs, with a title) on the theme of Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Use the unit vocabulary: ${(s?.words || []).join(", ")}.
+Write an ORIGINAL reading passage (about ${n} words, with a title) on the theme of Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Use the unit vocabulary: ${(s?.words || []).join(", ")}.
 Use mainly these structures from the term: ${txt(ctx.grammar, 600)}.
 Then write:
-- 5 multiple-choice questions (${no} options each) about the passage: 3 detail questions, 1 reference question ("<pronoun> in line X refers to:" — the pronoun must really appear in that line when the passage is split into lines of about 15 words), 1 vocabulary-in-context or main-idea question.
-- 4 true/false statements (mix of true and false; false ones change one fact).
-JSON: {"data":{"title":"...","passage":"...","mcq":[{"q":"...","options":${oj},"answer":"..."}],"tf":[{"s":"...","answer":true}]}}`;
+Give the passage as an array "lines" of 8–11 printed lines, each 10–14 words (split sentences naturally across lines; no "Line 1:" labels, no numbering — the tool numbers the lines).
+- 5 multiple-choice questions (${no} options each) about the passage: 3 detail questions, 1 reference question ("The word '<pronoun>' in line X refers to:" — X is the real index (starting at 1) of the line in "lines" that contains that pronoun), 1 main-idea / best-title question.
+- 4 true/false statements: 2 TRUE (stated directly in the passage) and 2 FALSE (clearly contradicting one fact stated in the passage — never something the passage simply does not mention). Mix the order.
+JSON: {"data":{"title":"...","lines":["",""],"mcq":[{"q":"...","options":${oj},"answer":"..."}],"tf":[{"s":"...","answer":true}]}}`;
   }
   if (section === "composition") {
     const s = specs[0];

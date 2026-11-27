@@ -321,6 +321,10 @@ table.marks td{border:1px solid #000;padding:1px 4px;text-align:center;min-width
 .popts{margin-left:16px}
 .passage{border:1px solid #000;padding:6px 9px;margin:4px 0 8px;text-align:justify}
 .passage p{margin:0 0 4px}
+.passage.num{text-align:left}
+.passage .pl{display:flex;gap:8px}
+.passage .ln{flex:none;width:16px;text-align:right;font-size:9pt;color:#555 !important;padding-top:1px}
+.logo{display:block;margin:0 auto;height:52px}
 .dots{border-bottom:1px dotted #000;height:22px;margin:2px 0}
 .box{border:1px solid #000;padding:5px 9px;text-align:center;margin:4px 0 8px}
 .match{display:grid;grid-template-columns:1fr 1fr;gap:2px 30px;margin-left:12px}
@@ -335,21 +339,29 @@ table.marks td{border:1px solid #000;padding:1px 4px;text-align:center;min-width
 .pbreak{break-before:page;page-break-before:always}
 .sheet.exp{width:194mm;padding:0 1mm}
 /* قالب التصحيح الآلي */
-.ah{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:10pt;line-height:1.35}
+.ah{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;font-size:10pt;line-height:1.35}
+.sheet.auto{font-size:11pt;line-height:1.3}
+.sheet.auto .passage{font-size:10.5pt;padding:4px 8px;margin:3px 0 5px}
+.sheet.auto .s-sub{margin:5px 0 2px}
+.sheet.auto .dots{height:19px}
+.sheet.auto table.at{line-height:1.22}
+.sheet.auto .qtitle{margin:0 0 2px}
+.sheet.auto .ah{font-size:9.5pt}
+.sheet.auto table.ai td{height:20px;padding:1px 6px}
 .ah .bx{border:1.5px solid #000;border-radius:10px;padding:6px 10px;text-align:center}
 table.ai{width:100%;border-collapse:collapse;font-size:10pt;margin-top:6px}
 table.ai td{border:1px solid #000;padding:3px 6px;height:24px}
 table.ai td.lb{font-weight:700;background:#eee;width:16%}
-.asec{display:inline-block;background:#1f7a3f;color:#fff !important;font-weight:700;padding:1px 8px;margin:12px 0 4px}
+.asec{display:inline-block;background:#1f7a3f;color:#fff !important;font-weight:700;padding:1px 8px;margin:8px 0 2px}
 .amk{float:right;border:1.5px solid #000;min-width:40px;text-align:center;font-weight:700;padding:1px 6px}
-table.at{width:100%;border-collapse:collapse;table-layout:fixed;font-size:11pt;break-inside:avoid;page-break-inside:avoid}
-table.at td{border:1px solid #000;padding:2px 6px;overflow-wrap:anywhere}
+table.at{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10pt;break-inside:avoid;page-break-inside:avoid}
+table.at td{border:1px solid #000;padding:1px 6px;overflow-wrap:anywhere}
 table.at td.st{font-weight:600}
 table.at td.L{width:22px;text-align:center;font-weight:700;background:#eee}
 table.at + table.at td{border-top:0}
 table.at td.tfc{width:42px;text-align:center;font-weight:700}
-table.at td.img{width:120px;height:78px;text-align:center;padding:2px}
-table.at td.img img{max-width:114px;max-height:74px}
+table.at td.img{width:100px;height:56px;text-align:center;padding:1px}
+table.at td.img img{max-width:96px;max-height:54px}
 table.at td.nb{width:44px;text-align:center;font-weight:700}
 table.ak{border-collapse:collapse;font-size:10pt;margin:2px 0 8px}
 table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24px}
@@ -451,6 +463,11 @@ const PREF_KEY = 'enjaz_exam_prefs_v1';
 const GRADE_EN = { sg1: 'First Intermediate Grade', sg2: 'Second Intermediate Grade', sg3: 'Third Intermediate Grade' };
 const L = 'abcd';
 let EXAM = null;
+const LOGO = 'data:image/png;base64,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';
+// كلمات محسوسة يمكن تصويرها — كلمات الصور تُختار منها فقط
+const PICTURABLE = new Set(["t-shirt", "abaya", "accident", "actor", "airplane", "airport", "amusement park", "apartment", "apple pie", "armchair", "aspirin", "athlete", "avocado", "baby", "backpack", "bags", "balcony", "bank", "bathroom", "beach", "beans", "bedroom", "beef", "belt", "bicycle", "blender", "blood donation", "board games", "boarding pass", "boots", "bowling", "breakfast", "briefcase", "broom", "bus stop", "business cards", "cabinet", "calligraphy", "camel", "camera", "camping", "castle", "cell phone", "cereal", "cheesecake", "cheetah", "chef", "chicken", "chocolate chip cookies", "chopsticks", "closet", "cloudy", "coat", "computer", "coral reefs", "corn", "cough", "crab", "crayon", "credit card", "crowd", "curtains", "dates", "desert", "desk", "diamond", "dinosaur", "director", "dishwasher", "dishwashing liquid", "diving", "doctor", "dolphin", "driver", "earrings", "elevator", "engineer", "eraser", "fever", "fire", "fish", "flour", "forests", "forks", "fossil", "fountain", "fries", "furniture", "garage", "garden", "gift", "glasses", "greeting cards", "guacamole", "hair dryer", "hang gliding", "headache", "headlights", "herbal tea", "highway", "hiking", "horse carriage", "horseback riding", "hose", "hospital", "hotel", "house", "jeans", "kabsa", "kitchen", "ladder", "lamb", "lamp", "laptop", "lawn mower", "living room", "luggage", "magazine", "majlis", "mall", "mango", "mechanic", "menu", "metro", "microwave", "microwave oven", "mobile clinic", "mountains", "museum", "mushrooms", "nail polish", "napkins", "necklace", "notebook", "nurse", "olive oil", "onions", "oven", "painting", "parade", "paragliding", "park", "parrot", "party", "passport", "pasta", "pedestrian crossing", "pencil", "peppers", "perfume", "photograph", "photographer", "pilot", "pineapple", "planetarium", "police officer", "pond", "post office", "radio", "rainy", "rearview mirror", "recipe", "refrigerator", "remote control", "resort", "restaurant", "rice", "rock", "salad", "salmon", "sandals", "sausage", "scissors", "scuba diving", "sculpture", "seat belt", "shark", "shirt", "shoes", "shomagh", "shorts", "shrimp", "skiing", "skyscraper", "snowy", "sofa", "soup", "souvenir", "space shuttle", "spoons", "squid", "steak", "steering wheel", "stomachache", "stop sign", "stove", "strawberries", "street", "studio", "subway", "suit", "suitcase", "sunny", "supermarket", "teapot", "television", "thief", "thobe", "ticket", "tickets", "tomatoes", "tombs", "toothache", "toothpaste", "tower", "toys", "traffic light", "train", "twins", "uniform", "vacuum cleaner", "video games", "waiter", "water park", "windshield wipers", "windy", "yogurt", "zookeeper"]);
+// حروف يخلط بينها المتعلم العربي — تُستخدم بدائل في سؤال الإملاء
+const CONF = { b: 'pd', p: 'bq', f: 'vp', v: 'fb', c: 'ks', k: 'cg', s: 'cz', z: 'sj', e: 'ia', i: 'ey', a: 'eo', o: 'ua', u: 'oa', g: 'jk', j: 'gy', d: 'tb', t: 'dk', m: 'nw', n: 'mr', r: 'ln', l: 'rt', h: 'kg', w: 'vm', y: 'ie', q: 'kg', x: 'ks' };
 
 function toast(msg, ms = 3200) { const t = $('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(toast._t); toast._t = setTimeout(() => { t.style.display = 'none'; }, ms); }
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
@@ -569,8 +586,14 @@ function buildBlueprint(units, p) {
   const single = (u) => u.vocab.filter((w) => /^[a-z]{4,}$/i.test(w));
   const spelling = roundRobin(units, single, 10, used).map((s) => ({ ...s, kind: 'spell' }));
   const kinds = auto ? [...Array(5).fill('mcq'), ...Array(4).fill('picture')] : [...Array(4).fill('mcq'), ...Array(4).fill('match'), ...Array(6).fill('picture'), ...Array(4).fill('odd')];
-  const vw = roundRobin(units, (u) => u.vocab, kinds.length, used);
-  const vocab = kinds.map((k, i) => ({ ...(vw[i] || vw[i % Math.max(1, vw.length)]), kind: k }));
+  const nPic = kinds.filter((k) => k === 'picture').length;
+  let pw = roundRobin(units, (u) => u.vocab.filter((w) => PICTURABLE.has(w.toLowerCase())), nPic, used);
+  if (pw.length < nPic) { // وحدات قليلة الكلمات المحسوسة: نكمل من كل وحدات الكتاب
+    const all = C[p.grade].units; pw = pw.concat(roundRobin(all, (u) => u.vocab.filter((w) => PICTURABLE.has(w.toLowerCase())), nPic - pw.length, used));
+  }
+  const vw = roundRobin(units, (u) => u.vocab, kinds.length - nPic, used);
+  let pi = 0, oi = 0;
+  const vocab = kinds.map((k) => ({ ...(k === 'picture' ? (pw[pi++] || vw[oi++ % Math.max(1, vw.length)]) : (vw[oi++] || vw[0])), kind: k }));
   const order = shuffle(units);
   const ru = order[0]; const cu = order[1] || order[0];
   return {
@@ -612,7 +635,23 @@ function normVocab(raw, spec) {
   if (spec.kind === 'picture') return { ...spec, word: norm(raw?.word || spec.target), img: '' };
   return normMCQ(raw, spec);
 }
+// الأداة (لا الذكاء الاصطناعي) تحذف حرفاً واحداً — ليس الأول — وتختار بديلين من الحروف المتشابهة
+function gapWord(word) {
+  const w = String(word || '');
+  const cand = []; for (let i = 1; i < w.length; i++) { const ch = w[i].toLowerCase(); if (CONF[ch] && w[i - 1].toLowerCase() !== ch && (w[i + 1] || '').toLowerCase() !== ch) cand.push(i); }
+  if (!cand.length) return null;
+  const mid = cand.filter((i) => i < w.length - 1); const pos = (mid.length ? mid : cand)[Math.floor(Math.random() * (mid.length ? mid : cand).length)];
+  const ch = w[pos].toLowerCase(); const ds = CONF[ch].split('').filter((x) => x !== ch).slice(0, 2);
+  const choices = shuffle([ch, ...ds]);
+  return { gapped: w.slice(0, pos) + '_' + w.slice(pos + 1), choices, ans: choices.indexOf(ch) };
+}
 function normSpell(raw, spec) {
+  const word = norm(raw?.word || spec.target); let sentence = norm(raw?.sentence);
+  if (sentence && !/_/.test(sentence)) {
+    const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+    const mm = sentence.match(re); const g = gapWord(mm ? mm[0] : word);
+    if (mm && g) return { ...spec, word, sentence: sentence.replace(re, g.gapped), choices: g.choices, ans: g.ans, warn: false };
+  }
   const choices = (Array.isArray(raw?.choices) ? raw.choices : []).map((c) => norm(c).slice(0, 2)).filter(Boolean).slice(0, 3);
   const ans = choices.findIndex((c) => c.toLowerCase() === norm(raw?.answer).toLowerCase());
   const ok = choices.length === 3 && ans >= 0 && /_/.test(raw?.sentence || '');
@@ -622,7 +661,10 @@ function normSpell(raw, spec) {
 function normReading(d, spec) {
   const mcq = (d?.mcq || []).slice(0, 5).map((q) => normMCQ({ ...q, stem: q.q }, {}));
   const tf = (d?.tf || []).slice(0, 4).map((t) => ({ s: norm(t.s), ans: t.answer === true || String(t.answer).toLowerCase() === 'true' }));
-  return { ...spec, title: norm(d?.title), passage: String(d?.passage || '').trim(), mcq, tf, warn: mcq.length < 5 || tf.length < 4 };
+  let lines = Array.isArray(d?.lines) ? d.lines.map(norm).filter(Boolean) : String(d?.passage || '').split(/\n+/).map((x) => x.trim()).filter(Boolean);
+  const labelled = lines.some((x) => /^line\s*\d+\s*[:.\-]/i.test(x));
+  lines = lines.map((x) => x.replace(/^line\s*\d+\s*[:.\-]\s*/i, ''));
+  return { ...spec, title: norm(d?.title), passage: lines.join('\n'), numbered: Array.isArray(d?.lines) || labelled, mcq, tf, warn: mcq.length < 5 || tf.length < 4 };
 }
 function normComposition(d, spec) {
   if (d?.mode === 'words') return { ...spec, mode: 'words', title: norm(d.title), words: (d.words || []).map(norm).filter(Boolean).slice(0, 10), model: norm(d.model) };
@@ -724,7 +766,7 @@ function renderEditor() {
   const r = EXAM.reading; let ri = '';
   if (!r) ri = '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>';
   else {
-    ri = `<div class="row" style="margin-bottom:6px">${tagOf(r)}</div><label class="f">العنوان${inp('reading.title', r.title)}</label><label class="f" style="margin-top:6px">النص${area('reading.passage', r.passage, 7)}</label>
+    ri = `<div class="row" style="margin-bottom:6px">${tagOf(r)}</div><label class="f">العنوان${inp('reading.title', r.title)}</label><label class="f" style="margin-top:6px">النص${r.numbered ? ' — كل سطر هنا = سطر مرقّم في الورقة' : ''}${area('reading.passage', r.passage, r.numbered ? 10 : 7)}</label>
       <div class="sub">أ) اختيار من متعدد — اختر الدائرة عند الإجابة الصحيحة</div>
       ${r.mcq.map((q, i) => `<div class="it${q.warn ? ' warn' : ''}">${inp(`reading.mcq.${i}.stem`, q.stem)}${optsHTML(`reading.mcq.${i}`, q, 'rq' + i)}</div>`).join('')}
       <div class="sub">ب) صح أو خطأ</div>
@@ -872,6 +914,11 @@ function ensureOrders() {
   const pics = EXAM.vocab.filter((x) => x.kind === 'picture');
   if (!EXAM.picBox || EXAM.picBox.length !== pics.length) EXAM.picBox = shuffle(pics.map((_, k) => k));
 }
+function passageHTML(r) {
+  const ls = r.passage.split(/\n+/).map((x) => x.trim()).filter(Boolean);
+  if (!r.numbered) return `<div class="passage">${ls.map((p) => `<p>${esc(p)}</p>`).join('')}</div>`;
+  return `<div class="passage num">${ls.map((p, i) => `<div class="pl"><span class="ln">${i + 1}</span><span>${esc(p)}</span></div>`).join('')}</div>`;
+}
 function paperHTML(withKey) {
   ensureOrders();
   if (isAuto()) return autoPaperHTML(withKey);
@@ -879,7 +926,7 @@ function paperHTML(withKey) {
   const termTxt = m.term === '2' ? 'Second' : 'First';
   let h = `<div class="ph">
     <div>Kingdom of Saudi Arabia<br>Ministry of Education${m.directorate ? '<br>' + esc(m.directorate) : ''}<br>${esc(m.school || 'Intermediate School')}</div>
-    <div><table class="marks"><tr><td>Q.</td><td>Q1</td><td>Q2</td><td>Q3</td><td>Q4</td><td>Q5</td><td>Total</td></tr><tr><td>Mark</td><td>8</td><td>9</td><td>9</td><td>9</td><td>5</td><td><b>40</b></td></tr><tr><td>Student</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>
+    <div><img class="logo" src="${LOGO}" alt="" style="height:44px;margin-bottom:3px"><table class="marks"><tr><td>Q.</td><td>Q1</td><td>Q2</td><td>Q3</td><td>Q4</td><td>Q5</td><td>Total</td></tr><tr><td>Mark</td><td>8</td><td>9</td><td>9</td><td>9</td><td>5</td><td><b>40</b></td></tr><tr><td>Student</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>
     <div class="r">${esc(book.name)} – English Language<br>${GRADE_EN[m.grade]}<br>${termTxt} Term Final Exam ${esc(m.year || '')}<br>Time: ${esc(m.time || '')}</div>
   </div>
   <div class="sname">Student's name: …………………………………………… &nbsp; Class: ……… &nbsp; Seat No.: ………</div>`;
@@ -896,7 +943,7 @@ function paperHTML(withKey) {
   const r = EXAM.reading;
   h += `<div class="q">${qh(2, 'Reading Comprehension', 9)}`;
   if (r) {
-    h += `<div class="qtitle">${esc(r.title)}</div><div class="passage">${r.passage.split(/\n+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join('')}</div><div class="s-sub">A- Choose the correct answer:</div>`;
+    h += `<div class="qtitle">${esc(r.title)}</div>${passageHTML(r)}<div class="s-sub">A- Choose the correct answer:</div>`;
     r.mcq.forEach((q, i) => { h += `<div class="pi">${i + 1}. ${esc(q.stem)}<div class="popts">${q.options.map((o, j) => `${L[j]}) ${esc(o)}`).join(' &nbsp;&nbsp; ')}</div></div>`; });
     h += '<div class="s-sub">B- Write (T) for true or (F) for false:</div>';
     r.tf.forEach((t, i) => { h += `<div class="pi">${i + 1}. ${esc(t.s)} &nbsp; (&nbsp;&nbsp;&nbsp;&nbsp;)</div>`; });
@@ -997,16 +1044,17 @@ function autoPaperHTML(withKey) {
   const opts = (o) => `<tr>${o.map((x, j) => `<td class="L">${LT[j]}</td><td>${esc(x)}</td>`).join('')}</tr>`;
   const cg = (k) => `<colgroup>${Array(k).fill('<col style="width:26px"><col>').join('')}</colgroup>`;
   const mcq = (n, q) => `<table class="at">${cg(q.options.length)}<tr><td class="st" colspan="${q.options.length * 2}">${n}. ${esc(q.stem)}</td></tr>${opts(q.options)}</table>`;
-  const sec = (name, mark, title) => `<div style="break-after:avoid;page-break-after:avoid"><span class="amk">${mark}</span><span class="asec">${name}</span><div class="s-sub" style="margin-top:2px">${title}</div></div>`;
+  const sec = (name, mark, title) => `<div class="keep"><span class="amk">${mark}</span><span class="asec">${name}</span><div class="s-sub" style="margin-top:2px">${title}</div>`; // يُغلق بعد أول فقرة
   let h = `<div class="ah">
     <div class="bx">Kingdom of Saudi Arabia<br>Ministry of Education${m.directorate ? '<br>' + esc(m.directorate) : ''}<br>${esc(m.school || 'Intermediate School')}</div>
+    <img class="logo" src="${LOGO}" alt="">
     <div class="bx">${esc(book.name)} – English Language<br>${GRADE_EN[m.grade]}<br>${termTxt} Term Final Exam ${esc(m.year || '')}<br>Time: ${esc(m.time || '')}</div>
   </div>
   <table class="ai"><tr><td class="lb">Student's name</td><td colspan="3"></td><td class="lb">Seat No.</td><td style="width:18%"></td></tr>
   <tr><td class="lb">Mark</td><td style="width:14%">&nbsp;&nbsp;&nbsp;&nbsp;/ 40</td><td class="lb">Corrector</td><td></td><td class="lb">Reviewer</td><td></td></tr></table>`;
-  if (gm.length) { h += sec('Grammar', 9, `Choose the correct answer: <span style="font-weight:400">(${mk.gEach} mark each)</span>`); gm.forEach((q, i) => { h += mcq(i + 1, q); }); }
+  if (gm.length) { h += sec('Grammar', 9, `Choose the correct answer: <span style="font-weight:400">(${mk.gEach} mark each)</span>`); gm.forEach((q, i) => { h += mcq(i + 1, q) + (i === 0 ? '</div>' : ''); }); }
   if (vm.length || pics.length) {
-    h += sec('Vocabulary', 9, 'A- Choose the correct answer:');
+    h += sec('Vocabulary', 9, vm.length ? 'A- Choose the correct answer:' : '') + '</div>';
     vm.forEach((q, i) => { h += mcq(i + 1, q); });
     if (pics.length) {
       h += '<div class="s-sub">B- Match the pictures with the correct words:</div>';
@@ -1015,20 +1063,21 @@ function autoPaperHTML(withKey) {
   }
   if (r) {
     h += sec('Reading', 9, 'Read the passage, then answer the questions:');
-    h += `<div class="qtitle">${esc(r.title)}</div><div class="passage">${r.passage.split(/\n+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join('')}</div><div class="s-sub">A- Choose the correct answer:</div>`;
+    h += `<div class="qtitle">${esc(r.title)}</div>${passageHTML(r)}</div><div class="s-sub">A- Choose the correct answer:</div>`;
     r.mcq.forEach((q, i) => { h += mcq(i + 1, q); });
     h += `<div class="s-sub">B- Choose (T) for true or (F) for false:</div>${r.tf.map((t, i) => `<table class="at"><tr><td class="st">${i + 1}. ${esc(t.s)}</td><td class="tfc">T</td><td class="tfc">F</td></tr></table>`).join('')}`;
   }
   if (sp.length) {
     h += sec('Orthography', 5, 'Choose the missing letter: <span style="font-weight:400">(½ mark each)</span>');
-    sp.forEach((q, i) => { h += `<table class="at"><tr><td class="st">${i + 1}. ${esc(q.sentence)}</td>${q.choices.map((x, j) => `<td class="L">${LT[j]}</td><td style="width:34px;text-align:center">${esc(x)}</td>`).join('')}</tr></table>`; });
+    sp.forEach((q, i) => { h += `<table class="at"><tr><td class="st">${i + 1}. ${esc(q.sentence)}</td>${q.choices.map((x, j) => `<td class="L">${LT[j]}</td><td style="width:34px;text-align:center">${esc(x)}</td>`).join('')}</tr></table>` + (i === 0 ? '</div>' : ''); });
   }
   if (c) {
     h += sec('Writing', 8, `Write a paragraph about (<i>${esc(c.title)}</i>).`);
     if (c.words && c.words.length) h += `<div>Use (${c.words.map(esc).join(' – ')})</div>`;
-    h += '<div class="dots"></div>'.repeat(9);
+    h += '<div class="dots"></div></div>';
+    h += '<div class="dots"></div>'.repeat(5);
   }
-  h += `<div style="text-align:center;margin-top:12px;font-weight:700">End of the questions</div><div class="foot">My best wishes${m.teacher ? '<br>' + esc(m.teacher) : ''}</div>`;
+  h += `<div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:end;margin-top:6px"><span></span><b>End of the questions</b><span style="text-align:right;font-style:italic;font-size:10pt">My best wishes${m.teacher ? '<br>' + esc(m.teacher) : ''}</span></div>`;
   if (withKey) {
     h += `<div class="pbreak"></div><div class="key"><h3>Answer Key</h3>`;
     for (const [title, letters] of autoKeyRows()) h += `<div class="s-sub">${esc(title)}</div><table class="ak"><tr>${letters.map((_, i) => `<td>${i + 1}</td>`).join('')}</tr><tr>${letters.map((l) => `<td><b>${l}</b></td>`).join('')}</tr></table>`;
@@ -1044,8 +1093,8 @@ async function exportDOCXAuto() {
     ensureOrders();
     const D = window.docx; const m = EXAM.meta; const book = C[m.grade]; const F = 'Arial';
     const { gm, vm, pics, r, c, sp } = autoParts(); const mk = autoMarks();
-    const T = (text, o = {}) => new D.TextRun({ text: String(text ?? ''), font: F, size: o.size || 22, bold: o.bold, italics: o.italics, color: o.color });
-    const P = (runs, o = {}) => new D.Paragraph({ children: Array.isArray(runs) ? runs : [T(runs, o)], alignment: o.align, spacing: { after: o.after ?? 40, before: o.before ?? 0 }, shading: o.shade ? { type: D.ShadingType.CLEAR, fill: o.shade, color: 'auto' } : undefined });
+    const T = (text, o = {}) => new D.TextRun({ text: String(text ?? ''), font: F, size: o.size || 20, bold: o.bold, italics: o.italics, color: o.color });
+    const P = (runs, o = {}) => new D.Paragraph({ children: Array.isArray(runs) ? runs : [T(runs, o)], alignment: o.align, spacing: { after: o.after ?? 20, before: o.before ?? 0 }, shading: o.shade ? { type: D.ShadingType.CLEAR, fill: o.shade, color: 'auto' } : undefined });
     const shade = { type: D.ShadingType.CLEAR, fill: 'EEEEEE', color: 'auto' };
     const TC = (children, o = {}) => new D.TableCell({ children: Array.isArray(children) ? children : [P(children, { bold: o.bold, align: o.align, after: 0, size: o.size })], columnSpan: o.span, shading: o.sh ? shade : undefined, width: o.w ? { size: o.w, type: D.WidthType.DXA } : undefined, verticalAlign: D.VerticalAlign.CENTER });
     const full = { size: 100, type: D.WidthType.PERCENTAGE };
@@ -1055,11 +1104,11 @@ async function exportDOCXAuto() {
       new D.TableRow({ children: q.options.flatMap((x, j) => [TC(LT[j], { bold: true, sh: true, align: D.AlignmentType.CENTER, w: 400 }), TC(x)]) }),
     ] });
     const gap = () => P('', { after: 60 });
-    const sec = (name, mark, title) => [P([T(` ${name} `, { bold: true, color: 'FFFFFF' }), T(`        ( ${mark} )`, { bold: true })], { before: 200, after: 40, shade: undefined }), P(title, { bold: true })];
     const kids = [];
     const hdr = (lines) => new D.TableCell({ children: lines.map((l) => P(l, { align: D.AlignmentType.CENTER, after: 0, size: 20 })) });
     kids.push(new D.Table({ width: full, rows: [new D.TableRow({ children: [
       hdr(['Kingdom of Saudi Arabia', 'Ministry of Education', ...(m.directorate ? [m.directorate] : []), m.school || 'Intermediate School']),
+      new D.TableCell({ borders: { top: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' }, bottom: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' } }, verticalAlign: D.VerticalAlign.CENTER, children: [new D.Paragraph({ alignment: D.AlignmentType.CENTER, children: [new D.ImageRun({ data: b64u8(LOGO), transformation: { width: 104, height: 56 } })] })] }),
       hdr([`${book.name} – English Language`, GRADE_EN[m.grade], `${m.term === '2' ? 'Second' : 'First'} Term Final Exam ${m.year || ''}`, `Time: ${m.time || ''}`]),
     ] })] }));
     kids.push(gap());
@@ -1068,7 +1117,7 @@ async function exportDOCXAuto() {
       new D.TableRow({ children: [TC('Mark', { bold: true, sh: true }), TC('      / 40'), TC('Corrector', { bold: true, sh: true }), TC(''), TC('Reviewer', { bold: true, sh: true }), TC('')] }),
     ] }));
     // عنوان القسم بخلفية خضراء
-    const secHead = (name, mark, title) => { kids.push(new D.Paragraph({ spacing: { before: 220, after: 40 }, children: [new D.TextRun({ text: ` ${name} `, font: F, size: 22, bold: true, color: 'FFFFFF', shading: { type: D.ShadingType.CLEAR, fill: '1F7A3F', color: 'auto' } }), new D.TextRun({ text: `\t( ${mark} )`, font: F, size: 22, bold: true })] })); kids.push(P(title, { bold: true })); };
+    const secHead = (name, mark, title) => { kids.push(new D.Paragraph({ spacing: { before: 140, after: 20 }, children: [new D.TextRun({ text: ` ${name} `, font: F, size: 22, bold: true, color: 'FFFFFF', shading: { type: D.ShadingType.CLEAR, fill: '1F7A3F', color: 'auto' } }), new D.TextRun({ text: `\t( ${mark} )`, font: F, size: 22, bold: true })] })); kids.push(P(title, { bold: true })); };
     if (gm.length) { secHead('Grammar', 9, `Choose the correct answer: (${mk.gEach} mark each)`); gm.forEach((q, i) => kids.push(mcqT(i + 1, q))); }
     if (vm.length || pics.length) {
       secHead('Vocabulary', 9, 'A- Choose the correct answer:');
@@ -1076,9 +1125,9 @@ async function exportDOCXAuto() {
       if (pics.length) {
         kids.push(P('B- Match the pictures with the correct words:', { bold: true, before: 80 }));
         const imgCell = (it) => {
-          if (!it.img) return TC([P(' ', { after: 900 })], { w: 2200 });
+          if (!it.img) return TC([P(' ', { after: 760 })], { w: 2200 });
           const bin = atob(it.img.split(',')[1]); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-          return TC([new D.Paragraph({ alignment: D.AlignmentType.CENTER, children: [new D.ImageRun({ data: u8, transformation: { width: 100, height: 75 } })] })], { w: 2200 });
+          return TC([new D.Paragraph({ alignment: D.AlignmentType.CENTER, children: [new D.ImageRun({ data: u8, transformation: { width: 88, height: 62 } })] })], { w: 2200 });
         };
         kids.push(new D.Table({ ...W([800, 2400, 1000, 500, 5200]), rows: pics.map((it, k) => new D.TableRow({ children: [TC(`(${k + 1})`, { bold: true, align: D.AlignmentType.CENTER, w: 700 }), imgCell(it), TC('( … )', { align: D.AlignmentType.CENTER, w: 900 }), TC(LT[k], { bold: true, sh: true, align: D.AlignmentType.CENTER, w: 500 }), TC(pics[EXAM.picBox[k]].word)] })) }));
       }
@@ -1086,7 +1135,7 @@ async function exportDOCXAuto() {
     if (r) {
       secHead('Reading', 9, 'Read the passage, then answer the questions:');
       kids.push(P(r.title, { bold: true, align: D.AlignmentType.CENTER }));
-      kids.push(new D.Table({ width: full, rows: [new D.TableRow({ children: [new D.TableCell({ children: r.passage.split(/\n+/).filter(Boolean).map((p) => P(p, { align: D.AlignmentType.JUSTIFIED })) })] })] }));
+      kids.push(new D.Table({ width: full, rows: [new D.TableRow({ children: [new D.TableCell({ children: docxPassage(D, r, P, 21) })] })] }));
       kids.push(P('A- Choose the correct answer:', { bold: true, before: 80 }));
       r.mcq.forEach((q, i) => kids.push(mcqT(i + 1, q)));
       kids.push(P('B- Choose (T) for true or (F) for false:', { bold: true, before: 80 }));
@@ -1099,7 +1148,7 @@ async function exportDOCXAuto() {
     if (c) {
       secHead('Writing', 8, `Write a paragraph about (${c.title}).`);
       if (c.words && c.words.length) kids.push(P(`Use (${c.words.join(' – ')})`));
-      for (let i = 0; i < 9; i++) kids.push(P('……………………………………………………………………………………………………', { after: 100 }));
+      for (let i = 0; i < 7; i++) kids.push(P('……………………………………………………………………………………………………', { after: 80 }));
     }
     kids.push(P('End of the questions', { bold: true, align: D.AlignmentType.CENTER, before: 160 }));
     kids.push(P('My best wishes', { italics: true, align: D.AlignmentType.RIGHT }));
@@ -1129,7 +1178,7 @@ function fitPreview() {
   sh.style.zoom = avail < w ? (avail / w).toFixed(3) : '';
 }
 function renderPreview() {
-  $('pvBody').innerHTML = `<div class="sheet">${paperHTML($('pvKey').checked)}</div>`;
+  $('pvBody').innerHTML = `<div class="sheet${isAuto() ? ' auto' : ''}">${paperHTML($('pvKey').checked)}</div>`;
   fitPreview();
 }
 function openPreview() {
@@ -1151,18 +1200,28 @@ async function exportPDF() {
   busyBtns(true); toast('جارٍ تجهيز ملف PDF…', 8000);
   try {
     if (!window.html2pdf) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
-    const html = `<div class="sheet exp" dir="ltr">${paperHTML($('withKey').checked)}</div>`;
+    const html = `<div class="sheet exp${isAuto() ? ' auto' : ''}" dir="ltr">${paperHTML($('withKey').checked)}</div>`;
     await window.html2pdf().set({
-      margin: [8, 8, 8, 8], filename: fileBase() + '.pdf',
+      margin: isAuto() ? [6, 7, 6, 7] : [8, 8, 8, 8], filename: fileBase() + '.pdf',
       image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['css', 'legacy'], avoid: ['.pi', '.qhead', '.ppic', '.passage', '.box', 'table'] },
-    }).from(html, 'string').save();
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['.pi', '.qhead', '.ppic', '.passage', '.box', 'table', '.keep'] },
+    }).from(html, 'string').toPdf().get('pdf').then((pdf) => {
+      // html2pdf يضيف أحياناً صفحة أخيرة فارغة: نحذفها إن لم يُرسم عليها شيء
+      const n = pdf.internal.getNumberOfPages();
+      if (n > 1) { const pg = pdf.internal.pages[n]; if (!pg || pg.filter((x) => /\bDo\b/.test(String(x))).length === 0) pdf.deletePage(n); }
+    }).save();
     toast('تم تنزيل ملف PDF.');
   } catch { toast('تعذّر إنشاء ملف PDF.', 5000); }
   finally { busyBtns(false); }
 }
 
+function b64u8(dataUrl) { const bin = atob(dataUrl.split(',')[1]); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); return u8; }
+function docxPassage(D, r, P, size) {
+  const ls = r.passage.split(/\n+/).map((x) => x.trim()).filter(Boolean);
+  if (!r.numbered) return ls.map((p) => P(p, { after: 60, align: D.AlignmentType.JUSTIFIED, size }));
+  return ls.map((p, i) => new D.Paragraph({ spacing: { after: 20 }, tabStops: [{ type: D.TabStopType.LEFT, position: 420 }], children: [new D.TextRun({ text: String(i + 1), font: 'Arial', size: 16, color: '555555' }), new D.TextRun({ text: '\t' + p, font: 'Arial', size: size || 22 })] }));
+}
 async function exportDOCX() {
   if (!EXAM) return;
   if (isAuto()) return exportDOCXAuto();
@@ -1188,6 +1247,7 @@ async function exportDOCX() {
       width: { size: 100, type: D.WidthType.PERCENTAGE }, borders: noB,
       rows: [new D.TableRow({ children: [
         new D.TableCell({ children: [P('Kingdom of Saudi Arabia', { size: 20, after: 0 }), P('Ministry of Education', { size: 20, after: 0 }), ...(m.directorate ? [P(m.directorate, { size: 20, after: 0 })] : []), P(m.school || 'Intermediate School', { size: 20, after: 0 })] }),
+        new D.TableCell({ children: [new D.Paragraph({ alignment: D.AlignmentType.CENTER, children: [new D.ImageRun({ data: b64u8(LOGO), transformation: { width: 96, height: 51 } })] })] }),
         new D.TableCell({ children: [P(`${book.name} – English Language`, { size: 20, after: 0, align: R }), P(GRADE_EN[m.grade], { size: 20, after: 0, align: R }), P(`${termTxt} Term Final Exam ${m.year || ''}`, { size: 20, after: 0, align: R }), P(`Time: ${m.time || ''}`, { size: 20, after: 0, align: R })] }),
       ] })],
     }));
@@ -1217,7 +1277,7 @@ async function exportDOCX() {
     kids.push(qh(2, 'Reading Comprehension', 9));
     if (r) {
       kids.push(P(r.title, { bold: true, align: D.AlignmentType.CENTER }));
-      kids.push(boxed(r.passage.split(/\n+/).filter(Boolean).map((p) => P(p, { after: 60, align: D.AlignmentType.JUSTIFIED }))));
+      kids.push(boxed(docxPassage(D, r, P)));
       kids.push(sub('A- Choose the correct answer:'));
       r.mcq.forEach((q, i) => { kids.push(P(`${i + 1}. ${q.stem}`)); kids.push(P(q.options.map((o, j) => `${L[j]}) ${o}`).join('      '), { indent: 300 })); });
       kids.push(sub('B- Write (T) for true or (F) for false:'));
