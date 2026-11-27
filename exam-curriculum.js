@@ -144,7 +144,7 @@ window.EXAM_CURRICULUM = {
     units: [
       { u: 1, title: 'Lifestyles',
         grammar: ['Simple present: habitual activities', 'Adverbs / expressions of frequency (always, usually, occasionally, hardly ever, once in a while…)', 'Questions with How often / How much / How long', 'All / both / neither / none'],
-        vocab: ['lifestyle', 'healthy', 'habits', 'diet', 'vegetarian', 'exercise', 'spend time', 'chatting online', 'Internet addict', 'stay up late', 'once', 'twice', 'rarely', 'seldom', 'hardly ever', 'frequently', 'now and then', 'from time to time'],
+        vocab: ['lifestyle', 'healthy', 'habits', 'diet', 'vegetarian', 'herbal tea', 'exercise', 'spend time', 'chatting online', 'Internet addict', 'stay up late', 'once', 'twice', 'rarely', 'seldom', 'hardly ever', 'frequently', 'now and then', 'from time to time'],
         reading: 'Do College Students Have a Healthy Lifestyle?', writing: 'Report your class survey on young people’s habits' },
       { u: 2, title: 'Life Stories',
         grammar: ['Simple past tense', 'Passive expressions: be + born / raised / educated / married', 'Used to', 'Time expressions for the past', 'When clauses'],
