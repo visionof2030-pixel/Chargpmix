@@ -1283,7 +1283,9 @@ async function exportDOCX() {
     const noB = { top: nb, bottom: nb, left: nb, right: nb, insideHorizontal: nb, insideVertical: nb };
     const qh = (n, name, mark) => P([T(`Q${n} / ${name}`, { bold: true, size: 26 }), new D.TextRun({ text: `\t( ${mark} )`, font: F, size: 26, bold: true })], { before: 200, after: 80, border: { bottom: { style: D.BorderStyle.SINGLE, size: 6, color: '000000' } } });
     const sub = (t) => P(t, { bold: true, before: 80 });
-    const boxed = (children) => new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, rows: [new D.TableRow({ children: [new D.TableCell({ children })] })] });
+    const FULLW = 10300; // عرض محتوى الصفحة بالضبط — كل الصناديق والجداول بنفس العرض
+    const fixedW = (cols) => ({ columnWidths: cols, layout: D.TableLayoutType.FIXED, width: { size: cols.reduce((a, b) => a + b, 0), type: D.WidthType.DXA } });
+    const boxed = (children) => new D.Table({ ...fixedW([FULLW]), rows: [new D.TableRow({ children: [new D.TableCell({ children, width: { size: FULLW, type: D.WidthType.DXA } })] })] });
     const kids = [];
     const termTxt = m.term === '2' ? 'Second' : 'First';
     const R = D.AlignmentType.RIGHT;
@@ -1296,7 +1298,7 @@ async function exportDOCX() {
       ] })],
     }));
     kids.push(P('', { after: 60 }));
-    kids.push(new D.Table({ alignment: D.AlignmentType.CENTER, rows: [
+    kids.push(new D.Table({ alignment: D.AlignmentType.CENTER, ...fixedW([1600, 900, 900, 900, 900, 900, 1000]), rows: [
       new D.TableRow({ children: ['Question', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Total'].map((x) => cell(x, { w: 1000 })) }),
       new D.TableRow({ children: ['Mark', '8', '9', '9', '9', '5', '40'].map((x) => cell(x, { w: 1000, bold: x === '40' })) }),
       new D.TableRow({ children: ["Student's mark", '', '', '', '', '', ''].map((x) => cell(x, { w: 1000 })) }),
@@ -1352,10 +1354,10 @@ async function exportDOCX() {
           ch.push(new D.Paragraph({ alignment: D.AlignmentType.CENTER, children: [new D.ImageRun({ data: u8, transformation: { width: 130, height: 100 } })] }));
         } else ch.push(P(' ', { after: 1300 }));
         ch.push(P('……………………', { align: D.AlignmentType.CENTER, after: 40 }));
-        return new D.TableCell({ children: ch, width: { size: 3300, type: D.WidthType.DXA } });
+        return new D.TableCell({ children: ch, width: { size: Math.floor(FULLW / 3), type: D.WidthType.DXA } });
       };
       const rowsP = []; for (let i = 0; i < pics.length; i += 3) rowsP.push(new D.TableRow({ children: [0, 1, 2].map((k) => picCell(pics[i + k])) }));
-      kids.push(new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, rows: rowsP }));
+      kids.push(new D.Table({ ...fixedW([0, 1, 2].map(() => Math.floor(FULLW / 3))), rows: rowsP }));
       kids.push(sub('D- Circle the odd word:'));
       V.filter((x) => x.kind === 'odd').forEach((it, n) => kids.push(P(`${n + 1}. ${it.options.join(' – ')}`)));
     }
