@@ -423,6 +423,7 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
         <button class="btn" id="pvBtn">👁 معاينة الملف</button>
         <button class="btn sec" id="pdfBtn">تنزيل PDF</button>
         <button class="btn sec" id="docBtn">تنزيل Word</button>
+        <button class="btn sec" id="copyBtn">نسخ</button>
         <label class="row muted" style="gap:5px"><input type="checkbox" id="withKey"> إرفاق نموذج الإجابة</label>
         <span style="flex:1"></span>
         <button class="btn sec sm" id="newBtn">↺ اختبار جديد</button>
@@ -442,6 +443,7 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
     <label class="row muted" style="gap:5px"><input type="checkbox" id="pvKey"> نموذج الإجابة</label>
     <button class="btn" id="pvPdf">تنزيل PDF</button>
     <button class="btn sec" id="pvDoc">تنزيل Word</button>
+    <button class="btn sec" id="pvCopy">نسخ</button>
     <button class="btn sec" id="pvClose">← رجوع للتحرير</button>
   </div>
   <div class="pv-body" id="pvBody"></div>
@@ -538,6 +540,7 @@ function initUI() {
   $('pvClose').onclick = closePreview;
   $('pdfBtn').onclick = $('pvPdf').onclick = exportPDF;
   $('docBtn').onclick = $('pvDoc').onclick = exportDOCX;
+  $('copyBtn').onclick = $('pvCopy').onclick = copyExam;
   $('withKey').onchange = () => { $('pvKey').checked = $('withKey').checked; if ($('pv').classList.contains('open')) renderPreview(); };
   $('pvKey').onchange = () => { $('withKey').checked = $('pvKey').checked; renderPreview(); };
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('pv').classList.contains('open')) closePreview(); });
@@ -1211,7 +1214,31 @@ window.addEventListener('resize', () => { if ($('pv').classList.contains('open')
 // ===================== التنزيل =====================
 function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
 function fileBase() { const m = EXAM.meta; return `Exam_${C[m.grade].name.replace(/\s+/g, '')}_T${m.term}`; }
-function busyBtns(on) { for (const id of ['pdfBtn', 'docBtn', 'pvPdf', 'pvDoc']) $(id).disabled = on; }
+function busyBtns(on) { for (const id of ['pdfBtn', 'docBtn', 'pvPdf', 'pvDoc', 'copyBtn', 'pvCopy']) $(id).disabled = on; }
+// نسخ الورقة إلى الحافظة (بتنسيقها وصورها) للصقها في Word أو Google Docs أو غيرهما
+async function copyExam() {
+  if (!EXAM) return;
+  const withKey = $('pv').classList.contains('open') ? $('pvKey').checked : $('withKey').checked;
+  const holder = document.createElement('div');
+  holder.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:#fff';
+  holder.innerHTML = `<div class="sheet${isAuto() ? ' auto' : ''}" dir="ltr">${paperHTML(withKey)}</div>`;
+  document.body.appendChild(holder);
+  const css = [...document.querySelectorAll('style')].map((x) => x.textContent).join('\n');
+  const html = `<html><head><meta charset="utf-8"><style>${css}</style></head><body>${holder.innerHTML}</body></html>`;
+  const text = holder.innerText.replace(/\n{3,}/g, '\n\n');
+  let ok = false;
+  try {
+    if (navigator.clipboard && window.ClipboardItem) {
+      await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([html], { type: 'text/html' }), 'text/plain': new Blob([text], { type: 'text/plain' }) })]);
+      ok = true;
+    }
+  } catch {}
+  if (!ok) { // متصفحات أقدم: تحديد الورقة ونسخها
+    try { const r = document.createRange(); r.selectNodeContents(holder); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); ok = document.execCommand('copy'); sel.removeAllRanges(); } catch {}
+  }
+  holder.remove();
+  toast(ok ? 'تم نسخ الاختبار — الصقه في Word أو Google Docs.' + (withKey ? ' (مع نموذج الإجابة)' : '') : 'تعذّر النسخ في هذا المتصفح — استخدم تنزيل Word.', 4000);
+}
 async function exportPDF() {
   if (!EXAM) return;
   busyBtns(true); toast('جارٍ تجهيز ملف PDF…', 8000);
