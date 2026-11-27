@@ -207,6 +207,7 @@ window.EXAM_CURRICULUM = {
 :root{--bg:#f3f5f8;--card:#fff;--ink:#1d2430;--mut:#667085;--acc:#0f766e;--acc-h:#0b5f58;--accs:#e7f5f3;--line:#e3e7ec;--warn:#b45309;--warns:#fff6e6;--bad:#b42318;--chip:#f1f4f7}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151b;--card:#1a2028;--ink:#e6e9ee;--mut:#9aa4b2;--acc:#2dd4bf;--acc-h:#5eead4;--accs:#143532;--line:#2a323d;--warns:#3a2a12;--chip:#222a33}}
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,"Segoe UI",Tahoma,sans-serif}
 .wrap{max-width:1180px;margin:0 auto;padding:16px 16px 90px}
 header.top{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:14px}
@@ -302,7 +303,13 @@ ul.pts li.no{color:var(--warn)}
 .pv-bar{background:var(--card);border-bottom:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .pv-bar h3{margin:0;font-size:16px;flex:1;min-width:120px}
 .pv-body{flex:1;overflow:auto;padding:18px 10px 40px}
-.pv-body .sheet{margin:0 auto 14px;box-shadow:0 4px 20px rgba(0,0,0,.35)}
+.pvwrap{position:relative;margin:0 auto 14px;direction:ltr;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.35);background:#fff}
+.pvwrap .sheet{position:absolute;top:0;left:0;margin:0;transform-origin:0 0;width:210mm;max-width:none}
+/* المعاينة بنفس كثافة PDF و Word */
+.sheet.pvsheet{font-size:12pt;line-height:1.28}
+.sheet.pvsheet.auto{font-size:10.5pt;line-height:1.2}
+.sheet.pvsheet .q{margin-top:8px}
+.sheet.pvsheet .pi{padding:1px 0}
 /* ===== ورقة الاختبار (للمعاينة والتصدير) ===== */
 .sheet{direction:ltr;text-align:left;background:#fff;color:#000;width:210mm;padding:10mm 12mm;font:12.5pt/1.45 Arial,"Helvetica Neue",sans-serif}
 .sheet *{color:#000}
@@ -1485,14 +1492,21 @@ async function exportDOCX() {
 }
 
 // ===================== المرحلة ٣: المعاينة =====================
+// المعاينة: الورقة تُرسم بعرض A4 الحقيقي ثم تُصغَّر كصورة (transform) لتناسب الشاشة —
+// فلا تتغير أحجام الخطوط ولا يعاد ترتيب النصوص على الجوال.
 function fitPreview() {
-  const body = $('pvBody'); const sh = body.querySelector('.sheet'); if (!sh) return;
-  const avail = body.clientWidth - 20; const w = sh.offsetWidth || 794;
-  sh.style.zoom = avail < w ? (avail / w).toFixed(3) : '';
+  const body = $('pvBody'); const wrap = body.querySelector('.pvwrap'); const sh = wrap && wrap.querySelector('.sheet'); if (!sh) return;
+  const w = sh.offsetWidth || 794;
+  const s = Math.min(1, (body.clientWidth - 24) / w);
+  sh.style.transform = s < 1 ? `scale(${s})` : '';
+  wrap.style.width = Math.round(w * s) + 'px';
+  wrap.style.height = Math.ceil(sh.offsetHeight * s) + 'px';
 }
 function renderPreview() {
-  $('pvBody').innerHTML = `<div class="sheet${isAuto() ? ' auto' : ''}">${paperHTML($('pvKey').checked)}</div>`;
+  $('pvBody').innerHTML = `<div class="pvwrap"><div class="sheet pvsheet${isAuto() ? ' auto' : ''}" dir="ltr">${paperHTML($('pvKey').checked)}</div></div>`;
   fitPreview();
+  $('pvBody').querySelectorAll('img').forEach((im) => { if (!im.complete) im.addEventListener('load', fitPreview, { once: true }); });
+  setTimeout(fitPreview, 250);
 }
 function openPreview() {
   if (!EXAM) return;
