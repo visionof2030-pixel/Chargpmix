@@ -204,157 +204,210 @@ window.EXAM_CURRICULUM = {
 
 </script>
 <style>
-:root{--bg:#f4f6f8;--card:#fff;--ink:#1d2430;--mut:#667085;--acc:#0f766e;--acc2:#0d9488;--line:#e3e7ec;--warn:#b45309;--bad:#b42318;--soft:#eef7f6}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--card:#1b2129;--ink:#e6e9ee;--mut:#9aa4b2;--acc:#2dd4bf;--acc2:#14b8a6;--line:#2a323d;--soft:#16302d}}
+:root{--bg:#f3f5f8;--card:#fff;--ink:#1d2430;--mut:#667085;--acc:#0f766e;--acc-h:#0b5f58;--accs:#e7f5f3;--line:#e3e7ec;--warn:#b45309;--warns:#fff6e6;--bad:#b42318;--chip:#f1f4f7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151b;--card:#1a2028;--ink:#e6e9ee;--mut:#9aa4b2;--acc:#2dd4bf;--acc-h:#5eead4;--accs:#143532;--line:#2a323d;--warns:#3a2a12;--chip:#222a33}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,"Segoe UI",Tahoma,sans-serif}
-.wrap{max-width:1180px;margin:0 auto;padding:16px}
-header.top{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:12px}
-header.top h1{font-size:20px;margin:0}
-header.top a{color:var(--acc);text-decoration:none;font-size:14px}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 16px 90px}
+header.top{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:14px}
+header.top h1{font-size:19px;margin:0;line-height:1.35}
+header.top a{color:var(--acc);text-decoration:none;font-size:14px;white-space:nowrap}
+.steps{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.steps span{font-size:13px;padding:4px 12px;border-radius:999px;background:var(--chip);color:var(--mut)}
+.steps span.on{background:var(--acc);color:#fff}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
-.card h2{font-size:16px;margin:0 0 10px}
+.card h2{font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.card h2 .mk{font-size:12px;font-weight:600;background:var(--accs);color:var(--acc);border-radius:999px;padding:1px 10px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
 label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut)}
-select,input[type=text]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:7px 9px;min-width:0}
+select,input[type=text],textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:7px 9px;min-width:0;width:100%}
+textarea{resize:vertical;line-height:1.55}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--acc);outline-offset:-1px}
+.en{direction:ltr;text-align:left}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
-.seg button{font:inherit;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}
+.seg button{font:inherit;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:5px 14px;cursor:pointer}
 .seg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
 .units{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.units label{display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:9px;padding:4px 9px;font-size:13px;cursor:pointer;direction:ltr}
-.btn{font:inherit;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;background:var(--acc);color:#fff;font-weight:600}
-.btn.sec{background:var(--bg);color:var(--ink);border:1px solid var(--line);font-weight:500}
+.units label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:9px;padding:4px 10px;font-size:13px;cursor:pointer;direction:ltr;background:var(--bg)}
+.btn{font:inherit;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;background:var(--acc);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{background:var(--acc-h)}
+.btn.sec{background:var(--card);color:var(--ink);border:1px solid var(--line);font-weight:500}
+.btn.sec:hover{background:var(--chip)}
+.btn.sm{padding:4px 10px;font-size:13px;border-radius:8px}
 .btn:disabled{opacity:.5;cursor:default}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .muted{color:var(--mut);font-size:13px}
 .gate{text-align:center;padding:40px 16px}
-.prog{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.prog span{font-size:12px;border-radius:999px;padding:2px 10px;background:var(--bg);border:1px solid var(--line)}
-.prog span.ok{background:var(--soft);border-color:var(--acc);color:var(--acc)}
-.prog span.err{border-color:var(--bad);color:var(--bad)}
+.prog{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.prog span{font-size:12px;border-radius:999px;padding:2px 10px;background:var(--chip)}
+.prog span.ok{background:var(--accs);color:var(--acc)}
+.prog span.err{color:var(--bad)}
+.toolbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);padding:8px 0;margin-bottom:6px}
+.toolbar .card{margin:0;padding:10px 12px}
+@media (max-width:700px){
+  .toolbar{position:static}
+  .toolbar .card{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .toolbar .btn{padding:7px 6px;font-size:13px;justify-content:center}
+  .toolbar #pvBtn{grid-column:1/-1}
+  .toolbar label{grid-column:1/3}
+  .toolbar span[style]{display:none}
+  .pv-bar{padding:8px 10px;gap:6px}
+  .pv-bar .btn{padding:7px 10px;font-size:13px}
+  .pv-bar h3{flex-basis:100%;order:-1}
+}
 .layout{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
-@media (min-width:1100px){.layout{grid-template-columns:minmax(0,1fr) 300px}}
-.side .card{position:sticky;top:10px}
+@media (min-width:1050px){.layout{grid-template-columns:minmax(0,1fr) 300px}.side .card{position:sticky;top:76px}}
+/* بطاقات التحرير */
+.sub{font-weight:700;font-size:14px;margin:14px 0 6px;color:var(--mut)}
+.it{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:var(--bg)}
+.it.warn{border-color:#e8a33d;background:var(--warns)}
+.it-h{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
+.tag{font-size:12px;color:var(--mut);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag b{color:var(--acc);font-weight:600}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;margin-top:6px;direction:ltr}
+.opt{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:9px;padding:2px 6px 2px 8px;background:var(--card)}
+.opt.ok{border-color:var(--acc);background:var(--accs)}
+.opt input[type=text]{border:0;background:transparent;padding:5px 2px}
+.opt input[type=radio]{accent-color:var(--acc);width:17px;height:17px;flex:none;margin:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:6px;direction:ltr}
+.tf{display:flex;gap:6px;align-items:center;direction:ltr}
+.tf .seg button{padding:3px 12px}
+.iconbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;width:30px;height:28px;cursor:pointer;flex:none;font-size:14px}
+.iconbtn:hover{background:var(--accs);color:var(--acc)}
+.busy{opacity:.45;pointer-events:none}
+/* بطاقات الصور */
+.pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.pc{border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden;display:flex;flex-direction:column}
+.pc .drop{aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:var(--bg);border-bottom:1px dashed var(--line);color:var(--mut);text-align:center;padding:8px;position:relative}
+.pc .drop:hover,.pc .drop.over{background:var(--accs);color:var(--acc)}
+.pc .drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff}
+.pc .drop svg{width:30px;height:30px}
+.pc .drop .w{font-weight:700;color:var(--ink);direction:ltr;font-size:15px}
+.pc .meta{padding:8px;display:flex;flex-direction:column;gap:6px}
+.pc .meta .row{gap:4px}
+.pc .meta .btn{flex:1;justify-content:center}
+.pc .lbl{font-size:12px;color:var(--mut)}
+.pc .done{position:absolute;top:6px;left:6px;background:var(--acc);color:#fff;border-radius:999px;font-size:11px;padding:1px 8px;z-index:2}
+/* تقرير الشمول */
 table.cov{width:100%;border-collapse:collapse;font-size:13px}
 table.cov th,table.cov td{border-bottom:1px solid var(--line);padding:4px;text-align:center}
 table.cov td:first-child,table.cov th:first-child{text-align:right}
-ul.pts{list-style:none;margin:6px 0 0;padding:0;font-size:12.5px;direction:ltr;text-align:left}
+ul.pts{list-style:none;margin:6px 0 0;padding:0;font-size:12.5px;direction:ltr;text-align:left;max-height:320px;overflow:auto}
 ul.pts li{padding:2px 0}
 ul.pts li.no{color:var(--warn)}
-.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1d2430;color:#fff;padding:9px 16px;border-radius:10px;font-size:14px;z-index:50;display:none;max-width:90vw}
-
-/* ===== ورقة الاختبار ===== */
-.paperbox{overflow-x:auto}
-#paper{direction:ltr;text-align:left;background:#fff;color:#000;width:210mm;max-width:100%;margin:0 auto;padding:10mm 12mm;font:12.5pt/1.45 Arial,"Helvetica Neue",sans-serif;box-shadow:0 1px 6px rgba(0,0,0,.12)}
-#paper *{color:#000}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1d2430;color:#fff;padding:9px 16px;border-radius:10px;font-size:14px;z-index:90;display:none;max-width:90vw}
+/* المعاينة */
+.pv{position:fixed;inset:0;z-index:60;background:rgba(15,20,28,.72);display:none;flex-direction:column}
+.pv.open{display:flex}
+.pv-bar{background:var(--card);border-bottom:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pv-bar h3{margin:0;font-size:16px;flex:1;min-width:120px}
+.pv-body{flex:1;overflow:auto;padding:18px 10px 40px}
+.pv-body .sheet{margin:0 auto 14px;box-shadow:0 4px 20px rgba(0,0,0,.35)}
+/* ===== ورقة الاختبار (للمعاينة والتصدير) ===== */
+.sheet{direction:ltr;text-align:left;background:#fff;color:#000;width:210mm;padding:10mm 12mm;font:12.5pt/1.45 Arial,"Helvetica Neue",sans-serif}
+.sheet *{color:#000}
 .ph{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:start;font-size:10pt;line-height:1.35}
 .ph .r{text-align:right}
-.ph .mid{text-align:center;font-size:10pt}
 table.marks{border-collapse:collapse;margin:2px auto 0;font-size:9pt}
 table.marks td{border:1px solid #000;padding:1px 4px;text-align:center;min-width:26px}
 .sname{margin:8px 0 4px;font-size:10.5pt;white-space:nowrap;overflow:hidden;border-bottom:1.5px solid #000;padding-bottom:6px}
-.q{margin-top:12px;break-inside:auto}
-.qhead{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #000;margin-bottom:6px;break-after:avoid;page-break-after:avoid}
+.q{margin-top:12px}
+.qhead{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #000;margin-bottom:6px;break-after:avoid;page-break-after:avoid}
 .qhead b{font-size:13pt}
 .qmark{border:1.5px solid #000;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:700}
 .qtitle{text-align:center;font-weight:700;margin:2px 0 6px}
-.sub{font-weight:700;margin:8px 0 3px}
-.item{position:relative;padding:2px 26px 2px 0;break-inside:avoid;page-break-inside:avoid}
-.opts{margin-left:16px}
+.s-sub{font-weight:700;margin:8px 0 3px;break-after:avoid;page-break-after:avoid}
+.pi{padding:2px 0;break-inside:avoid;page-break-inside:avoid}
+.popts{margin-left:16px}
 .passage{border:1px solid #000;padding:6px 9px;margin:4px 0 8px;text-align:justify}
+.passage p{margin:0 0 4px}
 .dots{border-bottom:1px dotted #000;height:22px;margin:2px 0}
 .box{border:1px solid #000;padding:5px 9px;text-align:center;margin:4px 0 8px}
 .match{display:grid;grid-template-columns:1fr 1fr;gap:2px 30px;margin-left:12px}
-.pics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0}
-.pic{border:1px solid #000;height:110px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;cursor:pointer}
-.pic img{max-width:100%;max-height:100%}
-.pic .ph-t{font-size:10pt;color:#888 !important;font-family:system-ui,Tahoma,sans-serif;direction:rtl}
-.pic + .dots{margin-top:0}
-.picwrap .dots{margin-top:4px}
+.ppics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0}
+.ppic{break-inside:avoid;page-break-inside:avoid}
+.ppic .frame{border:1px solid #000;height:110px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ppic .frame img{max-width:100%;max-height:100%}
 .foot{text-align:right;margin-top:14px;font-style:italic}
-.tools{position:absolute;right:0;top:2px;display:flex;gap:2px}
-.tools button{border:0;background:#eef7f6;border-radius:6px;width:22px;height:22px;cursor:pointer;font-size:12px;line-height:22px;padding:0}
-.tools button:hover{background:#c7ece7}
-.qtools{display:flex;gap:4px}
-.qtools button{border:1px solid #cfe9e5;background:#eef7f6;border-radius:6px;padding:0 7px;font:12px system-ui,Tahoma,sans-serif;cursor:pointer;direction:rtl}
-[contenteditable]{outline:none;border-radius:3px}
-[contenteditable]:hover{background:#fffbe6}
-[contenteditable]:focus{background:#fff4c2}
-.warn{outline:2px dashed #e8a33d;outline-offset:2px}
-.busy{opacity:.45}
-.key{margin-top:18px;border-top:2px solid #000;padding-top:8px}
-.key h3{text-align:center;margin:0 0 6px}
-.key .opt{display:inline-block;border:1px solid #bbb;border-radius:5px;padding:0 6px;margin:1px 2px;cursor:pointer}
-.key .opt.on{background:#d1fadf;border-color:#12b76a;font-weight:700}
+.key{margin-top:4px}
+.key h3{text-align:center;margin:0 0 8px}
+.key .k{font-size:11pt;padding:1px 0}
 .pbreak{break-before:page;page-break-before:always}
-body.exporting .tools,body.exporting .qtools,body.exporting .ph-t{display:none !important}
-body.exporting [contenteditable]{background:none !important}
-body.exporting .warn{outline:none}
-@media print{
-  body{background:#fff}
-  .noprint{display:none !important}
-  .wrap{padding:0;max-width:none}
-  #paper{box-shadow:none;width:auto;padding:0}
-  .tools,.qtools,.ph-t{display:none !important}
-  @page{size:A4;margin:10mm}
-}
+.sheet.exp{width:194mm;padding:0 1mm}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="top noprint">
+  <header class="top">
     <h1>صانع الاختبارات النهائية — الإنجليزي (متوسط)</h1>
-    <a href="./">← العودة لإنجاز</a>
+    <a href="./">→ العودة لإنجاز</a>
   </header>
-
   <div id="gate" class="card gate">جارٍ التحقق من تسجيل الدخول…</div>
 
   <div id="app" hidden>
-    <div class="card noprint">
-      <h2>إعداد الاختبار</h2>
-      <div class="grid">
-        <label class="f">الصف
-          <select id="grade"><option value="sg1">أول متوسط — Super Goal 1</option><option value="sg2">ثاني متوسط — Super Goal 2</option><option value="sg3">ثالث متوسط — Super Goal 3</option></select>
-        </label>
-        <label class="f">الفصل الدراسي
-          <select id="term"><option value="1">الأول</option><option value="2">الثاني</option></select>
-        </label>
-        <label class="f">اسم المدرسة<input type="text" id="school" placeholder="Intermediate School"></label>
-        <label class="f">اسم المعلم/ة (أسفل الورقة)<input type="text" id="teacher" placeholder="By: ..."></label>
-        <label class="f">العام<input type="text" id="year" value="1447"></label>
-        <label class="f">الزمن<input type="text" id="time" value="1.5 hours"></label>
-      </div>
-      <div style="margin-top:10px">
-        <div class="muted">الوحدات المشمولة (تلقائياً حسب الفصل، ويمكنك التعديل):</div>
-        <div class="units" id="units"></div>
-      </div>
-      <div class="grid" style="margin-top:10px">
-        <div><div class="muted">مستوى الصعوبة</div><div class="seg" id="diff"><button data-v="easy">سهل</button><button data-v="medium" class="on">متوسط</button><button data-v="hard">صعب</button></div></div>
-        <div><div class="muted">نوع سؤال التعبير</div><div class="seg" id="cmode"><button data-v="guided" class="on">أسئلة موجّهة</button><button data-v="wordbox">إكمال من صندوق كلمات</button></div></div>
-      </div>
-      <div class="row" style="margin-top:12px">
-        <button class="btn" id="genBtn">توليد الاختبار</button>
-        <span class="muted" id="genHint">يستغرق عادةً ٢٠–٤٠ ثانية.</span>
-      </div>
-      <div class="prog" id="prog"></div>
-    </div>
+    <div class="steps"><span id="st1" class="on">١ الإعداد</span><span id="st2">٢ التحرير</span><span id="st3">٣ المعاينة والتنزيل</span></div>
 
-    <div id="result" hidden>
-      <div class="card noprint">
-        <div class="row">
-          <button class="btn" id="pdfBtn">تنزيل PDF</button>
-          <button class="btn" id="docBtn">تنزيل Word</button>
-          <label class="row muted" style="gap:5px"><input type="checkbox" id="withKey"> إرفاق نموذج الإجابة</label>
-          <button class="btn sec" id="printBtn">طباعة</button>
+    <!-- ===== المرحلة ١: الإعداد ===== -->
+    <section id="setup">
+      <div class="card">
+        <h2>إعداد الاختبار</h2>
+        <div class="grid">
+          <label class="f">الصف
+            <select id="grade"><option value="sg1">أول متوسط — Super Goal 1</option><option value="sg2">ثاني متوسط — Super Goal 2</option><option value="sg3">ثالث متوسط — Super Goal 3</option></select>
+          </label>
+          <label class="f">الفصل الدراسي
+            <select id="term"><option value="1">الأول</option><option value="2">الثاني</option></select>
+          </label>
+          <label class="f">اسم المدرسة<input type="text" id="school" placeholder="Intermediate School"></label>
+          <label class="f">اسم المعلم/ة (أسفل الورقة)<input type="text" id="teacher" placeholder="By: ..."></label>
+          <label class="f">العام<input type="text" id="year" value="1447"></label>
+          <label class="f">الزمن<input type="text" id="time" value="1.5 hours" class="en"></label>
         </div>
-        <div class="muted" style="margin-top:6px">اضغط على أي نص في الورقة لتعديله. زر ↻ يعيد توليد فقرة واحدة، وفي الصور اضغط المربع لرفع صورة. لتغيير الإجابة الصحيحة استخدم نموذج الإجابة أسفل الورقة.</div>
+        <div style="margin-top:12px">
+          <div class="muted">الوحدات المشمولة (تلقائياً حسب الفصل، ويمكنك التعديل):</div>
+          <div class="units" id="units"></div>
+        </div>
+        <div class="grid" style="margin-top:12px">
+          <div><div class="muted">مستوى الصعوبة</div><div class="seg" id="diff"><button data-v="easy">سهل</button><button data-v="medium" class="on">متوسط</button><button data-v="hard">صعب</button></div></div>
+          <div><div class="muted">نوع سؤال التعبير</div><div class="seg" id="cmode"><button data-v="guided" class="on">أسئلة موجّهة</button><button data-v="wordbox">إكمال من صندوق كلمات</button></div></div>
+        </div>
+        <div class="row" style="margin-top:14px">
+          <button class="btn" id="genBtn">توليد الاختبار</button>
+          <button class="btn sec" id="backEdit" hidden>متابعة تحرير الاختبار الحالي</button>
+          <span class="muted">يستغرق عادةً ٢٠–٤٠ ثانية.</span>
+        </div>
+        <div class="prog" id="prog"></div>
       </div>
+    </section>
+
+    <!-- ===== المرحلة ٢: التحرير ===== -->
+    <section id="editor" hidden>
+      <div class="toolbar"><div class="card row">
+        <button class="btn" id="pvBtn">👁 معاينة الملف</button>
+        <button class="btn sec" id="pdfBtn">تنزيل PDF</button>
+        <button class="btn sec" id="docBtn">تنزيل Word</button>
+        <label class="row muted" style="gap:5px"><input type="checkbox" id="withKey"> إرفاق نموذج الإجابة</label>
+        <span style="flex:1"></span>
+        <button class="btn sec sm" id="newBtn">↺ اختبار جديد</button>
+      </div></div>
       <div class="layout">
-        <div class="paperbox"><div id="paper"></div></div>
-        <div class="side noprint"><div class="card" id="coverage"></div></div>
+        <div id="edBody"></div>
+        <div class="side"><div class="card" id="coverage"></div></div>
       </div>
-    </div>
+    </section>
   </div>
+</div>
+
+<!-- ===== المعاينة ===== -->
+<div class="pv" id="pv">
+  <div class="pv-bar">
+    <h3>معاينة الملف</h3>
+    <label class="row muted" style="gap:5px"><input type="checkbox" id="pvKey"> نموذج الإجابة</label>
+    <button class="btn" id="pvPdf">تنزيل PDF</button>
+    <button class="btn sec" id="pvDoc">تنزيل Word</button>
+    <button class="btn sec" id="pvClose">← رجوع للتحرير</button>
+  </div>
+  <div class="pv-body" id="pvBody"></div>
 </div>
 <input type="file" id="picFile" accept="image/*" hidden>
 <div class="toast" id="toast"></div>
@@ -371,15 +424,15 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const DRAFT_KEY = 'enjaz_exam_draft_v1';
 const PREF_KEY = 'enjaz_exam_prefs_v1';
 const GRADE_EN = { sg1: 'First Intermediate Grade', sg2: 'Second Intermediate Grade', sg3: 'Third Intermediate Grade' };
-const MARKS = { composition: 8, reading: 9, grammar: 9, vocab: 9, spelling: 5 };
-let EXAM = null; // نموذج الاختبار الحالي
+const L = 'abcd';
+let EXAM = null;
 
 function toast(msg, ms = 3200) { const t = $('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(toast._t); toast._t = setTimeout(() => { t.style.display = 'none'; }, ms); }
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } }
 
-// ===================== الدخول: نفس حساب إنجاز، للمالك فقط =====================
+// ===================== الدخول =====================
 async function gate() {
   const { data } = await sb.auth.getSession();
   const email = String(data?.session?.user?.email || '').toLowerCase();
@@ -388,6 +441,14 @@ async function gate() {
   if (!C) { $('gate').textContent = 'تعذّر تحميل المنهج — حدّث الصفحة.'; return; }
   $('gate').hidden = true; $('app').hidden = false;
   initUI();
+}
+
+// ===================== المراحل =====================
+function showStep(n) {
+  $('setup').hidden = n !== 1; $('editor').hidden = n !== 2;
+  $('st1').classList.toggle('on', n === 1); $('st2').classList.toggle('on', n === 2); $('st3').classList.remove('on');
+  $('backEdit').hidden = !(n === 1 && EXAM);
+  window.scrollTo(0, 0);
 }
 
 // ===================== الإعدادات =====================
@@ -415,20 +476,25 @@ function initUI() {
   const sp = lsGet(PREF_KEY) || {};
   for (const k of ['grade', 'term', 'school', 'teacher', 'year', 'time']) if (sp[k]) $(k).value = sp[k];
   for (const id of ['diff', 'cmode']) {
-    const v = sp[id === 'diff' ? 'diff' : 'cmode'];
+    const v = sp[id];
     if (v) document.querySelectorAll('#' + id + ' button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
     $(id).addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $(id).querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); savePrefs(); });
   }
   renderUnits();
   $('grade').onchange = $('term').onchange = () => { renderUnits(); savePrefs(); };
-  for (const k of ['school', 'teacher', 'year', 'time']) $(k).addEventListener('input', () => { savePrefs(); if (EXAM) { Object.assign(EXAM.meta, { [k]: $(k).value.trim() }); renderPaper(); } });
+  for (const k of ['school', 'teacher', 'year', 'time']) $(k).addEventListener('input', () => { savePrefs(); if (EXAM) { EXAM.meta[k] = $(k).value.trim(); saveDraft(); } });
   $('genBtn').onclick = generate;
-  $('pdfBtn').onclick = exportPDF;
-  $('docBtn').onclick = exportDOCX;
-  $('printBtn').onclick = () => { renderPaper(); setTimeout(() => window.print(), 50); };
-  $('withKey').onchange = renderPaper;
+  $('backEdit').onclick = () => showStep(2);
+  $('newBtn').onclick = () => showStep(1);
+  $('pvBtn').onclick = openPreview;
+  $('pvClose').onclick = closePreview;
+  $('pdfBtn').onclick = $('pvPdf').onclick = exportPDF;
+  $('docBtn').onclick = $('pvDoc').onclick = exportDOCX;
+  $('withKey').onchange = () => { $('pvKey').checked = $('withKey').checked; if ($('pv').classList.contains('open')) renderPreview(); };
+  $('pvKey').onchange = () => { $('withKey').checked = $('pvKey').checked; renderPreview(); };
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('pv').classList.contains('open')) closePreview(); });
   const d = lsGet(DRAFT_KEY);
-  if (d && d.v === 1) { EXAM = d; showResult(); toast('تم استرجاع آخر اختبار عملت عليه.'); }
+  if (d && d.v === 1) { EXAM = d; renderEditor(); showStep(2); toast('تم استرجاع آخر اختبار عملت عليه.'); }
 }
 function savePrefs() { lsSet(PREF_KEY, prefs()); }
 function saveDraft() {
@@ -436,11 +502,11 @@ function saveDraft() {
   if (!lsSet(DRAFT_KEY, EXAM)) {
     const lite = JSON.parse(JSON.stringify(EXAM)); (lite.vocab || []).forEach((it) => { if (it.img) it.img = ''; });
     lsSet(DRAFT_KEY, lite);
+    toast('الصور كبيرة على الحفظ التلقائي — ستبقى في الصفحة حتى تغلقها.');
   }
 }
 
 // ===================== مخطط الشمول =====================
-// كل فقرة تُربط مسبقاً بوحدة وقاعدة أو كلمة، بالتناوب على الوحدات، فلا تتكدس الأسئلة في وحدة واحدة.
 function roundRobin(units, listOf, n, used) {
   const pools = units.map((u) => ({ u, list: shuffle(listOf(u)).filter((x) => !used || !used.has(x.toLowerCase())) }));
   const out = []; let guard = 0;
@@ -453,19 +519,14 @@ function roundRobin(units, listOf, n, used) {
       out.push({ unit: p.u.u, unitTitle: p.u.title, target: x, words: p.u.vocab.slice(0, 25) });
       added = true;
     }
-    if (!added) { // نفدت القوائم: إعادة استخدام (للقواعد فقط)
-      if (used) break;
-      pools.forEach((p) => { p.list = shuffle(listOf(p.u)); });
-    }
+    if (!added) { if (used) break; pools.forEach((p) => { p.list = shuffle(listOf(p.u)); }); }
   }
   return out;
 }
 function buildBlueprint(units) {
   const g = roundRobin(units, (u) => u.grammar, 14);
-  // فقرات «افعل كما هو مطلوب» موزعة على المخطط لا متجمعة في آخره
   const doIdx = new Set([1, 5, 9, 12]);
   const grammar = g.map((s, i) => ({ ...s, kind: doIdx.has(i) ? 'do' : 'mcq' }));
-  const mcq = grammar.filter((x) => x.kind === 'mcq'); const doo = grammar.filter((x) => x.kind === 'do');
   const used = new Set();
   const single = (u) => u.vocab.filter((w) => /^[a-z]{4,}$/i.test(w));
   const spelling = roundRobin(units, single, 10, used).map((s) => ({ ...s, kind: 'spell' }));
@@ -475,7 +536,7 @@ function buildBlueprint(units) {
   const order = shuffle(units);
   const ru = order[0]; const cu = order[1] || order[0];
   return {
-    grammar: [...mcq, ...doo], vocab, spelling,
+    grammar: [...grammar.filter((x) => x.kind === 'mcq'), ...grammar.filter((x) => x.kind === 'do')], vocab, spelling,
     reading: { kind: 'reading', unit: ru.u, unitTitle: ru.title, target: ru.reading, words: ru.vocab.slice(0, 25) },
     composition: { kind: 'composition', unit: cu.u, unitTitle: cu.title, target: cu.writing, words: cu.vocab.slice(0, 20) },
   };
@@ -501,6 +562,7 @@ function normMCQ(raw, spec, n = 4) {
   let ans = options.findIndex((o) => o.toLowerCase() === ansText.toLowerCase());
   const ok = options.length === n && ans >= 0;
   if (ok) { const correct = options[ans]; options = shuffle(options); ans = options.indexOf(correct); }
+  while (options.length < n) options.push('');
   return { ...spec, stem: norm(raw?.stem || raw?.q), options, ans: Math.max(0, ans), warn: !ok };
 }
 function normGrammar(raw, spec) {
@@ -514,8 +576,9 @@ function normVocab(raw, spec) {
 }
 function normSpell(raw, spec) {
   const choices = (Array.isArray(raw?.choices) ? raw.choices : []).map((c) => norm(c).slice(0, 2)).filter(Boolean).slice(0, 3);
-  let ans = choices.findIndex((c) => c.toLowerCase() === norm(raw?.answer).toLowerCase());
+  const ans = choices.findIndex((c) => c.toLowerCase() === norm(raw?.answer).toLowerCase());
   const ok = choices.length === 3 && ans >= 0 && /_/.test(raw?.sentence || '');
+  while (choices.length < 3) choices.push('');
   return { ...spec, word: norm(raw?.word || spec.target), sentence: norm(raw?.sentence), choices, ans: Math.max(0, ans), warn: !ok };
 }
 function normReading(d, spec) {
@@ -532,19 +595,19 @@ function setProg(states) {
   const names = { composition: 'التعبير', reading: 'القراءة', grammar: 'القواعد', vocab: 'المفردات', spelling: 'الإملاء' };
   $('prog').innerHTML = Object.entries(states).map(([k, s]) => `<span class="${s}">${names[k]} ${s === 'ok' ? '✓' : s === 'err' ? '✗' : '…'}</span>`).join('');
 }
+const readingWords = (d) => (d === 'easy' ? 100 : d === 'hard' ? 150 : 125);
 async function generate() {
   const units = selectedUnits();
   if (!units.length) { toast('اختر وحدة واحدة على الأقل'); return; }
   const p = prefs(); savePrefs();
   const bp = buildBlueprint(units);
   const grammarCtx = units.flatMap((u) => u.grammar).join('; ');
-  EXAM = { v: 1, meta: { ...p, units: units.map((u) => u.u) }, grammar: [], vocab: [], spelling: [], reading: null, composition: null };
+  EXAM = { v: 1, meta: { ...p, units: units.map((u) => u.u) }, grammar: [], vocab: [], spelling: [], reading: null, composition: null, bp };
   const st = { composition: '', reading: '', grammar: '', vocab: '', spelling: '' }; setProg(st);
-  $('genBtn').disabled = true;
-  const words = p.diff === 'easy' ? 100 : p.diff === 'hard' ? 150 : 125;
+  $('genBtn').disabled = true; $('genBtn').textContent = 'جارٍ التوليد…';
   const jobs = {
     composition: () => callSection('composition', [bp.composition], { mode: p.cmode }).then((r) => { EXAM.composition = normComposition(r.data, bp.composition); }),
-    reading: () => callSection('reading', [bp.reading], { words, grammar: grammarCtx }).then((r) => { EXAM.reading = normReading(r.data, bp.reading); }),
+    reading: () => callSection('reading', [bp.reading], { words: readingWords(p.diff), grammar: grammarCtx }).then((r) => { EXAM.reading = normReading(r.data, bp.reading); }),
     grammar: () => callSection('grammar', bp.grammar).then((r) => { EXAM.grammar = bp.grammar.map((s, i) => normGrammar((r.items || [])[i], s)); }),
     vocab: () => callSection('vocab', bp.vocab).then((r) => { EXAM.vocab = bp.vocab.map((s, i) => normVocab((r.items || [])[i], s)); }),
     spelling: () => callSection('spelling', bp.spelling).then((r) => { EXAM.spelling = bp.spelling.map((s, i) => normSpell((r.items || [])[i], s)); }),
@@ -555,177 +618,120 @@ async function generate() {
       try { await fn(); st[k] = 'ok'; setProg(st); return; } catch (e) { if (attempt === 1) { st[k] = 'err'; setProg(st); errors.push(e.message); } }
     }
   }));
-  $('genBtn').disabled = false;
-  EXAM.bp = bp; // للإعادة لاحقاً للأقسام التي فشلت
-  if (errors.length) toast('بعض الأقسام لم تُولَّد: ' + errors[0] + ' — استخدم زر «إعادة توليد القسم».', 6000);
-  showResult(); saveDraft();
-}
-function showResult() {
-  $('result').hidden = false;
-  for (const k of ['school', 'teacher', 'year', 'time']) if (EXAM.meta[k] !== undefined && document.activeElement !== $(k)) $(k).value = EXAM.meta[k];
-  renderPaper();
+  $('genBtn').disabled = false; $('genBtn').textContent = 'توليد الاختبار';
+  if (errors.length) toast('بعض الأقسام لم تُولَّد: ' + errors[0] + ' — استخدم زر «↻ القسم».', 6000);
+  saveDraft(); renderEditor(); showStep(2);
 }
 
-// إعادة توليد فقرة واحدة أو قسم كامل
 async function regen(section, idx) {
   const p = EXAM.meta; const units = C[p.grade].units.filter((u) => p.units.includes(u.u));
-  const host = document.querySelector(`[data-sec="${section}"]${idx != null ? `[data-i="${idx}"]` : ''}`);
+  const host = idx != null ? document.querySelector(`.it[data-sec="${section}"][data-i="${idx}"], .pc[data-i="${idx}"]`) : $('sec-' + section);
   host?.classList.add('busy');
   try {
+    const f = section === 'grammar' ? normGrammar : section === 'vocab' ? normVocab : normSpell;
     if (section === 'reading' || section === 'composition') {
-      const spec = EXAM[section] ? { kind: section, unit: EXAM[section].unit, unitTitle: EXAM[section].unitTitle, target: EXAM[section].target, words: EXAM[section].words } : (EXAM.bp ? EXAM.bp[section] : buildBlueprint(units)[section]);
-      const r = await callSection(section, [spec], section === 'reading' ? { words: p.diff === 'easy' ? 100 : p.diff === 'hard' ? 150 : 125, grammar: units.flatMap((u) => u.grammar).join('; ') } : { mode: p.cmode });
+      const cur = EXAM[section];
+      const spec = cur ? { kind: section, unit: cur.unit, unitTitle: cur.unitTitle, target: cur.target, words: cur.words } : (EXAM.bp || buildBlueprint(units))[section];
+      const r = await callSection(section, [spec], section === 'reading' ? { words: readingWords(p.diff), grammar: units.flatMap((u) => u.grammar).join('; ') } : { mode: p.cmode });
       EXAM[section] = section === 'reading' ? normReading(r.data, spec) : normComposition(r.data, spec);
     } else if (idx == null) {
-      const specs = (EXAM[section] && EXAM[section].length ? EXAM[section] : (EXAM.bp || buildBlueprint(units))[section]).map(({ kind, unit, unitTitle, target, words }) => ({ kind, unit, unitTitle, target, words }));
+      const src = EXAM[section] && EXAM[section].length ? EXAM[section] : (EXAM.bp || buildBlueprint(units))[section];
+      const specs = src.map(({ kind, unit, unitTitle, target, words }) => ({ kind, unit, unitTitle, target, words }));
       const r = await callSection(section, specs);
-      const f = section === 'grammar' ? normGrammar : section === 'vocab' ? normVocab : normSpell;
-      EXAM[section] = specs.map((s, i) => { const n = f((r.items || [])[i], s); if (section === 'vocab' && EXAM[section]?.[i]?.img && s.kind === 'picture') n.img = EXAM[section][i].img; return n; });
+      const old = EXAM[section] || [];
+      EXAM[section] = specs.map((s, i) => { const n = f((r.items || [])[i], s); if (old[i]?.img && s.kind === 'picture') { n.img = old[i].img; n.word = old[i].word; } return n; });
     } else {
       const old = EXAM[section][idx];
       const spec = { kind: old.kind, unit: old.unit, unitTitle: old.unitTitle, target: old.target, words: old.words };
       const r = await callSection(section, [spec]);
-      const f = section === 'grammar' ? normGrammar : section === 'vocab' ? normVocab : normSpell;
-      const n = f((r.items || [])[0], spec); if (old.img) n.img = old.img;
-      EXAM[section][idx] = n;
+      EXAM[section][idx] = f((r.items || [])[0], spec);
     }
-    saveDraft(); renderPaper();
+    saveDraft(); renderEditor();
   } catch (e) { toast(e.message); host?.classList.remove('busy'); }
 }
 
-// ===================== عرض الورقة =====================
-function ed(path, text, tag = 'span') { return `<${tag} contenteditable="true" spellcheck="false" data-p="${path}">${esc(text)}</${tag}>`; }
-const L = 'abcd';
-function qhead(n, name, sec, mark) {
-  return `<div class="qhead"><b>Q${n} / ${name}</b><span class="qtools"><button data-regen="${sec}" title="إعادة توليد القسم">↻ القسم</button></span><span class="qmark">${mark}</span></div>`;
+// ===================== المرحلة ٢: بطاقات التحرير =====================
+const inp = (path, val, ph = '', cls = 'en') => `<input type="text" class="${cls}" data-p="${path}" value="${esc(val)}" placeholder="${esc(ph)}">`;
+const area = (path, val, rows = 3) => `<textarea class="en" rows="${rows}" data-p="${path}">${esc(val)}</textarea>`;
+const tagOf = (it) => it && it.unit ? `<span class="tag" title="${esc(it.target)}"><b>U${it.unit}</b> · ${esc(it.target)}</span>` : '<span></span>';
+const rbtn = (sec, i) => `<button class="iconbtn" data-regen="${sec}"${i != null ? ` data-i="${i}"` : ''} title="إعادة توليد">↻</button>`;
+function optsHTML(path, it, uid) {
+  return `<div class="opts">${it.options.map((o, j) => `<label class="opt${it.ans === j ? ' ok' : ''}"><input type="radio" name="${uid}" data-ans="${path}" value="${j}"${it.ans === j ? ' checked' : ''} title="الإجابة الصحيحة"><input type="text" data-p="${path}.options.${j}" value="${esc(o)}"></label>`).join('')}</div>`;
 }
-function tools(sec, i) { return `<span class="tools"><button data-regen="${sec}" data-i="${i}" title="إعادة توليد هذه الفقرة">↻</button></span>`; }
-function mcqInline(path, it) { return '(' + it.options.map((o, j) => ed(`${path}.options.${j}`, o)).join(' – ') + ')'; }
-function lineNumbered(passage) {
-  return passage.split(/\n+/).filter(Boolean).map((p) => `<p style="margin:0 0 4px">${esc(p)}</p>`).join('');
+function secCard(id, title, mark, inner) {
+  return `<div class="card" id="sec-${id}"><h2><span>${title}</span><span class="row" style="gap:6px"><span class="mk">${mark} درجات</span><button class="btn sec sm" data-regen="${id}">↻ القسم</button></span></h2>${inner}</div>`;
 }
+const UP_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.8"/><path d="M21 15l-5-5L5 21"/></svg>';
 
-function renderPaper() {
+function renderEditor() {
   if (!EXAM) return;
-  const m = EXAM.meta; const book = C[m.grade];
-  const termTxt = m.term === '2' ? 'Second' : 'First';
-  let h = `
-  <div class="ph">
-    <div>Kingdom of Saudi Arabia<br>Ministry of Education<br>${ed('meta.school', m.school || 'Intermediate School')}</div>
-    <div class="mid"><table class="marks"><tr><td>Q.</td><td>Q1</td><td>Q2</td><td>Q3</td><td>Q4</td><td>Q5</td><td>Total</td></tr><tr><td>Mark</td><td>8</td><td>9</td><td>9</td><td>9</td><td>5</td><td><b>40</b></td></tr><tr><td>Student</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>
-    <div class="r">${esc(book.name)} – English Language<br>${GRADE_EN[m.grade]}<br>${termTxt} Term Final Exam ${esc(m.year || '')}<br>Time: ${esc(m.time || '')}</div>
-  </div>
-  <div class="sname">Student's name: …………………………………………… &nbsp; Class: ……… &nbsp; Seat No.: ………</div>`;
-
-  // Q1 التعبير
-  const c = EXAM.composition;
-  h += `<div class="q" data-sec="composition">${qhead(1, 'Composition', 'composition', 8)}`;
-  if (!c) h += `<div class="muted">لم يُولَّد بعد.</div>`;
-  else if (c.mode === 'wordbox') {
-    if (!c.boxOrder || c.boxOrder.length !== c.answers.length) c.boxOrder = shuffle(c.answers.map((_, i) => i));
-    h += `<div class="qtitle">${ed('composition.title', c.title)}</div><div class="sub">${ed('composition.instructions', c.instructions)}</div>
-      <div class="box">${c.boxOrder.map((i) => ed(`composition.answers.${i}`, c.answers[i])).join(' &nbsp;–&nbsp; ')}</div>
-      <div style="line-height:2">${ed('composition.paragraph', c.paragraph.replace(/_{2,}/g, '__________'), 'div')}</div>`;
-  } else {
-    h += `<div class="qtitle">${ed('composition.title', c.title)}</div><div class="sub">${ed('composition.instructions', c.instructions || 'Write a paragraph answering the following questions:')}</div>
-      <ol style="margin:2px 0 6px 22px;padding:0">${c.questions.map((q, i) => `<li>${ed(`composition.questions.${i}`, q)}</li>`).join('')}</ol>
-      ${'<div class="dots"></div>'.repeat(8)}`;
-  }
-  h += `</div>`;
-
-  // Q2 القراءة
-  const r = EXAM.reading;
-  h += `<div class="q" data-sec="reading">${qhead(2, 'Reading Comprehension', 'reading', 9)}`;
-  if (!r) h += `<div class="muted">لم يُولَّد بعد.</div>`;
+  let h = '';
+  // التعبير
+  const c = EXAM.composition; let ci = '';
+  if (!c) ci = '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>';
   else {
-    h += `<div class="qtitle">${ed('reading.title', r.title)}</div><div class="passage${r.warn ? ' warn' : ''}" contenteditable="true" spellcheck="false" data-p="reading.passage">${lineNumbered(r.passage)}</div>
-    <div class="sub">A- Choose the correct answer:</div>
-    ${r.mcq.map((q, i) => `<div class="item${q.warn ? ' warn' : ''}">${i + 1}. ${ed(`reading.mcq.${i}.stem`, q.stem)}<div class="opts">${q.options.map((o, j) => `${L[j]}) ${ed(`reading.mcq.${i}.options.${j}`, o)}`).join(' &nbsp;&nbsp; ')}</div></div>`).join('')}
-    <div class="sub">B- Write (T) for true or (F) for false:</div>
-    ${r.tf.map((t, i) => `<div class="item">${i + 1}. ${ed(`reading.tf.${i}.s`, t.s)} &nbsp; (&nbsp;&nbsp;&nbsp;&nbsp;)</div>`).join('')}`;
+    ci = `<div class="row" style="margin-bottom:6px">${tagOf(c)}</div><div class="two" style="direction:rtl"><label class="f">العنوان${inp('composition.title', c.title)}</label><label class="f">التعليمات${inp('composition.instructions', c.instructions)}</label></div>`;
+    if (c.mode === 'wordbox') ci += `<label class="f" style="margin-top:8px">الفقرة (الفراغ = ____)${area('composition.paragraph', c.paragraph, 4)}</label><div class="sub">كلمات الصندوق (بالترتيب الصحيح)</div><div class="opts">${c.answers.map((a, i) => `<label class="opt"><span class="muted">${i + 1}</span>${inp(`composition.answers.${i}`, a)}</label>`).join('')}</div>`;
+    else ci += `<div class="sub">الأسئلة الموجّهة</div>${c.questions.map((q, i) => `<div style="margin-bottom:6px">${inp(`composition.questions.${i}`, q)}</div>`).join('')}<label class="f" style="margin-top:6px">نموذج إجابة (يظهر في نموذج الإجابة فقط)${area('composition.model', c.model, 3)}</label>`;
   }
-  h += `</div>`;
+  h += secCard('composition', 'السؤال الأول — التعبير', 8, ci);
 
-  // Q3 القواعد
-  const gm = EXAM.grammar.filter((x) => x.kind === 'mcq'); const gd = EXAM.grammar.filter((x) => x.kind === 'do');
-  h += `<div class="q" data-sec="grammar">${qhead(3, 'Grammar', 'grammar', 9)}`;
-  if (!EXAM.grammar.length) h += `<div class="muted">لم يُولَّد بعد.</div>`;
+  // القراءة
+  const r = EXAM.reading; let ri = '';
+  if (!r) ri = '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>';
   else {
-    h += `<div class="sub">A- Choose the correct answer:</div>`;
-    gm.forEach((it, n) => { const i = EXAM.grammar.indexOf(it); h += `<div class="item${it.warn ? ' warn' : ''}" data-sec="grammar" data-i="${i}">${tools('grammar', i)}${n + 1}. ${ed(`grammar.${i}.stem`, it.stem)} ${mcqInline(`grammar.${i}`, it)}</div>`; });
-    h += `<div class="sub">B- Do as shown between brackets:</div>`;
-    gd.forEach((it, n) => { const i = EXAM.grammar.indexOf(it); h += `<div class="item${it.warn ? ' warn' : ''}" data-sec="grammar" data-i="${i}">${tools('grammar', i)}${n + 1}. ${ed(`grammar.${i}.sentence`, it.sentence)} &nbsp; (${ed(`grammar.${i}.instruction`, it.instruction)})<div class="dots"></div></div>`; });
+    ri = `<div class="row" style="margin-bottom:6px">${tagOf(r)}</div><label class="f">العنوان${inp('reading.title', r.title)}</label><label class="f" style="margin-top:6px">النص${area('reading.passage', r.passage, 7)}</label>
+      <div class="sub">أ) اختيار من متعدد — اختر الدائرة عند الإجابة الصحيحة</div>
+      ${r.mcq.map((q, i) => `<div class="it${q.warn ? ' warn' : ''}">${inp(`reading.mcq.${i}.stem`, q.stem)}${optsHTML(`reading.mcq.${i}`, q, 'rq' + i)}</div>`).join('')}
+      <div class="sub">ب) صح أو خطأ</div>
+      ${r.tf.map((t, i) => `<div class="it tf">${inp(`reading.tf.${i}.s`, t.s)}<div class="seg" data-tf="${i}"><button class="${t.ans ? 'on' : ''}" data-v="1">T</button><button class="${t.ans ? '' : 'on'}" data-v="0">F</button></div></div>`).join('')}`;
   }
-  h += `</div>`;
+  h += secCard('reading', 'السؤال الثاني — القراءة', 9, ri);
 
-  // Q4 المفردات
-  const V = EXAM.vocab; const vk = (k) => V.map((x, i) => [x, i]).filter(([x]) => x.kind === k);
-  h += `<div class="q" data-sec="vocab">${qhead(4, 'Vocabulary', 'vocab', 9)}`;
-  if (!V.length) h += `<div class="muted">لم يُولَّد بعد.</div>`;
+  // القواعد
+  let gi = '';
+  if (!EXAM.grammar.length) gi = '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>';
   else {
-    h += `<div class="sub">A- Choose the correct answer:</div>`;
-    vk('mcq').forEach(([it, i], n) => { h += `<div class="item${it.warn ? ' warn' : ''}" data-sec="vocab" data-i="${i}">${tools('vocab', i)}${n + 1}. ${ed(`vocab.${i}.stem`, it.stem)} &nbsp; ${mcqInline(`vocab.${i}`, it)}</div>`; });
-    const mt = vk('match');
-    if (!EXAM.matchOrder || EXAM.matchOrder.length !== mt.length) EXAM.matchOrder = shuffle(mt.map((_, k) => k));
-    h += `<div class="sub">B- Match the word with its meaning:</div><div class="match">`;
-    mt.forEach(([it, i], n) => { const [it2, i2] = mt[EXAM.matchOrder[n]]; h += `<div class="item" data-sec="vocab" data-i="${i}">${tools('vocab', i)}${n + 1}. ${ed(`vocab.${i}.word`, it.word)}</div><div>(&nbsp;&nbsp;&nbsp;) ${ed(`vocab.${i2}.meaning`, it2.meaning)}</div>`; });
-    h += `</div>`;
-    const pics = vk('picture');
-    if (!EXAM.picBox || EXAM.picBox.length !== pics.length) EXAM.picBox = shuffle(pics.map((_, k) => k));
-    h += `<div class="sub">C- Write the correct word under each picture:</div><div class="box">${EXAM.picBox.map((k) => esc(pics[k][0].word)).join(' &nbsp;–&nbsp; ')}</div><div class="pics">`;
-    pics.forEach(([it, i]) => { h += `<div class="picwrap" data-sec="vocab" data-i="${i}" style="position:relative">${tools('vocab', i)}<div class="pic" data-pic="${i}" title="اضغط لرفع صورة: ${esc(it.word)}">${it.img ? `<img src="${it.img}" alt="">` : `<span class="ph-t">اضغط لرفع صورة<br>«${esc(it.word)}»</span>`}</div><div class="dots"></div></div>`; });
-    h += `</div><div class="sub">D- Circle the odd word:</div>`;
-    vk('odd').forEach(([it, i], n) => { h += `<div class="item${it.warn ? ' warn' : ''}" data-sec="vocab" data-i="${i}">${tools('vocab', i)}${n + 1}. ${it.options.map((o, j) => ed(`vocab.${i}.options.${j}`, o)).join(' – ')}</div>`; });
+    gi += '<div class="sub">أ) اختيار من متعدد (½ لكل فقرة)</div>';
+    EXAM.grammar.forEach((it, i) => { if (it.kind === 'mcq') gi += `<div class="it${it.warn ? ' warn' : ''}" data-sec="grammar" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('grammar', i)}</div>${inp(`grammar.${i}.stem`, it.stem)}${optsHTML(`grammar.${i}`, it, 'g' + i)}</div>`; });
+    gi += '<div class="sub">ب) افعل كما هو مطلوب (درجة لكل فقرة)</div>';
+    EXAM.grammar.forEach((it, i) => { if (it.kind === 'do') gi += `<div class="it${it.warn ? ' warn' : ''}" data-sec="grammar" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('grammar', i)}</div><div class="two"><div>${inp(`grammar.${i}.sentence`, it.sentence, 'Sentence')}</div><div>${inp(`grammar.${i}.instruction`, it.instruction, 'Instruction')}</div></div><div style="margin-top:6px"><span class="muted">الإجابة:</span> ${inp(`grammar.${i}.answer`, it.answer)}</div></div>`; });
   }
-  h += `</div>`;
+  h += secCard('grammar', 'السؤال الثالث — القواعد', 9, gi);
 
-  // Q5 الإملاء
-  h += `<div class="q" data-sec="spelling">${qhead(5, 'Orthography', 'spelling', 5)}`;
-  if (!EXAM.spelling.length) h += `<div class="muted">لم يُولَّد بعد.</div>`;
+  // المفردات
+  const V = EXAM.vocab; let vi = '';
+  if (!V.length) vi = '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>';
   else {
-    h += `<div class="sub">Choose the missing letter:</div>`;
-    EXAM.spelling.forEach((it, i) => { h += `<div class="item${it.warn ? ' warn' : ''}" data-sec="spelling" data-i="${i}">${tools('spelling', i)}${i + 1}. ${ed(`spelling.${i}.sentence`, it.sentence)} &nbsp; (${it.choices.map((c, j) => ed(`spelling.${i}.choices.${j}`, c)).join(' – ')})</div>`; });
-  }
-  h += `</div><div class="foot">Best wishes${m.teacher ? '<br>' + esc(m.teacher) : ''}</div>`;
-
-  if ($('withKey').checked || !document.body.classList.contains('exporting')) h += renderKey();
-  $('paper').innerHTML = h;
-  renderCoverage();
-}
-
-function renderKey() {
-  const showOnPrint = $('withKey').checked;
-  let k = `<div class="key pbreak${showOnPrint ? '' : ' noprint'}" id="keyBox"><h3>Answer Key${showOnPrint ? '' : ' <span class="muted" style="font-size:12px">(للمعلم — لا يُطبع إلا إذا فعّلت «إرفاق نموذج الإجابة»)</span>'}</h3>`;
-  const opt = (sec, i, it, sub) => it.options.map((o, j) => `<span class="opt${it.ans === j ? ' on' : ''}" data-ans="${sec}|${i}|${j}${sub != null ? '|' + sub : ''}">${L[j]}) ${esc(o)}</span>`).join('');
-  const c = EXAM.composition;
-  if (c) {
-    k += `<div class="sub">Q1 Composition (8)</div>`;
-    if (c.mode === 'wordbox') k += `<div>${c.answers.map((a, i) => `${i + 1}. ${esc(a)}`).join(' &nbsp; ')} <span class="muted">(1 mark each)</span></div>`;
-    else k += `<div><i>Marking (Ministry):</i> vocabulary &amp; language accuracy (3) · punctuation (1) · coherence &amp; sequence of ideas (2) · relevance to the topic (2).</div>${c.model ? `<div style="margin-top:4px"><i>Model answer:</i> ${esc(c.model)}</div>` : ''}`;
-  }
-  const r = EXAM.reading;
-  if (r) {
-    k += `<div class="sub">Q2 Reading (9)</div>`;
-    r.mcq.forEach((q, i) => { k += `<div>A${i + 1}. ${opt('reading', i, q, 'mcq')}</div>`; });
-    k += `<div>B: ${r.tf.map((t, i) => `<span class="opt${''}" data-tf="${i}">${i + 1}. ${t.ans ? 'T' : 'F'}</span>`).join(' ')}</div>`;
-  }
-  if (EXAM.grammar.length) {
-    k += `<div class="sub">Q3 Grammar (A: ½ each · B: 1 each)</div>`;
-    EXAM.grammar.forEach((it, i) => { k += it.kind === 'mcq' ? `<div>${esc(it.stem)} — ${opt('grammar', i, it)}</div>` : `<div>${esc(it.sentence)} → <b contenteditable="true" data-p="grammar.${i}.answer">${esc(it.answer)}</b></div>`; });
-  }
-  if (EXAM.vocab.length) {
-    k += `<div class="sub">Q4 Vocabulary (½ each)</div>`;
-    EXAM.vocab.forEach((it, i) => {
-      if (it.kind === 'mcq' || it.kind === 'odd') k += `<div>${it.kind === 'odd' ? 'Odd: ' : esc(it.stem) + ' — '}${opt('vocab', i, it)}</div>`;
-      else if (it.kind === 'match') k += `<div>${esc(it.word)} = ${esc(it.meaning)}</div>`;
-      else k += `<div>Picture: ${esc(it.word)}</div>`;
+    vi += '<div class="sub">أ) اختيار من متعدد</div>';
+    V.forEach((it, i) => { if (it.kind === 'mcq') vi += `<div class="it${it.warn ? ' warn' : ''}" data-sec="vocab" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('vocab', i)}</div>${inp(`vocab.${i}.stem`, it.stem)}${optsHTML(`vocab.${i}`, it, 'v' + i)}</div>`; });
+    vi += '<div class="sub">ب) توصيل الكلمة بمعناها (تُخلط المعاني تلقائياً في الورقة)</div>';
+    V.forEach((it, i) => { if (it.kind === 'match') vi += `<div class="it${it.warn ? ' warn' : ''}" data-sec="vocab" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('vocab', i)}</div><div class="two"><div>${inp(`vocab.${i}.word`, it.word, 'word')}</div><div>${inp(`vocab.${i}.meaning`, it.meaning, 'meaning')}</div></div></div>`; });
+    const pics = V.map((x, i) => [x, i]).filter(([x]) => x.kind === 'picture');
+    const done = pics.filter(([x]) => x.img).length;
+    vi += `<div class="sub">ج) الصور — ارفع صورة لكل كلمة (${done} من ${pics.length})</div><div class="pics">`;
+    pics.forEach(([it, i]) => {
+      vi += `<div class="pc" data-i="${i}">
+        <div class="drop" data-pic="${i}" title="اضغط لاختيار صورة">${it.img ? `<span class="done">✓</span><img src="${it.img}" alt="">` : `${UP_SVG}<span class="w">${esc(it.word)}</span><span class="lbl">اضغط لاختيار صورة</span>`}</div>
+        <div class="meta"><span class="lbl">الكلمة المطلوبة</span>${inp(`vocab.${i}.word`, it.word, 'word')}
+          <div class="row">${it.img ? `<button class="btn sec sm" data-pic="${i}">تغيير</button><button class="btn sec sm" data-delpic="${i}">حذف</button>` : `<button class="btn sm" data-pic="${i}">رفع صورة</button>`}${rbtn('vocab', i)}</div></div></div>`;
     });
+    vi += '</div><div class="sub">د) الكلمة المختلفة — اختر الدائرة عند الكلمة المختلفة</div>';
+    V.forEach((it, i) => { if (it.kind === 'odd') vi += `<div class="it${it.warn ? ' warn' : ''}" data-sec="vocab" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('vocab', i)}</div>${optsHTML(`vocab.${i}`, it, 'o' + i)}</div>`; });
   }
-  if (EXAM.spelling.length) {
-    k += `<div class="sub">Q5 Orthography (½ each)</div>`;
-    EXAM.spelling.forEach((it, i) => { k += `<div>${esc(it.word)} — ${it.choices.map((c, j) => `<span class="opt${it.ans === j ? ' on' : ''}" data-ans="spelling|${i}|${j}">${esc(c)}</span>`).join('')}</div>`; });
-  }
-  return k + `</div>`;
+  h += secCard('vocab', 'السؤال الرابع — المفردات', 9, vi);
+
+  // الإملاء
+  let si = '';
+  if (!EXAM.spelling.length) si = '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>';
+  else EXAM.spelling.forEach((it, i) => {
+    si += `<div class="it${it.warn ? ' warn' : ''}" data-sec="spelling" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('spelling', i)}</div><div class="two"><div>${inp(`spelling.${i}.sentence`, it.sentence, 'sentence with _')}</div><div>${inp(`spelling.${i}.word`, it.word, 'full word')}</div></div>
+      <div class="opts">${it.choices.map((ch, j) => `<label class="opt${it.ans === j ? ' ok' : ''}"><input type="radio" name="s${i}" data-ans="spelling.${i}" value="${j}"${it.ans === j ? ' checked' : ''}><input type="text" data-p="spelling.${i}.choices.${j}" value="${esc(ch)}"></label>`).join('')}</div></div>`;
+  });
+  h += secCard('spelling', 'السؤال الخامس — الإملاء', 5, si);
+
+  $('edBody').innerHTML = h;
+  renderCoverage();
 }
 
 // ===================== تقرير الشمول =====================
@@ -740,49 +746,62 @@ function renderCoverage() {
   const covered = new Set(EXAM.grammar.map((x) => x.unit + '|' + x.target));
   let pts = ''; let n = 0; let tot = 0;
   for (const u of units) for (const gpt of u.grammar) { tot++; const ok = covered.has(u.u + '|' + gpt); if (ok) n++; pts += `<li class="${ok ? '' : 'no'}">${ok ? '✓' : '○'} U${u.u}: ${esc(gpt)}</li>`; }
-  const warns = document.querySelectorAll('#paper .warn').length;
+  const warns = document.querySelectorAll('#edBody .warn').length;
+  const pics = EXAM.vocab.filter((x) => x.kind === 'picture'); const miss = pics.filter((x) => !x.img).length;
   $('coverage').innerHTML = `<h2>تقرير الشمول</h2>
     <table class="cov"><tr><th>الوحدة</th><th>قواعد</th><th>مفردات</th><th>نص</th></tr>${rows}</table>
-    <div class="muted" style="margin-top:8px">نقاط القواعد المغطاة: <b>${n}</b> من ${tot} (١٤ فقرة قواعد في الاختبار، موزعة بالتساوي على الوحدات).</div>
+    <div class="muted" style="margin-top:8px">نقاط القواعد المغطاة: <b>${n}</b> من ${tot}.</div>
     <ul class="pts">${pts}</ul>
-    ${warns ? `<div class="muted" style="color:var(--warn);margin-top:8px">⚠ ${warns} فقرة تحتاج مراجعة (محاطة بإطار برتقالي) — عدّلها أو أعد توليدها.</div>` : ''}`;
+    ${warns ? `<div class="muted" style="color:var(--warn);margin-top:8px">⚠ ${warns} فقرة تحتاج مراجعة (بخلفية برتقالية).</div>` : ''}
+    ${miss ? `<div class="muted" style="color:var(--warn);margin-top:4px">🖼 ${miss} صورة لم تُرفع بعد.</div>` : ''}`;
 }
 
-// ===================== التحرير =====================
+// ===================== ربط التحرير بالنموذج =====================
 function setPath(path, val) {
   const parts = path.split('.'); let o = EXAM;
   for (let i = 0; i < parts.length - 1; i++) { o = o[isNaN(parts[i]) ? parts[i] : +parts[i]]; if (o == null) return; }
   const last = parts[parts.length - 1]; o[isNaN(last) ? last : +last] = val;
 }
+function getPath(path) { return path.split('.').reduce((o, k) => (o == null ? o : o[isNaN(k) ? k : +k]), EXAM); }
 document.addEventListener('input', (e) => {
-  const el = e.target.closest?.('[data-p]'); if (!el || !EXAM) return;
-  const p = el.dataset.p;
-  let v = p === 'reading.passage' ? [...el.querySelectorAll('p')].map((x) => x.innerText.trim()).filter(Boolean).join('\n\n') || el.innerText : el.innerText.replace(/\s+/g, ' ').trim();
-  if (p === 'composition.paragraph') v = v.replace(/_{3,}/g, '____');
-  if (p.startsWith('meta.')) { EXAM.meta[p.slice(5)] = v; const f = $(p.slice(5)); if (f) f.value = v; }
-  else setPath(p, v);
-  clearTimeout(document._sv); document._sv = setTimeout(saveDraft, 600);
+  const el = e.target; if (!EXAM || !el.dataset || !el.dataset.p) return;
+  setPath(el.dataset.p, el.tagName === 'TEXTAREA' ? el.value : el.value.replace(/\s+/g, ' '));
+  // إذا عُدّلت كلمة صورة، يتحدث اسمها في المربع فوراً
+  const pc = el.closest('.pc'); if (pc) { const w = pc.querySelector('.drop .w'); if (w) w.textContent = el.value; }
+  clearTimeout(document._sv); document._sv = setTimeout(saveDraft, 500);
+});
+document.addEventListener('change', (e) => {
+  const el = e.target;
+  if (el.dataset && el.dataset.ans && EXAM) {
+    const it = getPath(el.dataset.ans); it.ans = +el.value; it.warn = false;
+    el.closest('.opts').querySelectorAll('.opt').forEach((o, j) => o.classList.toggle('ok', j === it.ans));
+    el.closest('.it')?.classList.remove('warn');
+    saveDraft(); renderCoverage();
+  }
 });
 document.addEventListener('click', (e) => {
   const rg = e.target.closest('[data-regen]');
   if (rg) { regen(rg.dataset.regen, rg.dataset.i != null ? +rg.dataset.i : null); return; }
-  const an = e.target.closest('[data-ans]');
-  if (an) {
-    const [sec, i, j, sub] = an.dataset.ans.split('|');
-    if (sub === 'mcq') EXAM.reading.mcq[+i].ans = +j; else EXAM[sec][+i].ans = +j;
-    saveDraft(); renderPaper(); return;
-  }
-  const tf = e.target.closest('[data-tf]');
-  if (tf) { const t = EXAM.reading.tf[+tf.dataset.tf]; t.ans = !t.ans; saveDraft(); renderPaper(); return; }
+  const tf = e.target.closest('[data-tf] button');
+  if (tf) { const i = +tf.parentElement.dataset.tf; EXAM.reading.tf[i].ans = tf.dataset.v === '1'; tf.parentElement.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b === tf)); saveDraft(); return; }
+  const dp = e.target.closest('[data-delpic]');
+  if (dp) { EXAM.vocab[+dp.dataset.delpic].img = ''; saveDraft(); renderEditor(); return; }
   const pic = e.target.closest('[data-pic]');
   if (pic) { $('picFile').dataset.i = pic.dataset.pic; $('picFile').value = ''; $('picFile').click(); }
 });
-$('picFile').addEventListener('change', async (e) => {
-  const f = e.target.files?.[0]; if (!f) return;
-  const i = +e.target.dataset.i;
-  try { EXAM.vocab[i].img = await shrinkImage(f, 500); saveDraft(); renderPaper(); }
-  catch { toast('تعذّر قراءة الصورة'); }
+// السحب والإفلات على مربع الصورة
+document.addEventListener('dragover', (e) => { const d = e.target.closest?.('.drop'); if (d) { e.preventDefault(); d.classList.add('over'); } });
+document.addEventListener('dragleave', (e) => { const d = e.target.closest?.('.drop'); if (d) d.classList.remove('over'); });
+document.addEventListener('drop', (e) => {
+  const d = e.target.closest?.('.drop'); if (!d) return; e.preventDefault(); d.classList.remove('over');
+  const f = e.dataTransfer?.files?.[0]; if (f) setPic(+d.dataset.pic, f);
 });
+$('picFile').addEventListener('change', (e) => { const f = e.target.files?.[0]; if (f) setPic(+e.target.dataset.i, f); });
+async function setPic(i, f) {
+  if (!/^image\//.test(f.type)) { toast('اختر ملف صورة'); return; }
+  try { EXAM.vocab[i].img = await shrinkImage(f, 500); saveDraft(); renderEditor(); }
+  catch { toast('تعذّر قراءة الصورة'); }
+}
 function shrinkImage(file, max) {
   return new Promise((res, rej) => {
     const img = new Image(); const url = URL.createObjectURL(file);
@@ -797,60 +816,189 @@ function shrinkImage(file, max) {
   });
 }
 
-// ===================== التصدير =====================
-function loadScript(src) {
-  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+// ===================== الورقة (للمعاينة والتصدير) =====================
+function ensureOrders() {
+  const c = EXAM.composition;
+  if (c && c.mode === 'wordbox' && (!c.boxOrder || c.boxOrder.length !== c.answers.length)) c.boxOrder = shuffle(c.answers.map((_, i) => i));
+  const mt = EXAM.vocab.filter((x) => x.kind === 'match');
+  if (!EXAM.matchOrder || EXAM.matchOrder.length !== mt.length) EXAM.matchOrder = shuffle(mt.map((_, k) => k));
+  const pics = EXAM.vocab.filter((x) => x.kind === 'picture');
+  if (!EXAM.picBox || EXAM.picBox.length !== pics.length) EXAM.picBox = shuffle(pics.map((_, k) => k));
 }
+function paperHTML(withKey) {
+  ensureOrders();
+  const m = EXAM.meta; const book = C[m.grade];
+  const termTxt = m.term === '2' ? 'Second' : 'First';
+  let h = `<div class="ph">
+    <div>Kingdom of Saudi Arabia<br>Ministry of Education<br>${esc(m.school || 'Intermediate School')}</div>
+    <div><table class="marks"><tr><td>Q.</td><td>Q1</td><td>Q2</td><td>Q3</td><td>Q4</td><td>Q5</td><td>Total</td></tr><tr><td>Mark</td><td>8</td><td>9</td><td>9</td><td>9</td><td>5</td><td><b>40</b></td></tr><tr><td>Student</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>
+    <div class="r">${esc(book.name)} – English Language<br>${GRADE_EN[m.grade]}<br>${termTxt} Term Final Exam ${esc(m.year || '')}<br>Time: ${esc(m.time || '')}</div>
+  </div>
+  <div class="sname">Student's name: …………………………………………… &nbsp; Class: ……… &nbsp; Seat No.: ………</div>`;
+  const qh = (n, name, mark) => `<div class="qhead"><b>Q${n} / ${name}</b><span class="qmark">${mark}</span></div>`;
+
+  const c = EXAM.composition;
+  h += `<div class="q">${qh(1, 'Composition', 8)}`;
+  if (c) {
+    if (c.mode === 'wordbox') h += `<div class="qtitle">${esc(c.title)}</div><div class="s-sub">${esc(c.instructions)}</div><div class="box">${c.boxOrder.map((i) => esc(c.answers[i])).join(' &nbsp;–&nbsp; ')}</div><div style="line-height:2">${esc(c.paragraph).replace(/_{2,}/g, '__________')}</div>`;
+    else h += `<div class="qtitle">${esc(c.title)}</div><div class="s-sub">${esc(c.instructions || 'Write a paragraph answering the following questions:')}</div><ol style="margin:2px 0 6px 22px;padding:0">${c.questions.map((q) => `<li>${esc(q)}</li>`).join('')}</ol>${'<div class="dots"></div>'.repeat(8)}`;
+  }
+  h += '</div>';
+
+  const r = EXAM.reading;
+  h += `<div class="q">${qh(2, 'Reading Comprehension', 9)}`;
+  if (r) {
+    h += `<div class="qtitle">${esc(r.title)}</div><div class="passage">${r.passage.split(/\n+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join('')}</div><div class="s-sub">A- Choose the correct answer:</div>`;
+    r.mcq.forEach((q, i) => { h += `<div class="pi">${i + 1}. ${esc(q.stem)}<div class="popts">${q.options.map((o, j) => `${L[j]}) ${esc(o)}`).join(' &nbsp;&nbsp; ')}</div></div>`; });
+    h += '<div class="s-sub">B- Write (T) for true or (F) for false:</div>';
+    r.tf.forEach((t, i) => { h += `<div class="pi">${i + 1}. ${esc(t.s)} &nbsp; (&nbsp;&nbsp;&nbsp;&nbsp;)</div>`; });
+  }
+  h += '</div>';
+
+  h += `<div class="q">${qh(3, 'Grammar', 9)}`;
+  if (EXAM.grammar.length) {
+    h += '<div class="s-sub">A- Choose the correct answer:</div>';
+    EXAM.grammar.filter((x) => x.kind === 'mcq').forEach((it, n) => { h += `<div class="pi">${n + 1}. ${esc(it.stem)} (${it.options.map(esc).join(' – ')})</div>`; });
+    h += '<div class="s-sub">B- Do as shown between brackets:</div>';
+    EXAM.grammar.filter((x) => x.kind === 'do').forEach((it, n) => { h += `<div class="pi">${n + 1}. ${esc(it.sentence)} &nbsp; (${esc(it.instruction)})<div class="dots"></div></div>`; });
+  }
+  h += '</div>';
+
+  const V = EXAM.vocab;
+  h += `<div class="q">${qh(4, 'Vocabulary', 9)}`;
+  if (V.length) {
+    h += '<div class="s-sub">A- Choose the correct answer:</div>';
+    V.filter((x) => x.kind === 'mcq').forEach((it, n) => { h += `<div class="pi">${n + 1}. ${esc(it.stem)} &nbsp; (${it.options.map(esc).join(' – ')})</div>`; });
+    const mt = V.filter((x) => x.kind === 'match');
+    h += '<div class="s-sub">B- Match the word with its meaning:</div><div class="match">';
+    mt.forEach((it, n) => { h += `<div class="pi">${n + 1}. ${esc(it.word)}</div><div class="pi">(&nbsp;&nbsp;&nbsp;) ${esc(mt[EXAM.matchOrder[n]].meaning)}</div>`; });
+    const pics = V.filter((x) => x.kind === 'picture');
+    h += `</div><div class="s-sub">C- Write the correct word under each picture:</div><div class="box">${EXAM.picBox.map((k) => esc(pics[k].word)).join(' &nbsp;–&nbsp; ')}</div><div class="ppics">`;
+    pics.forEach((it) => { h += `<div class="ppic"><div class="frame">${it.img ? `<img src="${it.img}" alt="">` : ''}</div><div class="dots"></div></div>`; });
+    h += '</div><div class="s-sub">D- Circle the odd word:</div>';
+    V.filter((x) => x.kind === 'odd').forEach((it, n) => { h += `<div class="pi">${n + 1}. ${it.options.map(esc).join(' – ')}</div>`; });
+  }
+  h += '</div>';
+
+  h += `<div class="q">${qh(5, 'Orthography', 5)}`;
+  if (EXAM.spelling.length) {
+    h += '<div class="s-sub">Choose the missing letter:</div>';
+    EXAM.spelling.forEach((it, i) => { h += `<div class="pi">${i + 1}. ${esc(it.sentence)} &nbsp; (${it.choices.map(esc).join(' – ')})</div>`; });
+  }
+  h += `</div><div class="foot">Best wishes${m.teacher ? '<br>' + esc(m.teacher) : ''}</div>`;
+  if (withKey) h += `<div class="pbreak"></div>${keyHTML()}`;
+  return h;
+}
+function keyLines() {
+  const out = [];
+  const c = EXAM.composition;
+  if (c) {
+    out.push(['h', 'Q1 Composition (8)']);
+    if (c.mode === 'wordbox') out.push(['t', c.answers.map((a, i) => `${i + 1}. ${a}`).join('   ') + '   (1 mark each)']);
+    else { out.push(['t', 'Marking (Ministry): vocabulary & language accuracy (3) · punctuation (1) · coherence & sequence of ideas (2) · relevance to the topic (2).']); if (c.model) out.push(['t', 'Model answer: ' + c.model]); }
+  }
+  const r = EXAM.reading;
+  if (r) {
+    out.push(['h', 'Q2 Reading Comprehension (9)']);
+    out.push(['t', 'A: ' + r.mcq.map((q, i) => `${i + 1}) ${L[q.ans]} – ${q.options[q.ans]}`).join('   ')]);
+    out.push(['t', 'B: ' + r.tf.map((t, i) => `${i + 1}) ${t.ans ? 'T' : 'F'}`).join('   ')]);
+  }
+  if (EXAM.grammar.length) {
+    out.push(['h', 'Q3 Grammar (A: ½ each · B: 1 each)']);
+    out.push(['t', 'A: ' + EXAM.grammar.filter((x) => x.kind === 'mcq').map((it, n) => `${n + 1}) ${it.options[it.ans]}`).join('   ')]);
+    EXAM.grammar.filter((x) => x.kind === 'do').forEach((it, n) => out.push(['t', `B${n + 1}) ${it.answer}`]));
+  }
+  if (EXAM.vocab.length) {
+    const V = EXAM.vocab;
+    out.push(['h', 'Q4 Vocabulary (½ each)']);
+    out.push(['t', 'A: ' + V.filter((x) => x.kind === 'mcq').map((it, n) => `${n + 1}) ${it.options[it.ans]}`).join('   ')]);
+    const mt = V.filter((x) => x.kind === 'match');
+    out.push(['t', 'B: ' + mt.map((it, n) => `${n + 1}) ${it.word} = ${it.meaning}`).join('   ')]);
+    out.push(['t', 'C: ' + V.filter((x) => x.kind === 'picture').map((it, n) => `${n + 1}) ${it.word}`).join('   ')]);
+    out.push(['t', 'D: ' + V.filter((x) => x.kind === 'odd').map((it, n) => `${n + 1}) ${it.options[it.ans]}`).join('   ')]);
+  }
+  if (EXAM.spelling.length) {
+    out.push(['h', 'Q5 Orthography (½ each)']);
+    out.push(['t', EXAM.spelling.map((it, i) => `${i + 1}) ${it.choices[it.ans]} (${it.word})`).join('   ')]);
+  }
+  return out;
+}
+function keyHTML() { return `<div class="key"><h3>Answer Key</h3>${keyLines().map(([t, s]) => t === 'h' ? `<div class="s-sub">${esc(s)}</div>` : `<div class="k">${esc(s)}</div>`).join('')}</div>`; }
+
+// ===================== المرحلة ٣: المعاينة =====================
+function fitPreview() {
+  const body = $('pvBody'); const sh = body.querySelector('.sheet'); if (!sh) return;
+  const avail = body.clientWidth - 20; const w = sh.offsetWidth || 794;
+  sh.style.zoom = avail < w ? (avail / w).toFixed(3) : '';
+}
+function renderPreview() {
+  $('pvBody').innerHTML = `<div class="sheet">${paperHTML($('pvKey').checked)}</div>`;
+  fitPreview();
+}
+function openPreview() {
+  if (!EXAM) return;
+  $('pvKey').checked = $('withKey').checked;
+  $('pv').classList.add('open'); document.body.style.overflow = 'hidden';
+  $('st3').classList.add('on'); $('st2').classList.remove('on');
+  renderPreview();
+}
+function closePreview() { $('pv').classList.remove('open'); document.body.style.overflow = ''; $('st3').classList.remove('on'); $('st2').classList.add('on'); }
+window.addEventListener('resize', () => { if ($('pv').classList.contains('open')) fitPreview(); });
+
+// ===================== التنزيل =====================
+function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
 function fileBase() { const m = EXAM.meta; return `Exam_${C[m.grade].name.replace(/\s+/g, '')}_T${m.term}`; }
+function busyBtns(on) { for (const id of ['pdfBtn', 'docBtn', 'pvPdf', 'pvDoc']) $(id).disabled = on; }
 async function exportPDF() {
   if (!EXAM) return;
-  $('pdfBtn').disabled = true;
+  busyBtns(true); toast('جارٍ تجهيز ملف PDF…', 8000);
   try {
     if (!window.html2pdf) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
-    document.body.classList.add('exporting'); renderPaper();
-    const el = $('paper');
+    const html = `<div class="sheet exp" dir="ltr">${paperHTML($('withKey').checked)}</div>`;
     await window.html2pdf().set({
       margin: [8, 8, 8, 8], filename: fileBase() + '.pdf',
-      image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['css', 'legacy'], avoid: ['.item', '.qhead', '.picwrap', '.passage', '.box', 'table'] },
-    }).from(el).save();
-  } catch { toast('تعذّر إنشاء ملف PDF — جرّب زر «طباعة» ثم «حفظ كـ PDF».', 6000); }
-  finally { document.body.classList.remove('exporting'); renderPaper(); $('pdfBtn').disabled = false; }
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['.pi', '.qhead', '.ppic', '.passage', '.box', 'table'] },
+    }).from(html, 'string').save();
+    toast('تم تنزيل ملف PDF.');
+  } catch { toast('تعذّر إنشاء ملف PDF.', 5000); }
+  finally { busyBtns(false); }
 }
 
 async function exportDOCX() {
   if (!EXAM) return;
-  $('docBtn').disabled = true;
+  busyBtns(true);
   try {
     if (!window.docx) await loadScript('https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js');
+    ensureOrders();
     const D = window.docx; const m = EXAM.meta; const book = C[m.grade];
     const F = 'Arial';
     const T = (text, o = {}) => new D.TextRun({ text: String(text ?? ''), font: F, size: o.size || 24, bold: o.bold, italics: o.italics });
     const P = (runs, o = {}) => new D.Paragraph({ children: Array.isArray(runs) ? runs : [T(runs, o)], alignment: o.align, spacing: { after: o.after ?? 60, before: o.before ?? 0 }, indent: o.indent ? { left: o.indent } : undefined, border: o.border });
     const dots = () => P('……………………………………………………………………………………………………', { after: 100 });
     const cell = (text, o = {}) => new D.TableCell({ children: [P(text, { align: D.AlignmentType.CENTER, size: o.size || 20, bold: o.bold, after: 0 })], width: o.w ? { size: o.w, type: D.WidthType.DXA } : undefined });
-    const noB = { top: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' }, bottom: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' }, left: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' }, right: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' }, insideHorizontal: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' }, insideVertical: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' } };
+    const nb = { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' };
+    const noB = { top: nb, bottom: nb, left: nb, right: nb, insideHorizontal: nb, insideVertical: nb };
     const qh = (n, name, mark) => P([T(`Q${n} / ${name}`, { bold: true, size: 26 }), new D.TextRun({ text: `\t( ${mark} )`, font: F, size: 26, bold: true })], { before: 200, after: 80, border: { bottom: { style: D.BorderStyle.SINGLE, size: 6, color: '000000' } } });
     const sub = (t) => P(t, { bold: true, before: 80 });
+    const boxed = (children) => new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, rows: [new D.TableRow({ children: [new D.TableCell({ children })] })] });
     const kids = [];
     const termTxt = m.term === '2' ? 'Second' : 'First';
+    const R = D.AlignmentType.RIGHT;
     kids.push(new D.Table({
       width: { size: 100, type: D.WidthType.PERCENTAGE }, borders: noB,
       rows: [new D.TableRow({ children: [
         new D.TableCell({ children: [P('Kingdom of Saudi Arabia', { size: 20, after: 0 }), P('Ministry of Education', { size: 20, after: 0 }), P(m.school || 'Intermediate School', { size: 20, after: 0 })] }),
-        new D.TableCell({ children: [P(`${book.name} – English Language`, { size: 20, after: 0, align: D.AlignmentType.RIGHT }), P(GRADE_EN[m.grade], { size: 20, after: 0, align: D.AlignmentType.RIGHT }), P(`${termTxt} Term Final Exam ${m.year || ''}`, { size: 20, after: 0, align: D.AlignmentType.RIGHT }), P(`Time: ${m.time || ''}`, { size: 20, after: 0, align: D.AlignmentType.RIGHT })] }),
+        new D.TableCell({ children: [P(`${book.name} – English Language`, { size: 20, after: 0, align: R }), P(GRADE_EN[m.grade], { size: 20, after: 0, align: R }), P(`${termTxt} Term Final Exam ${m.year || ''}`, { size: 20, after: 0, align: R }), P(`Time: ${m.time || ''}`, { size: 20, after: 0, align: R })] }),
       ] })],
     }));
     kids.push(P('', { after: 60 }));
-    kids.push(new D.Table({
-      alignment: D.AlignmentType.CENTER,
-      rows: [
-        new D.TableRow({ children: ['Question', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Total'].map((x) => cell(x, { w: 1000 })) }),
-        new D.TableRow({ children: ['Mark', '8', '9', '9', '9', '5', '40'].map((x) => cell(x, { w: 1000, bold: x === '40' })) }),
-        new D.TableRow({ children: ["Student's mark", '', '', '', '', '', ''].map((x) => cell(x, { w: 1000 })) }),
-      ],
-    }));
+    kids.push(new D.Table({ alignment: D.AlignmentType.CENTER, rows: [
+      new D.TableRow({ children: ['Question', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Total'].map((x) => cell(x, { w: 1000 })) }),
+      new D.TableRow({ children: ['Mark', '8', '9', '9', '9', '5', '40'].map((x) => cell(x, { w: 1000, bold: x === '40' })) }),
+      new D.TableRow({ children: ["Student's mark", '', '', '', '', '', ''].map((x) => cell(x, { w: 1000 })) }),
+    ] }));
     kids.push(P("Student's name: ……………………………………………  Class: …………  Seat No.: …………", { before: 120, after: 60, border: { bottom: { style: D.BorderStyle.SINGLE, size: 8, color: '000000' } } }));
 
     const c = EXAM.composition;
@@ -859,7 +1007,7 @@ async function exportDOCX() {
       kids.push(P(c.title, { bold: true, align: D.AlignmentType.CENTER }));
       if (c.mode === 'wordbox') {
         kids.push(sub(c.instructions));
-        kids.push(new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, rows: [new D.TableRow({ children: [new D.TableCell({ children: [P((c.boxOrder || c.answers.map((_, i) => i)).map((i) => c.answers[i]).join('  –  '), { align: D.AlignmentType.CENTER, after: 40 })] })] })] }));
+        kids.push(boxed([P(c.boxOrder.map((i) => c.answers[i]).join('  –  '), { align: D.AlignmentType.CENTER, after: 40 })]));
         kids.push(P(c.paragraph.replace(/_{2,}/g, '__________'), { before: 80, after: 80 }));
       } else {
         kids.push(sub(c.instructions || 'Write a paragraph answering the following questions:'));
@@ -871,7 +1019,7 @@ async function exportDOCX() {
     kids.push(qh(2, 'Reading Comprehension', 9));
     if (r) {
       kids.push(P(r.title, { bold: true, align: D.AlignmentType.CENTER }));
-      kids.push(new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, rows: [new D.TableRow({ children: [new D.TableCell({ children: r.passage.split(/\n+/).filter(Boolean).map((p) => P(p, { after: 60, align: D.AlignmentType.JUSTIFIED })) })] })] }));
+      kids.push(boxed(r.passage.split(/\n+/).filter(Boolean).map((p) => P(p, { after: 60, align: D.AlignmentType.JUSTIFIED }))));
       kids.push(sub('A- Choose the correct answer:'));
       r.mcq.forEach((q, i) => { kids.push(P(`${i + 1}. ${q.stem}`)); kids.push(P(q.options.map((o, j) => `${L[j]}) ${o}`).join('      '), { indent: 300 })); });
       kids.push(sub('B- Write (T) for true or (F) for false:'));
@@ -890,15 +1038,15 @@ async function exportDOCX() {
       kids.push(sub('A- Choose the correct answer:'));
       V.filter((x) => x.kind === 'mcq').forEach((it, n) => kids.push(P(`${n + 1}. ${it.stem}   (${it.options.join(' – ')})`)));
       kids.push(sub('B- Match the word with its meaning:'));
-      const mt = V.filter((x) => x.kind === 'match'); const mo = EXAM.matchOrder || mt.map((_, k) => k);
-      kids.push(new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, borders: noB, rows: mt.map((it, n) => new D.TableRow({ children: [new D.TableCell({ children: [P(`${n + 1}. ${it.word}`, { after: 20 })] }), new D.TableCell({ children: [P(`(     ) ${mt[mo[n]].meaning}`, { after: 20 })] })] })) }));
-      const pics = V.filter((x) => x.kind === 'picture'); const pb = EXAM.picBox || pics.map((_, k) => k);
+      const mt = V.filter((x) => x.kind === 'match');
+      kids.push(new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, borders: noB, rows: mt.map((it, n) => new D.TableRow({ children: [new D.TableCell({ children: [P(`${n + 1}. ${it.word}`, { after: 20 })] }), new D.TableCell({ children: [P(`(     ) ${mt[EXAM.matchOrder[n]].meaning}`, { after: 20 })] })] })) }));
+      const pics = V.filter((x) => x.kind === 'picture');
       kids.push(sub('C- Write the correct word under each picture:'));
-      kids.push(new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, rows: [new D.TableRow({ children: [new D.TableCell({ children: [P(pb.map((k) => pics[k].word).join('  –  '), { align: D.AlignmentType.CENTER, after: 40 })] })] })] }));
+      kids.push(boxed([P(EXAM.picBox.map((k) => pics[k].word).join('  –  '), { align: D.AlignmentType.CENTER, after: 40 })]));
       const picCell = (it) => {
         const ch = [];
         if (it?.img) {
-          const b64 = it.img.split(',')[1]; const bin = atob(b64); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+          const bin = atob(it.img.split(',')[1]); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
           ch.push(new D.Paragraph({ alignment: D.AlignmentType.CENTER, children: [new D.ImageRun({ data: u8, transformation: { width: 130, height: 100 } })] }));
         } else ch.push(P(' ', { after: 1300 }));
         ch.push(P('……………………', { align: D.AlignmentType.CENTER, after: 40 }));
@@ -914,22 +1062,20 @@ async function exportDOCX() {
       kids.push(sub('Choose the missing letter:'));
       EXAM.spelling.forEach((it, i) => kids.push(P(`${i + 1}. ${it.sentence}   (${it.choices.join(' – ')})`)));
     }
-    kids.push(P('Best wishes', { italics: true, align: D.AlignmentType.RIGHT, before: 200 }));
-    if (m.teacher) kids.push(P(m.teacher, { align: D.AlignmentType.RIGHT }));
-
+    kids.push(P('Best wishes', { italics: true, align: R, before: 200 }));
+    if (m.teacher) kids.push(P(m.teacher, { align: R }));
     if ($('withKey').checked) {
       kids.push(new D.Paragraph({ children: [new D.PageBreak()] }));
       kids.push(P('Answer Key', { bold: true, size: 28, align: D.AlignmentType.CENTER }));
-      const keyEl = document.createElement('div'); keyEl.innerHTML = renderKey();
-      keyEl.querySelectorAll('.opt:not(.on)[data-ans]').forEach((x) => x.remove());
-      keyEl.querySelectorAll('.sub, .key > div').forEach((d) => { if (d.closest('h3')) return; const t = d.innerText.replace(/\s+/g, ' ').trim(); if (t) kids.push(P(t, { bold: d.classList.contains('sub'), size: 22 })); });
+      keyLines().forEach(([t, s]) => kids.push(P(s, { bold: t === 'h', size: 22, before: t === 'h' ? 120 : 0 })));
     }
     const doc = new D.Document({ sections: [{ properties: { page: { margin: { top: 720, bottom: 720, left: 800, right: 800 } } }, children: kids }] });
     const blob = await D.Packer.toBlob(doc);
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileBase() + '.docx'; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast('تم تنزيل ملف Word.');
   } catch (e) { console.error(e); toast('تعذّر إنشاء ملف Word.'); }
-  finally { $('docBtn').disabled = false; }
+  finally { busyBtns(false); }
 }
 
 gate();
