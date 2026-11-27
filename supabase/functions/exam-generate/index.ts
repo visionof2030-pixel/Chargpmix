@@ -101,23 +101,26 @@ function specLines(specs: Spec[]) {
 
 function buildPrompt(section: string, h: string, specs: Spec[], ctx: Record<string, unknown>): string | null {
   const lines = specLines(specs);
+  // عدد الخيارات: 4 (قالب الوزارة) أو 3 (قالب التصحيح الآلي A/B/C)
+  const no = Number(ctx.nopts) === 3 ? 3 : 4;
+  const oj = JSON.stringify(Array(no).fill(""));
   if (section === "grammar") {
     return `${h}
 Write one grammar item for EACH line below, in the same order, testing exactly the given target point.
-- kind "mcq": a sentence with ONE blank "____" and 4 options (all the same word class / verb forms of the same verb).
+- kind "mcq": a sentence with ONE blank "____" and ${no} options (all the same word class / verb forms of the same verb).
 - kind "do": a "do as shown" task. Pick the instruction that best fits the target, e.g. "Correct the mistake", "Rearrange", "Make a Yes/No question", "Make a question", "Change into negative", "Change into passive", "Join using who/which", "Use the correct form of the verb". For "Rearrange" give the words separated by " – ". For "Correct the mistake" the sentence must contain exactly one error in the target point.
 ${lines}
-JSON: {"items":[{"kind":"mcq","stem":"...","options":["","","",""],"answer":"<exact option>"} | {"kind":"do","sentence":"...","instruction":"...","answer":"<the full correct answer>"}]}`;
+JSON: {"items":[{"kind":"mcq","stem":"...","options":${oj},"answer":"<exact option>"} | {"kind":"do","sentence":"...","instruction":"...","answer":"<the full correct answer>"}]}`;
   }
   if (section === "vocab") {
     return `${h}
 Write one vocabulary item for EACH line below, in the same order, testing the given target word (a word from that unit).
-- kind "mcq": a sentence with ONE blank "____" where the target word is the answer; 4 options from the same unit/word class.
+- kind "mcq": a sentence with ONE blank "____" where the target word is the answer; ${no} options from the same unit/word class.
 - kind "match": give a short simple meaning/definition (max 5 words) or synonym of the target word.
 - kind "picture": just return the word (it must be a concrete, picturable noun or action; if the target is not picturable choose another picturable word from the unit words).
 - kind "odd": 4 words where 3 belong to one category from the unit and 1 (the target or another word) is the odd one; give the odd word as answer.
 ${lines}
-JSON: {"items":[{"kind":"mcq","stem":"...","options":["","","",""],"answer":"..."} | {"kind":"match","word":"...","meaning":"..."} | {"kind":"picture","word":"..."} | {"kind":"odd","options":["","","",""],"answer":"..."}]}`;
+JSON: {"items":[{"kind":"mcq","stem":"...","options":${oj},"answer":"..."} | {"kind":"match","word":"...","meaning":"..."} | {"kind":"picture","word":"..."} | {"kind":"odd","options":["","","",""],"answer":"..."}]}`;
   }
   if (section === "spelling") {
     return `${h}
@@ -132,13 +135,18 @@ JSON: {"items":[{"word":"<full word>","sentence":"<sentence with the gapped word
 Write an ORIGINAL reading passage (about ${n} words, 2 short paragraphs, with a title) on the theme of Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Use the unit vocabulary: ${(s?.words || []).join(", ")}.
 Use mainly these structures from the term: ${txt(ctx.grammar, 600)}.
 Then write:
-- 5 multiple-choice questions (4 options each) about the passage: 3 detail questions, 1 reference question ("<pronoun> in line X refers to:" — the pronoun must really appear in that line when the passage is split into lines of about 15 words), 1 vocabulary-in-context or main-idea question.
+- 5 multiple-choice questions (${no} options each) about the passage: 3 detail questions, 1 reference question ("<pronoun> in line X refers to:" — the pronoun must really appear in that line when the passage is split into lines of about 15 words), 1 vocabulary-in-context or main-idea question.
 - 4 true/false statements (mix of true and false; false ones change one fact).
-JSON: {"data":{"title":"...","passage":"...","mcq":[{"q":"...","options":["","","",""],"answer":"..."}],"tf":[{"s":"...","answer":true}]}}`;
+JSON: {"data":{"title":"...","passage":"...","mcq":[{"q":"...","options":${oj},"answer":"..."}],"tf":[{"s":"...","answer":true}]}}`;
   }
   if (section === "composition") {
     const s = specs[0];
-    const mode = ctx.mode === "wordbox" ? "wordbox" : "guided";
+    const mode = ctx.mode === "wordbox" ? "wordbox" : ctx.mode === "words" ? "words" : "guided";
+    if (mode === "words") {
+      return `${h}
+Composition (free paragraph with helper words). Topic from Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Give a short topic title (2–5 words) for the task "Write a paragraph about (...)", and 6–8 helper words/phrases from the unit (${(s?.words || []).join(", ")}) that students should use. Also write a model answer paragraph (60–80 words) for the teacher.
+JSON: {"data":{"mode":"words","title":"...","words":["",""],"model":"..."}}`;
+    }
     if (mode === "wordbox") {
       return `${h}
 Guided composition (word box). Topic from Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}).
