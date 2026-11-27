@@ -180,6 +180,15 @@ JSON: {"items":[{"word":"<the target word exactly>","sentence":"<sentence contai
   if (section === "reading") {
     const s = specs[0];
     const n = Number(ctx.words) || 120;
+    // قالب التصحيح الآلي: القراءة 9 عبارات صح وخطأ فقط (بلا اختيار من متعدد)
+    if (ctx.tf9) {
+      return `${h}
+Write an ORIGINAL reading passage${ctx.genre ? " in the form of " + txt(ctx.genre, 80) : ""} (about ${n} words, with a title) on the theme of Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Use the unit vocabulary: ${(s?.words || []).join(", ")}.
+Use mainly these structures from the term: ${txt(ctx.grammar, 600)}.
+Give the passage as an array "paragraphs" of 1–3 normal paragraphs (ordinary prose; no line numbers, no labels).
+Then write EXACTLY 9 true/false statements about the passage, in passage order where possible: 4 or 5 TRUE (stated directly in the passage, reworded simply) and the rest FALSE. Every FALSE statement must clearly contradict ONE fact that IS stated in the passage (a wrong name, place, number, day, action…) — never something the passage simply does not mention. Each statement is one short simple sentence. Mix true and false.
+JSON: {"data":{"title":"...","paragraphs":[""],"tf":[{"s":"...","answer":true}]}}`;
+    }
     return `${h}
 Write an ORIGINAL reading passage${ctx.genre ? " in the form of " + txt(ctx.genre, 80) : ""} (about ${n} words, with a title) on the theme of Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Use the unit vocabulary: ${(s?.words || []).join(", ")}.
 Use mainly these structures from the term: ${txt(ctx.grammar, 600)}.
@@ -194,7 +203,7 @@ JSON: {"data":{"title":"...","paragraphs":["",""],"mcq":[{"q":"...","options":${
     const mode = ctx.mode === "wordbox" ? "wordbox" : ctx.mode === "words" ? "words" : "guided";
     if (mode === "words") {
       return `${h}
-Composition (free paragraph with helper words). Topic from Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Give a short topic title (2–5 words) for the task "Write a paragraph about (...)", and 6–8 helper words/phrases from the unit (${(s?.words || []).join(", ")}) that students should use. Also write a model answer paragraph (60–80 words) for the teacher.
+Composition (paragraph with a word list). Topic from Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Give a short topic title (2–5 words), and EXACTLY ${Number(ctx.nwords) === 8 ? 8 : "6–8"} words/phrases from the unit (${(s?.words || []).join(", ")}) that fit one clear everyday topic so a student can write a coherent paragraph of 3–5 sentences using all of them. Also write a model answer paragraph of 3–5 sentences that uses all the listed words (for the teacher).
 JSON: {"data":{"mode":"words","title":"...","words":["",""],"model":"..."}}`;
     }
     if (mode === "wordbox") {
