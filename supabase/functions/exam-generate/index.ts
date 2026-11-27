@@ -99,8 +99,13 @@ function specLines(specs: Spec[]) {
   return specs.map((s, i) => `${i + 1}. [${s.kind}] Unit ${s.unit} "${s.unitTitle}" — target: ${s.target}${s.words.length ? " — unit words: " + s.words.join(", ") : ""}`).join("\n");
 }
 
-function buildPrompt(section: string, h: string, specs: Spec[], ctx: Record<string, unknown>): string | null {
+function buildPrompt(section: string, h0: string, specs: Spec[], ctx: Record<string, unknown>): string | null {
   const lines = specLines(specs);
+  // نموذج بديل: نصوص النموذج الأول التي يجب ألا تتكرر
+  const avoid = Array.isArray(ctx.avoid) ? (ctx.avoid as unknown[]).slice(0, 40).map((x) => txt(x, 200)).filter(Boolean) : [];
+  const h = avoid.length ? `${h0}
+This is an ALTERNATIVE exam form. Do NOT reuse, copy or lightly paraphrase any of these existing items/texts from the first form — write completely new sentences, contexts, names and distractors (same grammar points / words where required):
+${avoid.map((a) => "- " + a).join("\n")}` : h0;
   // عدد الخيارات: 4 (قالب الوزارة) أو 3 (قالب التصحيح الآلي A/B/C)
   const no = Number(ctx.nopts) === 3 ? 3 : 4;
   const oj = JSON.stringify(Array(no).fill(""));
@@ -142,10 +147,10 @@ JSON: {"items":[{"word":"<the target word exactly>","sentence":"<sentence contai
 Write an ORIGINAL reading passage (about ${n} words, with a title) on the theme of Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Use the unit vocabulary: ${(s?.words || []).join(", ")}.
 Use mainly these structures from the term: ${txt(ctx.grammar, 600)}.
 Then write:
-Give the passage as an array "lines" of 8–11 printed lines, each 10–14 words (split sentences naturally across lines; no "Line 1:" labels, no numbering — the tool numbers the lines).
-- 5 multiple-choice questions (${no} options each) about the passage: 3 detail questions, 1 reference question ("The word '<pronoun>' in line X refers to:" — X is the real index (starting at 1) of the line in "lines" that contains that pronoun), 1 main-idea / best-title question.
+Give the passage as an array "paragraphs" of 2–3 normal paragraphs (ordinary prose with normal commas and full stops; no line numbers, no labels).
+- 5 multiple-choice questions (${no} options each) about the passage: 3 detail questions, 1 reference question ("The word '<pronoun>' in paragraph N refers to:" — the pronoun must really appear in that paragraph), 1 main-idea / best-title question.
 - 4 true/false statements: 2 TRUE (stated directly in the passage) and 2 FALSE (clearly contradicting one fact stated in the passage — never something the passage simply does not mention). Mix the order.
-JSON: {"data":{"title":"...","lines":["",""],"mcq":[{"q":"...","options":${oj},"answer":"..."}],"tf":[{"s":"...","answer":true}]}}`;
+JSON: {"data":{"title":"...","paragraphs":["",""],"mcq":[{"q":"...","options":${oj},"answer":"..."}],"tf":[{"s":"...","answer":true}]}}`;
   }
   if (section === "composition") {
     const s = specs[0];
