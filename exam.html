@@ -553,24 +553,36 @@ table.marks td{border:1px solid #000;padding:1px 4px;text-align:center;min-width
 .xn{display:grid;grid-template-columns:33fr 13fr 43fr 14fr;gap:6px;margin:6px 0 4px}
 .xn .xf{background:#f2f2f2;border-radius:6px;height:24px}
 .xn .xnl{background:#dae3f3;border-radius:6px;text-align:center;font-weight:700;display:flex;align-items:center;justify-content:center;height:24px}
-.xash{margin-top:10px;align-items:flex-start;padding-top:3px}
-.xsec{display:inline-block;color:#fff !important;font-weight:700;padding:0 4px}
-.xqt{font-weight:700;font-style:italic;text-decoration:underline;margin:4px 0 6px}
-.xqt + .xv,.xash + .xqt{margin-top:2px}
-table.xt td{font-style:italic;font-weight:700}
-table.xt td.L{background:#ededed;width:34px;text-align:left}
-table.xv{width:100%;border-collapse:collapse;table-layout:fixed;break-inside:avoid}
-table.xv td{border:1px solid #000;height:76px;padding:2px 4px;font-weight:700}
-table.xv td.c{text-align:center}
+.xash{margin-top:12px;align-items:flex-start;padding-top:3px}
+.xsec{display:inline-block;color:#fff !important;font-weight:700;font-size:11.5pt;padding:2px 10px}
+.xqt{font-weight:700;font-style:italic;text-decoration:underline;margin:4px 0 8px}
+.xash + .xqt{margin-top:2px}
+table.xq{width:100%;border-collapse:collapse;table-layout:fixed;break-inside:avoid;margin:0}
+table.xq td{border:0;padding:1px 4px;vertical-align:top}
+table.xq td.st{font-weight:700;font-style:italic;padding-top:5px}
+table.xq tr.o td{border-bottom:1px solid #d6d6d6;padding:1px 4px 4px 34px}
+table.xq tr.o td b{display:inline-block;width:26px;margin-left:-26px}
+table.xq tr.o td.kc{background:#fde8e8 !important}
+table.xv{width:100%;border-collapse:collapse;table-layout:fixed;break-inside:avoid;margin-top:8px}
+table.xv th{text-align:left;font-weight:700;padding:4px 6px;border-bottom:1.5px solid #9a9a9a}
+table.xv th.g,table.xv td.g{border:0 !important}
+table.xv td{border-bottom:1px solid #d6d6d6;height:76px;padding:2px 6px;vertical-align:middle}
+table.xv td.n,table.xv td.L{font-weight:700}
 table.xv td.vi{text-align:center}
-table.xv td.vi img{max-height:66px;max-width:94%}
-table.xv td.w{text-align:center;vertical-align:top;padding-top:10px}
-.xp{font-family:Cambria,Georgia,'Times New Roman',serif;font-size:11pt;text-align:justify;margin:4px 0 10px}
+table.xv td.vi img{max-height:66px;max-width:96%}
+table.xv td.a{color:#444}
+table.xv td.bl{padding:0 8px 0 0}
+table.xv td.bl span{display:block;border-bottom:1.2px solid #333;height:20px;text-align:center;font-weight:700}
+.xp{font-family:Cambria,Georgia,'Times New Roman',serif;font-size:11.5pt;line-height:1.45;text-align:justify;margin:4px 0 10px}
 .xp p{margin:0 0 4px}
 table.xr{width:100%;border-collapse:collapse;table-layout:fixed}
-table.xr td{border:1px solid #000;height:36px;padding:2px 6px;font-family:'Times New Roman',serif;font-size:11pt}
-table.xr td.c{text-align:center;font-family:Arial,sans-serif;font-weight:700;font-size:10pt}
-.xwl{font-family:Cambria,Georgia,serif;font-size:11pt;margin:2px 0 4px}
+table.xr td{border-bottom:1px solid #d6d6d6;height:34px;padding:2px 6px}
+table.xr td.c{font-weight:700;font-size:9.5pt;white-space:nowrap}
+table.xr td.c i{display:inline-block;width:13px;height:13px;border:1.2px solid #555;border-radius:2px;vertical-align:-2px;margin-right:6px;font-style:normal;text-align:center;line-height:12px;font-size:10pt}
+table.xr td.kc{background:#fde8e8 !important}
+.xhr{border:0;border-top:1.2px solid #9a9a9a;margin:16px 0 4px}
+.xwl{font-family:Cambria,Georgia,serif;font-size:11.5pt;line-height:1.45;margin:2px 0 6px}
+.xdl{height:25px;border-bottom:1px dotted #666}
 .sheet .endsig.xsig{width:46%;margin:22px 0 0;border:1.5px solid #9bbb59;padding:6px;text-align:center;font:italic 700 11pt/1.5 'Lucida Handwriting','Segoe Script','Brush Script MT',cursive}
 /* بيانات الطالب بالعربية */
 .sname[dir=rtl]{direction:rtl;display:flex;gap:22px;text-align:right;font-family:Arial,Tahoma,sans-serif}
@@ -1284,6 +1296,48 @@ function normSpell(raw, spec) {
   while (choices.length < 3) choices.push('');
   return { ...spec, word: norm(raw?.word || spec.target), sentence: norm(raw?.sentence), choices, ans: Math.max(0, ans), warn: !ok };
 }
+// ===== Orthography (قالب التصحيح الآلي): ثلاثة أنواع من كلمات المنهج نفسها =====
+// right: اختر الكلمة الصحيحة · wrong: أي كلمة خاطئة الإملاء · gap: أكمل الكلمة بحرف
+const ORTHO_STEM = { right: 'Choose the correctly spelled word.', wrong: 'Which word is misspelled?', gap: 'Complete the word:' };
+// أخطاء إملائية شائعة لدى الطلاب، لا أحرف عشوائية
+function misspell(word) {
+  const w = String(word || '').toLowerCase(); const out = new Set(); const V = 'aeiou'; const isV = (ch) => !!ch && V.includes(ch);
+  const add = (x) => { if (x && x !== w && x.length >= 3 && /^[a-z]+$/.test(x)) out.add(x); };
+  for (let i = 1; i < w.length - 1; i++) { // حرف علة مفرد بحرف علة قريب (pencil→pincil)
+    const sw = { a: 'e', e: 'i', i: 'e', o: 'u', u: 'o' }[w[i]]; if (sw && !isV(w[i - 1]) && !isV(w[i + 1])) add(w.slice(0, i) + sw + w.slice(i + 1));
+  }
+  for (let i = 1; i < w.length; i++) if (w[i] === w[i - 1] && !isV(w[i])) add(w.slice(0, i) + w.slice(i + 1)); // حرف مضعّف يصير مفرداً (address→adress)
+  for (let i = 1; i < w.length - 1; i++) if (!isV(w[i]) && isV(w[i - 1]) && isV(w[i + 1]) && 'lrtnmps'.includes(w[i])) add(w.slice(0, i + 1) + w.slice(i)); // تضعيف خاطئ
+  [['ph', 'f'], ['ck', 'k'], ['gh', 'g'], ['wh', 'w'], ['kn', 'n'], ['wr', 'r'], ['ie', 'ei'], ['ei', 'ie'], ['ea', 'ee'], ['ou', 'ow'], ['tion', 'sion']].forEach(([a, b]) => { const k = w.indexOf(a); if (k >= 0) add(w.slice(0, k) + b + w.slice(k + a.length)); });
+  for (let i = 1; i < w.length; i++) if (w[i] === 'c' && w[i + 1] !== 'h' && w[i + 1] !== 'k' && w[i - 1] !== 's') add(w.slice(0, i) + ('eiy'.includes(w[i + 1] || 'x') ? 's' : 'k') + w.slice(i + 1)); // c تُكتب بصوتها
+  if (/y$/.test(w) && !isV(w[w.length - 2])) add(w.slice(0, -1) + 'i');
+  if (/[^e]e$/.test(w) && w.length > 4) add(w.slice(0, -1)); // حذف e الأخيرة
+  for (let i = 1; i < w.length - 1; i++) if ('ea'.includes(w[i]) && (isV(w[i - 1]) || isV(w[i + 1]))) add(w.slice(0, i) + w.slice(i + 1)); // حرف علة من تجمّع (restaurant→resturant)
+  for (let i = 1; i < w.length - 1; i++) if ((w[i] === 'h' && 'gwr'.includes(w[i - 1])) || (w[i] === 'u' && w[i - 1] === 'g')) add(w.slice(0, i) + w.slice(i + 1)); // حرف صامت (neighborhood→neigborhood)
+  return [...out];
+}
+// خطآن مختلفان النوع، ليسا كلمتين من المنهج
+function twoMisspell(word, S) {
+  const c = misspell(word).filter((x) => !S.has(x)); if (c.length < 2) return null;
+  const a = c[0]; const rest = shuffle(c.slice(1)); const b = rest.find((x) => [...x].filter((ch, i) => ch !== a[i]).length > 0 && x.length !== a.length) || rest[0];
+  return shuffle([a, b]);
+}
+function orthoMix(list, p, pool) {
+  const S = vocabSet(p.grade); const used = new Set(list.map((x) => String(x.word || '').toLowerCase()));
+  const others = shuffle([...new Set((pool || []).filter((w) => /^[a-z]{4,10}$/.test(w) && !used.has(w)))]); // أسماء العلم (Riyadh) لا تدخل
+  const plan = shuffle(['right', 'right', 'gap', 'gap', 'wrong']);
+  return list.map((it, i) => {
+    const t = plan[i % plan.length]; const w = String(it.word || '');
+    if (t === 'gap' || !/^[a-z]{4,}$/.test(w)) return { ...it, ot: 'gap' };
+    if (t === 'right') { const m = twoMisspell(w, S); if (!m) return { ...it, ot: 'gap' }; const ch = shuffle([w, ...m]); return { ...it, ot: 'right', choices: ch, ans: ch.indexOf(w) }; }
+    const m = misspell(w).filter((x) => !S.has(x)); const o2 = others.splice(0, 2);
+    if (!m.length || o2.length < 2) return { ...it, ot: 'gap' };
+    const bad = m[Math.floor(Math.random() * Math.min(3, m.length))]; const ch = shuffle([bad, ...o2.map((x) => x.toLowerCase())]);
+    return { ...it, ot: 'wrong', choices: ch, ans: ch.indexOf(bad) };
+  });
+}
+// نص سؤال الإملاء في قالب التصحيح الآلي
+function orthoStem(q) { return q.ot === 'right' || q.ot === 'wrong' ? ORTHO_STEM[q.ot] : `${ORTHO_STEM.gap} ${spellGap(q).replace(/_+/g, '__')}`; }
 function normReading(d, spec) {
   const mcq = (d?.mcq || []).slice(0, 5).map((q) => normMCQ({ ...q, stem: q.q }, {}));
   const auto = (GEN_META ? GEN_META.tmpl : (EXAM ? EXAM.meta.tmpl : prefs().tmpl)) === 'auto';
@@ -1318,7 +1372,7 @@ async function runSections(ex, bp, units, avoid, onProg) {
     reading: () => callSection('reading', [bp.reading], { words: readingWords(p.diff), grammar: grammarCtx, tf9: p.tmpl === 'auto', ...av('reading') }, p).then((r) => { ex.reading = normReading(r.data, bp.reading); }),
     grammar: () => callSection('grammar', bp.grammar, av('grammar'), p).then((r) => checkGrammar(bp.grammar.map((s, i) => normGrammar((r.items || [])[i], s)), p, () => { st.grammar = 'rev'; onProg && onProg(st); })).then((l) => { ex.grammar = l; }),
     vocab: () => callSection('vocab', bp.vocab, av('vocab'), p).then((r) => checkVocab(bp.vocab.map((s, i) => normVocab((r.items || [])[i], s)), p)).then((l) => { ex.vocab = l; }),
-    spelling: () => callSection('spelling', bp.spelling, av('spelling'), p).then((r) => { ex.spelling = bp.spelling.map((s, i) => normSpell((r.items || [])[i], s)); }),
+    spelling: () => callSection('spelling', bp.spelling, av('spelling'), p).then((r) => { const l = bp.spelling.map((s, i) => normSpell((r.items || [])[i], s)); ex.spelling = p.tmpl === 'auto' ? orthoMix(l, p, units.flatMap((u) => u.vocab)) : l; }),
   };
   const errors = [];
   await Promise.all(Object.entries(jobs).map(async ([k, fn]) => {
@@ -1395,6 +1449,7 @@ async function regen(section, idx) {
       const old = EXAM[section] || [];
       let fresh = specs.map((s, i) => { const n = f((r.items || [])[i], s); if (old[i]?.img && !old[i].lib && s.kind === 'picture') { n.img = old[i].img; n.word = old[i].word; n.lib = false; } return n; });
       if (section === 'grammar') fresh = await checkGrammar(fresh, p); else if (section === 'vocab') fresh = await checkVocab(fresh, p);
+      else if (section === 'spelling' && p.tmpl === 'auto') fresh = orthoMix(fresh, p, units.flatMap((u) => u.vocab));
       EXAM[section] = fresh;
     } else {
       const old = EXAM[section][idx];
@@ -1402,6 +1457,12 @@ async function regen(section, idx) {
       const r = await callSection(section, [spec]);
       let one = [f((r.items || [])[0], spec)];
       if (section === 'grammar') one = await checkGrammar(one, p); else if (section === 'vocab') one = await checkVocab(one, p);
+      else if (section === 'spelling' && p.tmpl === 'auto') { // يبقى نوع السؤال كما هو
+        const ot = old.ot || 'gap'; const rest = EXAM.spelling.filter((_, k) => k !== idx).map((x) => String(x.word || '').toLowerCase());
+        const base = one; let tries = 0;
+        if (ot === 'gap') one = [{ ...base[0], ot: 'gap' }];
+        else do { one = orthoMix(base, p, units.flatMap((u) => u.vocab).filter((w) => !rest.includes(w.toLowerCase()))); tries++; } while (one[0].ot !== ot && tries < 12);
+      }
       EXAM[section][idx] = one[0];
     }
     saveDraft(); renderEditor();
@@ -1488,7 +1549,7 @@ function renderEditor() {
   let si = '';
   if (!EXAM.spelling.length) si = '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>';
   else EXAM.spelling.forEach((it, i) => {
-    si += `<div class="it${it.warn ? ' warn' : ''}" data-sec="spelling" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('spelling', i)}</div><div class="two"><div>${inp(`spelling.${i}.sentence`, it.sentence, 'sentence with _')}</div><div>${inp(`spelling.${i}.word`, it.word, 'full word')}</div></div>
+    si += `<div class="it${it.warn ? ' warn' : ''}" data-sec="spelling" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('spelling', i)}</div>${it.ot ? `<div class="two"><div class="en" dir="ltr" style="font-weight:600;padding:6px 2px">${esc(ORTHO_STEM[it.ot])}</div><div>${it.ot === 'gap' ? inp(`spelling.${i}.gw`, spellGap(it), 'word with _') : inp(`spelling.${i}.word`, it.word, 'full word')}</div></div>` : `<div class="two"><div>${inp(`spelling.${i}.sentence`, it.sentence, 'sentence with _')}</div><div>${inp(`spelling.${i}.word`, it.word, 'full word')}</div></div>`}
       <div class="opts">${it.choices.map((ch, j) => `<label class="opt${it.ans === j ? ' ok' : ''}"><input type="radio" name="s${i}" data-ans="spelling.${i}" value="${j}"${it.ans === j ? ' checked' : ''}><input type="text" data-p="spelling.${i}.choices.${j}" value="${esc(ch)}"></label>`).join('')}</div></div>`;
   });
   h += secCard('spelling', 'السؤال الخامس — الإملاء', 5, si);
@@ -1733,7 +1794,7 @@ function ministryBody(ka) {
 // ===================== قالب التصحيح الآلي =====================
 // ===================== قالب التصحيح الآلي (وفق نموذج المعلم) =====================
 // الترتيب: Grammar (9) · Orthography (5) · Vocabulary صور (9) · Reading صح/خطأ (9) · Writing (8) = 40
-const LA = 'abc';
+const LA = 'ABC';
 const L9 = 'ABCDEFGHI';
 const ORD = (n) => n + (n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th');
 const GRADE_N = { sg1: 1, sg2: 2, sg3: 3 };
@@ -1765,9 +1826,9 @@ function autoKeyRows() {
   return rows;
 }
 const AUTO_TXT = {
-  g: 'choose the correct answer',
-  v: 'Carefully look at all the pictures shown in the column below. Then, read the list of words provided in the opposite column. Each word is labeled with a letter (A, B, C, etc.), and each picture is labeled with a number (1, 2, 3, etc.). Your task is to choose the correct word that matches each picture.',
-  r: 'Read the passage then choose T for true And F for False :-',
+  g: 'Choose the correct answer.',
+  v: 'Look at the pictures and match each one with the correct word.',
+  r: 'Read the passage, then choose T for True and F for False.',
   w: 'Write a coherent paragraph of 3-5 sentences using 8 words from the following list:',
 };
 function autoBody(ka) {
@@ -1775,9 +1836,8 @@ function autoBody(ka) {
   const { gm, vm, pics, r, c, sp } = autoParts();
   const A = (t) => (ka ? `<span class="ka">${t}</span>` : t);
   const cell = (ok, html, cls = '') => `<td class="${cls}${ok && ka ? ' kc' : ''}">${ok && ka ? A(html) : html}</td>`;
-  const cg = (k) => `<colgroup>${Array(k).fill('<col style="width:34px"><col>').join('')}</colgroup>`;
-  const mcq = (n, stem, q) => `<table class="at xt">${cg(q.options.length)}<tr><td class="st" colspan="${q.options.length * 2}">${n}. ${stem}</td></tr><tr>${q.options.map((x, j) => cell(q.ans === j, LA[j], 'L') + cell(q.ans === j, esc(x))).join('')}</tr></table>`;
-  const head = (name, n, title, mark) => `<div class="ash xash"><span class="xsec" style="background:${SEC_COL[name]}${name === 'Orthography' ? ';font-family:\'Times New Roman\',serif' : ''}">${name}</span>${frac(mark)}</div><div class="xqt">${n}${title}</div>`;
+  const mcq = (n, stem, q) => `<table class="xq"><tr><td class="st" colspan="${q.options.length}">${n}. ${stem}</td></tr><tr class="o">${q.options.map((x, j) => cell(q.ans === j, `<b>${LA[j]})</b>${esc(x)}`)).join('')}</tr></table>`;
+  const head = (name, n, title, mark) => `<div class="ash xash"><span class="xsec" style="background:${SEC_COL[name]}">${name}</span>${frac(mark)}</div><div class="xqt">${n} ${title}</div>`;
   let h = ka ? keyBanner() : '';
   const hl = autoHeadLines(m);
   h += `<div class="xh">
@@ -1793,17 +1853,17 @@ function autoBody(ka) {
     gm.slice(1).forEach((q) => { h += mcq(++n, esc(q.stem), q); });
   }
   if (sp.length) {
-    const st = (q) => `Which letter completes the word? “ ${esc(spellGap(q)).replace(/_+/g, '__')} ”.`;
-    h += `<div class="keep">${head('Orthography', '2.', AUTO_TXT.g, 5)}${mcq(++n, st(sp[0]), { options: sp[0].choices, ans: sp[0].ans })}</div>`;
-    sp.slice(1).forEach((q) => { h += mcq(++n, st(q), { options: q.choices, ans: q.ans }); });
+    const sq = (q) => mcq(++n, esc(orthoStem(q)), { options: q.choices, ans: q.ans });
+    h += `<div class="keep">${head('Orthography', '2.', AUTO_TXT.g, 5)}${sq(sp[0])}</div>`;
+    sp.slice(1).forEach((q) => { h += sq(q); });
   }
   if (vm.length || pics.length) {
-    h += `<div class="keep">${head('Vocabulary', '3. ', AUTO_TXT.v, 9)}`;
+    h += `<div class="keep">${head('Vocabulary', '3.', AUTO_TXT.v, 9)}`;
     if (vm.length) { h += mcq(1, esc(vm[0].stem), vm[0]); h += '</div>'; vm.slice(1).forEach((q, i) => { h += mcq(i + 2, esc(q.stem), q); }); h += '<div class="keep">'; }
     if (pics.length) {
-      h += `<table class="xv"><colgroup><col style="width:11%"><col style="width:22%"><col style="width:11%"><col style="width:6%"><col style="width:7%"><col></colgroup>`;
+      h += `<table class="xv"><colgroup><col style="width:6%"><col style="width:17%"><col style="width:10%"><col style="width:16%"><col style="width:6%"><col style="width:8%"><col></colgroup><tr><th colspan="4">Pictures</th><th class="g"></th><th colspan="2">Words</th></tr>`;
       pics.forEach((it, k) => {
-        h += `<tr><td class="c">(${k + 1})</td><td class="vi">${it.img ? `<img src="${it.img}" alt="">` : ''}</td><td class="c${ka ? ' kc' : ''}">( ${ka ? A(L9[EXAM.picBox.indexOf(k)]) : '…'} )</td>${k ? '' : `<td class="sp" rowspan="${pics.length}"></td>`}<td class="c">(${L9[k]})</td><td class="w">${esc(pics[EXAM.picBox[k]].word)}</td></tr>`;
+        h += `<tr><td class="n">${k + 1}.</td><td class="vi">${it.img ? `<img src="${it.img}" alt="">` : ''}</td><td class="a">Answer:</td><td class="bl"><span>${ka ? A(L9[EXAM.picBox.indexOf(k)]) : ''}</span></td><td class="g"></td><td class="L">(${L9[k]})</td><td>${esc(pics[EXAM.picBox[k]].word)}</td></tr>`;
       });
       h += '</table>';
     }
@@ -1812,12 +1872,13 @@ function autoBody(ka) {
   if (r) {
     h += `<div class="keep">${head('Reading', '4.', AUTO_TXT.r, 9)}<div class="xp">${passageParas(r).map((p) => `<p>${esc(p)}</p>`).join('')}</div>`;
     if (r.mcq.length) { h += '</div>'; r.mcq.forEach((q, i) => { h += mcq(i + 1, esc(q.stem), q); }); h += '<div class="keep">'; }
-    if (r.tf.length) h += `<table class="xr"><colgroup><col style="width:57%"><col style="width:13%"><col style="width:15%"><col></colgroup>${r.tf.map((t, i) => `<tr><td>${i + 1}. ${esc(t.s)}</td><td></td>${cell(t.ans, '(T)', 'c')}${cell(!t.ans, '(F)', 'c')}</tr>`).join('')}</table>`;
+    const bx = (ok, t) => cell(ok, `<i>${ok && ka ? '✓' : ''}</i>${t}`, 'c');
+    if (r.tf.length) h += `<table class="xr"><colgroup><col><col style="width:13%"><col style="width:13%"></colgroup>${r.tf.map((t, i) => `<tr><td>${i + 1}. ${esc(t.s)}</td>${bx(t.ans, 'True')}${bx(!t.ans, 'False')}</tr>`).join('')}</table>`;
     h += '</div>';
   }
   if (c) {
-    h += `<div class="keep">${head('Writing', '5- ', AUTO_TXT.w, 8)}<div class="xwl">(${(c.words || []).map(esc).join(' – ')})</div>`;
-    h += ka ? `<div class="kmodel">${A(esc(c.model || ''))}</div><div class="k">${A('Marking: vocabulary &amp; language accuracy (3) · punctuation (1) · coherence &amp; sequence of ideas (2) · relevance to the topic (2).')}</div>` : '<div class="dots"></div>'.repeat(4);
+    h += `<div class="keep"><hr class="xhr">${head('Writing', '5-', AUTO_TXT.w, 8)}<div class="xwl">(${(c.words || []).map(esc).join(' – ')})</div>`;
+    h += ka ? `<div class="kmodel">${A(esc(c.model || ''))}</div><div class="k">${A('Marking: vocabulary &amp; language accuracy (3) · punctuation (1) · coherence &amp; sequence of ideas (2) · relevance to the topic (2).')}</div>` : '<div class="xdl"></div>'.repeat(5);
     h += '</div>';
   }
   if (!ka) h += `<div class="endsig xsig">My best wishes${m.teacher ? `<br>Teacher ${esc(m.teacher)}` : ''}</div>`;
@@ -2001,25 +2062,25 @@ function autoDocx(D, ka) {
   const shd = (fill) => ({ type: D.ShadingType.CLEAR, fill, color: 'auto' });
   const cellX = (children, o = {}) => new D.TableCell({ children, columnSpan: o.span, rowSpan: o.rowSpan, verticalMerge: o.vm, shading: o.fill ? shd(o.fill) : undefined, verticalAlign: o.va || D.VerticalAlign.CENTER, borders: o.borders, margins: o.margins });
   const It = (t, o = {}) => T(t, { italics: true, ...o });
-  // جدول اختيار a/b/c: صف السؤال مربوط بصف الخيارات، والصفان لا ينقسمان
+  const NB = { top: nb, bottom: nb, left: nb, right: nb };
+  // سؤال اختيار: سطر السؤال ثم ثلاثة خيارات A) B) C) وخط فاصل خفيف أسفلها؛ الصفان لا ينفصلان
+  const lg = { style: D.BorderStyle.SINGLE, size: 6, color: 'D6D6D6' };
   const mcqT = (n, stem, q) => {
     const k = q.options.length; const cw = Math.floor(W / k);
-    return new D.Table({ ...fixedW(q.options.flatMap(() => [520, cw - 520])), borders: { ...allB, insideHorizontal: sb, insideVertical: sb }, rows: [
-      new D.TableRow({ cantSplit: true, children: [TC([It(`${n}. ${stem}`, { bold: true })], { span: k * 2, keep: true })] }),
-      new D.TableRow({ cantSplit: true, children: q.options.flatMap((x, j) => { const ok = ka && q.ans === j; return [TC([ok ? red(LA[j], { italics: true }) : It(LA[j], { bold: true })], { sh: true, keep: false }), TC([ok ? red(x, { italics: true }) : It(x, { bold: true })], { keep: false })]; }) }),
+    return new D.Table({ ...fixedW(Array(k).fill(cw)), borders: noB, rows: [
+      new D.TableRow({ cantSplit: true, children: [cellX([new D.Paragraph({ keepNext: true, keepLines: true, spacing: { before: 60, after: 0 }, children: [It(`${n}. ${stem}`, { bold: true })] })], { span: k, borders: NB })] }),
+      new D.TableRow({ cantSplit: true, children: q.options.map((x, j) => { const ok = ka && q.ans === j; return cellX([new D.Paragraph({ keepLines: true, spacing: { after: 60 }, indent: { left: 300 }, children: [ok ? red(`${LA[j]})  `) : T(`${LA[j]})  `, { bold: true }), ok ? red(x) : T(x)] })], { borders: { top: nb, left: nb, right: nb, bottom: lg }, fill: ok ? 'FDE8E8' : undefined }); }) }),
     ] });
   };
   const head = (name, n, title, mark) => {
     sep();
     kids.push(new D.Table({ ...fixedW([W - 760, 760]), borders: noB, rows: [new D.TableRow({ cantSplit: true, children: [
-      TC([P([T(` ${name} `, { bold: true, color: 'FFFFFF', size: 21, fill: SEC_COL[name].slice(1) })], { keep: true, after: 60 }), new D.Paragraph({ keepNext: true, keepLines: true, spacing: { after: 60 }, children: [new D.TextRun({ text: n + title, font: 'Arial', size: 20, bold: true, italics: name === 'Grammar' || name === 'Orthography', underline: {} })] })], { borders: { top: nb, left: nb, right: nb, bottom: nb } }), fracCell(mark)] })] }));
+      TC([P([T(` ${name} `, { bold: true, color: 'FFFFFF', size: 21, fill: SEC_COL[name].slice(1) })], { keep: true, after: 60 }), new D.Paragraph({ keepNext: true, keepLines: true, spacing: { after: 60 }, children: [new D.TextRun({ text: `${n} ${title}`, font: 'Arial', size: 20, bold: true, italics: true, underline: {} })] })], { borders: { top: nb, left: nb, right: nb, bottom: nb } }), fracCell(mark)] })] }));
   };
   // عنوان القسم صفاً أول داخل جدول القسم نفسه (فلا ينفصل عن الجدول في Word)، وعمود أخير ضيق للدرجة
-  const NB = { top: nb, bottom: nb, left: nb, right: nb };
   const headRow = (name, n, title, mark, span) => new D.TableRow({ cantSplit: true, children: [
-    cellX([P([T(` ${name} `, { bold: true, color: 'FFFFFF', size: 21, fill: SEC_COL[name].slice(1) })], { keep: true, after: 60 }), new D.Paragraph({ keepNext: true, keepLines: true, spacing: { after: 60 }, children: [new D.TextRun({ text: n + title, font: 'Arial', size: 20, bold: true, underline: {} })] })], { span, borders: NB, va: D.VerticalAlign.BOTTOM }),
+    cellX([P([T(` ${name} `, { bold: true, color: 'FFFFFF', size: 21, fill: SEC_COL[name].slice(1) })], { keep: true, after: 60 }), new D.Paragraph({ keepNext: true, keepLines: true, spacing: { after: 60 }, children: [new D.TextRun({ text: `${n} ${title}`, font: 'Arial', size: 20, bold: true, italics: true, underline: {} })] })], { span, borders: NB, va: D.VerticalAlign.BOTTOM }),
     fracCell(mark)] });
-  const tail = () => cellX([P('', { after: 0 })], { borders: { top: nb, bottom: nb, right: nb, left: sb } });
   if (ka) kids.push(P([T(`Answer Key${FORMS.length > 1 ? ' — Form ' + (m.form || 'A') : ''} — نموذج الإجابة`, { red: true, size: 26 })], { align: CTR, after: 100 }));
   // الرأس: مربع الوزارة (حد أخضر فاتح) · الشعار · مربع المادة (رمادي)
   const lines = (arr) => arr.map((l) => P(l, { align: CTR, after: 0, size: 21 }));
@@ -2050,42 +2111,54 @@ function autoDocx(D, ka) {
   ] })] }));
   let n = 0;
   if (gm.length) { head('Grammar', '1.', AUTO_TXT.g, 9); gm.forEach((q) => kids.push(mcqT(++n, q.stem, q))); }
-  if (sp.length) { head('Orthography', '2.', AUTO_TXT.g, 5); sp.forEach((q) => kids.push(mcqT(++n, `Which letter completes the word? “ ${spellGap(q).replace(/_+/g, '__')} ”.`, { options: q.choices, ans: q.ans }))); }
+  if (sp.length) { head('Orthography', '2.', AUTO_TXT.g, 5); sp.forEach((q) => kids.push(mcqT(++n, orthoStem(q), { options: q.choices, ans: q.ans }))); }
   if (vm.length || pics.length) {
-    if (!pics.length) head('Vocabulary', '3. ', AUTO_TXT.v, 9);
+    if (!pics.length) head('Vocabulary', '3.', AUTO_TXT.v, 9);
     vm.forEach((q, i) => kids.push(mcqT(i + 1, q.stem, q)));
     if (pics.length) {
       sep();
-      const B = (t) => [P([T(t, { bold: true })], { align: CTR, after: 0, keep: true })];
-      kids.push(new D.Table({ ...fixedW([1130, 2270, 1130, 620, 720, 3670, 760]), borders: noB, rows: [headRow('Vocabulary', '3. ', AUTO_TXT.v, 9, 6), ...pics.map((it, k) => new D.TableRow({ cantSplit: true, height: { value: 1180, rule: D.HeightRule.ATLEAST }, children: [
-        cellX(B(`(${k + 1})`), { borders: allB }),
-        cellX(it.img ? [docxImg(D, it.img, 96, 64)] : [P(' ', { after: 0, keep: true })], { borders: allB }),
-        cellX(ka ? [P([T('( '), red(L9[EXAM.picBox.indexOf(k)]), T(' )')], { align: CTR, after: 0, keep: true })] : B('( … )'), { borders: allB }),
-        cellX([P('', { after: 0, keep: true })], { vm: k ? D.VerticalMergeType.CONTINUE : D.VerticalMergeType.RESTART, borders: allB }),
-        cellX(B(`(${L9[k]})`), { borders: allB }),
-        cellX(B(pics[EXAM.picBox[k]].word), { borders: allB }),
-        tail(),
-      ] }))] }));
+      const hb = { style: D.BorderStyle.SINGLE, size: 10, color: '9A9A9A' };
+      const RB = { top: nb, left: nb, right: nb, bottom: lg };
+      const tx = (t, o = {}) => [P([T(t, o)], { after: 0, keep: true, align: o.align })];
+      const th = (t, span) => cellX(tx(t, { bold: true }), { span, borders: { top: nb, left: nb, right: nb, bottom: hb } });
+      kids.push(new D.Table({ ...fixedW([620, 1750, 1000, 1650, 600, 820, 3100, 760]), borders: noB, rows: [
+        headRow('Vocabulary', '3.', AUTO_TXT.v, 9, 7),
+        new D.TableRow({ cantSplit: true, children: [th('Pictures', 4), cellX(tx(''), { borders: NB }), th('Words', 2), cellX(tx(''), { borders: NB })] }),
+        ...pics.map((it, k) => new D.TableRow({ cantSplit: true, height: { value: 1180, rule: D.HeightRule.ATLEAST }, children: [
+          cellX(tx(`${k + 1}.`, { bold: true }), { borders: RB }),
+          cellX(it.img ? [docxImg(D, it.img, 96, 64)] : tx(' '), { borders: RB }),
+          cellX(tx('Answer:', { color: '444444' }), { borders: RB }),
+          cellX([P([ka ? red(L9[EXAM.picBox.indexOf(k)]) : T(' ')], { align: CTR, after: 0, keep: true, border: { bottom: { style: D.BorderStyle.SINGLE, size: 8, color: '333333' } } })], { borders: RB }),
+          cellX(tx(''), { borders: NB }),
+          cellX(tx(`(${L9[k]})`, { bold: true }), { borders: RB }),
+          cellX(tx(pics[EXAM.picBox[k]].word), { borders: RB }),
+          cellX(tx(''), { borders: NB }),
+        ] }))] }));
     }
   }
   if (r) {
     sep();
-    const tfc = (ok, tx) => cellX([P([ka && ok ? red(tx) : T(tx, { bold: true })], { align: CTR, after: 0, keep: true })], { fill: ka && ok ? 'FDE8E8' : undefined, borders: allB });
-    const pas = cellX(passageParas(r).map((p) => new D.Paragraph({ alignment: D.AlignmentType.JUSTIFIED, keepNext: true, keepLines: true, spacing: { after: 80 }, children: [new D.TextRun({ text: p, font: 'Cambria', size: 22 })] })), { span: 4, borders: NB });
-    const rows = [headRow('Reading', '4.', AUTO_TXT.r, 9, 4), new D.TableRow({ cantSplit: true, children: [pas, cellX([P('', { after: 0, keep: true })], { borders: NB })] })];
-    r.tf.forEach((tt, i) => rows.push(new D.TableRow({ cantSplit: true, height: { value: 560, rule: D.HeightRule.ATLEAST }, children: [
-      cellX([new D.Paragraph({ keepNext: i < r.tf.length - 1, keepLines: true, spacing: { after: 0 }, children: [new D.TextRun({ text: `${i + 1}. ${tt.s}`, font: 'Times New Roman', size: 22 })] })], { borders: allB }),
-      cellX([P('', { after: 0, keep: i < r.tf.length - 1 })], { borders: allB }), tfc(tt.ans, '(T)'), tfc(!tt.ans, '(F)'), tail(),
-    ] })));
-    kids.push(new D.Table({ ...fixedW([5110, 1340, 1545, 1545, 760]), borders: noB, rows }));
+    const RB = { top: nb, left: nb, right: nb, bottom: lg };
+    const tfc = (ok, tx, last) => cellX([P([ka && ok ? red('☑ ') : T('☐ ', { color: '555555' }), ka && ok ? red(tx) : T(tx, { bold: true, size: 19 })], { after: 0, keep: !last })], { fill: ka && ok ? 'FDE8E8' : undefined, borders: RB });
+    const pas = cellX(passageParas(r).map((p) => new D.Paragraph({ alignment: D.AlignmentType.JUSTIFIED, keepNext: true, keepLines: true, spacing: { after: 80 }, children: [new D.TextRun({ text: p, font: 'Cambria', size: 23 })] })), { span: 3, borders: NB });
+    const rows = [headRow('Reading', '4.', AUTO_TXT.r, 9, 3), new D.TableRow({ cantSplit: true, children: [pas, cellX([P('', { after: 0, keep: true })], { borders: NB })] })];
+    r.tf.forEach((tt, i) => { const last = i === r.tf.length - 1; rows.push(new D.TableRow({ cantSplit: true, height: { value: 540, rule: D.HeightRule.ATLEAST }, children: [
+      cellX([new D.Paragraph({ keepNext: !last, keepLines: true, spacing: { after: 0 }, children: [T(`${i + 1}. ${tt.s}`)] })], { borders: RB }),
+      tfc(tt.ans, 'True', last), tfc(!tt.ans, 'False', last), cellX([P('', { after: 0 })], { borders: NB }),
+    ] })); });
+    kids.push(new D.Table({ ...fixedW([6740, 1400, 1400, 760]), borders: noB, rows }));
     // اختبارات قديمة فيها أسئلة اختيار للقراءة
     r.mcq.forEach((q, i) => kids.push(mcqT(i + 1, q.stem, q)));
   }
   if (c) {
-    head('Writing', '5- ', AUTO_TXT.w, 8);
-    kids.push(new D.Paragraph({ keepNext: true, keepLines: true, spacing: { after: 80 }, children: [new D.TextRun({ text: `(${(c.words || []).join(' – ')})`, font: 'Cambria', size: 22 })] }));
+    kids.push(new D.Paragraph({ keepNext: true, spacing: { before: 240, after: 0 }, border: { bottom: { style: D.BorderStyle.SINGLE, size: 8, color: '9A9A9A' } }, children: [T('', { size: 4 })] }));
+    head('Writing', '5-', AUTO_TXT.w, 8);
+    kids.push(new D.Paragraph({ keepNext: true, keepLines: true, spacing: { after: 80 }, children: [new D.TextRun({ text: `(${(c.words || []).join(' – ')})`, font: 'Cambria', size: 23 })] }));
     if (ka) { kids.push(P([red(c.model || '')], { keep: true })); kids.push(P([T('Marking: vocabulary & language accuracy (3) · punctuation (1) · coherence & sequence of ideas (2) · relevance to the topic (2).', { red: true, size: 18 })])); }
-    else for (let i = 0; i < 4; i++) kids.push(P('………………………………………………………………………………………………………………', { after: 120, keep: i < 3 }));
+    else { // خمسة أسطر منقطة (صفوف جدول حتى لا يدمجها Word في حد واحد)
+      const dl = { style: D.BorderStyle.DOTTED, size: 6, color: '666666' };
+      kids.push(new D.Table({ ...fixedW([W]), borders: noB, rows: Array.from({ length: 5 }, (_, i) => new D.TableRow({ cantSplit: true, height: { value: 500, rule: D.HeightRule.EXACT }, children: [cellX([P('', { after: 0, keep: i < 4 })], { borders: { top: nb, left: nb, right: nb, bottom: dl } })] })) }));
+    }
   }
   if (!ka) kids.push(autoSigDocx(D, m));
   if (ka) {
@@ -2215,7 +2288,7 @@ function arabicToImages(html) {
 // تقسيم الصفحات: يمر على وحدات الورقة بالترتيب؛ أي وحدة (سؤال مع خياراته، كتلة توصيل/صور، عنوان مع أول فقرة)
 // تعبر حدّ الصفحة تُنقل كاملة للصفحة التالية، وصفحة نموذج الإجابة تبدأ دائماً بصفحة جديدة.
 function paginate(root, pageH) {
-  const sel = '.keypage, .keep, .pi, table.at, .match, .passage, .box, .qhead, .ash, table.ak, .kmodel, .endsig';
+  const sel = '.keypage, .keep, .pi, table.at, table.xq, table.xr, .match, .passage, .box, .qhead, .ash, table.ak, .kmodel, .endsig';
   const base = () => root.getBoundingClientRect().top;
   root.querySelectorAll(sel).forEach((el) => {
     const r = el.getBoundingClientRect(); const b0 = base();
