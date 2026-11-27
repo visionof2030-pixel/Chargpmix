@@ -111,7 +111,9 @@ Write one grammar item for EACH line below, in the same order, testing exactly t
 - kind "mcq": a sentence with ONE blank "____" and ${no} options (all the same word class / verb forms of the same verb).
 - kind "do": a "do as shown" task. Pick the instruction that best fits the target, e.g. "Correct the mistake", "Rearrange", "Make a Yes/No question", "Make a question", "Change into negative", "Change into passive", "Join using who/which", "Use the correct form of the verb". For "Rearrange" give the words separated by " – ". For "Correct the mistake" the sentence must contain exactly one error in the target point.
 ${lines}
-JSON: {"items":[{"kind":"mcq","stem":"...","options":${oj},"answer":"<exact option>"} | {"kind":"do","sentence":"...","instruction":"...","answer":"<the full correct answer>"}]}`;
+Return valid JSON: {"items":[ ...one object per line above, in order... ]}
+Object for kind "mcq": {"kind":"mcq","stem":"...","options":${oj},"answer":"<exact option>"}
+Object for kind "do": {"kind":"do","sentence":"...","instruction":"...","answer":"<the full correct answer>"}`;
   }
   if (section === "vocab") {
     return `${h}
@@ -121,7 +123,11 @@ Write one vocabulary item for EACH line below, in the same order, testing the gi
 - kind "picture": just return the word (it must be a concrete, picturable noun or action; if the target is not picturable choose another picturable word from the unit words).
 - kind "odd": 4 words where 3 belong to one category from the unit and 1 (the target or another word) is the odd one; give the odd word as answer.
 ${lines}
-JSON: {"items":[{"kind":"mcq","stem":"...","options":${oj},"answer":"..."} | {"kind":"match","word":"...","meaning":"..."} | {"kind":"picture","word":"..."} | {"kind":"odd","options":["","","",""],"answer":"..."}]}`;
+Return valid JSON: {"items":[ ...one object per line above, in order... ]}
+Object for kind "mcq": {"kind":"mcq","stem":"...","options":${oj},"answer":"<exact option>"}
+Object for kind "match": {"kind":"match","word":"...","meaning":"..."}
+Object for kind "picture": {"kind":"picture","word":"..."}
+Object for kind "odd": {"kind":"odd","options":["","","",""],"answer":"..."}`;
   }
   if (section === "spelling") {
     return `${h}
@@ -158,6 +164,20 @@ JSON: {"data":{"mode":"wordbox","title":"...","instructions":"Fill in the blanks
     return `${h}
 Guided composition. Topic from Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Give a short title (2–4 words), one instruction line, and 5 guiding questions in a logical order that help the student write a paragraph of about 60–80 words using the unit's grammar and words (${(s?.words || []).join(", ")}). Also write a model answer paragraph (for the teacher's answer key).
 JSON: {"data":{"mode":"guided","title":"...","instructions":"...","questions":["","","","",""],"model":"..."}}`;
+  }
+  return null;
+}
+
+// قراءة متسامحة لرد النموذج: أسوار الكود، مصفوفة في الأعلى، فواصل زائدة، علامات اقتباس ذكية، وفاصل «|» بين الكائنات
+function parseLoose(raw: string): any {
+  let c = raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+  const tries: string[] = [c];
+  const o1 = c.indexOf("{"), o2 = c.lastIndexOf("}"), a1 = c.indexOf("["), a2 = c.lastIndexOf("]");
+  if (o1 >= 0 && o2 > o1) tries.push(c.slice(o1, o2 + 1));
+  if (a1 >= 0 && a2 > a1 && (o1 < 0 || a1 < o1)) tries.push(c.slice(a1, a2 + 1));
+  const fix = (x: string) => x.replace(/[\u201c\u201d]/g, '"').replace(/}\s*\|\s*{/g, "},{").replace(/,\s*([}\]])/g, "$1");
+  for (const t of [...tries, ...tries.map(fix)]) {
+    try { const v = JSON.parse(t); if (v && typeof v === "object") return v; } catch { /* next */ }
   }
   return null;
 }
@@ -226,12 +246,14 @@ const handleRequest = async (req: Request): Promise<Response> => {
 
   const raw = await callGemini(prompt, 95000);
   if (!raw) return jsonResponse({ failed: true, reason: "no_answer" });
-  try {
-    const c = raw.trim().replace(/^```json\s*/i, "").replace(/```\s*$/i, "");
-    const v = JSON.parse(c.slice(c.indexOf("{"), c.lastIndexOf("}") + 1));
-    if (!v || typeof v !== "object") throw new Error("shape");
-    return jsonResponse({ items: Array.isArray(v.items) ? v.items : undefined, data: v.data && typeof v.data === "object" ? v.data : undefined });
-  } catch { return jsonResponse({ failed: true, reason: "unparsable" }); }
+  const v = parseLoose(raw);
+  if (!v) {
+    console.error("exam-generate unparsable section=" + section + " len=" + raw.length + " head=" + raw.slice(0, 400).replace(/\s+/g, " "));
+    return jsonResponse({ failed: true, reason: "unparsable" });
+  }
+  const items = Array.isArray(v) ? v : Array.isArray(v.items) ? v.items : undefined;
+  const data = !Array.isArray(v) && v.data && typeof v.data === "object" ? v.data : (!Array.isArray(v) && !v.items && (v.title || v.lines || v.mcq) ? v : undefined);
+  return jsonResponse({ items, data });
 };
 
 Deno.serve(async (req: Request) => {
