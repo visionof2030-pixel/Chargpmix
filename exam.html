@@ -337,6 +337,7 @@ table.marks td{border:1px solid #000;padding:1px 4px;text-align:center;min-width
 .key h3{text-align:center;margin:0 0 8px}
 .key .k{font-size:11pt;padding:1px 0}
 .pbreak{break-before:page;page-break-before:always}
+.endsig{text-align:center;font-style:italic;margin-top:22px;line-height:1.35}
 /* درجة السؤال: كسر بسطه فارغ للمعلم ومقامه الدرجة الكاملة */
 .frac{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid #000;border-radius:6px;min-width:34px;padding:0 5px;font-weight:700;line-height:1.15;font-size:11pt}
 .frac .fn{display:block;width:100%;height:15px;border-bottom:1.5px solid #000}
@@ -359,6 +360,17 @@ td.ar{direction:rtl;text-align:center;font-family:Arial,Tahoma,sans-serif}
 .keep,.pi,table.at,.ppic,.match,.passage,.box,table.ak{break-inside:avoid;page-break-inside:avoid}
 .qhead,.ash,.s-sub,.qtitle{break-after:avoid;page-break-after:avoid}
 .sheet.exp{width:194mm;padding:0 1mm}
+.sheet.exp{font-size:12pt;line-height:1.28}
+.sheet.exp .q{margin-top:8px}
+.sheet.exp .pi{padding:1px 0}
+.sheet.exp .s-sub{margin:5px 0 2px}
+.sheet.exp .dots{height:20px}
+.sheet.exp .passage{padding:4px 8px;margin:3px 0 6px}
+.sheet.exp .passage p{margin:0 0 3px}
+.sheet.exp .ppic .frame{height:100px}
+.sheet.exp.auto{font-size:10.5pt;line-height:1.2}
+.sheet.exp.auto table.at td{padding:0 5px}
+.sheet.exp.auto .passage{font-size:10pt}
 /* قالب التصحيح الآلي */
 .ah{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;font-size:10pt;line-height:1.35}
 .sheet.auto{font-size:11pt;line-height:1.3}
@@ -430,6 +442,7 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
           <div id="cmodeBox"><div class="muted">نوع سؤال التعبير</div><div class="seg" id="cmode"><button data-v="guided" class="on">أسئلة موجّهة</button><button data-v="wordbox">إكمال من صندوق كلمات</button></div></div>
         </div>
         <div class="row" style="margin-top:14px">
+          <label class="row muted" style="gap:5px"><input type="checkbox" id="twoForms"> توليد نموذجين (أ و ب)</label>
           <button class="btn" id="genBtn">توليد الاختبار</button>
           <button class="btn sec" id="backEdit" hidden>متابعة تحرير الاختبار الحالي</button>
           <span class="muted">يستغرق عادةً ٢٠–٤٠ ثانية.</span>
@@ -447,7 +460,10 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
         <button class="btn sec" id="copyBtn">نسخ</button>
         <button class="btn sec" id="altBtn">＋ نموذج بديل (أسئلة مختلفة)</button>
         <div class="seg" id="formTabs" hidden><button data-i="0" class="on">النموذج أ</button><button data-i="1">النموذج ب</button></div>
-        <label class="row muted" style="gap:5px"><input type="checkbox" id="withKey"> إرفاق نموذج الإجابة</label>
+        <span class="dlpick row muted" style="gap:10px"><span>يشمل التنزيل:</span>
+          <label class="row" style="gap:4px" id="pickAWrap"><input type="checkbox" id="pickA" checked> النموذج أ</label>
+          <label class="row" style="gap:4px" id="pickBWrap"><input type="checkbox" id="pickB" checked> النموذج ب</label>
+          <label class="row" style="gap:4px"><input type="checkbox" id="withKey"> نموذج الإجابة</label></span>
         <span style="flex:1"></span>
         <button class="btn sec sm" id="newBtn">↺ اختبار جديد</button>
       </div></div>
@@ -532,6 +548,7 @@ function prefs() {
     year: $('year').value.trim(), time: $('time').value.trim(),
     diff: document.querySelector('#diff .on')?.dataset.v || 'medium', cmode: document.querySelector('#cmode .on')?.dataset.v || 'guided',
     tmpl: document.querySelector('#tmpl .on')?.dataset.v || 'ministry', gcount: +(document.querySelector('#gcount .on')?.dataset.v || 9),
+    twoForms: !!$('twoForms')?.checked,
   };
 }
 function termUnits(g, t) { const b = C[g]; const [a, z] = b.terms[t]; return b.units.filter((u) => u.u >= a && u.u <= z); }
@@ -550,6 +567,7 @@ function selectedUnits() {
 function initUI() {
   const sp = lsGet(PREF_KEY) || {};
   for (const k of ['grade', 'term', 'directorate', 'school', 'teacher', 'year', 'time']) if (sp[k]) $(k).value = sp[k];
+  $('twoForms').checked = !!sp.twoForms; $('twoForms').onchange = savePrefs;
   for (const id of ['diff', 'cmode', 'tmpl', 'gcount']) {
     const v = sp[id] != null ? String(sp[id]) : '';
     if (v) document.querySelectorAll('#' + id + ' button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
@@ -610,6 +628,7 @@ function setForm(i) {
 function formsUI() {
   const two = FORMS.length > 1;
   $('formTabs').hidden = !two;
+  $('pickAWrap').hidden = !two; $('pickBWrap').hidden = !two;
   $('formTabs').querySelectorAll('button').forEach((b, i) => b.classList.toggle('on', i === CUR));
   $('altBtn').textContent = two ? '↻ إعادة توليد النموذج ب' : '＋ نموذج بديل (أسئلة مختلفة)';
 }
@@ -772,11 +791,12 @@ async function generate() {
   FORMS = [ex]; CUR = 0; EXAM = ex;
   if (errors.length) toast('بعض الأقسام لم تُولَّد: ' + errors[0] + ' — استخدم زر «↻ القسم».', 6000);
   saveDraft(); renderEditor(); formsUI(); showStep(2);
+  if (p.twoForms) await generateAlt(true); // نموذجان دفعة واحدة
 }
 // نموذج بديل بضغطة واحدة: نفس الوحدات والتوزيع، وأسئلة ونصوص وكلمات مختلفة عن النموذج أ
-async function generateAlt() {
+async function generateAlt(auto) {
   const A = FORMS[0]; if (!A) return;
-  if (FORMS[1] && !confirm('سيُستبدل النموذج ب الحالي بأسئلة جديدة. متابعة؟')) return;
+  if (!auto && FORMS[1] && !confirm('سيُستبدل النموذج ب الحالي بأسئلة جديدة. متابعة؟')) return;
   const p = { ...A.meta, form: 'B' };
   const units = C[p.grade].units.filter((u) => p.units.includes(u.u));
   const lc = (x) => String(x || '').toLowerCase();
@@ -1031,13 +1051,32 @@ function passageParas(r) {
 }
 function passageHTML(r) { return `<div class="passage">${passageParas(r).map((p) => `<p>${esc(p)}</p>`).join('')}</div>`; }
 const frac = (mark) => `<span class="frac"><span class="fn"></span><span class="fd">${mark}</span></span>`;
-const keyBanner = () => `<div class="keyban">Answer Key — <span class="art red">نموذج الإجابة</span></div>`; // يأتي أول عنصر في صفحة نموذج الإجابة
+const keyBanner = () => `<div class="keyban">Answer Key${FORMS.length > 1 ? ' — Form ' + esc(EXAM.meta.form || 'A') : ''} — <span class="art red">نموذج الإجابة</span></div>`;
+// «Best wishes» واسم المعلم: أسفل آخر صفحة من ورقة الأسئلة، في المنتصف تماماً
+const endSig = (m) => `<div class="endsig">Best wishes${m.teacher ? '<br>' + esc(m.teacher) : ''}</div>`; // يأتي أول عنصر في صفحة نموذج الإجابة
 function formLine(m) { return EXAM_FORMS().length > 1 ? `<br><b>Form ${esc(m.form || 'A')}</b>` : ''; }
 
+function withForm(f, fn) { const prev = EXAM; EXAM = f; try { ensureOrders(); return fn(); } finally { EXAM = prev; } }
+const bodyOf = (ka) => (isAuto() ? autoBody(ka) : ministryBody(ka));
+// النموذج المعروض (المعاينة والنسخ)
 function paperHTML(withKey) {
   ensureOrders();
-  const body = (ka) => (isAuto() ? autoBody(ka) : ministryBody(ka));
-  return body(false) + (withKey ? `<div class="pbreak keypage">${body(true)}</div>` : '');
+  return bodyOf(false) + (withKey ? `<div class="pbreak keypage">${bodyOf(true)}</div>` : '');
+}
+// ما سيُنزَّل: النماذج المختارة ثم إجاباتها — كل جزء يبدأ بصفحة جديدة ولا يتداخل مع غيره
+function exportForms() {
+  if (FORMS.length < 2) return [EXAM];
+  const out = []; if ($('pickA').checked) out.push(FORMS[0]); if ($('pickB').checked) out.push(FORMS[1]);
+  return out.length ? out : [EXAM];
+}
+function exportParts() {
+  const forms = exportForms(); const parts = [];
+  forms.forEach((f) => parts.push({ f, ka: false }));
+  if ($('withKey').checked) forms.forEach((f) => parts.push({ f, ka: true }));
+  return parts;
+}
+function exportHTML() {
+  return exportParts().map((pt, i) => { const b = withForm(pt.f, () => bodyOf(pt.ka)); return i ? `<div class="pbreak keypage">${b}</div>` : b; }).join('');
 }
 
 function ministryBody(ka) {
@@ -1124,7 +1163,8 @@ function ministryBody(ka) {
   h += `<div class="q"><div class="keep">${qh(5, 'Orthography', 5)}`;
   if (EXAM.spelling.length) { h += `<div class="s-sub">Choose the missing letter:</div>${si(EXAM.spelling[0], 0)}</div>`; EXAM.spelling.slice(1).forEach((it, i) => { h += si(it, i + 1); }); }
   else h += '</div>';
-  h += `</div><div class="foot">Best wishes${m.teacher ? '<br>' + esc(m.teacher) : ''}</div>`;
+  h += '</div>';
+  if (!ka) h += endSig(m);
   return h;
 }
 
@@ -1190,7 +1230,8 @@ function autoBody(ka) {
     h += ka ? `<div class="kmodel">${A(esc(c.model || ''))}</div><div class="k">${A('Marking: vocabulary &amp; language accuracy (3) · punctuation (1) · coherence &amp; sequence of ideas (2) · relevance to the topic (2).')}</div>` : '<div class="dots"></div>'.repeat(6);
     h += '</div>';
   }
-  h += `<div class="keep" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:end;margin-top:6px"><span></span><b>End of the questions</b><span style="text-align:right;font-style:italic;font-size:10pt">My best wishes${m.teacher ? '<br>' + esc(m.teacher) : ''}</span></div>`;
+  h += `<div class="keep" style="text-align:center;margin-top:6px"><b>End of the questions</b></div>`;
+  if (!ka) h += endSig(m);
   if (ka) {
     h += `<div class="keep" style="margin-top:10px"><div class="s-sub">Quick key (for the auto-correction system):</div>`;
     for (const [title, letters] of autoKeyRows()) h += `<div class="keep"><div class="k"><b>${esc(title)}</b></div><table class="ak"><tr>${letters.map((_, i) => `<td>${i + 1}</td>`).join('')}</tr><tr>${letters.map((l) => `<td>${A(l)}</td>`).join('')}</tr></table></div>`;
@@ -1234,6 +1275,14 @@ function docxSave(D, kids, margins, name) {
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   });
 }
+function docxSig(D, m, size) {
+  const runs = [new D.TextRun({ text: 'Best wishes', font: 'Arial', size, italics: true })];
+  if (m.teacher) runs.push(new D.TextRun({ text: m.teacher, font: 'Arial', size, italics: true, break: 1 }));
+  return new D.Paragraph({
+    alignment: D.AlignmentType.CENTER, children: runs,
+    frame: { type: 'alignment', width: 6000, height: m.teacher ? 620 : 340, anchor: { horizontal: D.FrameAnchorType.MARGIN, vertical: D.FrameAnchorType.MARGIN }, alignment: { x: D.HorizontalPositionAlign.CENTER, y: D.VerticalPositionAlign.BOTTOM } },
+  });
+}
 function docxImg(D, dataUrl, w, h) { return new D.Paragraph({ alignment: D.AlignmentType.CENTER, keepNext: true, children: [new D.ImageRun({ data: b64u8(dataUrl), transformation: { width: w, height: h } })] }); }
 function docxPassageParas(D, K, r, size) { return passageParas(r).map((p) => K.P(p, { after: 60, align: D.AlignmentType.JUSTIFIED, size, keep: true })); }
 
@@ -1249,7 +1298,7 @@ function ministryDocx(D, ka) {
   const boxed = (children) => new D.Table({ ...fixedW([FULLW]), rows: [new D.TableRow({ cantSplit: true, children: [new D.TableCell({ children, width: { size: FULLW, type: D.WidthType.DXA } })] })] });
   const dots = (keep) => P('……………………………………………………………………………………………………', { after: 100, keep });
   const termTxt = m.term === '2' ? 'Second' : 'First';
-  if (ka) kids.push(P([T('Answer Key — نموذج الإجابة', { red: true, size: 28 })], { align: CTR, after: 120 }));
+  if (ka) kids.push(P([T(`Answer Key${FORMS.length > 1 ? ' — Form ' + (m.form || 'A') : ''} — نموذج الإجابة`, { red: true, size: 28 })], { align: CTR, after: 120 }));
   kids.push(new D.Table({ ...fixedW([3900, 2500, 3900]), borders: noB, rows: [new D.TableRow({ children: [
     new D.TableCell({ children: [P('Kingdom of Saudi Arabia', { size: 20, after: 0 }), P('Ministry of Education', { size: 20, after: 0 }), ...(m.directorate ? [P(m.directorate, { size: 20, after: 0 })] : []), P(m.school || 'Intermediate School', { size: 20, after: 0 })] }),
     new D.TableCell({ children: [docxImg(D, LOGO, 96, 51)] }),
@@ -1338,8 +1387,7 @@ function ministryDocx(D, ka) {
     kids.push(sub('Choose the missing letter:'));
     EXAM.spelling.forEach((it, i) => kids.push(P([T(`${i + 1}. ${it.sentence}   (`), ...it.choices.flatMap((x, j) => [...(j ? [T(' – ')] : []), ka && it.ans === j ? red(x) : T(x)]), T(')')])));
   }
-  kids.push(P('Best wishes', { italics: true, align: R, before: 200, keep: true }));
-  if (m.teacher) kids.push(P(m.teacher, { align: R }));
+  if (!ka) kids.push(docxSig(D, m, 24));
   return kids;
 }
 
@@ -1355,7 +1403,7 @@ function autoDocx(D, ka) {
     (keep) => [TC(`${n}. ${q.stem}`, { bold: true, span: q.options.length * 2, keep })],
     (keep) => q.options.flatMap((x, j) => { const ok = ka && q.ans === j; return [TC(ok ? [red(LT[j])] : LT[j], { bold: true, sh: true, align: CTR, keep }), TC(ok ? [red(x)] : x, { keep })]; }),
   ]) });
-  if (ka) kids.push(P([T('Answer Key — نموذج الإجابة', { red: true, size: 26 })], { align: CTR, after: 100 }));
+  if (ka) kids.push(P([T(`Answer Key${FORMS.length > 1 ? ' — Form ' + (m.form || 'A') : ''} — نموذج الإجابة`, { red: true, size: 26 })], { align: CTR, after: 100 }));
   const hdr = (lines) => new D.TableCell({ children: lines.map((l) => P(l, { align: CTR, after: 0, size: 20 })) });
   kids.push(new D.Table({ ...fixedW([4100, 2100, 4100]), rows: [new D.TableRow({ children: [
     hdr(['Kingdom of Saudi Arabia', 'Ministry of Education', ...(m.directorate ? [m.directorate] : []), m.school || 'Intermediate School']),
@@ -1410,8 +1458,7 @@ function autoDocx(D, ka) {
     else for (let i = 0; i < 7; i++) kids.push(P('……………………………………………………………………………………………………', { after: 80, keep: i < 6 }));
   }
   kids.push(P('End of the questions', { bold: true, align: CTR, before: 160, keep: true }));
-  kids.push(P('My best wishes', { italics: true, align: D.AlignmentType.RIGHT, keep: !!m.teacher }));
-  if (m.teacher) kids.push(P(m.teacher, { align: D.AlignmentType.RIGHT }));
+  if (!ka) kids.push(docxSig(D, m, 20));
   if (ka) {
     kids.push(P('Quick key (for the auto-correction system):', { bold: true, before: 160, keep: true }));
     for (const [title, letters] of autoKeyRows()) {
@@ -1427,11 +1474,10 @@ async function exportDOCX() {
   busyBtns(true);
   try {
     if (!window.docx) await loadScript('https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js');
-    ensureOrders();
     const D = window.docx; const auto = isAuto();
     const build = auto ? autoDocx : ministryDocx;
-    let kids = build(D, false);
-    if ($('withKey').checked) kids = kids.concat([new D.Paragraph({ children: [new D.PageBreak()] })], build(D, true));
+    let kids = [];
+    exportParts().forEach((pt, i) => { if (i) kids.push(new D.Paragraph({ children: [new D.PageBreak()] })); kids = kids.concat(withForm(pt.f, () => build(D, pt.ka))); });
     await docxSave(D, kids, auto ? { top: 700, bottom: 700, left: 760, right: 760 } : { top: 720, bottom: 720, left: 800, right: 800 }, fileBase() + (auto ? '_Auto' : '') + '.docx');
     toast('تم تنزيل ملف Word.');
   } catch (e) { console.error(e); toast('تعذّر إنشاء ملف Word.'); }
@@ -1460,7 +1506,10 @@ window.addEventListener('resize', () => { if ($('pv').classList.contains('open')
 
 // ===================== التنزيل =====================
 function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
-function fileBase() { const m = EXAM.meta; return `Exam_${C[m.grade].name.replace(/\s+/g, '')}_T${m.term}${FORMS.length > 1 ? '_Form' + (m.form || 'A') : ''}`; }
+function fileBase() {
+  const m = EXAM.meta; const fs = FORMS.length > 1 ? exportForms().map((f) => f.meta.form || 'A').join('') : '';
+  return `Exam_${C[m.grade].name.replace(/\s+/g, '')}_T${m.term}${fs ? '_Form' + fs : ''}${$('withKey').checked ? '_withKey' : ''}`;
+}
 function busyBtns(on) { for (const id of ['pdfBtn', 'docBtn', 'pvPdf', 'pvDoc', 'copyBtn', 'pvCopy']) $(id).disabled = on; }
 // نسخ الورقة إلى الحافظة (بتنسيقها وصورها) للصقها في Word أو Google Docs أو غيرهما
 async function copyExam() {
@@ -1506,13 +1555,16 @@ function arabicToImages(html) {
 // تقسيم الصفحات: يمر على وحدات الورقة بالترتيب؛ أي وحدة (سؤال مع خياراته، كتلة توصيل/صور، عنوان مع أول فقرة)
 // تعبر حدّ الصفحة تُنقل كاملة للصفحة التالية، وصفحة نموذج الإجابة تبدأ دائماً بصفحة جديدة.
 function paginate(root, pageH) {
-  const sel = '.keypage, .keep, .pi, table.at, .match, .passage, .box, .qhead, .ash, table.ak, .kmodel';
+  const sel = '.keypage, .keep, .pi, table.at, .match, .passage, .box, .qhead, .ash, table.ak, .kmodel, .endsig';
   const base = () => root.getBoundingClientRect().top;
   root.querySelectorAll(sel).forEach((el) => {
     const r = el.getBoundingClientRect(); const b0 = base();
     const top = r.top - b0; const bot = r.bottom - b0; const rem = top % pageH;
     let pad = 0;
     if (el.classList.contains('keypage')) { if (rem > 14) pad = pageH - rem + 2; }
+    else if (el.classList.contains('endsig')) { // أسفل الصفحة الحالية، أو أسفل التالية إن لم يتسع
+      const h = r.height + 6; pad = rem + h <= pageH ? pageH - rem - h : (pageH - rem) + (pageH - h);
+    }
     else if (r.height <= pageH - 6 && Math.floor(top / pageH) !== Math.floor((bot - 1) / pageH)) pad = pageH - rem + 2;
     if (pad > 0) { const d = document.createElement('div'); d.style.height = pad + 'px'; el.parentNode.insertBefore(d, el); }
   });
@@ -1523,7 +1575,7 @@ async function exportPDF() {
   try {
     if (!window.html2pdf) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
     // فاصل صفحة نموذج الإجابة نضبطه بأنفسنا (مكتبة PDF تضيف صفحة فارغة إذا وقع الفاصل على حد الصفحة تماماً)
-    const html = `<div class="sheet exp${isAuto() ? ' auto' : ''}" dir="ltr">${arabicToImages(paperHTML($('withKey').checked)).replace('class="pbreak keypage"', 'class="keypage" style="break-before:auto;page-break-before:auto"')}</div>`;
+    const html = `<div class="sheet exp${isAuto() ? ' auto' : ''}" dir="ltr">${arabicToImages(exportHTML()).replace(/class="pbreak keypage"/g, 'class="keypage" style="break-before:auto;page-break-before:auto"')}</div>`;
     const worker = window.html2pdf().set({
       margin: isAuto() ? [6, 7, 6, 7] : [8, 8, 8, 8], filename: fileBase() + '.pdf',
       image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 },
