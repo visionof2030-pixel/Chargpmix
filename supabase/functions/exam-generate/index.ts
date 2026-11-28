@@ -99,11 +99,11 @@ const lvl = (d: string) => (LEVEL[d] ? d : d === "easy" || d === "hard" ? d : "m
 
 function header(grade: string, term: string, difficulty: string) {
   return `You write questions for a Saudi Ministry of Education English final exam.
-Students: ${grade} (intermediate stage, Super Goal series), term ${term}. Learners are Saudi teenagers (A1–A2).
+Students: ${grade}${/primary/i.test(grade) ? " (primary stage, Top Goal series), term " + term + ". Learners are Saudi children aged 11–12 (A1): keep sentences short and simple, everyday child-friendly contexts (school, family, food, sports, animals)." : " (intermediate stage, Super Goal series), term " + term + ". Learners are Saudi teenagers (A1–A2)."}
 Difficulty: ${LEVEL[lvl(difficulty)]}
 Rules:
 - Use ONLY the grammar and vocabulary of the given units. Never test anything outside them, and never invent a grammar rule or structure that is not in the given points.
-- Natural, correct English; culturally appropriate for Saudi Arabia (Saudi names, places, food). No music, dating or inappropriate content.
+- Natural, correct English; culturally appropriate for Saudi Arabia (Saudi names, places, food). No dating or inappropriate content; mention music or instruments only when it is a target unit word.
 - Exactly one correct answer per item. Shuffle the position of the correct option.
 - Return JSON only, no markdown.`;
 }
@@ -144,7 +144,7 @@ Object for kind "do": {"kind":"do","sentence":"...","instruction":"...","answer"
   }
   if (section === "grammar_review") {
     const its = Array.isArray(ctx.review) ? (ctx.review as unknown[]).slice(0, 20).map((x) => txt(x, 400)) : [];
-    return `You are a strict curriculum checker for a Saudi intermediate-stage English exam (Super Goal series).
+    return `You are a strict curriculum checker for a Saudi school English exam (Super Goal / Top Goal series).
 Allowed grammar points (the ONLY grammar the exam may test): ${txt(ctx.allowed, 1500)}.
 For EACH numbered item below (it shows its intended target point), decide "ok": true ONLY if ALL are true:
 1) it tests exactly its target point, and that point is in the allowed list;

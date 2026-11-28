@@ -202,6 +202,44 @@ window.EXAM_CURRICULUM = {
         vocab: ['culture shock', 'customs', 'customary', 'polite', 'impolite', 'rude', 'advisable', 'chopsticks', 'business cards', 'tipping', 'arrive late', 'adapt', 'adjustment', 'flexible', 'frustrating', 'homesick', 'abroad'],
         reading: 'A Fish Out of Water (culture shock)', writing: 'An email about cultural differences / advice to travelers' },
     ]
+  },
+  // كتاب Top Goal 3 (السادس الابتدائي) — من صفحة Scope and Sequence في كتاب الطالب
+  tg3: {
+    name: 'Top Goal 3', grade: 'سادس ابتدائي', primary: true, terms: { 1: [1, 4], 2: [5, 8] },
+    units: [
+      { u: 1, title: 'Living Things',
+        grammar: ['Present passive (is / are + past participle): Insects are eaten by other animals.', 'Where clauses: The desert is where camels live.'],
+        vocab: ['beetle', 'butterfly', 'creature', 'dinosaur', 'extinct', 'furry', 'heavy', 'insect', 'look like', 'quiet', 'tortoise', 'touch', 'wild', 'wing', 'camel', 'desert', 'eagle', 'fur', 'journey', 'look after', 'nest', 'octopus', 'pond', 'swan'],
+        reading: 'A story about different creatures in the park / an article about animal environments', writing: 'A description of an animal environment' },
+      { u: 2, title: 'Lifestyles',
+        grammar: ['Zero conditional: We feel better if we rest well.', 'First conditional: If you go to the hospital, they will give you an X-ray.', 'a few / a little (countable and uncountable nouns)'],
+        vocab: ['bandage', 'break', 'broken', 'burn', 'elbow', 'fall over', 'finger', 'hand', 'knee', 'knife', 'medicine', 'pharmacy', 'soap', 'sore', 'toe', 'bread', 'cereal', 'egg', 'fork', 'jam', 'milk', 'olive', 'pepper', 'pizza', 'salt', 'spoon', 'strawberry', 'cut', 'restaurant', 'X-ray'],
+        reading: 'A story about making a healthy breakfast / a blog post about experiences with food', writing: 'A blog post about food experiences' },
+      { u: 3, title: 'Interests',
+        grammar: ['Present perfect questions: How long have you…? / Have you ever…?', 'Present perfect with since / for', 'Present perfect vs. simple past; present perfect with just'],
+        vocab: ['bored', 'classical', 'concert', 'drum', 'festival', 'instrument', 'invitation', 'member', 'online', 'oud', 'prize', 'traditional', 'violin', 'chess', 'collect', 'experiment', 'magazine', 'midday', 'midnight', 'poetry', 'puzzle', 'pyramid', 'stamp', 'join', 'program'],
+        reading: 'A story about a musician / a friendly e-mail about interests', writing: 'An e-mail about changing interests' },
+      { u: 4, title: 'Professions',
+        grammar: ['Simple past and past progressive: They were traveling when we recorded our video message.', 'Restrictive relative clauses with who / which / that'],
+        vocab: ['AI specialist', 'artificial intelligence', 'astronaut', 'cybersecurity analyst', 'design', 'Earth', 'planet', 'robotics engineer', 'rocket', 'satellite', 'space', 'video message', 'ambulance', 'business', 'fire', 'firefighter', 'fire station', 'fire truck', 'missing', 'police officer', 'police station'],
+        reading: 'A story about a special visitor at school / an anecdote about an unusual message', writing: 'An anecdote about an unusual or exciting message' },
+      { u: 5, title: 'World Sports',
+        grammar: ['Comparatives and superlatives of adjectives and adverbs', 'Comparisons of equality: (not) as … as'],
+        vocab: ['competition', 'enter', 'match', 'quiz', 'race', 'sell', 'soon', 'stadium', 'team', 'tickets', 'tire', 'volleyball', 'whistle', 'winner', 'cycle', 'cycling', 'golf', 'hotel', 'ice skating', 'skiing', 'sled', 'snowboard', 'snowboarding', 'fast', 'quickly', 'slowly'],
+        reading: 'A story about a sporting event / an online post expressing opinions about sports', writing: 'An online post comparing two sports' },
+      { u: 6, title: 'Environments',
+        grammar: ['Future forms: be going to and will', 'Simple present and present progressive as future forms', 'Predictions with may / might / could'],
+        vocab: ['adventure', 'air', 'bridge', 'castle', 'cave', 'deep', 'east', 'fog', 'hill', 'north', 'ocean', 'south', 'stream', 'west', 'dark', 'foggy', 'high', 'path', 'stone', 'storm', 'turn left', 'turn right', 'tomorrow'],
+        reading: 'A story about a family adventure / an article about climate change', writing: 'An article about predictions for climate change' },
+      { u: 7, title: 'Styles',
+        grammar: ['Reported speech of simple present and present progressive with say and tell', 'Reporting present Wh- and yes/no questions'],
+        vocab: ['bracelet', 'fall', 'flip-flops', 'gloves', 'pajamas', 'pocket', 'spots', 'spring', 'stripes', 'summer', 'sunglasses', 'sneakers', 'warm', 'winter', 'baggy', 'cheap', 'expensive', 'fit', 'handkerchief', 'oversized', 'size', 'slim', 'tank top', 'tracksuit'],
+        reading: 'A story about a graduation surprise / a fashion emergency anecdote', writing: 'An anecdote about a fashion emergency' },
+      { u: 8, title: 'Recent Events',
+        grammar: ['Present perfect with already, ever, just, never and yet', 'Modal verbs: can / could / must / have to / should'],
+        vocab: ['advertisement', 'athletics', 'classmate', 'decide', 'exams', 'follow', 'grades', 'graduate', 'gymnastics', 'instead', 'interested', 'presentation', 'semester', 'sign up', 'application', 'apply', 'assistant', 'improve', 'interesting', 'invent', 'keep', 'scholarship', 'several', 'teenager'],
+        reading: 'A story about a school club / an e-mail to an old friend', writing: 'An e-mail to catch up with an old friend' },
+    ]
   }
 };
 
@@ -684,13 +722,13 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
       <div class="card">
         <div class="ch"><span class="n">٢</span><div><b>المادة والصف والوحدات</b><small>الوحدات تُحدَّد تلقائياً حسب الفصل الدراسي، ويمكنك تعديلها.</small></div></div>
         <div class="lbl2">المادة</div>
-        <div class="subj" id="subj" style="margin-bottom:14px"><button type="button" data-v="en" class="on">اللغة الإنجليزية — المرحلة المتوسطة</button><button type="button" data-v="math">الرياضيات — وفق جدول المواصفات</button><span class="soon">مواد أخرى <em>قريباً</em></span></div>
+        <div class="subj" id="subj" style="margin-bottom:14px"><button type="button" data-v="en" class="on">اللغة الإنجليزية</button><button type="button" data-v="math">الرياضيات — وفق جدول المواصفات</button><span class="soon">مواد أخرى <em>قريباً</em></span></div>
         <div class="grid">
           <label class="f" id="mgradeF" hidden>الصف
             <select id="mgrade"><option value="p1">الأول الابتدائي</option><option value="p2">الثاني الابتدائي</option><option value="p3">الثالث الابتدائي</option><option value="g4">الرابع الابتدائي</option><option value="g5">الخامس الابتدائي</option><option value="g6">السادس الابتدائي</option><option value="m1">الأول المتوسط</option><option value="m2">الثاني المتوسط</option><option value="m3" selected>الثالث المتوسط</option></select>
           </label>
           <label class="f" id="gradeF">الصف
-            <select id="grade"><option value="sg1">أول متوسط — Super Goal 1</option><option value="sg2">ثاني متوسط — Super Goal 2</option><option value="sg3">ثالث متوسط — Super Goal 3</option></select>
+            <select id="grade"><option value="tg3">سادس ابتدائي — Top Goal 3</option><option value="sg1">أول متوسط — Super Goal 1</option><option value="sg2">ثاني متوسط — Super Goal 2</option><option value="sg3">ثالث متوسط — Super Goal 3</option></select>
           </label>
           <label class="f">الفصل الدراسي
             <select id="term"><option value="1">الأول</option><option value="2">الثاني</option></select>
@@ -830,7 +868,7 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const DRAFT_KEY = 'enjaz_exam_draft_v1';
 const PREF_KEY = 'enjaz_exam_prefs_v1';
-const GRADE_EN = { sg1: 'First Intermediate Grade', sg2: 'Second Intermediate Grade', sg3: 'Third Intermediate Grade' };
+const GRADE_EN = { tg3: 'Sixth Primary Grade', sg1: 'First Intermediate Grade', sg2: 'Second Intermediate Grade', sg3: 'Third Intermediate Grade' };
 const L = 'abcd';
 let EXAM = null;
 // نموذجان للاختبار: أ (الأساسي) و ب (أسئلة بديلة مختلفة). EXAM هو النموذج المعروض حالياً.
@@ -910,7 +948,7 @@ let VOCAB_SET = null; let VOCAB_FOR = '';
 function vocabSet(grade) {
   if (VOCAB_SET && VOCAB_FOR === grade) return VOCAB_SET;
   const order = ['sg1', 'sg2', 'sg3']; const s = new Set();
-  for (const g of order.slice(0, order.indexOf(grade) + 1)) for (const u of C[g].units) for (const w of u.vocab) {
+  for (const g of (order.includes(grade) ? order.slice(0, order.indexOf(grade) + 1) : [grade])) for (const u of C[g].units) for (const w of u.vocab) {
     const l = w.toLowerCase().replace(/[^a-z' -]/g, '').trim(); if (!l) continue; s.add(l); l.split(/[\s-]+/).forEach((t) => t.length > 1 && s.add(t));
   }
   VOCAB_SET = s; VOCAB_FOR = grade; return s;
@@ -1746,7 +1784,7 @@ function ministryBody(ka) {
   const A = (t) => (ka ? `<span class="ka">${t}</span>` : t);
   let h = ka ? keyBanner() : '';
   h += `<div class="ph">
-    <div>Kingdom of Saudi Arabia<br>Ministry of Education${m.directorate ? '<br>' + esc(m.directorate) : ''}<br>${esc(m.school || 'Intermediate School')}</div>
+    <div>Kingdom of Saudi Arabia<br>Ministry of Education${m.directorate ? '<br>' + esc(m.directorate) : ''}<br>${esc(m.school || schoolDef(m))}</div>
     <div><img class="logo" src="${LOGO}" alt="" style="height:44px;margin-bottom:3px"><table class="marks"><tr><td>Q.</td><td>Q1</td><td>Q2</td><td>Q3</td><td>Q4</td><td>Q5</td><td>Total</td></tr><tr><td>Mark</td><td>8</td><td>9</td><td>9</td><td>9</td><td>5</td><td><b>40</b></td></tr><tr><td>Student</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>
     <div class="r">${esc(book.name)} – English Language<br>${GRADE_EN[m.grade]}<br>${termTxt} Term Final Exam ${esc(m.year || '')}<br>Time: ${esc(m.time || '')}${formLine(m)}</div>
   </div>
@@ -1836,11 +1874,12 @@ const LA = 'ABC';
 const L9 = 'ABCDEFGHI';
 const ORD = (n) => n + (n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th');
 const GRADE_N = { sg1: 1, sg2: 2, sg3: 3 };
+const schoolDef = (m) => (C[m.grade] && C[m.grade].primary ? 'Primary School' : 'Intermediate School');
 const SEC_COL = { Grammar: '#0e7c7b', Orthography: '#1f1fd1', Vocabulary: '#0a6a0a', Reading: '#e10000', Writing: '#7d8f1b' };
 function autoYear(m) { const y = String(m.year || '').trim(); return /^14\d\d$/.test(y) ? `${y}-${+y + 579}` : y; }
 function autoHeadLines(m) {
   const book = C[m.grade];
-  return [`${book.name} - English Language`, `${ORD(GRADE_N[m.grade] || 1)} Intermediate Grade ${ORD(+m.term || 1)} term`, `${m.form === 'B' && EXAM_FORMS().length > 1 ? 'Alternative questions' : 'Final Exam'} ${autoYear(m)}`, `Time: ${m.time || ''}`];
+  return [`${book.name} - English Language`, `${C[m.grade].primary ? GRADE_EN[m.grade] : ORD(GRADE_N[m.grade] || 1) + ' Intermediate Grade'} ${ORD(+m.term || 1)} term`, `${m.form === 'B' && EXAM_FORMS().length > 1 ? 'Alternative questions' : 'Final Exam'} ${autoYear(m)}`, `Time: ${m.time || ''}`];
 }
 // فراغ كلمة الإملاء: من الكلمة المحفوظة، أو من الجملة (اختبارات قديمة)
 function spellGap(q) {
@@ -1879,7 +1918,7 @@ function autoBody(ka) {
   let h = ka ? keyBanner() : '';
   const hl = autoHeadLines(m);
   h += `<div class="xh">
-    <div class="xb1">Kingdom of Saudi Arabia Ministry of Education${m.directorate ? ', ' + esc(m.directorate) : ''}<br>${esc(m.school || 'Intermediate School')}</div>
+    <div class="xb1">Kingdom of Saudi Arabia Ministry of Education${m.directorate ? ', ' + esc(m.directorate) : ''}<br>${esc(m.school || schoolDef(m))}</div>
     <img class="logo" src="${LOGO}" alt="">
     <div class="xb2">${hl.map(esc).join('<br>')}</div>
   </div>
@@ -1996,7 +2035,7 @@ function ministryDocx(D, ka) {
   const termTxt = m.term === '2' ? 'Second' : 'First';
   if (ka) kids.push(P([T(`Answer Key${FORMS.length > 1 ? ' — Form ' + (m.form || 'A') : ''} — نموذج الإجابة`, { red: true, size: 28 })], { align: CTR, after: 120 }));
   kids.push(new D.Table({ ...fixedW([3900, 2500, 3900]), borders: noB, rows: [new D.TableRow({ children: [
-    new D.TableCell({ children: [P('Kingdom of Saudi Arabia', { size: 20, after: 0 }), P('Ministry of Education', { size: 20, after: 0 }), ...(m.directorate ? [P(m.directorate, { size: 20, after: 0 })] : []), P(m.school || 'Intermediate School', { size: 20, after: 0 })] }),
+    new D.TableCell({ children: [P('Kingdom of Saudi Arabia', { size: 20, after: 0 }), P('Ministry of Education', { size: 20, after: 0 }), ...(m.directorate ? [P(m.directorate, { size: 20, after: 0 })] : []), P(m.school || schoolDef(m), { size: 20, after: 0 })] }),
     new D.TableCell({ children: [docxImg(D, LOGO, 96, 51)] }),
     new D.TableCell({ children: [P(`${book.name} – English Language`, { size: 20, after: 0, align: R }), P(GRADE_EN[m.grade], { size: 20, after: 0, align: R }), P(`${termTxt} Term Final Exam ${m.year || ''}`, { size: 20, after: 0, align: R }), P(`Time: ${m.time || ''}`, { size: 20, after: 0, align: R }), ...(EXAM_FORMS().length > 1 ? [P(`Form ${m.form || 'A'}`, { size: 20, after: 0, align: R, bold: true })] : [])] }),
   ] })] }));
@@ -2124,7 +2163,7 @@ function autoDocx(D, ka) {
   const lines = (arr) => arr.map((l) => P(l, { align: CTR, after: 0, size: 21 }));
   const gB = { style: D.BorderStyle.SINGLE, size: 8, color: 'A9D18E' };
   kids.push(new D.Table({ ...fixedW([4000, 2300, 4000]), borders: noB, rows: [new D.TableRow({ children: [
-    cellX(lines([`Kingdom of Saudi Arabia Ministry of Education${m.directorate ? ', ' + m.directorate : ''}`, m.school || 'Intermediate School']), { borders: { top: gB, bottom: gB, left: gB, right: gB } }),
+    cellX(lines([`Kingdom of Saudi Arabia Ministry of Education${m.directorate ? ', ' + m.directorate : ''}`, m.school || schoolDef(m)]), { borders: { top: gB, bottom: gB, left: gB, right: gB } }),
     cellX([docxImg(D, LOGO, 104, 56)], { borders: { top: nb, bottom: nb, left: nb, right: nb } }),
     cellX(lines(autoHeadLines(m)), { fill: 'EDEDED', borders: { top: nb, bottom: nb, left: nb, right: nb } }),
   ] })] }));
@@ -2408,7 +2447,7 @@ function subjUI() {
   if (m) renderChapters(); else tmplUI();
   document.querySelectorAll('#directorate,#school,#teacher,#time').forEach((x) => { x.dir = 'auto'; x.classList.toggle('en', !m); });
   $('directorate').placeholder = m ? 'الإدارة العامة للتعليم بـ …' : 'Education Directorate in ...';
-  $('school').placeholder = m ? 'مدرسة …' : '... Intermediate School';
+  $('school').placeholder = m ? 'مدرسة …' : (C[$('grade').value] && C[$('grade').value].primary ? '... Primary School' : '... Intermediate School');
   $('teacher').placeholder = m ? 'اسم المعلم' : "Teacher's name";
 }
 function renderChapters() {
