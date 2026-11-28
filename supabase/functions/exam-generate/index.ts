@@ -198,19 +198,36 @@ Give the passage as an array "paragraphs" of 2–3 normal paragraphs (ordinary p
 - 4 true/false statements: 2 TRUE (stated directly in the passage) and 2 FALSE (clearly contradicting one fact stated in the passage — never something the passage simply does not mention). Mix the order.
 JSON: {"data":{"title":"...","paragraphs":["",""],"mcq":[{"q":"...","options":${oj},"answer":"..."}],"tf":[{"s":"...","answer":true}]}}`;
   }
+  if (section === "prim") {
+    return `${h}
+Primary-stage exam items (children aged 11–12): short, clear, natural sentences using the unit words. Write one item for EACH line below, in the same order:
+- kind "qa": a short question a child can answer (about the unit theme: favourite things, jobs, food, family, hobbies, places…) and its short answer (3–8 words), e.g. "What is your favourite dish?" → "My favourite dish is pizza." Every question in this request must have a clearly different answer, so students can match each question with exactly one answer.
+- kind "picsent": the target word will be shown to the student as a PICTURE. Write two short sentences (3–7 words): "right" correctly describes the picture (it uses the target word or clearly means it); "wrong" is similar in form but describes something different (another word from the unit), so only "right" matches the picture.
+- kind "picfill": one short sentence (5–10 words) about the picture with ONE blank "____" where the target word fits exactly (the target word itself must NOT appear in the sentence).
+- kind "opp": a common adjective (from the units if possible) and its clear opposite, e.g. happy / sad, big / small, clean / messy.
+- kind "text": a very short real-life text of the type given in the target (40–70 words), with a title and short lines (ingredients/steps for a recipe, greeting/body/closing for an e-mail…), then exactly 2 multiple-choice questions with 3 options each: first "This text is:" (options are text types, e.g. an e-mail / a recipe / a dialogue), second "The text is about:" (one correct, two clearly wrong but plausible).
+${lines}
+JSON: {"items":[ ...one object per line above, in order... ]}
+qa: {"kind":"qa","q":"...","a":"..."}
+picsent: {"kind":"picsent","right":"...","wrong":"..."}
+picfill: {"kind":"picfill","s":"... ____ ..."}
+opp: {"kind":"opp","word":"...","opposite":"..."}
+text: {"kind":"text","title":"...","lines":["...","..."],"mcq":[{"q":"This text is:","options":["","",""],"answer":"..."},{"q":"The text is about:","options":["","",""],"answer":"..."}]}`;
+  }
   if (section === "composition") {
     const s = specs[0];
     const mode = ctx.mode === "wordbox" ? "wordbox" : ctx.mode === "words" ? "words" : "guided";
     if (mode === "words") {
       return `${h}
-Composition (paragraph with a word list). Topic from Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Give a short topic title (2–5 words), and EXACTLY ${Number(ctx.nwords) === 8 ? 8 : "6–8"} words/phrases from the unit (${(s?.words || []).join(", ")}) that fit one clear everyday topic so a student can write a coherent paragraph of 3–5 sentences using all of them. Also write a model answer paragraph of 3–5 sentences that uses all the listed words (for the teacher).
+Composition (paragraph with a word list). Topic from Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Give a short topic title (2–5 words), and EXACTLY ${[5, 6, 7, 8].includes(Number(ctx.nwords)) ? Number(ctx.nwords) : "6–8"} words/phrases from the unit (${(s?.words || []).join(", ")}) that fit one clear everyday topic so a student can write a coherent paragraph of 3–5 sentences using all of them. Also write a model answer paragraph of 3–5 sentences that uses all the listed words (for the teacher).
 JSON: {"data":{"mode":"words","title":"...","words":["",""],"model":"..."}}`;
     }
     if (mode === "wordbox") {
+      const nb = [5, 6, 7, 8].includes(Number(ctx.nblanks)) ? Number(ctx.nblanks) : 8;
       return `${h}
 Guided composition (word box). Topic from Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}).
-Write a short first-person paragraph (60–90 words) with exactly 8 blanks written as "____". Give the 8 missing words/phrases (each 1–4 words) in order. Students fill the blanks from a box. Use unit words: ${(s?.words || []).join(", ")}.
-JSON: {"data":{"mode":"wordbox","title":"...","instructions":"Fill in the blanks with a suitable word from the box below","paragraph":"...","answers":["", "", "", "", "", "", "", ""]}}`;
+Write a short first-person paragraph (60–90 words) with exactly ${nb} blanks written as "____". Give the ${nb} missing words/phrases (each 1–4 words) in order. Students fill the blanks from a box. Use unit words: ${(s?.words || []).join(", ")}.
+JSON: {"data":{"mode":"wordbox","title":"...","instructions":"Fill in the blanks with a suitable word from the box below","paragraph":"...","answers":${JSON.stringify(Array(nb).fill(""))}}}`;
     }
     return `${h}
 Guided composition. Topic from Unit ${s?.unit} "${s?.unitTitle}" (${s?.target}). Give a short title (2–4 words), one instruction line, and 5 guiding questions in a logical order that help the student write a paragraph of about 60–80 words using the unit's grammar and words (${(s?.words || []).join(", ")}). Also write a model answer paragraph (for the teacher's answer key).

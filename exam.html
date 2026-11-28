@@ -752,6 +752,8 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
         <div id="tmplWrap"><div class="lbl2">قالب الأسئلة</div>
         <div class="seg big" id="tmpl">
           <button data-v="ministry" class="on"><b>قالب الوزارة</b><small>اختيار من متعدد، افعل كما هو مطلوب، مطابقة وصور</small></button>
+          <button data-v="pA" hidden><b>نموذج ١ (ابتدائي)</b><small>توصيل، تعبير بكلمات مساعدة، ترتيب وأضداد، صور وجمل</small></button>
+          <button data-v="pB" hidden><b>نموذج ٢ (ابتدائي)</b><small>توصيل، إكمال فقرة، صور وجمل ونص قصير، تعريفات</small></button>
           <button data-v="auto"><b>قالب التصحيح الآلي</b><small>جداول A/B/C وصح وخطأ تُصحَّح آلياً</small></button>
         </div>
         <div class="hint" id="tmplHint"></div></div>
@@ -1013,6 +1015,11 @@ const SEC_META = {
   grammar: ['القواعد', 'Grammar · 9 درجات', 'fa-spell-check'],
   vocab: ['المفردات', 'Vocabulary · 9 درجات', 'fa-language'],
   spelling: ['الإملاء', 'Spelling · 5 درجات', 'fa-keyboard'],
+  pread: ['الأسئلة العامة والقراءة', 'General Questions + Reading · 14 درجة', 'fa-book-open'],
+  pcomp: ['التعبير الموجّه', 'Guided Composition · 7 درجات', 'fa-pen-nib'],
+  pgram: ['القواعد', 'Grammar · 7 درجات', 'fa-spell-check'],
+  pvoc: ['المفردات', 'Vocabulary · 7 درجات', 'fa-language'],
+  pspell: ['الإملاء', 'Orthography · 5 درجات', 'fa-keyboard'],
 };
 const FORM_NAME = ['الاختبار الأساسي', 'الاختبار البديل'];
 const SM = (k) => SEC_META[k] || MSEC_META[k];
@@ -1027,7 +1034,7 @@ const GV_TIPS = [
 const GV = { groups: [], st: [], t0: [], start: 0, timer: null, tick: 0, tipI: 0 };
 function genSub(p, units) {
   const us = units.map((u) => u.u);
-  return `${C[p.grade].name} · الفصل ${p.term === '2' ? 'الثاني' : 'الأول'} · ${units.length} وحدات (${us[0]}–${us[us.length - 1]}) · ${p.tmpl === 'auto' ? 'قالب التصحيح الآلي' : 'قالب الوزارة'}`;
+  return `${C[p.grade].name} · الفصل ${p.term === '2' ? 'الثاني' : 'الأول'} · ${units.length} وحدات (${us[0]}–${us[us.length - 1]}) · ${p.tmpl === 'auto' ? 'قالب التصحيح الآلي' : p.tmpl === 'pA' ? 'نموذج ١ الابتدائي' : p.tmpl === 'pB' ? 'نموذج ٢ الابتدائي' : 'قالب الوزارة'}`;
 }
 function gvOpen(labels, sub, secs) {
   GV.secs = secs || SECS; GV.groups = labels; GV.st = labels.map(() => null); GV.t0 = labels.map(() => 0); GV.start = Date.now(); GV.tick = 0;
@@ -1081,7 +1088,7 @@ function gvTick() {
 }
 function examItems(f) {
   if (isMathF(f)) return f.mcq.length + f.tf.length + f.essay.length;
-  return (f.grammar || []).length + (f.vocab || []).length + (f.spelling || []).length + (f.reading ? f.reading.mcq.length + f.reading.tf.length : 0) + (f.composition ? 1 : 0);
+  return (f.grammar || []).length + (f.vocab || []).length + (f.spelling || []).length + (f.reading ? f.reading.mcq.length + f.reading.tf.length : 0) + (f.composition ? 1 : 0) + (f.prim ? f.prim.qa.length + f.prim.ps.length + f.prim.pf.length + f.prim.opp.length + (f.prim.text ? f.prim.text.mcq.length : 0) : 0);
 }
 function gvFinish() {
   const fails = []; GV.st.forEach((st, gi) => { for (const k of GV.secs) if (st && st[k] === 'err') fails.push(SM(k)[0] + (GV.groups.length > 1 ? ` (${GV.groups[gi]})` : '')); });
@@ -1187,7 +1194,7 @@ function initUI() {
   }
   tmplUI(); diffUI();
   renderUnits();
-  $('grade').onchange = () => { renderUnits(); savePrefs(); };
+  $('grade').onchange = () => { renderUnits(); tmplUI(); savePrefs(); };
   $('term').onchange = () => { renderUnits(); renderChapters(); savePrefs(); };
   subjUI();
   for (const k of ['directorate', 'school', 'teacher', 'year', 'time']) $(k).addEventListener('input', () => { savePrefs(); if (EXAM) { FORMS.forEach((f) => { f.meta[k] = $(k).value.trim(); }); saveDraft(); } });
@@ -1214,22 +1221,28 @@ function savePrefs() { lsSet(PREF_KEY, prefs()); diffUI(); }
 const DIFF_HINT = { veasy: 'جمل قصيرة جداً وكلمات مألوفة ومشتتات واضحة، ونص قراءة نحو ٧٠ كلمة.', easy: 'جمل قصيرة ومشتتات واضحة، ونص قراءة نحو ٩٠ كلمة.', medium: 'مستوى نهاية الفصل المعتاد، ونص قراءة نحو ١٢٠ كلمة.', mhard: 'جمل أطول ومشتتات قريبة وسؤال استنتاج، ونص نحو ١٤٠ كلمة.', hard: 'جمل مركّبة ومشتتات قريبة جداً واستنتاج ومعنى من السياق، ونص نحو ١٦٠ كلمة.', vhard: 'أصعب ما يسمح به المنهج: مشتتات من عائلة الكلمة نفسها واستنتاج وفكرة رئيسة، ونص نحو ١٨٠ كلمة.' };
 function diffUI() { const d = document.querySelector('#diff .on')?.dataset.v || 'medium'; const h = $('diffNote') || Object.assign(document.createElement('div'), { id: 'diffNote', className: 'hint' }); h.textContent = DIFF_HINT[d] + ' والأسئلة كلها من المنهج في كل المستويات.'; $('diff').after(h); }
 function tmplUI() {
+  const prim = isPrimG($('grade').value); const tb = $('tmpl');
+  tb.querySelector('[data-v=ministry]').hidden = prim; tb.querySelector('[data-v=pA]').hidden = !prim; tb.querySelector('[data-v=pB]').hidden = !prim;
+  const cur = tb.querySelector('.on');
+  if (!cur || cur.hidden) { const want = prim ? 'pA' : 'ministry'; tb.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x.dataset.v === want)); }
+  if (prefs().subject !== 'math') $('school').placeholder = prim ? '... Primary School' : '... Intermediate School';
   const auto = prefs().tmpl === 'auto';
   $('gcountBox').hidden = !auto; $('cmodeBox').hidden = auto;
   if (prefs().subject === 'math') { $('gcountBox').hidden = true; $('cmodeBox').hidden = true; }
+  if (isPEnT(prefs().tmpl)) { $('cmodeBox').hidden = true; $('tmplHint').textContent = prefs().tmpl === 'pA' ? 'نموذج ١: أسئلة عامة ٧ (توصيل) · تعبير موجّه ٧ (فقرة بكلمات مساعدة + ترتيب كلمات + أضداد) · قراءة جمل قصيرة ٧ (جمل وصور + إكمال من صندوق) · قواعد ٧ (اختيار من ثلاثة) · مفردات ٧ (كلمات تحت الصور) · إملاء ٥ (حروف ناقصة). مع صفحة غلاف وجدول الدرجات.' : 'نموذج ٢: أسئلة عامة ٧ (توصيل) · تعبير موجّه ٧ (إكمال فقرة من صندوق) · قراءة جمل قصيرة ٧ (جمل وصور + نص قصير وسؤالان) · قواعد ٧ (اختيار من ثلاثة) · مفردات ٧ (صور + تعريفات) · إملاء ٥ (اختيار الحرف الناقص، ½ لكل كلمة). مع صفحة غلاف وجدول الدرجات.'; return; }
   $('tmplHint').textContent = auto
     ? 'وفق نموذجك: قواعد 9 (a/b/c) · إملاء 5 (الحرف الناقص) · مفردات 9 (صور وكلمات) · قراءة 9 (صح وخطأ) · كتابة 8 (فقرة بثماني كلمات). كل الأسئلة تُصحَّح آلياً عدا الكتابة.'
     : 'نموذج الوزارة المعتاد: تعبير 8 · قراءة 9 · قواعد 9 (اختيار + افعل كما هو مطلوب) · مفردات 9 · إملاء 5.';
 }
 const isAuto = () => (EXAM ? EXAM.meta.tmpl : prefs().tmpl) === 'auto';
 let GEN_META = null; // أثناء التوليد: إعدادات الاختبار الجاري توليده (لا المعروض)
-const NOPTS = () => ((GEN_META ? GEN_META.tmpl === 'auto' : isAuto()) ? 3 : 4);
+const NOPTS = () => (opts3(GEN_META ? GEN_META.tmpl : EXAM ? EXAM.meta.tmpl : prefs().tmpl) ? 3 : 4);
 function saveDraft() {
   if (!EXAM) return;
   const pack = JSON.parse(JSON.stringify({ v: 2, forms: FORMS, cur: CUR }));
-  pack.forms.forEach((f) => (f.vocab || []).forEach((it) => { if (it.lib) it.img = ''; })); // صور المكتبة تُستعاد منها
+  pack.forms.forEach((f) => peItems(f).forEach((it) => { if (it.lib) it.img = ''; })); // صور المكتبة تُستعاد منها
   if (!lsSet(DRAFT_KEY, pack)) {
-    pack.forms.forEach((f) => (f.vocab || []).forEach((it) => { if (it.img) it.img = ''; }));
+    pack.forms.forEach((f) => peItems(f).forEach((it) => { if (it.img) it.img = ''; }));
     lsSet(DRAFT_KEY, pack);
     toast('الصور كبيرة على الحفظ التلقائي — ستبقى في الصفحة حتى تغلقها.');
   }
@@ -1238,7 +1251,7 @@ function loadDraft(d) {
   if (!d) return false;
   const forms = d.v === 2 ? d.forms : d.v === 1 ? [d] : null;
   if (!forms || !forms.length) return false;
-  forms.forEach((f, i) => { f.meta.form = f.meta.form || 'AB'[i]; (f.vocab || []).forEach((it) => { if (it.lib && !it.img) it.img = libImg(it.word); }); });
+  forms.forEach((f, i) => { f.meta.form = f.meta.form || 'AB'[i]; peItems(f).forEach((it) => { if (it.lib && !it.img) it.img = libImg(it.word); }); });
   forms.forEach(fixOpts);
   FORMS = forms; CUR = Math.min(d.cur || 0, forms.length - 1); EXAM = FORMS[CUR];
   return true;
@@ -1310,7 +1323,7 @@ function buildBlueprint(units, p, exclude) {
 // ===================== التوليد =====================
 async function callSection(section, items, ctx, meta) {
   const p = meta || (EXAM ? EXAM.meta : prefs());
-  const body = { section, grade: C[p.grade].name + ' (' + GRADE_EN[p.grade] + ')', term: p.term, difficulty: p.diff, items, ctx: { ...extraCtx(section, p), ...(ctx || {}), nopts: p.tmpl === 'auto' ? 3 : 4 } };
+  const body = { section, grade: C[p.grade].name + ' (' + GRADE_EN[p.grade] + ')', term: p.term, difficulty: p.diff, items, ctx: { ...extraCtx(section, p), ...(ctx || {}), nopts: opts3(p.tmpl) ? 3 : 4 } };
   const { data, error } = await sb.functions.invoke('exam-generate', { body });
   if (error) {
     let code = '';
@@ -1463,11 +1476,12 @@ async function generate() {
   const units = selectedUnits();
   if (!units.length) { toast('اختر وحدة واحدة على الأقل'); return; }
   const p = prefs(); savePrefs();
-  const bp = buildBlueprint(units, p);
+  const pe = isPEnT(p.tmpl);
+  const bp = pe ? buildBlueprintPE(units, p) : buildBlueprint(units, p);
   const ex = { v: 1, meta: { ...p, units: units.map((u) => u.u), form: 'A' }, grammar: [], vocab: [], spelling: [], reading: null, composition: null, bp };
   $('genBtn').disabled = true;
-  gvOpen(p.twoForms ? FORM_NAME : [null], genSub(p, units));
-  await runSections(ex, bp, units, null, (st) => gvProg(0, st));
+  gvOpen(p.twoForms ? FORM_NAME : [null], genSub(p, units), pe ? PE_SECS : null);
+  await (pe ? runPE : runSections)(ex, bp, units, null, (st) => gvProg(0, st));
   FORMS = [ex]; CUR = 0; EXAM = ex;
   saveDraft(); renderEditor(); formsUI(); showStep(2);
   if (p.twoForms) await generateAlt(true); // الاختباران دفعة واحدة
@@ -1482,19 +1496,21 @@ async function generateAlt(auto) {
   const p = { ...A.meta, form: 'B' };
   const units = C[p.grade].units.filter((u) => p.units.includes(u.u));
   const lc = (x) => String(x || '').toLowerCase();
-  const exclude = [...A.vocab.map((x) => lc(x.word || x.target)), ...A.vocab.map((x) => lc(x.target)), ...A.spelling.map((x) => lc(x.word))].filter(Boolean);
-  const bp = buildBlueprint(units, p, exclude);
+  const pe = isPEnT(p.tmpl);
+  const exclude = [...A.vocab.map((x) => lc(x.word || x.target)), ...A.vocab.map((x) => lc(x.target)), ...A.spelling.map((x) => lc(x.word)), ...(pe ? peItems(A).map((x) => lc(x.word || x.target)) : [])].filter(Boolean);
+  const bp = pe ? buildBlueprintPE(units, p, exclude) : buildBlueprint(units, p, exclude);
   const avoid = {
     grammar: A.grammar.map((x) => x.stem || x.sentence).filter(Boolean),
     vocab: A.vocab.map((x) => x.stem || x.meaning || '').filter(Boolean),
     spelling: A.spelling.map((x) => x.sentence).filter(Boolean),
     reading: A.reading ? [A.reading.title, ...passageParas(A.reading).slice(0, 1)] : [],
     composition: A.composition ? [A.composition.title] : [],
+    prim: A.prim ? [...A.prim.qa.map((x) => x.q), ...A.prim.ps.flatMap((x) => x.sents || []), ...A.prim.pf.map((x) => x.s), ...A.prim.opp.map((x) => x.word), ...(A.prim.text ? [A.prim.text.title] : [])].filter(Boolean) : [],
   };
   const ex = { v: 1, meta: p, grammar: [], vocab: [], spelling: [], reading: null, composition: null, bp };
   const btn = $('altBtn'); btn.disabled = true;
-  if (!auto) gvOpen([FORM_NAME[1]], genSub(p, units));
-  await runSections(ex, bp, units, avoid, (st) => gvProg(auto ? 1 : 0, st));
+  if (!auto) gvOpen([FORM_NAME[1]], genSub(p, units), pe ? PE_SECS : null);
+  await (pe ? runPE : runSections)(ex, bp, units, avoid, (st) => gvProg(auto ? 1 : 0, st));
   btn.disabled = false;
   FORMS[1] = ex; FORMS.forEach((f, i) => { f.meta.form = 'AB'[i]; });
   setForm(auto ? 0 : 1);
@@ -1503,6 +1519,7 @@ async function generateAlt(auto) {
 
 async function regen(section, idx) {
   if (isMathF(EXAM)) return mathRegen(section, idx);
+  if (isPEnF(EXAM)) return peRegen(section, idx);
   const p = EXAM.meta; const units = C[p.grade].units.filter((u) => p.units.includes(u.u));
   const host = idx != null ? document.querySelector(`.it[data-sec="${section}"][data-i="${idx}"], .pc[data-i="${idx}"]`) : $('sec-' + section);
   host?.classList.add('busy');
@@ -1557,6 +1574,7 @@ let ENG_NAV = '';
 function renderEditor() {
   if (!EXAM) return;
   if (isMathF(EXAM)) { $('secNav').innerHTML = '<button data-go="mcq">الاختيار من متعدد</button><button data-go="tf">صح وخطأ</button><button data-go="essay">المقالي</button><button data-go="coverage">جدول المواصفات</button>'; mathEditor(); return; }
+  if (isPEnF(EXAM)) return peEditor();
   if (ENG_NAV && $('secNav').innerHTML !== ENG_NAV) $('secNav').innerHTML = ENG_NAV;
   let h = '';
   // التعبير
@@ -1664,16 +1682,17 @@ function setPath(path, val) {
 function getPath(path) { return path.split('.').reduce((o, k) => (o == null ? o : o[isNaN(k) ? k : +k]), EXAM); }
 document.addEventListener('input', (e) => {
   const el = e.target;
+  if (EXAM && el.dataset && el.dataset.lines && EXAM.prim && EXAM.prim.text) { EXAM.prim.text.lines = el.value.split('\n').map((x) => x.trim()).filter(Boolean); clearTimeout(document._sv); document._sv = setTimeout(saveDraft, 500); return; }
   if (EXAM && el.dataset && el.dataset.words && EXAM.composition) { EXAM.composition.words = el.value.split(/[,،–-]/).map((w) => w.trim()).filter(Boolean); clearTimeout(document._sv); document._sv = setTimeout(saveDraft, 500); return; }
   if (!EXAM || !el.dataset || !el.dataset.p) return;
   setPath(el.dataset.p, el.tagName === 'TEXTAREA' ? el.value : el.value.replace(/\s+/g, ' '));
   // إذا عُدّلت كلمة صورة، يتحدث اسمها في المربع فوراً
   const pc = el.closest('.pc');
   if (pc) {
-    const it = EXAM.vocab[+pc.dataset.i]; const li = libImg(el.value);
+    const it = pc.dataset.path ? getPath(pc.dataset.path) : EXAM.vocab[+pc.dataset.i]; const li = libImg(el.value);
     if (it && (!it.img || it.lib)) {
       const had = !!it.img; it.img = li; it.lib = !!li;
-      if (had !== !!li || li) { clearTimeout(document._rp); document._rp = setTimeout(() => { const pos = el.selectionStart; renderEditor(); const ni = document.querySelector(`.pc[data-i="${pc.dataset.i}"] input[data-p]`); if (ni) { ni.focus(); try { ni.setSelectionRange(pos, pos); } catch {} } }, 400); }
+      if (had !== !!li || li) { clearTimeout(document._rp); document._rp = setTimeout(() => { const pos = el.selectionStart; renderEditor(); const ni = document.querySelector(pc.dataset.path ? `.pc[data-path="${pc.dataset.path}"] input[data-p]` : `.pc[data-i="${pc.dataset.i}"] input[data-p]`); if (ni) { ni.focus(); try { ni.setSelectionRange(pos, pos); } catch {} } }, 400); }
     }
     const w = pc.querySelector('.drop .w'); if (w) w.textContent = el.value;
   }
@@ -1694,7 +1713,7 @@ document.addEventListener('click', (e) => {
   const tf = e.target.closest('[data-tf] button');
   if (tf) { const i = +tf.parentElement.dataset.tf; EXAM.reading.tf[i].ans = tf.dataset.v === '1'; tf.parentElement.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b === tf)); saveDraft(); return; }
   const dp = e.target.closest('[data-delpic]');
-  if (dp) { const it = EXAM.vocab[+dp.dataset.delpic]; it.img = ''; it.lib = false; saveDraft(); renderEditor(); return; }
+  if (dp) { const it = picAt(dp.dataset.delpic); it.img = ''; it.lib = false; saveDraft(); renderEditor(); return; }
   const pic = e.target.closest('[data-pic]');
   if (pic) { $('picFile').dataset.i = pic.dataset.pic; $('picFile').value = ''; $('picFile').click(); }
 });
@@ -1703,12 +1722,13 @@ document.addEventListener('dragover', (e) => { const d = e.target.closest?.('.dr
 document.addEventListener('dragleave', (e) => { const d = e.target.closest?.('.drop'); if (d) d.classList.remove('over'); });
 document.addEventListener('drop', (e) => {
   const d = e.target.closest?.('.drop'); if (!d) return; e.preventDefault(); d.classList.remove('over');
-  const f = e.dataTransfer?.files?.[0]; if (f) setPic(+d.dataset.pic, f);
+  const f = e.dataTransfer?.files?.[0]; if (f) setPic(d.dataset.pic, f);
 });
-$('picFile').addEventListener('change', (e) => { const f = e.target.files?.[0]; if (f) setPic(+e.target.dataset.i, f); });
+$('picFile').addEventListener('change', (e) => { const f = e.target.files?.[0]; if (f) setPic(e.target.dataset.i, f); });
+const picAt = (k) => (/^\d+$/.test(String(k)) ? EXAM.vocab[+k] : getPath(String(k)));
 async function setPic(i, f) {
   if (!/^image\//.test(f.type)) { toast('اختر ملف صورة'); return; }
-  try { EXAM.vocab[i].img = await shrinkImage(f, 500); EXAM.vocab[i].lib = false; saveDraft(); renderEditor(); }
+  try { const it = picAt(i); it.img = await shrinkImage(f, 500); it.lib = false; saveDraft(); renderEditor(); }
   catch { toast('تعذّر قراءة الصورة'); }
 }
 function shrinkImage(file, max) {
@@ -1756,7 +1776,7 @@ const endSig = (m) => `<div class="endsig">Best wishes${m.teacher ? '<br>' + esc
 function formLine(m) { return EXAM_FORMS().length > 1 ? `<br><b>Form ${esc(m.form || 'A')}</b>` : ''; }
 
 function withForm(f, fn) { const prev = EXAM; EXAM = f; try { ensureOrders(); return fn(); } finally { EXAM = prev; } }
-const bodyOf = (ka) => (isMathF(EXAM) ? mathBody(ka) : isAuto() ? autoBody(ka) : ministryBody(ka));
+const bodyOf = (ka) => (isMathF(EXAM) ? mathBody(ka) : isPEnF(EXAM) ? primEnBody(ka) : isAuto() ? autoBody(ka) : ministryBody(ka));
 // النموذج المعروض (المعاينة والنسخ)
 function paperHTML(withKey) {
   ensureOrders();
@@ -2265,11 +2285,12 @@ async function exportDOCX() {
   try {
     if (!window.docx) await loadScript('https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js');
     const D = window.docx; const auto = isAuto();
-    await preloadDims([LOGO, ...exportForms().flatMap((f) => (f.vocab || []).map((x) => x.img))]);
-    const build = auto ? autoDocx : ministryDocx;
+    await preloadDims([LOGO, ...exportForms().flatMap((f) => peItems(f).map((x) => x.img))]);
+    const pe = isPEnF(EXAM);
+    const build = pe ? peDocx : auto ? autoDocx : ministryDocx;
     let kids = [];
     exportParts().forEach((pt, i) => { if (i) kids.push(new D.Paragraph({ children: [new D.PageBreak()] })); kids = kids.concat(withForm(pt.f, () => build(D, pt.ka))); });
-    await docxSave(D, kids, auto ? { top: 700, bottom: 700, left: 760, right: 760 } : { top: 720, bottom: 720, left: 800, right: 800 }, fileBase() + (auto ? '_Auto' : '') + '.docx');
+    await docxSave(D, kids, auto ? { top: 700, bottom: 700, left: 760, right: 760 } : { top: 720, bottom: 720, left: 800, right: 800 }, fileBase() + (auto ? '_Auto' : pe ? '_Primary' + EXAM.meta.tmpl.slice(1) : '') + '.docx');
     toast('تم تنزيل ملف Word.');
   } catch (e) { console.error(e); toast('تعذّر إنشاء ملف Word.'); }
   finally { busyBtns(false); }
@@ -2415,6 +2436,570 @@ async function exportPDF() {
   finally { busyBtns(false); }
 }
 
+
+// ===================== الإنجليزي الابتدائي (Top Goal): نموذجا الأسئلة الأولية =====================
+// نموذج ١ (pA): أسئلة عامة (توصيل) · تعبير موجّه بكلمات مساعدة + ترتيب كلمات + أضداد · قراءة جمل وصور + إكمال من صندوق ·
+//               قواعد (اختيار من ثلاثة) · مفردات (كلمات تحت الصور) · إملاء (حروف ناقصة من صندوق)
+// نموذج ٢ (pB): أسئلة عامة · إكمال فقرة من صندوق · قراءة جمل وصور + نص قصير وسؤالان · قواعد · مفردات (صور + تعريفات) ·
+//               إملاء (اختيار الحرف الناقص من حرفين، ½ لكل فقرة)
+const isPEnT = (t) => t === 'pA' || t === 'pB';
+const isPEnF = (f) => !!f && !isMathF(f) && isPEnT(f.meta && f.meta.tmpl);
+const isPEn = () => (EXAM ? isPEnF(EXAM) : prefs().subject !== 'math' && isPEnT(prefs().tmpl));
+const opts3 = (t) => t === 'auto' || isPEnT(t);
+const isPrimG = (g) => !!(C[g] && C[g].primary);
+const PE_GENRES = ['a recipe', 'an e-mail', 'an invitation card', 'an advertisement', 'a school notice', 'a restaurant menu'];
+const PE_SECS = ['pread', 'pcomp', 'pgram', 'pvoc', 'pspell'];
+const PE_ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+const PE_QS = ['General Questions', 'Guided Composition', 'Reading Short Sentences', 'Grammar', 'Vocabulary', 'Orthography'];
+const PE_MK = [7, 7, 7, 7, 7, 5];
+const peItems = (f) => [...(f.vocab || []), ...(f.spelling || []), ...((f.prim && f.prim.ps) || []), ...((f.prim && f.prim.pf) || [])];
+
+// كلمات الصور: الأولوية لما له صورة في المكتبة، ثم المحسوس، ثم بقية الكلمات
+function pePickWords(units, n, used, filt) {
+  const ok = (w) => !used.has(w.toLowerCase()) && (!filt || filt(w));
+  const tiers = [(w) => !!libImg(w), (w) => PICTURABLE.has(w.toLowerCase()), () => true];
+  let out = [];
+  for (const t of tiers) { if (out.length >= n) break; out = out.concat(roundRobin(units, (u) => u.vocab.filter((w) => ok(w) && t(w)), n - out.length, used)); }
+  return out;
+}
+function buildBlueprintPE(units, p, exclude) {
+  const A = p.tmpl === 'pA';
+  const used = new Set((exclude || []).map((x) => String(x).toLowerCase()));
+  const recent = recentWords(p.grade);
+  const pick = (n, filt) => {
+    const soft = new Set([...used, ...recent]);
+    let a = pePickWords(units, n, soft, filt); a.forEach((x) => used.add(x.target.toLowerCase()));
+    if (a.length < n) a = a.concat(pePickWords(units, n - a.length, used, filt));
+    if (a.length < n) a = a.concat(pePickWords(C[p.grade].units, n - a.length, used, filt));
+    return a;
+  };
+  const grammar = [...roundRobin(units, (u) => u.grammar, 7).map((s) => ({ ...s, kind: 'mcq' })), ...(A ? roundRobin(units, (u) => u.grammar, 2).map((s) => ({ ...s, kind: 'do' })) : [])];
+  const vocab = [...pick(A ? 7 : 5).map((s) => ({ ...s, kind: 'picture' })), ...(A ? [] : pick(2).map((s) => ({ ...s, kind: 'match' })))];
+  const spelling = pick(A ? 5 : 10, (w) => /^[a-z]{3,10}$/i.test(w)).map((s) => ({ ...s, kind: 'spell' }));
+  const qa = roundRobin(units, (u) => [`a simple question about the theme of Unit ${u.u} "${u.title}" (e.g. favourite things, jobs, family, food, hobbies)`], 7).map((s) => ({ ...s, kind: 'qa' }));
+  const ps = pick(A ? 4 : 5).map((s) => ({ ...s, kind: 'picsent' }));
+  const pf = A ? pick(3).map((s) => ({ ...s, kind: 'picfill' })) : [];
+  const u0 = units[0];
+  const opp = A ? [1, 2].map((k) => ({ kind: 'opp', unit: u0.u, unitTitle: u0.title, target: k === 1 ? 'a common everyday adjective (feelings or size) and its opposite' : 'a different common adjective (from the units if possible) and its opposite', words: shuffle(u0.vocab) })) : [];
+  const tu = shuffle(units)[0];
+  const text = A ? [] : [{ kind: 'text', unit: tu.u, unitTitle: tu.title, target: `${shuffle(PE_GENRES)[0]} related to the theme "${tu.title}"`, words: shuffle(tu.vocab) }];
+  const lastC = new Set(histFor(p.grade).slice(0, 2).map((h) => h.cu));
+  const cu = shuffle(units).sort((a, b) => (lastC.has(a.u) ? 1 : 0) - (lastC.has(b.u) ? 1 : 0))[0];
+  const composition = { kind: 'composition', unit: cu.u, unitTitle: cu.title, target: A ? `a short paragraph about yourself and your life (linked to the theme "${cu.title}")` : cu.writing, words: shuffle(cu.vocab) };
+  return { grammar, vocab, spelling, composition, reading: null, prim: [...qa, ...ps, ...pf, ...opp, ...text] };
+}
+// حرف ناقص تختاره الأداة (لا الذكاء الاصطناعي)، وبديل متشابه لنموذج ٢
+function peSpell(spec) {
+  const w = String(spec.word || spec.target || '');
+  let g = gapWord(w);
+  if (!g) { const pos = Math.min(1, w.length - 1); g = { gapped: w.slice(0, pos) + '_' + w.slice(pos + 1), choices: [w[pos], 'e'], ans: 0 }; }
+  const letter = g.choices[g.ans]; const alt = g.choices.find((c, j) => j !== g.ans) || 'e';
+  const img = spec.img && !spec.lib ? spec.img : libImg(w);
+  return { ...spec, word: w, gapped: g.gapped, letter: letter.toLowerCase(), alt: alt.toLowerCase(), altFirst: Math.random() < 0.5, img, lib: !!img && !(spec.img && !spec.lib), warn: false };
+}
+function peRearr(it) {
+  if (!it || it.kind !== 'do') return it;
+  const ans = norm(it.answer); const w = ans.replace(/[.?!]+$/, '').split(' ').filter(Boolean);
+  if (w.length < 3) return { ...it, chunks: w, instruction: 'Rearrange' };
+  const k = Math.min(5, Math.max(3, Math.ceil(w.length / 2))); const per = Math.ceil(w.length / k);
+  const ch = []; for (let i = 0; i < w.length; i += per) ch.push(w.slice(i, i + per).join(' '));
+  let sh = shuffle(ch); for (let t = 0; t < 6 && sh.join('|') === ch.join('|'); t++) sh = shuffle(ch);
+  return { ...it, chunks: sh, instruction: 'Rearrange', answer: ans };
+}
+function normPE(raw, spec) {
+  const r = raw || {};
+  if (spec.kind === 'qa') return { ...spec, q: norm(r.q), a: norm(r.a), warn: !r.q || !r.a };
+  if (spec.kind === 'picsent') {
+    const right = norm(r.right); const wrong = norm(r.wrong); const ans = Math.random() < 0.5 ? 0 : 1; const img = libImg(spec.target);
+    return { ...spec, word: spec.target, sents: ans === 0 ? [right, wrong] : [wrong, right], ans, img, lib: !!img, warn: !right || !wrong };
+  }
+  if (spec.kind === 'picfill') {
+    let s = norm(r.s).replace(/_{2,}|\.{4,}|…+/g, '____'); const img = libImg(spec.target);
+    if (!/____/.test(s)) { const re = new RegExp('\\b' + spec.target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i'); if (re.test(s)) s = s.replace(re, '____'); }
+    return { ...spec, word: spec.target, s, img, lib: !!img, warn: !/____/.test(s) };
+  }
+  if (spec.kind === 'opp') return { ...spec, word: norm(r.word), opposite: norm(r.opposite), warn: !r.word || !r.opposite };
+  if (spec.kind === 'text') {
+    const mcq = (Array.isArray(r.mcq) ? r.mcq : []).slice(0, 2).map((q) => normMCQ({ q: q && q.q, options: q && q.options, answer: q && q.answer }, {}, 3));
+    return { ...spec, title: norm(r.title), lines: (Array.isArray(r.lines) ? r.lines : []).map(norm).filter(Boolean).slice(0, 12), mcq, warn: mcq.length < 2 || mcq.some((x) => x.warn) };
+  }
+  return { ...spec };
+}
+function peSplit(list) {
+  const by = (k) => list.filter((x) => x.kind === k);
+  return { qa: by('qa'), ps: by('picsent'), pf: by('picfill'), opp: by('opp'), text: by('text')[0] || null };
+}
+// ترتيب الصناديق والتوصيل يُثبَّت مرة واحدة (حتى لا يتغير بين المعاينة والتنزيل)
+function peOrders(f, force) {
+  if (!f.prim) f.prim = { qa: [], ps: [], pf: [], opp: [], text: null };
+  const o = f.pe = force ? {} : (f.pe || {}); const P = f.prim;
+  const perm = (n) => { let a = shuffle([...Array(n).keys()]); for (let t = 0; t < 5 && n > 2 && a.some((x, i) => x === i); t++) a = shuffle([...Array(n).keys()]); return a; };
+  if (!o.qa || o.qa.length !== P.qa.length) o.qa = perm(P.qa.length);
+  const pics = (f.vocab || []).filter((x) => x.kind === 'picture');
+  if (!o.vb || o.vb.length !== pics.length) o.vb = perm(pics.length);
+  const pool = (f.meta && C[f.meta.grade] ? C[f.meta.grade].units.filter((u) => (f.meta.units || []).includes(u.u)).flatMap((u) => u.vocab) : []).filter((w) => /^[a-z]{3,}$/i.test(w));
+  const usedW = new Set([...peItems(f).map((x) => String(x.word || x.target || '').toLowerCase())]);
+  const extra = () => shuffle(pool).find((w) => !usedW.has(w.toLowerCase())) || 'water';
+  if (P.pf.length && (!o.pfBox || o.pfBox.length !== P.pf.length + 1)) { o.pfX = extra(); o.pfBox = perm(P.pf.length + 1); }
+  const defs = (f.vocab || []).filter((x) => x.kind === 'match');
+  if (defs.length && (!o.dBox || o.dBox.length !== defs.length + 1)) { o.dX = extra(); o.dBox = perm(defs.length + 1); }
+  if (!o.sp || o.sp.length !== (f.spelling || []).length) o.sp = perm((f.spelling || []).length);
+  const c = f.composition;
+  if (c && c.mode === 'wordbox' && (!o.cb || o.cb.length !== (c.answers || []).length)) o.cb = perm((c.answers || []).length);
+  return o;
+}
+
+async function runPE(ex, bp, units, avoid, onProg) {
+  const p = ex.meta; const A = p.tmpl === 'pA';
+  GEN_META = p;
+  const av = (k) => (avoid && avoid[k] && avoid[k].length ? { avoid: avoid[k] } : {});
+  const st = { pread: '', pcomp: '', pgram: '', pvoc: '', pspell: '' }; onProg && onProg(st);
+  const jobs = {
+    pread: () => callSection('prim', bp.prim, av('prim'), p).then((r) => { ex.prim = peSplit(bp.prim.map((s, i) => normPE((r.items || [])[i], s))); }),
+    pcomp: () => callSection('composition', [bp.composition], { mode: A ? 'words' : 'wordbox', nwords: A ? 5 : 0, nblanks: 7, ...av('composition') }, p).then((r) => { ex.composition = normComposition(r.data, bp.composition); }),
+    pgram: () => callSection('grammar', bp.grammar, av('grammar'), p).then((r) => checkGrammar(bp.grammar.map((s, i) => normGrammar((r.items || [])[i], s)), p, () => { st.pgram = 'rev'; onProg && onProg(st); })).then((l) => { ex.grammar = l.map(peRearr); }),
+    pvoc: async () => {
+      const m = bp.vocab.filter((x) => x.kind === 'match'); let got = [];
+      if (m.length) { const r = await callSection('vocab', m, av('vocab'), p); got = m.map((s, i) => normVocab((r.items || [])[i], s)); }
+      ex.vocab = bp.vocab.map((s) => (s.kind === 'match' ? got.shift() : normVocab(null, s)));
+    },
+    pspell: async () => { ex.spelling = bp.spelling.map(peSpell); },
+  };
+  const errors = [];
+  await Promise.all(Object.entries(jobs).map(async ([k, fn]) => {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try { await fn(); st[k] = 'ok'; onProg && onProg(st); return; } catch (e) { if (attempt === 1) { st[k] = 'err'; onProg && onProg(st); errors.push(e.message); } }
+    }
+  }));
+  peOrders(ex, true);
+  GEN_META = null;
+  return errors;
+}
+async function peRegen(section, idx) {
+  const p = EXAM.meta; const A = p.tmpl === 'pA'; const units = C[p.grade].units.filter((u) => p.units.includes(u.u));
+  const host = idx != null ? document.querySelector(`.it[data-sec="${section}"][data-i="${idx}"], .pc[data-sec="${section}"][data-i="${idx}"]`) : $('sec-' + section);
+  host?.classList.add('busy');
+  const spec = ({ kind, unit, unitTitle, target, words }) => ({ kind, unit, unitTitle, target, words });
+  const keepImg = (n, o) => (o && o.img && !o.lib ? { ...n, img: o.img, lib: false } : n);
+  try {
+    GEN_META = p;
+    if (section === 'composition') {
+      const cur = EXAM.composition; const s = cur ? spec(cur) : buildBlueprintPE(units, p).composition;
+      const r = await callSection('composition', [s], { mode: A ? 'words' : 'wordbox', nwords: A ? 5 : 0, nblanks: 7 }, p);
+      EXAM.composition = normComposition(r.data, s);
+    } else if (section === 'prim') {
+      const P = EXAM.prim; const flat = [...P.qa, ...P.ps, ...P.pf, ...P.opp, ...(P.text ? [P.text] : [])];
+      const list = flat.length ? flat : buildBlueprintPE(units, p).prim;
+      const which = idx == null ? list.map((_, i) => i) : [idx];
+      const r = await callSection('prim', which.map((i) => spec(list[i])), {}, p);
+      which.forEach((i, j) => { list[i] = keepImg(normPE((r.items || [])[j], spec(list[i])), list[i]); });
+      EXAM.prim = peSplit(list);
+    } else if (section === 'spelling') {
+      if (idx == null) EXAM.spelling = EXAM.spelling.map((x) => peSpell(x)); else EXAM.spelling[idx] = peSpell(EXAM.spelling[idx]);
+    } else if (section === 'grammar') {
+      const which = idx == null ? EXAM.grammar.map((_, i) => i) : [idx];
+      const specs = which.map((i) => spec(EXAM.grammar[i]));
+      const r = await callSection('grammar', specs, {}, p);
+      const fresh = (await checkGrammar(specs.map((s, j) => normGrammar((r.items || [])[j], s)), p)).map(peRearr);
+      which.forEach((i, j) => { EXAM.grammar[i] = fresh[j]; });
+    } else if (section === 'vocab') {
+      const which = idx == null ? EXAM.vocab.map((_, i) => i) : [idx];
+      const m = which.filter((i) => EXAM.vocab[i].kind === 'match');
+      if (m.length) { const r = await callSection('vocab', m.map((i) => spec(EXAM.vocab[i])), {}, p); m.forEach((i, j) => { EXAM.vocab[i] = normVocab((r.items || [])[j], spec(EXAM.vocab[i])); }); }
+      if (idx == null) { // صور جديدة: كلمات أخرى
+        const bp = buildBlueprintPE(units, p, EXAM.vocab.map((x) => x.word));
+        let k = 0; EXAM.vocab = EXAM.vocab.map((x) => (x.kind === 'picture' ? normVocab(null, bp.vocab[k++] || x) : x));
+      }
+    }
+    GEN_META = null;
+    peOrders(EXAM, true); saveDraft(); renderEditor();
+  } catch (e) { GEN_META = null; toast(e.message); host?.classList.remove('busy'); }
+}
+
+// ---------- التحرير ----------
+function pePicTile(sec, i, path, it, extra) {
+  return `<div class="pc" data-sec="${sec}" data-i="${i}" data-path="${path}">
+    <div class="drop" data-pic="${path}" title="اضغط لاختيار صورة">${it.img ? `<span class="done">${it.lib ? 'من المكتبة' : '✓'}</span><img src="${it.img}" alt="">` : `${UP_SVG}<span class="w">${esc(it.word)}</span><span class="lbl">اضغط لاختيار صورة</span>`}</div>
+    <div class="meta"><span class="lbl">الكلمة / الصورة</span>${inp(`${path}.word`, it.word, 'word')}${extra || ''}
+      <div class="row">${it.img ? `<button class="btn sec sm" data-pic="${path}">تغيير</button><button class="btn sec sm" data-delpic="${path}">حذف</button>` : `<button class="btn sm" data-pic="${path}">رفع صورة</button>`}${rbtn(sec, i)}</div></div></div>`;
+}
+function peEditor() {
+  const E = EXAM; const A = E.meta.tmpl === 'pA'; const P = E.prim || { qa: [], ps: [], pf: [], opp: [], text: null };
+  peOrders(E);
+  const none = '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>';
+  let h = '';
+  // ١ الأسئلة العامة
+  let q1 = P.qa.length ? '<div class="sub">توصيل السؤال بإجابته (تُخلط الإجابات تلقائياً في الورقة)</div>' : none;
+  P.qa.forEach((it, i) => { q1 += `<div class="it${it.warn ? ' warn' : ''}" data-sec="prim" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('prim', i)}</div><div class="two"><div>${inp(`prim.qa.${i}.q`, it.q, 'Question')}</div><div>${inp(`prim.qa.${i}.a`, it.a, 'Answer')}</div></div></div>`; });
+  h += secCard('prim', 'السؤال الأول — General Questions', 7, q1);
+  // ٢ التعبير الموجّه
+  const c = E.composition; let q2 = '';
+  if (!c) q2 = none;
+  else if (c.mode === 'words') q2 = `<div class="row" style="margin-bottom:6px">${tagOf(c)}</div><label class="f">أ) Write a short paragraph about (…)${inp('composition.title', c.title)}</label>
+      <label class="f" style="margin-top:6px">الكلمات المساعدة (افصل بينها بفاصلة)<input type="text" class="en" data-words="1" value="${esc((c.words || []).join(', '))}"></label>
+      <label class="f" style="margin-top:6px">نموذج إجابة (في نموذج الإجابة فقط)${area('composition.model', c.model, 3)}</label>`;
+  else q2 = `<div class="row" style="margin-bottom:6px">${tagOf(c)}</div><label class="f">عنوان الفقرة${inp('composition.title', c.title)}</label><label class="f" style="margin-top:8px">الفقرة (الفراغ = ____)${area('composition.paragraph', c.paragraph, 4)}</label><div class="sub">كلمات الصندوق (بترتيب الفراغات)</div><div class="opts">${(c.answers || []).map((a, i) => `<label class="opt"><span class="muted">${i + 1}</span>${inp(`composition.answers.${i}`, a)}</label>`).join('')}</div>`;
+  if (A) {
+    q2 += '<div class="sub">ب) رتّب الكلمات (تُقسَّم الجملة الصحيحة وتُخلط تلقائياً)</div>';
+    E.grammar.forEach((it, i) => { if (it.kind === 'do') q2 += `<div class="it${it.warn ? ' warn' : ''}" data-sec="grammar" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('grammar', i)}</div><div class="en" dir="ltr" style="padding:4px 2px;font-weight:600">${esc((it.chunks || []).join(' – '))}</div><div><span class="muted">الجملة الصحيحة:</span> ${inp(`grammar.${i}.answer`, it.answer, 'Answer')}</div></div>`; });
+    q2 += '<div class="sub">ج) اكتب الضد</div>';
+    P.opp.forEach((it, i) => { const gi = P.qa.length + P.ps.length + P.pf.length + i; q2 += `<div class="it${it.warn ? ' warn' : ''}" data-sec="prim" data-i="${gi}"><div class="it-h"><span></span>${rbtn('prim', gi)}</div><div class="two"><div>${inp(`prim.opp.${i}.word`, it.word, 'word')}</div><div>${inp(`prim.opp.${i}.opposite`, it.opposite, 'opposite')}</div></div></div>`; });
+  }
+  h += secCard('composition', 'السؤال الثاني — Guided Composition', 7, q2);
+  // ٣ القراءة
+  let q3 = P.ps.length ? `<div class="sub">أ) طابق الجملة بالصورة — اختر الجملة الصحيحة وارفع الصور (${P.ps.filter((x) => x.img).length} من ${P.ps.length})</div><div class="pics">` : none;
+  P.ps.forEach((it, i) => {
+    const gi = P.qa.length + i;
+    const ex = (it.sents || []).map((s, j) => `<label class="opt${it.ans === j ? ' ok' : ''}" style="margin-top:4px"><input type="radio" name="ps${i}" data-ans="prim.ps.${i}" value="${j}"${it.ans === j ? ' checked' : ''}><span class="muted">${'ab'[j]}-</span><input type="text" data-p="prim.ps.${i}.sents.${j}" value="${esc(s)}"></label>`).join('');
+    q3 += pePicTile('prim', gi, `prim.ps.${i}`, it, `<div class="opts" style="display:block">${ex}</div>`);
+  });
+  if (P.ps.length) q3 += '</div>';
+  if (P.pf.length) {
+    q3 += `<div class="sub">ب) أكمل الجملة من الصندوق تحت الصورة — الكلمة الزائدة في الصندوق: <b class="en">${esc((E.pe || {}).pfX || '')}</b></div><div class="pics">`;
+    P.pf.forEach((it, i) => { const gi = P.qa.length + P.ps.length + i; q3 += pePicTile('prim', gi, `prim.pf.${i}`, it, `<span class="lbl">الجملة (الفراغ = ____)</span>${inp(`prim.pf.${i}.s`, it.s, 'sentence')}`); });
+    q3 += '</div>';
+  }
+  if (P.text) {
+    const t = P.text; const gi = P.qa.length + P.ps.length + P.pf.length + P.opp.length;
+    q3 += `<div class="sub">ب) نص قصير وسؤالان</div><div class="it${t.warn ? ' warn' : ''}" data-sec="prim" data-i="${gi}"><div class="it-h">${tagOf(t)}${rbtn('prim', gi)}</div><label class="f">العنوان${inp('prim.text.title', t.title)}</label><label class="f" style="margin-top:6px">أسطر النص (كل سطر وحده)<textarea class="en" rows="6" data-lines="1">${esc((t.lines || []).join('\n'))}</textarea></label>
+      ${t.mcq.map((q, i) => `<div style="margin-top:6px">${inp(`prim.text.mcq.${i}.stem`, q.stem)}${optsHTML(`prim.text.mcq.${i}`, q, 'tx' + i)}</div>`).join('')}</div>`;
+  }
+  h += secCard('reading', 'السؤال الثالث — Reading Short Sentences', 7, q3);
+  // ٤ القواعد
+  let q4 = E.grammar.some((x) => x.kind === 'mcq') ? '<div class="sub">اختيار من ثلاثة (درجة لكل فقرة) — الفراغ ____ يُستبدل بالخيارات بين قوسين في الورقة</div>' : none;
+  E.grammar.forEach((it, i) => { if (it.kind === 'mcq') q4 += `<div class="it${it.warn ? ' warn' : ''}" data-sec="grammar" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('grammar', i)}</div>${inp(`grammar.${i}.stem`, it.stem)}${optsHTML(`grammar.${i}`, it, 'g' + i)}</div>`; });
+  h += secCard('grammar', 'السؤال الرابع — Grammar', 7, q4);
+  // ٥ المفردات
+  const V = E.vocab; let q5 = V.length ? '' : none;
+  const pics = V.map((x, i) => [x, i]).filter(([x]) => x.kind === 'picture');
+  if (pics.length) { q5 += `<div class="sub">أ) اكتب الكلمة تحت الصورة — ارفع صورة لكل كلمة (${pics.filter(([x]) => x.img).length} من ${pics.length})</div><div class="pics">`; pics.forEach(([it, i]) => { q5 += pePicTile('vocab', i, `vocab.${i}`, it); }); q5 += '</div>'; }
+  if (V.some((x) => x.kind === 'match')) {
+    q5 += `<div class="sub">ب) أكمل بالكلمة المناسبة من الصندوق (تعريفات) — الكلمة الزائدة: <b class="en">${esc((E.pe || {}).dX || '')}</b></div>`;
+    V.forEach((it, i) => { if (it.kind === 'match') q5 += `<div class="it${it.warn ? ' warn' : ''}" data-sec="vocab" data-i="${i}"><div class="it-h">${tagOf(it)}${rbtn('vocab', i)}</div><div class="two"><div>${inp(`vocab.${i}.word`, it.word, 'word')}</div><div>${inp(`vocab.${i}.meaning`, it.meaning, 'meaning')}</div></div></div>`; });
+  }
+  h += secCard('vocab', 'السؤال الخامس — Vocabulary', 7, q5);
+  // ٦ الإملاء
+  let q6 = E.spelling.length ? `<div class="sub">${A ? 'أكمل الحرف الناقص من صندوق الحروف' : 'اختر الحرف الناقص من حرفين (½ لكل فقرة)'} — ارفع صورة لكل كلمة (${E.spelling.filter((x) => x.img).length} من ${E.spelling.length})</div><div class="pics">` : none;
+  E.spelling.forEach((it, i) => { q6 += pePicTile('spelling', i, `spelling.${i}`, it, `<div class="en" dir="ltr" style="font-weight:700;padding:4px 0">${esc(String(it.gapped || '').replace('_', '__'))} <span class="muted">(${esc(it.letter)}${A ? '' : ' / ' + esc(it.alt)})</span></div>`); });
+  if (E.spelling.length) q6 += '</div>';
+  h += secCard('spelling', 'السؤال السادس — Orthography', 5, q6);
+  $('secNav').innerHTML = '<button data-go="prim">العامة</button><button data-go="composition">التعبير</button><button data-go="reading">القراءة</button><button data-go="grammar">القواعد</button><button data-go="vocab">المفردات</button><button data-go="spelling">الإملاء</button><button data-go="coverage">الشمول</button>';
+  $('edBody').innerHTML = h;
+  renderCoverage();
+}
+
+// ---------- الورقة ----------
+function peGrade(m) { return { ar: 'السادس الابتدائي', en: '6th Elementary Grade' }; }
+function peTerm(m) { return m.term === '2' ? { ar: 'الثاني', en: 'Second' } : { ar: 'الأول', en: 'First' }; }
+const peYear = (m) => String(m.year || '').trim();
+const peGap = () => '<span class="pe-dots">…………………</span>';
+function peStem(q, ka) { // ____ ← (أ – ب – جـ)
+  const o = `<b>(${q.options.map((x, j) => (ka && j === q.ans ? `<span class="ka"><u>${esc(x)}</u></span>` : esc(x))).join(' – ')})</b>`;
+  const s = esc(q.stem || '');
+  return /_{2,}/.test(s) ? s.replace(/_{2,}/, o) : `${s} ${o}`;
+}
+function peSent(s, ans, ka) { const t = esc(s || ''); const fill = ka ? `<span class="ka">${esc(ans)}</span>` : peGap(); return /_{2,}/.test(t) ? t.replace(/_{2,}/, fill) : `${t} ${fill}`; }
+function peCover(m) {
+  const A = m.tmpl === 'pA'; const g = peGrade(m); const t = peTerm(m); const y = peYear(m) || '144…';
+  const info = `<div class="pe-ar">${[`التاريخ: &nbsp; / &nbsp; / ${y}هـ`, `الصف: ${g.ar}`, `الزمن: ${m.time || 'ساعة ونصف'}`, 'المادة: اللغة الإنجليزية'].map((x) => `<div>${art(x.replace(/&nbsp;/g, ' '))}</div>`).join('')}</div>`;
+  let h = `<div class="pe-top">${info}<img class="logo" src="${LOGO}" alt=""><div class="pe-book">${esc(C[m.grade].name)}<small>${esc(m.school || schoolDef(m))}</small></div></div><hr class="pe-hr">`;
+  if (A) {
+    h += `<div class="pe-cbox">${[`أسئلة اختبار مادة اللغة الإنجليزية للصف ${g.ar}`, `للعام الدراسي ${y} هـ`, `الفصل الدراسي ${t.ar}`, 'عدد الأوراق: ......'].map((x) => `<div>${art(x)}</div>`).join('')}</div>
+    <div class="pe-ibox">${['اسم الطالب: ..........................................................................', 'رقم الجلوس: ......................................................................', 'اليوم: ..........................................', `التاريخ: ......... / ......... / ${y} هـ`, 'الزمن: ..............................'].map((x) => `<div>${art(x)}</div>`).join('')}</div>
+    <table class="pe-mt"><tr><th style="width:12%"></th><th>Questions</th><th style="width:14%">Mark</th><th style="width:24%">Student's mark</th></tr>${PE_QS.map((q, i) => `<tr><td>Q${i + 1}</td><td>${q}</td><td><b>${PE_MK[i]}</b></td><td></td></tr>`).join('')}<tr><td colspan="2"><b>Total :</b></td><td><b>40</b></td><td></td></tr></table>
+    <div class="pe-sig"><div>${art('المصحح: ..................................................... التوقيع: ...........................')}</div><div>${art('المراجع: ..................................................... التوقيع: ...........................')}</div><div class="pe-tch">${art('معلم المادة: ' + (m.teacher ? esc(m.teacher) : '............................'))}</div></div>`;
+  } else {
+    h += `<div class="pe-title">${art(`الاختبار النهائي لمادة اللغة الإنجليزية – الصف ${g.ar} – الفصل الدراسي ${t.ar} (الدور الأول) لعام ${y} هـ`)}</div>
+    <div class="pe-inst">${['عزيزي الطالب:', '- استعن بالله ثم أجب عن الأسئلة', '- فضلاً تأكد من كتابة اسمك الرباعي ورقم الجلوس', '- الإجابة باللون الأزرق فقط'].map((x, i) => `<div${i ? '' : ' class="b"'}>${art(x)}</div>`).join('')}</div>
+    <table class="pe-st2" dir="rtl"><tr><td class="l">${art('اسم الطالب رباعياً')}</td><td colspan="3"></td></tr><tr><td class="l">${art('رقم الجلوس:')}</td><td></td><td>${art('الصف: ' + g.ar)}</td><td>${art('المادة: اللغة الإنجليزية')}</td></tr><tr><td class="l">${art('اليوم:')}</td><td colspan="3">${art(`التاريخ: ...... / ...... / ${y} هـ`)}</td></tr></table>
+    <table class="pe-mt2" dir="rtl"><tr><th>${art('السؤال')}</th><th style="width:11%">${art('الدرجة رقماً')}</th><th style="width:27%">${art('الدرجة كتابة')}</th><th style="width:12%">${art('المصحح وتوقيعه')}</th><th style="width:12%">${art('المراجع وتوقيعه')}</th><th style="width:12%">${art('المدقق وتوقيعه')}</th></tr>
+      ${PE_QS.map((q) => `<tr><td class="q">${q}</td><td></td><td class="w">${art('فقط')}</td><td></td><td></td><td></td></tr>`).join('')}<tr class="tot"><td>${art('المجموع')}</td><td><b>40</b></td><td class="w">${art('فقط')}</td><td></td><td></td><td></td></tr></table>`;
+  }
+  return h;
+}
+function peHead2(m) {
+  const A = m.tmpl === 'pA'; const g = peGrade(m); const t = peTerm(m); const y = peYear(m) || '144…';
+  if (!A) return `<div class="pe-eh"><div></div><div class="r">${g.en}<br>Time: ${esc(/ساعة ونصف/.test(m.time || 'ساعة ونصف') ? 'An hour and a half' : (m.time || ''))}<br>Number of papers: ......</div></div><div class="pe-ec">Final Exam – ${t.en} Term – ${esc(y)} AH${formLine(m)}</div><hr class="pe-hr">`;
+  return `<table class="pe-gt" dir="rtl"><tr><td class="l">${art('الدرجة رقماً')}</td><td><b>40</b></td><td class="l">${art('الدرجة كتابة')}</td><td>${art('درجة فقط')}</td><td class="l">${art('اسم المصحح')}</td><td class="l">${art('توقيعه')}</td><td class="l">${art('اسم المراجع')}</td><td class="l">${art('توقيعه')}</td></tr><tr class="e"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+    <div class="pe-l1">${art(`اختبار اللغة الإنجليزية نهائي – الدور الأول – للصف ${g.ar} – الفصل الدراسي ${t.ar} ${y}هـ`)}${formLine(m)}</div>
+    <div class="pe-l2">${art('اسم الطالب: ........................................................   الفصل: ..................')}</div>`;
+}
+const peSH = (i, mark) => `<div class="pe-sh"><span>${PE_ROMAN[i]}. <u>${PE_QS[i]}:</u></span>${frac(mark)}</div>`;
+const peST = (t) => `<div class="pe-st">${t}</div>`;
+const peImg = (it) => (it && it.img ? `<img src="${it.img}" alt="">` : '<span class="pe-noimg"></span>');
+function primEnBody(ka) {
+  const E = EXAM; const m = E.meta; const A = m.tmpl === 'pA'; const P = E.prim || { qa: [], ps: [], pf: [], opp: [], text: null }; const O = peOrders(E);
+  const K = (t) => (ka ? `<span class="ka">${t}</span>` : '');
+  let h = '';
+  if (ka) h += keyBanner();
+  else h += `${peCover(m)}<div class="pbreak keypage">`;
+  h += ka ? '' : peHead2(m);
+  // I
+  if (P.qa.length) {
+    h += `<div class="keep">${peSH(0, 7)}${peST('A- <u>Match the questions with the correct answers:</u>')}<table class="pe-match"><colgroup><col style="width:50%"><col style="width:7%"><col></colgroup>${A ? '' : '<tr><th>A</th><th></th><th>B</th></tr>'}`;
+    P.qa.forEach((q, i) => { const j = O.qa[i]; const a = P.qa[j]; h += `<tr><td>${i + 1}. ${esc(q.q)}</td><td class="c">${K(j + 1)}</td><td>${esc(a.a)}</td></tr>`; });
+    h += '</table></div>';
+  }
+  // II
+  const c = E.composition;
+  if (c || (A && (E.grammar.some((x) => x.kind === 'do') || P.opp.length))) {
+    h += `<div class="keep">${peSH(1, 7)}`;
+    if (c && c.mode === 'words') {
+      h += `<div class="pe-ct"><u>A. Write a short paragraph about ${esc(c.title || 'yourself')}.</u></div><div class="pe-ct2"><u>Use the helping words to help you :</u></div><div class="pe-hw">${(c.words || []).map(esc).join(' – ')}</div>`;
+      h += ka ? `<div class="kmodel">${K(esc(c.model || ''))}</div></div>` : `${'<div class="pe-line"></div>'.repeat(6)}</div>`;
+    } else if (c) {
+      const box = O.cb.map((k) => esc(c.answers[k])).join(' – ');
+      let n = 0; const para = esc(c.paragraph || '').replace(/_{2,}/g, () => { const a = c.answers[n++] || ''; return ka ? `<span class="ka">${esc(a)}</span>` : peGap(); });
+      h += `${peST(`A- <u>Complete the paragraph about <i>${esc(c.title)}</i>. Use the words from the box.</u>`)}<div class="pe-box">${box}</div><div class="pe-para"><div class="t"><u>${esc(c.title)}</u></div><p>${para}</p></div></div>`;
+    }
+    if (A) {
+      const dos = E.grammar.filter((x) => x.kind === 'do');
+      if (dos.length) { h += `<div class="keep">${peST('B. <u>Rearrange the words to form sentences:</u>')}`; dos.forEach((it, i) => { h += `<div class="pe-rr">${i + 1}- ${(it.chunks || []).map(esc).join(' – ')}</div>${ka ? `<div class="pe-rra">${K(esc(it.answer))}</div>` : '<div class="pe-line"></div>'}`; }); h += '</div>'; }
+      if (P.opp.length) h += `<div class="keep">${peST('C. <u>Write the opposite :</u>')}<table class="pe-opp"><tr>${P.opp.map((o, i) => `<td>${i + 1}- ${esc(o.word)} # ${ka ? K(esc(o.opposite)) : peGap()}</td>`).join('')}</tr></table></div>`;
+    }
+  }
+  // III
+  if (P.ps.length || P.pf.length || P.text) {
+    h += `<div class="keep">${peSH(2, 7)}`;
+    if (P.ps.length) h += `${peST('A- <u>Read the sentences then match them with the correct pictures:</u>')}<table class="pe-ps"><tr>${P.ps.map((it) => `<td class="im">${peImg(it)}</td>`).join('')}</tr><tr>${P.ps.map((it) => `<td>${(it.sents || []).map((s, j) => `<div>${ka && j === it.ans ? K(`${'ab'[j]}- ${esc(s)}`) : `${'ab'[j]}- ${esc(s)}`}</div>`).join('')}</td>`).join('')}</tr></table>`;
+    h += '</div>';
+    if (P.pf.length) {
+      const words = [...P.pf.map((x) => x.word), O.pfX]; const box = O.pfBox.map((k) => esc(words[k])).join(' – ');
+      h += `<div class="keep">${peST('B- <u>Read and complete. Use the words in the box:</u>')}<div class="pe-box">${box}</div><table class="pe-pf"><tr>${P.pf.map((it) => `<td><div class="im">${peImg(it)}</div><div>${peSent(it.s, it.word, ka)}</div></td>`).join('')}</tr></table></div>`;
+    }
+    if (P.text) {
+      const t = P.text;
+      h += `<div class="keep">${peST('B- <u>Look at the text and choose the best option.</u>')}<table class="pe-tx"><tr><td class="q">${t.mcq.map((q, i) => `<div class="qq">${i + 1}- <u>${esc(q.stem)}</u></div>${q.options.map((o, j) => `<div class="oo">${ka && j === q.ans ? K(`${'abc'[j]}- ${esc(o)}`) : `${'abc'[j]}- ${esc(o)}`}</div>`).join('')}`).join('')}</td><td><div class="pe-txt"><div class="tt">${esc(t.title)}</div>${(t.lines || []).map((l) => `<div>${esc(l)}</div>`).join('')}</div></td></tr></table></div>`;
+    }
+  }
+  // IV
+  const gm = E.grammar.filter((x) => x.kind === 'mcq');
+  if (gm.length) h += `<div class="keep">${peSH(3, 7)}${peST('A- <u>Choose the correct answer:</u>')}${gm.map((q, i) => `<div class="pe-g">${i + 1}. ${peStem(q, ka)}</div>`).join('')}</div>`;
+  // V
+  const pics = E.vocab.filter((x) => x.kind === 'picture'); const defs = E.vocab.filter((x) => x.kind === 'match');
+  if (pics.length) {
+    const per = pics.length > 5 ? 4 : pics.length; const rows = []; for (let i = 0; i < pics.length; i += per) rows.push(pics.slice(i, i + per));
+    h += `<div class="keep">${peSH(4, 7)}${peST('A- <u>Write the words under the correct pictures:</u>')}<div class="pe-box">${O.vb.map((k) => esc(pics[k].word)).join(' – ')}</div><table class="pe-vp">${rows.map((r) => `<tr>${r.map((it) => `<td class="im">${peImg(it)}</td>`).join('')}${'<td class="x"></td>'.repeat(per - r.length)}</tr><tr class="a">${r.map((it) => `<td>${K(esc(it.word))}</td>`).join('')}${'<td class="x"></td>'.repeat(per - r.length)}</tr>`).join('')}</table></div>`;
+  }
+  if (defs.length) {
+    const words = [...defs.map((x) => x.word), O.dX];
+    h += `<div class="keep">${peST('B- <u>Fill in the blanks with the words from the box.</u>')}<table class="pe-df"><tr><th>${O.dBox.map((k) => esc(words[k])).join(' – ')}</th></tr>${defs.map((d, i) => `<tr><td>${i + 1}- ${ka ? K(esc(d.word)) : peGap()} : ${esc(d.meaning)}</td></tr>`).join('')}</table></div>`;
+  }
+  // VI
+  const sp = E.spelling;
+  if (sp.length) {
+    const gw = (it) => esc(String(it.gapped || '')).replace('_', ka ? `<span class="ka">${esc(it.letter)}</span>` : '__');
+    if (A) {
+      h += `<div class="keep">${peSH(5, 5)}<div class="pe-st pe-spl">A- <u>Fill in the missing letters:</u><span class="pe-lb">${O.sp.map((k) => esc(sp[k].letter)).join(' – ')}</span></div><table class="pe-sp"><tr>${sp.map((it) => `<td class="im">${peImg(it)}</td>`).join('')}</tr><tr class="w">${sp.map((it) => `<td>${gw(it)}</td>`).join('')}</tr></table></div>`;
+    } else {
+      const rows = []; for (let i = 0; i < sp.length; i += 5) rows.push(sp.slice(i, i + 5));
+      h += `<div class="keep">${peSH(5, 5)}${peST('A- <u>Choose the correct missing letters:</u>')}<table class="pe-sp2">${rows.map((r) => `<tr>${r.map((it) => `<td colspan="2" class="im">${peImg(it)}<div class="w">${gw(it)}</div></td>`).join('')}</tr><tr class="l">${r.map((it) => { const ls = it.altFirst ? [it.alt, it.letter] : [it.letter, it.alt]; return ls.map((l) => `<td${ka && l === it.letter ? ' class="kc"' : ''}>${ka && l === it.letter ? K(esc(l)) : esc(l)}</td>`).join(''); }).join('')}</tr>`).join('')}</table></div>`;
+    }
+  }
+  if (!ka) h += `<div class="pe-end"><b>END OF QUESTIONS</b><br><b>BEST OF LUCK</b>${m.teacher ? `<br><b>${esc(m.teacher)}</b>` : ''}</div></div>`;
+  return h;
+}
+const PE_CSS = `
+.sheet .pe-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.sheet .pe-ar{direction:rtl;text-align:right;font-size:11pt;line-height:1.5;order:3}
+.sheet .pe-top .logo{height:52px;order:2}
+.sheet .pe-book{order:1;font-weight:800;font-size:15pt;line-height:1.2}.sheet .pe-book small{display:block;font-weight:400;font-size:9.5pt}
+.sheet .pe-hr{border:0;border-top:2px solid #000;margin:6px 0 10px}
+.sheet .pe-cbox{border:1.3px solid #000;margin:6px 8% 10px;padding:6px;text-align:center;line-height:1.9}
+.sheet .pe-ibox{border:1.3px solid #000;margin:0 8% 12px;padding:6px 10px;direction:rtl;text-align:right;line-height:2.1}
+.sheet table.pe-mt{width:100%;border-collapse:collapse;margin:6px 0 12px}.sheet table.pe-mt th,.sheet table.pe-mt td{border:1px solid #000;padding:9px 6px;text-align:center;font-size:13pt}
+.sheet .pe-sig{direction:rtl;text-align:right;line-height:2.3;margin-top:6px}.sheet .pe-tch{text-align:center;margin-top:8px}
+.sheet .pe-title{text-align:center;border-bottom:1.5px solid #000;padding-bottom:4px;margin-bottom:12px}
+.sheet .pe-inst{border:1.5px solid #000;border-radius:22px;margin:4px 6% 14px;padding:10px 18px;direction:rtl;text-align:right;line-height:2}
+.sheet table.pe-st2,.sheet table.pe-mt2{width:100%;border-collapse:collapse;margin-bottom:14px}
+.sheet table.pe-st2 td,.sheet table.pe-mt2 td,.sheet table.pe-mt2 th{border:1px solid #000;padding:6px;text-align:right;height:22px}
+.sheet table.pe-st2 td.l{background:#eee;width:18%}
+.sheet table.pe-mt2 th{background:#ddd;text-align:center}.sheet table.pe-mt2 td{height:34px}.sheet table.pe-mt2 td.q{text-align:center;font-weight:700;font-family:'Times New Roman',serif}
+.sheet table.pe-mt2 td.w{vertical-align:top;font-size:9pt}.sheet table.pe-mt2 tr.tot td{background:#ddd;text-align:center}
+.sheet table.pe-gt{width:100%;border-collapse:collapse;margin-bottom:4px}.sheet table.pe-gt td{border:1px solid #000;text-align:center;padding:3px;font-size:10pt}.sheet table.pe-gt td.l{background:#eee}.sheet table.pe-gt tr.e td{height:24px}
+.sheet .pe-l1{text-align:center;border-bottom:1px solid #000;padding:2px 0}.sheet .pe-l2{text-align:right;direction:rtl;padding:4px 0 8px;border-bottom:1.5px solid #000;margin-bottom:6px}
+.sheet .pe-eh{display:flex;justify-content:space-between}.sheet .pe-eh .r{font-size:11.5pt;line-height:1.6}.sheet .pe-ec{text-align:center;font-size:11.5pt}
+.sheet .pe-sh{display:flex;justify-content:space-between;align-items:center;font:700 14.5pt/1.3 'Times New Roman',serif;margin:12px 0 4px}
+.sheet .pe-st{font-weight:700;margin:6px 0 6px 22px}
+.sheet .pe-ct{text-align:center;font-weight:700}.sheet .pe-ct2{text-align:center;font-size:13pt}.sheet .pe-hw{text-align:center;font-weight:700;margin:4px 0 8px}
+.sheet .pe-line{border-bottom:1px dotted #000;height:26px;margin:0 6px}
+.sheet .pe-dots{letter-spacing:1px}
+.sheet table.pe-match{width:100%;border-collapse:collapse}.sheet table.pe-match td,.sheet table.pe-match th{border:1px solid #000;padding:5px 7px;font-family:'Comic Sans MS','Segoe Print',Arial,sans-serif;font-size:11.5pt}.sheet table.pe-match th{background:#ddd}.sheet table.pe-match td.c{text-align:center}
+.sheet .pe-rr{margin:8px 0 0 22px;font-size:13pt}.sheet .pe-rra{margin:4px 0 4px 40px}
+.sheet table.pe-opp{width:100%;border-collapse:collapse;margin-top:4px}.sheet table.pe-opp td{border:1px solid #000;padding:5px 8px;width:50%}
+.sheet .pe-box{border:1.5px solid #000;margin:6px auto 8px;padding:5px 14px;text-align:center;font-weight:700;width:max-content;max-width:90%}
+.sheet .pe-para{border:1.5px solid #000;margin:4px 6%;padding:6px 14px;line-height:2}.sheet .pe-para .t{text-align:center;font-weight:700}.sheet .pe-para p{margin:0;text-indent:40px}
+.sheet table.pe-ps,.sheet table.pe-pf,.sheet table.pe-vp,.sheet table.pe-sp,.sheet table.pe-sp2{width:100%;border-collapse:collapse;table-layout:fixed}
+.sheet table.pe-ps td,.sheet table.pe-pf td,.sheet table.pe-vp td,.sheet table.pe-sp td,.sheet table.pe-sp2 td{border:1px solid #000;text-align:center;padding:4px;vertical-align:middle;font-size:11.5pt}
+.sheet td.im img,.sheet .im img{max-width:100%;max-height:92px;object-fit:contain}.sheet .pe-noimg{display:inline-block;width:80px;height:80px;border:1px dashed #999}
+.sheet table.pe-pf .im{height:100px;display:flex;align-items:center;justify-content:center}
+.sheet table.pe-vp tr.a td{height:28px}.sheet table.pe-vp td.x{border:0}
+.sheet table.pe-sp tr.w td{font-size:13pt;letter-spacing:1px}
+.sheet .pe-spl{display:flex;align-items:center;gap:24px}.sheet .pe-lb{border:1.5px solid #000;padding:2px 14px;font-weight:700;font-size:14pt}
+.sheet table.pe-sp2 .w{font-weight:700;margin-top:2px;letter-spacing:1px}.sheet table.pe-sp2 tr.l td{font-weight:700}
+.sheet table.pe-tx{width:100%;border-collapse:collapse}.sheet table.pe-tx td{vertical-align:top;width:50%}.sheet table.pe-tx .qq{margin-top:6px;font-weight:700}.sheet table.pe-tx .oo{margin-left:22px}
+.sheet .pe-txt{border:2.5px solid #000;padding:6px 10px;font-size:10.5pt;line-height:1.35}.sheet .pe-txt .tt{text-align:center;font-weight:800;font-size:12pt}
+.sheet table.pe-df{width:100%;border-collapse:collapse}.sheet table.pe-df td,.sheet table.pe-df th{border:1px solid #000;padding:5px 8px}.sheet table.pe-df th{background:#eee}
+.sheet .pe-g{margin:3px 0 3px 18px;font-size:12.5pt}
+.sheet .pe-end{text-align:center;margin-top:18px;line-height:1.6}
+`;
+
+// ---------- Word ----------
+function peDocx(D, ka) {
+  const K0 = docxKit(D, 22); const { T, P, fixedW, noB, fracCell } = K0;
+  const E = EXAM; const m = E.meta; const A = m.tmpl === 'pA'; const Pr = E.prim || { qa: [], ps: [], pf: [], opp: [], text: null }; const O = peOrders(E);
+  const CTR = D.AlignmentType.CENTER; const RIGHT = D.AlignmentType.RIGHT; const W = 10300;
+  const sb = K0.sb; const nb = K0.nb; const allB = { top: sb, bottom: sb, left: sb, right: sb }; const NB = { top: nb, bottom: nb, left: nb, right: nb };
+  const red = (t, o = {}) => T(t, { ...o, red: true });
+  const ar = (t, o = {}) => T(t, { rtl: true, ...o });
+  const kids = [];
+  const cell = (children, o = {}) => new D.TableCell({ children: Array.isArray(children) ? children : [children], columnSpan: o.span, shading: o.fill ? { type: D.ShadingType.CLEAR, fill: o.fill, color: 'auto' } : undefined, verticalAlign: D.VerticalAlign.CENTER, borders: o.borders || allB, width: o.w ? { size: o.w, type: D.WidthType.DXA } : undefined });
+  const row = (cells, o = {}) => new D.TableRow({ cantSplit: true, height: o.h ? { value: o.h, rule: D.HeightRule.ATLEAST } : undefined, children: cells });
+  const tbl = (cols, rows, o = {}) => new D.Table({ ...fixedW(cols), borders: o.borders, visuallyRightToLeft: o.rtl, rows });
+  const pAr = (t, o = {}) => P([ar(t, o)], { align: o.align || RIGHT, rtl: true, after: o.after ?? 40 });
+  const pC = (runs, o = {}) => P(Array.isArray(runs) ? runs : [T(runs, o)], { align: CTR, after: o.after ?? 40, keep: true });
+  const img = (it, w, h) => (it && it.img ? docxImg(D, it.img, w, h) : P(' ', { after: 0 }));
+  const dots = '…………………';
+  const sh = (i, mark) => kids.push(tbl([W - 760, 760], [row([cell([new D.Paragraph({ keepNext: true, spacing: { before: 160, after: 60 }, children: [new D.TextRun({ text: PE_ROMAN[i] + '. ', font: 'Times New Roman', size: 29, bold: true }), new D.TextRun({ text: PE_QS[i] + ':', font: 'Times New Roman', size: 29, bold: true, underline: {} })] })], { borders: NB }), fracCell(mark)])], { borders: noB }));
+  const st = (t) => kids.push(new D.Paragraph({ keepNext: true, spacing: { before: 60, after: 80 }, indent: { left: 300 }, children: [new D.TextRun({ text: t, font: 'Arial', size: 22, bold: true, underline: {} })] }));
+  const boxP = (t) => kids.push(tbl([2000, 6300, 2000], [row([cell(P('', { after: 0 }), { borders: NB }), cell(pC([T(t, { bold: true })], { after: 20 })), cell(P('', { after: 0 }), { borders: NB })])], { borders: noB }));
+  const gap = () => kids.push(P('', { after: 60 }));
+  const g = peGrade(m); const t = peTerm(m); const y = peYear(m) || '144…';
+  if (ka) kids.push(P([red(`Answer Key${FORMS.length > 1 ? ' — Form ' + (m.form || 'A') : ''} — نموذج الإجابة`, { size: 26 })], { align: CTR, after: 100 }));
+  else {
+    // الغلاف
+    kids.push(tbl([3600, 2600, 4100], [row([
+      cell([P([T(C[m.grade].name, { bold: true, size: 30 })], { after: 0 }), P([T(m.school || schoolDef(m), { size: 18 })], { after: 0 })], { borders: NB }),
+      cell([docxImg(D, LOGO, 104, 56)], { borders: NB }),
+      cell([`التاريخ:    /    / ${y}هـ`, `الصف: ${g.ar}`, `الزمن: ${m.time || 'ساعة ونصف'}`, 'المادة: اللغة الإنجليزية'].map((x) => pAr(x, { after: 0, size: 21 })), { borders: NB }),
+    ])], { borders: noB }));
+    kids.push(P('', { after: 120, border: { bottom: { style: D.BorderStyle.SINGLE, size: 12, color: '000000' } } }));
+    if (A) {
+      kids.push(tbl([1000, 8300, 1000], [row([cell(P(''), { borders: NB }), cell([`أسئلة اختبار مادة اللغة الإنجليزية للصف ${g.ar}`, `للعام الدراسي ${y} هـ`, `الفصل الدراسي ${t.ar}`, 'عدد الأوراق: ......'].map((x) => pAr(x, { align: CTR, after: 60, bold: true }))), cell(P(''), { borders: NB })])], { borders: noB }));
+      gap();
+      kids.push(tbl([1000, 8300, 1000], [row([cell(P(''), { borders: NB }), cell(['اسم الطالب: ............................................................................', 'رقم الجلوس: .......................................................................', 'اليوم: ...........................................', `التاريخ: ......... / ......... / ${y} هـ`, 'الزمن: ..............................'].map((x) => pAr(x, { after: 100, bold: true }))), cell(P(''), { borders: NB })])], { borders: noB }));
+      gap();
+      kids.push(tbl([1200, 4900, 1600, 2600], [row(['', 'Questions', 'Mark', "Student's mark"].map((x) => cell(pC([T(x, { bold: true, size: 26 })], { after: 0 }))), { h: 560 }),
+        ...PE_QS.map((q, i) => row([cell(pC(`Q${i + 1}`, { size: 24, after: 0 })), cell(pC(q, { size: 26, after: 0 })), cell(pC([T(String(PE_MK[i]), { bold: true, size: 26 })], { after: 0 })), cell(P(''))], { h: 600 })),
+        row([cell(pC([T('Total :', { bold: true, size: 26 })], { after: 0 }), { span: 2 }), cell(pC([T('40', { bold: true, size: 26 })], { after: 0 })), cell(P(''))], { h: 600 })]));
+      gap();
+      ['المصحح: ..................................................... التوقيع: ...........................', 'المراجع: ..................................................... التوقيع: ...........................'].forEach((x) => kids.push(pAr(x, { after: 160, bold: true })));
+      kids.push(pAr('معلم المادة: ' + (m.teacher || '............................'), { align: CTR, bold: true, color: 'C00000' }));
+    } else {
+      kids.push(pAr(`الاختبار النهائي لمادة اللغة الإنجليزية – الصف ${g.ar} – الفصل الدراسي ${t.ar} (الدور الأول) لعام ${y} هـ`, { align: CTR, bold: true, after: 160 }));
+      kids.push(tbl([700, 8900, 700], [row([cell(P(''), { borders: NB }), cell(['عزيزي الطالب:', '- استعن بالله ثم أجب عن الأسئلة', '- فضلاً تأكد من كتابة اسمك الرباعي ورقم الجلوس', '- الإجابة باللون الأزرق فقط'].map((x, i) => pAr(x, { after: 60, bold: !i }))), cell(P(''), { borders: NB })])], { borders: noB }));
+      gap();
+      const L = (x) => cell(pAr(x, { after: 0, bold: true }), { fill: 'EEEEEE' }); const Cc = (x) => cell(pAr(x || '', { after: 0 }));
+      kids.push(tbl([1900, 2800, 2800, 2800], [row([L('اسم الطالب رباعياً'), new D.TableCell({ columnSpan: 3, borders: allB, children: [P('')] })], { h: 420 }), row([L('رقم الجلوس:'), Cc(''), Cc('الصف: ' + g.ar), Cc('المادة: اللغة الإنجليزية')], { h: 420 }), row([L('اليوم:'), new D.TableCell({ columnSpan: 3, borders: allB, children: [pAr(`التاريخ: ...... / ...... / ${y} هـ`, { after: 0 })] })], { h: 420 })], { rtl: true }));
+      gap();
+      const H = (x) => cell(pAr(x, { align: CTR, after: 0, bold: true, size: 20 }), { fill: 'DDDDDD' });
+      kids.push(tbl([2300, 1200, 2900, 1300, 1300, 1300], [row(['السؤال', 'الدرجة رقماً', 'الدرجة كتابة', 'المصحح وتوقيعه', 'المراجع وتوقيعه', 'المدقق وتوقيعه'].map(H), { h: 500 }),
+        ...PE_QS.map((q) => row([cell(pC([new D.TextRun({ text: q, font: 'Times New Roman', size: 24, bold: true })], { after: 0 })), Cc(''), cell(pAr('فقط', { after: 0, size: 18 })), Cc(''), Cc(''), Cc('')], { h: 620 })),
+        row([H('المجموع'), cell(pC([T('40', { bold: true })], { after: 0 }), { fill: 'DDDDDD' }), cell(pAr('فقط', { after: 0, size: 18 }), { fill: 'DDDDDD' }), Cc(''), Cc(''), Cc('')], { h: 620 })], { rtl: true }));
+    }
+    kids.push(new D.Paragraph({ children: [new D.PageBreak()] }));
+    // رأس الصفحة الثانية
+    if (A) {
+      const L = (x) => cell(pAr(x, { align: CTR, after: 0, bold: true, size: 18 }), { fill: 'EEEEEE' }); const Cc = (x, o) => cell(pAr(x || '', { align: CTR, after: 0, ...o }));
+      kids.push(tbl(Array(8).fill(1287), [row([L('الدرجة رقماً'), Cc('40', { bold: true }), L('الدرجة كتابة'), Cc('درجة فقط', { size: 18 }), L('اسم المصحح'), L('توقيعه'), L('اسم المراجع'), L('توقيعه')]), row(Array(8).fill(0).map(() => Cc('')), { h: 420 })], { rtl: true }));
+      kids.push(pAr(`اختبار اللغة الإنجليزية نهائي – الدور الأول – للصف ${g.ar} – الفصل الدراسي ${t.ar} ${y}هـ`, { align: CTR, after: 40, size: 24 }));
+      kids.push(new D.Paragraph({ bidirectional: true, alignment: RIGHT, spacing: { after: 80 }, border: { bottom: { style: D.BorderStyle.SINGLE, size: 10, color: '000000' } }, children: [ar('اسم الطالب: ........................................................   الفصل: ..................', { size: 22 })] }));
+    } else {
+      kids.push(P([T(g.en), new D.TextRun({ text: 'Time: An hour and a half', font: 'Arial', size: 22, break: 1 }), new D.TextRun({ text: 'Number of papers: ......', font: 'Arial', size: 22, break: 1 })], { align: RIGHT, after: 40 }));
+      kids.push(new D.Paragraph({ alignment: CTR, spacing: { after: 100 }, border: { bottom: { style: D.BorderStyle.SINGLE, size: 10, color: '000000' } }, children: [T(`Final Exam – ${t.en} Term – ${y} AH${FORMS.length > 1 ? ' — Form ' + (m.form || 'A') : ''}`)] }));
+    }
+  }
+  // I
+  if (Pr.qa.length) {
+    sh(0, 7); st('A- Match the questions with the correct answers:');
+    kids.push(tbl([5150, 700, 4450], [...(A ? [] : [row(['A', '', 'B'].map((x) => cell(pC([T(x, { bold: true })], { after: 0 }), { fill: 'DDDDDD' })))]), ...Pr.qa.map((q, i) => { const j = O.qa[i]; return row([cell(P(`${i + 1}. ${q.q}`, { after: 0 })), cell(pC(ka ? [red(String(j + 1))] : '', { after: 0 })), cell(P(Pr.qa[j].a, { after: 0 }))], { h: 380 }); })]));
+  }
+  // II
+  const c = E.composition;
+  if (c || A) {
+    sh(1, 7);
+    if (c && c.mode === 'words') {
+      kids.push(pC([new D.TextRun({ text: `A. Write a short paragraph about ${c.title || 'yourself'}.`, font: 'Arial', size: 24, bold: true, underline: {} })]));
+      kids.push(pC([new D.TextRun({ text: 'Use the helping words to help you :', font: 'Arial', size: 24, underline: {} })]));
+      kids.push(pC([T((c.words || []).join(' – '), { bold: true })], { after: 100 }));
+      if (ka) kids.push(P([red(c.model || '')], { after: 80 })); else for (let i = 0; i < 6; i++) kids.push(P(''.padEnd(140, '.'), { after: 60, keep: i < 5 }));
+    } else if (c) {
+      st(`A- Complete the paragraph about ${c.title}. Use the words from the box.`);
+      boxP(O.cb.map((k) => c.answers[k]).join(' – '));
+      const parts = String(c.paragraph || '').split(/_{2,}/); const runs = [];
+      parts.forEach((s, i) => { runs.push(T(s)); if (i < parts.length - 1) runs.push(ka ? red(c.answers[i] || '') : T(dots)); });
+      kids.push(tbl([700, 8900, 700], [row([cell(P(''), { borders: NB }), cell([pC([T(c.title || '', { bold: true })], { after: 40 }), new D.Paragraph({ spacing: { line: 400, after: 40 }, indent: { firstLine: 500 }, children: runs })]), cell(P(''), { borders: NB })])], { borders: noB }));
+    }
+    if (A) {
+      const dos = E.grammar.filter((x) => x.kind === 'do');
+      if (dos.length) { st('B. Rearrange the words to form sentences:'); dos.forEach((it, i) => { kids.push(P(`${i + 1}- ${(it.chunks || []).join(' – ')}`, { keep: true, indent: 300, after: 60 })); kids.push(ka ? P([red(it.answer)], { indent: 600, after: 80 }) : P(''.padEnd(130, '.'), { after: 100, indent: 300 })); }); }
+      if (Pr.opp.length) { st('C. Write the opposite :'); kids.push(tbl([5150, 5150], [row(Pr.opp.map((o, i) => cell(P([T(`${i + 1}- ${o.word} # `), ka ? red(o.opposite) : T(dots)], { after: 0 }))), { h: 380 })])); }
+    }
+  }
+  // III
+  if (Pr.ps.length || Pr.pf.length || Pr.text) {
+    sh(2, 7);
+    if (Pr.ps.length) {
+      st('A- Read the sentences then match them with the correct pictures:');
+      const n = Pr.ps.length; const cw = Math.floor(W / n);
+      kids.push(tbl(Array(n).fill(cw), [row(Pr.ps.map((it) => cell(img(it, 110, 85))), { h: 1400 }), row(Pr.ps.map((it) => cell((it.sents || []).map((s, j) => P([ka && j === it.ans ? red(`${'ab'[j]}- ${s}`) : T(`${'ab'[j]}- ${s}`, { size: 20 })], { align: CTR, after: 20 })))))]));
+    }
+    if (Pr.pf.length) {
+      gap(); st('B- Read and complete. Use the words in the box:');
+      const words = [...Pr.pf.map((x) => x.word), O.pfX]; boxP(O.pfBox.map((k) => words[k]).join(' – '));
+      const n = Pr.pf.length; const cw = Math.floor(W / n);
+      kids.push(tbl(Array(n).fill(cw), [row(Pr.pf.map((it) => cell([img(it, 110, 90), (() => { const ps = String(it.s || '').split(/_{2,}/); const runs = []; ps.forEach((s, i) => { runs.push(T(s, { size: 21 })); if (i < ps.length - 1) runs.push(ka ? red(it.word) : T(dots)); }); return P(runs, { align: CTR, after: 20 }); })()])))]));
+    }
+    if (Pr.text) {
+      const tx = Pr.text; gap(); st('B- Look at the text and choose the best option.');
+      const qs = tx.mcq.flatMap((q, i) => [P([T(`${i + 1}- `, { bold: true }), new D.TextRun({ text: q.stem, font: 'Arial', size: 22, bold: true, underline: {} })], { after: 20, keep: true }), ...q.options.map((o, j) => P([ka && j === q.ans ? red(`${'abc'[j]}- ${o}`) : T(`${'abc'[j]}- ${o}`)], { indent: 300, after: 20, keep: true }))]);
+      const thick = { style: D.BorderStyle.SINGLE, size: 18, color: '000000' };
+      kids.push(tbl([5150, 5150], [row([cell(qs, { borders: NB }), cell([pC([T(tx.title, { bold: true, size: 24 })], { after: 40 }), ...(tx.lines || []).map((l) => P(l, { size: 19, after: 10 }))], { borders: { top: thick, bottom: thick, left: thick, right: thick } })])], { borders: noB }));
+    }
+  }
+  // IV
+  const gm = E.grammar.filter((x) => x.kind === 'mcq');
+  if (gm.length) {
+    sh(3, 7); st('A- Choose the correct answer:');
+    gm.forEach((q, i) => {
+      const parts = String(q.stem || '').split(/_{2,}/); const opt = [T('(', { bold: true })]; q.options.forEach((o, j) => { if (j) opt.push(T(' – ', { bold: true })); opt.push(ka && j === q.ans ? red(o) : T(o, { bold: true })); }); opt.push(T(')', { bold: true }));
+      const runs = [T(`${i + 1}. `, { bold: true })]; if (parts.length > 1) { runs.push(T(parts[0])); runs.push(...opt); runs.push(T(parts.slice(1).join(' '))); } else { runs.push(T(parts[0] + ' ')); runs.push(...opt); }
+      kids.push(P(runs, { indent: 300, after: 40 }));
+    });
+  }
+  // V
+  const pics = E.vocab.filter((x) => x.kind === 'picture'); const defs = E.vocab.filter((x) => x.kind === 'match');
+  if (pics.length) {
+    sh(4, 7); st('A- Write the words under the correct pictures:'); boxP(O.vb.map((k) => pics[k].word).join(' – '));
+    const per = pics.length > 5 ? 4 : pics.length; const cw = Math.floor(W / per); const rows = [];
+    for (let i = 0; i < pics.length; i += per) { const r = pics.slice(i, i + per); const pad = (arr) => arr.concat(Array(per - r.length).fill(0).map(() => cell(P(''), { borders: NB }))); rows.push(row(pad(r.map((it) => cell(img(it, 100, 80)))), { h: 1350 })); rows.push(row(pad(r.map((it) => cell(pC(ka ? [red(it.word)] : '', { after: 0 })))), { h: 420 })); }
+    kids.push(tbl(Array(per).fill(cw), rows));
+  }
+  if (defs.length) {
+    gap(); st('B- Fill in the blanks with the words from the box.');
+    const words = [...defs.map((x) => x.word), O.dX];
+    kids.push(tbl([W], [row([cell(pC([T(O.dBox.map((k) => words[k]).join(' – '), { bold: true })], { after: 0 }), { fill: 'EEEEEE' })]), ...defs.map((d, i) => row([cell(P([T(`${i + 1}- `), ka ? red(d.word) : T(dots), T(` : ${d.meaning}`)], { after: 0 }))], { h: 380 }))]));
+  }
+  // VI
+  const sp = E.spelling;
+  if (sp.length) {
+    sh(5, 5);
+    const gw = (it) => { const s = String(it.gapped || ''); const k = s.indexOf('_'); return k < 0 ? [T(s, { bold: true })] : [T(s.slice(0, k), { bold: true }), ka ? red(it.letter) : T('__', { bold: true }), T(s.slice(k + 1), { bold: true })]; };
+    if (A) {
+      kids.push(new D.Paragraph({ keepNext: true, spacing: { before: 60, after: 80 }, indent: { left: 300 }, children: [new D.TextRun({ text: 'A- Fill in the missing letters:', font: 'Arial', size: 22, bold: true, underline: {} }), T('          '), T(`  ${O.sp.map((k) => sp[k].letter).join(' – ')}  `, { bold: true, size: 28 })] }));
+      const cw = Math.floor(W / sp.length);
+      kids.push(tbl(Array(sp.length).fill(cw), [row(sp.map((it) => cell(img(it, 100, 80))), { h: 1350 }), row(sp.map((it) => cell(pC(gw(it), { after: 0 }))), { h: 420 })]));
+    } else {
+      st('A- Choose the correct missing letters:');
+      const rows = []; for (let i = 0; i < sp.length; i += 5) { const r = sp.slice(i, i + 5); rows.push(row(r.map((it) => new D.TableCell({ columnSpan: 2, borders: allB, children: [img(it, 90, 70), pC(gw(it), { after: 0 })] })), { h: 1500 })); rows.push(row(r.flatMap((it) => (it.altFirst ? [it.alt, it.letter] : [it.letter, it.alt]).map((l) => cell(pC(ka && l === it.letter ? [red(l)] : [T(l, { bold: true })], { after: 0 })))))); }
+      kids.push(tbl(Array(10).fill(1030), rows));
+    }
+  }
+  if (!ka) { kids.push(P('', { after: 200 })); ['END OF QUESTIONS', 'BEST OF LUCK', ...(m.teacher ? [m.teacher] : [])].forEach((x) => kids.push(pC([T(x, { bold: true })], { after: 20 }))); }
+  return kids;
+}
+
+document.head.insertAdjacentHTML('beforeend', '<style>' + PE_CSS + '</style>');
 
 // ===================== الرياضيات: اختبار وفق جدول المواصفات =====================
 // جدول المواصفات لكل صف وفصل (من ملفات المواصفات الرسمية): الفصول وحصصها، ودروسها وأهدافها بمستويات
