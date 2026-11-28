@@ -1,5 +1,5 @@
 // exam-generate: يولّد أسئلة اختبار نهائي وفق توزيع الوزارة: الإنجليزي (المرحلة المتوسطة) والرياضيات (وفق جدول المواصفات).
-// للمالك فقط حالياً. الصفحة exam.html تبني «مخطط الشمول» (كل فقرة مرتبطة بوحدة وقاعدة/كلمة)
+// متاح لكل حساب مسجّل في إنجاز. الصفحة exam.html تبني «مخطط الشمول» (كل فقرة مرتبطة بوحدة وقاعدة/كلمة)
 // وترسل قسماً واحداً في كل طلب، والنموذج يكتب الفقرات المطلوبة بالضبط — فلا يختار هو ما يُغطّى.
 // المدخلات: { section, grade, term, difficulty, items:[{kind, unit, unitTitle, target, words?}], ctx? }
 // المخرجات: { items:[...] } بنفس ترتيب الطلب، أو { data:{...} } للقراءة والتعبير.
@@ -13,7 +13,6 @@ const CORS_HEADERS: Record<string, string> = {
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const OWNER_EMAIL = "ifahadenglish@gmail.com";
 
 const GEMINI_KEYS: string[] = [];
 const KEY_SLOT = new Map<string, number>();
@@ -404,8 +403,7 @@ const handleRequest = async (req: Request): Promise<Response> => {
   const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const { data: userData, error: userError } = await authClient.auth.getUser(jwt);
   if (userError || !userData?.user) return jsonResponse({ detail: "Invalid session", code: "auth" }, 401);
-  // للمالك فقط حالياً
-  if (String(userData.user.email || "").toLowerCase() !== OWNER_EMAIL) return jsonResponse({ detail: "Not available", code: "forbidden" }, 403);
+  // متاح لكل حساب مسجّل في إنجاز (الجلسة إلزامية)
 
   let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return jsonResponse({ detail: "Bad request", code: "bad_request" }, 400); }

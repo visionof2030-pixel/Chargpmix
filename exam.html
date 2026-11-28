@@ -419,7 +419,7 @@ h1,h2,h3,.hd{font-family:var(--head)}
 .intro p{margin:2px 0 0;color:var(--mut);font-size:14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
 label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--mut)}
-select,input[type=text],textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line2);border-radius:10px;padding:9px 11px;min-width:0;width:100%;transition:border-color .15s,box-shadow .15s}
+select,input[type=text],input[type=password],input[type=email],textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line2);border-radius:10px;padding:9px 11px;min-width:0;width:100%;transition:border-color .15s,box-shadow .15s}
 select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),linear-gradient(135deg,var(--mut) 50%,transparent 50%);background-position:14px 55%,9px 55%;background-size:5px 5px;background-repeat:no-repeat;padding-left:26px}
 textarea{resize:vertical;line-height:1.6}
 input:focus,textarea:focus,select:focus{outline:0;border-color:var(--acc);box-shadow:var(--ring)}
@@ -494,6 +494,13 @@ table.cov{width:100%;border-collapse:collapse;font-size:12.5px}table.cov td,tabl
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .muted{color:var(--mut);font-size:13px}
 .gate{text-align:center;padding:48px 16px;font-weight:600}
+.auth{max-width:440px;margin:28px auto;padding:22px 20px;display:flex;flex-direction:column;gap:12px}
+.auth-h{display:flex;gap:12px;align-items:center}.auth-h b{display:block;font-size:17px}.auth-h small{display:block;color:var(--mute,#666);font-size:12.5px;line-height:1.6}
+.auth form{display:flex;flex-direction:column;gap:10px}.auth .seg{display:flex}.auth .seg button{flex:1}
+.auth .pw{display:flex;gap:6px;align-items:center}.auth .pw input{flex:1}.auth .eye{border:1px solid var(--line2);background:var(--card);border-radius:8px;padding:8px 10px;cursor:pointer;color:var(--ink)}
+.auth .linkbtn{background:none;border:0;color:var(--acc);font:inherit;font-size:13px;cursor:pointer;align-self:flex-start;padding:0}
+.auth .or{display:flex;align-items:center;gap:10px;color:var(--mute,#777);font-size:12px}.auth .or::before,.auth .or::after{content:"";flex:1;border-top:1px solid var(--line2)}
+.auth .amsg{font-size:13px;min-height:18px;line-height:1.6}.auth .amsg.err{color:#b42318}.auth .amsg.ok{color:#067647}
 .gate a{color:var(--acc)}
 .prog{display:none}
 /* شريط أدوات التحرير */
@@ -820,9 +827,29 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
 <header class="appbar"><div class="appbar-in">
   <div class="brand"><span class="stamp" aria-hidden="true">م</span><b>مِحَكّ</b></div>
   <a class="back" href="./"><i class="fas fa-arrow-right"></i><span>العودة لإنجاز</span></a>
+  <button class="back" id="signOut" type="button" hidden style="background:none;cursor:pointer;font:inherit"><i class="fas fa-right-from-bracket"></i><span>خروج</span></button>
 </div></header>
 <div class="wrap">
   <div id="gate" class="card gate">جارٍ التحقق من تسجيل الدخول…</div>
+  <div id="auth" class="card auth" hidden>
+    <div class="auth-h"><span class="stamp" aria-hidden="true">م</span><div><b>مِحَكّ — منشئ الاختبارات</b><small>ادخل بحسابك في إنجاز نفسه. ومن يُنشئ حساباً هنا يدخل به إنجاز أيضاً.</small></div></div>
+    <div class="seg" id="authTabs"><button type="button" data-v="login" class="on">تسجيل الدخول</button><button type="button" data-v="signup">إنشاء حساب</button></div>
+    <form id="loginF" autocomplete="on">
+      <label class="f">البريد الإلكتروني أو اسم المستخدم<input type="text" id="aId" autocomplete="username" dir="auto" required></label>
+      <label class="f">كلمة المرور<span class="pw"><input type="password" id="aPw" autocomplete="current-password" required><button type="button" class="eye" data-eye="aPw" aria-label="إظهار كلمة المرور"><i class="fas fa-eye"></i></button></span></label>
+      <button class="btn" type="submit" id="aGo" style="width:100%">دخول</button>
+      <button class="linkbtn" type="button" id="aForgot">نسيت كلمة المرور؟</button>
+    </form>
+    <form id="signupF" hidden autocomplete="on">
+      <label class="f">البريد الإلكتروني<input type="email" id="sEmail" autocomplete="email" dir="ltr" required></label>
+      <label class="f">اسم المستخدم<input type="text" id="sUser" autocomplete="username" dir="auto" required></label>
+      <label class="f">كلمة المرور (٦ أحرف على الأقل)<span class="pw"><input type="password" id="sPw" autocomplete="new-password" minlength="6" required><button type="button" class="eye" data-eye="sPw" aria-label="إظهار كلمة المرور"><i class="fas fa-eye"></i></button></span></label>
+      <button class="btn" type="submit" id="sGo" style="width:100%">إنشاء الحساب</button>
+    </form>
+    <div class="or"><span>أو</span></div>
+    <button class="btn sec" type="button" id="aGoogle" style="width:100%"><i class="fab fa-google"></i> الدخول بحساب Google</button>
+    <div class="amsg" id="aMsg" role="status"></div>
+  </div>
 
   <div id="app" hidden>
     <nav class="stepper" aria-label="المراحل">
@@ -841,7 +868,7 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
       <div class="card">
         <div class="ch"><span class="n">١</span><div><b>بيانات رأس الورقة</b><small>تظهر أعلى ورقة الاختبار، وتُحفظ لاختباراتك القادمة.</small></div></div>
         <div class="grid">
-          <label class="f">إدارة التعليم<input type="text" id="directorate" class="en" placeholder="Education Directorate in ..."></label>
+          <label class="f">إدارة التعليم (اكتب المدينة أو المنطقة فقط)<input type="text" id="directorate" class="en" placeholder="Makkah / مكة" autocomplete="off"><small class="muted" id="dirPrev" style="font-size:12px;margin-top:3px"></small></label>
           <label class="f">اسم المدرسة<input type="text" id="school" class="en" placeholder="... Intermediate School"></label>
           <label class="f">اسم المعلم/ة<input type="text" id="teacher" class="en" placeholder="Teacher's name"></label>
           <div class="f" style="grid-column:1/-1"><span>صيغة الورقة (تذكير أو تأنيث)</span><div class="seg" id="gender" style="margin-top:6px"><button type="button" data-v="m" class="on">معلم · طلاب</button><button type="button" data-v="f">معلمة · طالبات</button></div><div class="muted" id="genderHint" style="font-size:12px;margin-top:4px"></div></div>
@@ -853,7 +880,19 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
       <div class="card">
         <div class="ch"><span class="n">٢</span><div><b>المادة والصف والوحدات</b><small>الوحدات تُحدَّد تلقائياً حسب الفصل الدراسي، ويمكنك تعديلها.</small></div></div>
         <div class="lbl2">المادة</div>
-        <div class="subj" id="subj" style="margin-bottom:14px"><button type="button" data-v="en" class="on">اللغة الإنجليزية</button><button type="button" data-v="math">الرياضيات — وفق جدول المواصفات</button><span class="soon">مواد أخرى <em>قريباً</em></span></div>
+        <label class="f" style="margin-bottom:14px;max-width:420px">المادة<select id="subjSel">
+          <option value="en">اللغة الإنجليزية — وفق جدول المواصفات</option>
+          <option value="math">الرياضيات — وفق جدول المواصفات</option>
+          <option disabled>لغتي (اللغة العربية) — قريباً</option>
+          <option disabled>العلوم — قريباً</option>
+          <option disabled>الدراسات الإسلامية — قريباً</option>
+          <option disabled>الدراسات الاجتماعية — قريباً</option>
+          <option disabled>المهارات الرقمية — قريباً</option>
+          <option disabled>التفكير الناقد — قريباً</option>
+          <option disabled>التربية الفنية — قريباً</option>
+          <option disabled>التربية البدنية — قريباً</option>
+        </select></label>
+        <div class="subj" id="subj" hidden><button type="button" data-v="en" class="on">en</button><button type="button" data-v="math">math</button></div>
         <div class="grid">
           <label class="f" id="mgradeF" hidden>الصف
             <select id="mgrade"><option value="p1">الأول الابتدائي</option><option value="p2">الثاني الابتدائي</option><option value="p3">الثالث الابتدائي</option><option value="g4">الرابع الابتدائي</option><option value="g5">الخامس الابتدائي</option><option value="g6">السادس الابتدائي</option><option value="m1">الأول المتوسط</option><option value="m2">الثاني المتوسط</option><option value="m3" selected>الثالث المتوسط</option></select>
@@ -994,7 +1033,6 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
 'use strict';
 const SUPABASE_URL = "https://exulmefyudxtvybadnds.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4dWxtZWZ5dWR4dHZ5YmFkbmRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5NTgyNTMsImV4cCI6MjEwNDUzNDI1M30.bsFEzJIcB622-THJzqTYi0rbr7GYO0iS1aAhR5khsLI";
-const OWNER_EMAIL = 'ifahadenglish@gmail.com';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const C = window.EXAM_CURRICULUM;
 const $ = (id) => document.getElementById(id);
@@ -1023,15 +1061,61 @@ function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); 
 function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } }
 
 // ===================== الدخول =====================
+// الحساب نفسه في إنجاز: نفس مشروع Supabase، فمن يدخل هنا يدخل إنجاز والعكس
+let UI_READY = false;
 async function gate() {
   const { data } = await sb.auth.getSession();
-  const email = String(data?.session?.user?.email || '').toLowerCase();
-  if (!data?.session) { $('gate').innerHTML = 'سجّل دخولك في <a href="./">إنجاز</a> أولاً ثم ارجع لهذه الصفحة.'; return; }
-  if (email !== OWNER_EMAIL) { $('gate').textContent = 'هذه الأداة غير متاحة حالياً.'; return; }
+  if (!data?.session) { $('gate').hidden = true; $('app').hidden = true; $('signOut').hidden = true; authUI(); return; }
   if (!C) { $('gate').textContent = 'تعذّر تحميل المنهج — حدّث الصفحة.'; return; }
-  $('gate').hidden = true; $('app').hidden = false;
-  initUI();
+  $('auth').hidden = true; $('gate').hidden = true; $('app').hidden = false; $('signOut').hidden = false;
+  if (!UI_READY) { UI_READY = true; initUI(); }
 }
+function aMsg(t, cls) { const el = $('aMsg'); el.textContent = t || ''; el.className = 'amsg' + (cls ? ' ' + cls : ''); }
+let AUTH_WIRED = false;
+function authUI() {
+  $('auth').hidden = false;
+  if (AUTH_WIRED) return; AUTH_WIRED = true;
+  $('authTabs').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $('authTabs').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); $('loginF').hidden = b.dataset.v !== 'login'; $('signupF').hidden = b.dataset.v !== 'signup'; aMsg(''); });
+  document.querySelectorAll('#auth [data-eye]').forEach((b) => b.addEventListener('click', () => { const i = $(b.dataset.eye); const show = i.type === 'password'; i.type = show ? 'text' : 'password'; b.querySelector('i').className = show ? 'fas fa-eye-slash' : 'fas fa-eye'; }));
+  const busy = (id, on, txt) => { const b = $(id); b.disabled = on; if (on) { b.dataset.t = b.textContent; b.textContent = txt; } else if (b.dataset.t) b.textContent = b.dataset.t; };
+  $('loginF').addEventListener('submit', async (e) => {
+    e.preventDefault(); const id = $('aId').value.trim(); const pw = $('aPw').value;
+    if (!id || !pw) { aMsg('أدخل البريد الإلكتروني أو اسم المستخدم وكلمة المرور', 'err'); return; }
+    busy('aGo', true, 'جارٍ الدخول…'); aMsg('');
+    try {
+      if (!id.includes('@')) { // باسم المستخدم: الدخول على الخادم فلا يصل البريد للمتصفح
+        const { data, error } = await sb.functions.invoke('login-username', { body: { username: id, password: pw } });
+        if (error || !data || !data.ok || !data.session) { aMsg(data && data.code === 'too_many' ? 'محاولات كثيرة. انتظر ربع ساعة ثم حاول مجدداً' : error ? 'تعذّر الاتصال، حاول مجدداً' : 'بيانات الدخول غير صحيحة', 'err'); return; }
+        const { error: se } = await sb.auth.setSession(data.session); if (se) { aMsg('بيانات الدخول غير صحيحة', 'err'); return; }
+      } else {
+        const { data, error } = await sb.auth.signInWithPassword({ email: id, password: pw });
+        if (error || !data?.session) { aMsg('بيانات الدخول غير صحيحة', 'err'); return; }
+      }
+      gate();
+    } finally { busy('aGo', false); }
+  });
+  $('signupF').addEventListener('submit', async (e) => {
+    e.preventDefault(); const email = $('sEmail').value.trim(); const username = $('sUser').value.trim(); const pw = $('sPw').value;
+    if (!email || !username || !pw) { aMsg('عبّئ جميع الحقول', 'err'); return; }
+    if (pw.length < 6) { aMsg('كلمة المرور يجب ألا تقل عن ٦ أحرف', 'err'); return; }
+    busy('sGo', true, 'جارٍ إنشاء الحساب…'); aMsg('');
+    try {
+      const { data, error } = await sb.auth.signUp({ email, password: pw, options: { data: { username } } });
+      if (error) { aMsg(/already|exists|registered/i.test(error.message) ? 'هذا البريد الإلكتروني مسجّل بالفعل — سجّل الدخول' : /username/i.test(error.message) ? 'اسم المستخدم مستخدم بالفعل، اختر اسماً آخر' : 'تعذّر إنشاء الحساب', 'err'); return; }
+      if (data?.session) { gate(); return; }
+      aMsg('تم إنشاء الحساب. إن وصلك بريد تأكيد فافتح الرابط ثم سجّل الدخول.', 'ok');
+      $('authTabs').querySelector('[data-v=login]').click(); $('aId').value = email;
+    } finally { busy('sGo', false); }
+  });
+  $('aForgot').addEventListener('click', () => aMsg('لاستعادة كلمة المرور تواصل مع دعم إنجاز من الصفحة الرئيسية.', ''));
+  $('aGoogle').addEventListener('click', async () => {
+    aMsg('');
+    const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.href.split('#')[0].split('?')[0], queryParams: { prompt: 'select_account' } } });
+    if (error) aMsg('تعذّر بدء الدخول عبر Google', 'err');
+  });
+}
+sb.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_IN' && $('app').hidden) gate(); if (ev === 'SIGNED_OUT') { $('app').hidden = true; $('signOut').hidden = true; authUI(); } });
+document.addEventListener('click', async (e) => { if (e.target.closest('#signOut')) { await sb.auth.signOut(); } });
 
 // ===================== التنويع والالتزام بالمنهج =====================
 const HIST_KEY = 'enjaz_exam_hist_v1';
@@ -1279,7 +1363,7 @@ function showStep(n) {
 // ===================== الإعدادات =====================
 function prefs() {
   return {
-    grade: $('grade').value, term: $('term').value, directorate: $('directorate').value.trim(), school: $('school').value.trim(), teacher: $('teacher').value.trim(),
+    grade: $('grade').value, term: $('term').value, dirCity: dirCity($('directorate').value), directorate: dirPhrase(dirCity($('directorate').value), document.querySelector('#subj .on')?.dataset.v || 'en'), school: $('school').value.trim(), teacher: $('teacher').value.trim(),
     year: $('year').value.trim(), time: $('time').value.trim(),
     diff: document.querySelector('#diff .on')?.dataset.v || 'medium', cmode: document.querySelector('#cmode .on')?.dataset.v || 'guided',
     tmpl: document.querySelector('#tmpl .on')?.dataset.v || 'ministry', gcount: +(document.querySelector('#gcount .on')?.dataset.v || 9),
@@ -1310,6 +1394,9 @@ function initUI() {
   const sp = lsGet(PREF_KEY) || {};
   for (const k of ['grade', 'term', 'directorate', 'school', 'teacher', 'year', 'time', 'mgrade']) if (sp[k]) $(k).value = sp[k];
   if (sp.subject) document.querySelectorAll('#subj button').forEach((b) => b.classList.toggle('on', b.dataset.v === sp.subject));
+  $('subjSel').value = document.querySelector('#subj .on')?.dataset.v || 'en';
+  $('subjSel').addEventListener('change', () => { document.querySelector(`#subj button[data-v="${$('subjSel').value}"]`)?.click(); });
+  if (sp.dirCity != null) $('directorate').value = sp.dirCity; else if (sp.directorate) $('directorate').value = dirCity(sp.directorate);
   ENG_NAV = $('secNav').innerHTML;
   $('subj').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#subj button').forEach((x) => x.classList.toggle('on', x === b)); savePrefs(); subjUI(); });
   $('mgrade').onchange = () => { renderChapters(); savePrefs(); };
@@ -1332,7 +1419,9 @@ function initUI() {
   $('grade').onchange = () => { renderUnits(); tmplUI(); savePrefs(); };
   $('term').onchange = () => { renderUnits(); renderChapters(); savePrefs(); };
   subjUI();
-  for (const k of ['directorate', 'school', 'teacher', 'year', 'time']) $(k).addEventListener('input', () => { savePrefs(); if (EXAM) { FORMS.forEach((f) => { f.meta[k] = $(k).value.trim(); }); saveDraft(); } });
+  for (const k of ['directorate', 'school', 'teacher', 'year', 'time']) $(k).addEventListener('input', () => { savePrefs(); if (EXAM) { FORMS.forEach((f) => { f.meta[k] = k === 'directorate' ? dirPhrase(dirCity($(k).value), isMathF(f) ? 'math' : 'en') : $(k).value.trim(); }); saveDraft(); } if (k === 'directorate') dirUI(); });
+  $('directorate').addEventListener('blur', () => { const c = dirCity($('directorate').value); if (c) $('directorate').value = dirPhrase(c, prefs().subject); dirUI(); });
+  dirUI();
   $('genBtn').onclick = generate;
   $('units').addEventListener('change', unitsUI);
   $('uAll').onclick = () => { const all = [...document.querySelectorAll('#units input')]; const v = !all.every((x) => x.checked); all.forEach((x) => { x.checked = v; }); unitsUI(); };
@@ -2572,6 +2661,46 @@ async function exportPDF() {
 }
 
 
+// ===================== إدارة التعليم: يكتب المستخدم المدينة فقط =====================
+// المناطق: «الإدارة العامة للتعليم بمنطقة …»، والمحافظات: «… بمحافظة …»، وبالإنجليزي «Education Directorate in …»
+const DIR_PLACES = [
+  ['Riyadh', 'الرياض', 'r', 'riyadh riyad الرياض رياض'], ['Makkah', 'مكة المكرمة', 'r', 'makkah makka mecca mekkah مكة مكه المكرمة'],
+  ['Madinah', 'المدينة المنورة', 'r', 'madinah madina medina almadinah المدينة المنورة'], ['Eastern Province', 'المنطقة الشرقية', 'e', 'eastern eastern province sharqiyah dammam الشرقية الدمام'],
+  ['Qassim', 'القصيم', 'r', 'qassim qaseem gassim القصيم'], ['Asir', 'عسير', 'r', 'asir aseer abha عسير أبها ابها'], ['Tabuk', 'تبوك', 'r', 'tabuk tabouk تبوك'],
+  ['Hail', 'حائل', 'r', "hail ha'il haeel حائل حايل"], ['Northern Borders', 'الحدود الشمالية', 'r', 'northern borders arar الحدود الشمالية عرعر'], ['Jazan', 'جازان', 'r', 'jazan jizan gizan جازان جيزان'],
+  ['Najran', 'نجران', 'r', 'najran نجران'], ['Al-Baha', 'الباحة', 'r', 'baha albaha الباحة'], ['Al-Jouf', 'الجوف', 'r', 'jouf aljouf jawf الجوف'],
+  ['Jeddah', 'جدة', 'g', 'jeddah jedda jiddah jidda جدة جده'], ['Taif', 'الطائف', 'g', 'taif altaif الطائف طائف'], ['Al-Ahsa', 'الأحساء', 'g', 'ahsa alahsa hasa alhasa الأحساء الاحساء'],
+  ['Hafr Al-Batin', 'حفر الباطن', 'g', 'hafr albatin hafr al batin حفر الباطن'], ['Al-Kharj', 'الخرج', 'g', 'kharj alkharj الخرج'], ['Al-Qunfudhah', 'القنفذة', 'g', 'qunfudhah qunfudah القنفذة'],
+  ['Bisha', 'بيشة', 'g', 'bisha bishah بيشة'], ['Al-Qurayyat', 'القريات', 'g', 'qurayyat alqurayyat القريات'], ['Al-Majmaah', 'المجمعة', 'g', 'majmaah almajmaah المجمعة'],
+  ['Shaqra', 'شقراء', 'g', 'shaqra شقراء'], ['Wadi Al-Dawasir', 'وادي الدواسر', 'g', 'wadi aldawasir dawasir وادي الدواسر'], ['Al-Zulfi', 'الزلفي', 'g', 'zulfi alzulfi الزلفي'],
+  ['Al-Mikhwah', 'المخواة', 'g', 'mikhwah المخواة'], ['Muhayil', 'محايل', 'g', 'muhayil mahayel محايل'], ['Sabya', 'صبيا', 'g', 'sabya صبيا'], ['Yanbu', 'ينبع', 'g', 'yanbu ينبع'],
+  ['Al-Laith', 'الليث', 'g', 'laith allaith الليث'], ['Rabigh', 'رابغ', 'g', 'rabigh رابغ'], ['Unaizah', 'عنيزة', 'g', 'unaizah onaizah عنيزة'], ['Al-Rass', 'الرس', 'g', 'rass alrass الرس'],
+];
+const dirNorm = (v) => String(v || '').toLowerCase().replace(/[ًٌٍَُِّْـ]/g, '').replace(/^(al[-\s]?|the\s+)/, '').replace(/[-']/g, ' ').replace(/\s+/g, ' ').trim();
+function dirCity(v) {
+  return String(v || '').trim()
+    .replace(/^(the\s+)?(general\s+)?(administration|directorate)\s+(of\s+)?(education\s+)?(in|of|at)\s+/i, '').replace(/^education\s+(directorate|department|office)\s+(in|of|at)\s+/i, '')
+    .replace(/^(الإدارة العامة للتعليم|الادارة العامة للتعليم|إدارة التعليم|ادارة التعليم|إدارة تعليم|ادارة تعليم)\s*/, '').replace(/^(بمنطقة|بمحافظة|ب)\s*/, '').trim();
+}
+function dirPlace(city) {
+  const n = dirNorm(city); if (!n) return null;
+  return DIR_PLACES.find(([en, ar, k, al]) => dirNorm(en) === n || dirNorm(ar) === n || al.split(' ').some((a) => dirNorm(a) === n) || al.includes(n) && n.length > 3) || null;
+}
+function dirPhrase(city, subj) {
+  city = String(city || '').trim(); if (!city) return '';
+  const p = dirPlace(city);
+  if (subj === 'math') {
+    if (!p) return /[؀-ۿ]/.test(city) ? 'الإدارة العامة للتعليم ب' + (/^ال/.test(city) ? '' : 'منطقة ') + city : 'الإدارة العامة للتعليم بـ' + city;
+    return 'الإدارة العامة للتعليم ' + (p[2] === 'e' ? 'ب' + p[1] : p[2] === 'g' ? 'بمحافظة ' + p[1] : 'بمنطقة ' + p[1]);
+  }
+  return 'Education Directorate in ' + (p ? p[0] : city);
+}
+function dirUI() {
+  const c = dirCity($('directorate').value); const el = $('dirPrev'); if (!el) return;
+  const ph = dirPhrase(c, prefs().subject);
+  el.textContent = c && ph !== $('directorate').value.trim() ? 'في الورقة: ' + ph : '';
+}
+
 // ===================== التذكير والتأنيث =====================
 // صيغة الورقة تتبع المعلم/المعلمة (في المدارس السعودية الطلاب من جنس المعلم): تُكتشف تلقائياً من اسم المعلم أو المدرسة،
 // ويمكن تغييرها يدوياً. لا تُغيَّر إلا عبارات القالب (اسم الطالب، المصحح، معلم المادة…)، لا نصوص الأسئلة.
@@ -3205,7 +3334,9 @@ function subjUI() {
   $('mathHint').hidden = !m;
   if (m) renderChapters(); else tmplUI();
   document.querySelectorAll('#directorate,#school,#teacher,#time').forEach((x) => { x.dir = 'auto'; x.classList.toggle('en', !m); });
-  $('directorate').placeholder = m ? 'الإدارة العامة للتعليم بـ …' : 'Education Directorate in ...';
+  $('directorate').placeholder = m ? 'مكة / Makkah' : 'Makkah / مكة';
+  { const c = dirCity($('directorate').value); if (c && document.activeElement !== $('directorate')) $('directorate').value = dirPhrase(c, m ? 'math' : 'en'); dirUI(); }
+  if ($('subjSel')) $('subjSel').value = m ? 'math' : 'en';
   $('school').placeholder = m ? 'مدرسة …' : (C[$('grade').value] && C[$('grade').value].primary ? '... Primary School' : '... Intermediate School');
   $('teacher').placeholder = m ? 'اسم المعلم' : "Teacher's name";
 }
