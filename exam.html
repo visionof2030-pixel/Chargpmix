@@ -3205,7 +3205,8 @@ function mathBlueprint(chs, p) {
 // ----- النصوص الرياضية -----
 // تطبيع: أرقام هندية، فاصلة عشرية «٫»، ×، ومسافات
 function mfix(s) {
-  return String(s ?? '').replace(/[۰-۹]/g, (d) => '٠١٢٣٤٥٦٧٨٩'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)]).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d])
+  // ‎\f و‎\t داخل JSON رمزا تحكم: «\frac» تصل «rac{» و«\times» تصل «imes» — نعيدهما
+  return String(s ?? '').replace(/\\?f?rac\s*\{/g, '\\frac{').replace(/(^|[\s\t])\\?t?imes(?=[\s\d٠-٩(]|$)/g, '$1×').replace(/[۰-۹]/g, (d) => '٠١٢٣٤٥٦٧٨٩'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)]).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d])
     .replace(/([٠-٩])\.([٠-٩])/g, '$1٫$2').replace(/\*/g, '×').replace(/\\times/g, '×').replace(/\\div/g, '÷').replace(/\\le(q)?/g, '≤').replace(/\\ge(q)?/g, '≥').replace(/\\neq/g, '≠').replace(/\\sqrt/g, '√').replace(/\\pi/g, 'π')
     .replace(/\\\(|\\\)|\$/g, '').replace(/\s+/g, ' ').trim();
 }

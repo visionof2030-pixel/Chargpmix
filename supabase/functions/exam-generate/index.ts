@@ -342,6 +342,8 @@ ${its.map((x, i) => `${i + 1}. ${x}`).join("\n")}
 // قراءة متسامحة لرد النموذج: أسوار الكود، مصفوفة في الأعلى، فواصل زائدة، علامات اقتباس ذكية، وفاصل «|» بين الكائنات
 function parseLoose(raw: string): any {
   let c = raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+  // أوامر LaTeX بشرطة مائلة واحدة داخل JSON (\frac تصير رمز تحكم، و\le خطأ في الصيغة): نضاعف الشرطة قبل القراءة
+  c = c.replace(/(?<!\\)\\(?=(?:frac|times|neq|div|leq?|geq?|sqrt|pi|cdot|left|right|text|dfrac)(?![a-z]))/g, "\\\\");
   const tries: string[] = [c];
   const o1 = c.indexOf("{"), o2 = c.lastIndexOf("}"), a1 = c.indexOf("["), a2 = c.lastIndexOf("]");
   if (o1 >= 0 && o2 > o1) tries.push(c.slice(o1, o2 + 1));
