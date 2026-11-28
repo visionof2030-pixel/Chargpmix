@@ -99,7 +99,7 @@ const lvl = (d: string) => (LEVEL[d] ? d : d === "easy" || d === "hard" ? d : "m
 
 function header(grade: string, term: string, difficulty: string) {
   return `You write questions for a Saudi Ministry of Education English final exam.
-Students: ${grade}${/primary/i.test(grade) ? " (primary stage, Top Goal series), term " + term + ". Learners are Saudi children aged 10–12 (A1): keep sentences short and simple, everyday child-friendly contexts (school, family, food, sports, animals)." : " (intermediate stage, Super Goal series), term " + term + ". Learners are Saudi teenagers (A1–A2)."}
+Students: ${grade}${/primary/i.test(grade) ? " (primary stage), term " + term + ". Learners are Saudi children aged " + (/third/i.test(grade) ? "8–9 (pre-A1/A1): very short, very simple sentences" : /fourth/i.test(grade) ? "9–10 (A1): short simple sentences" : /fifth/i.test(grade) ? "10–11 (A1): short simple sentences" : "11–12 (A1): short simple sentences") + ", everyday child-friendly contexts (school, family, food, sports, animals)." : " (intermediate stage, Super Goal series), term " + term + ". Learners are Saudi teenagers (A1–A2)."}
 Difficulty: ${LEVEL[lvl(difficulty)]}
 Rules:
 - Use ONLY the grammar and vocabulary of the given units. Never test anything outside them, and never invent a grammar rule or structure that is not in the given points.
@@ -200,7 +200,7 @@ JSON: {"data":{"title":"...","paragraphs":["",""],"mcq":[{"q":"...","options":${
   }
   if (section === "prim") {
     return `${h}
-Primary-stage exam items (children aged 10–12): short, clear, natural sentences using the unit words. Write one item for EACH line below, in the same order:
+Primary-stage exam items for young children (see the age above): short, clear, natural sentences using the unit words. Write one item for EACH line below, in the same order:
 - kind "qa": a short question a child can answer (about the unit theme: favourite things, jobs, food, family, hobbies, places…) and its short answer (3–8 words), e.g. "What is your favourite dish?" → "My favourite dish is pizza." Every question in this request must have a clearly different answer, so students can match each question with exactly one answer.
 - kind "picsent": the target word will be shown to the student as a PICTURE. Write two short sentences (3–7 words): "right" correctly describes the picture (it uses the target word or clearly means it); "wrong" is similar in form but describes something different (another word from the unit), so only "right" matches the picture.
 - kind "picfill": one short sentence (5–10 words) about the picture with ONE blank "____" where the target word fits exactly (the target word itself must NOT appear in the sentence).
