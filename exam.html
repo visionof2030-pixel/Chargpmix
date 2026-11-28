@@ -2483,7 +2483,7 @@ function mathBlueprint(chs, p) {
   const byPos = (a, b) => a.ch - b.ch || a.li - b.li;
   const M = mcq.map(mk('mcq')).sort(byPos);
   // الأسئلة البيانية: من فقرات أهدافها تمثيل بياني أو مستوى إحداثي أو ميل أو خط أعداد، موزعة على الفصول
-  const want = p.mgraphs == null ? 3 : +p.mgraphs; const G_RE = /بياني|التمثيل|الأعمدة|بالنقاط|بالخطوط|البيانات|الوسيط|المنوال|المتوسط الحسابي|الإحصاء|تمثيل (العلاقات|المعادلات|الدوال|موقف)|الخط الرأسي|المستوى الإحداثي|النظام الإحداثي|الإحداثي|المقطع|الميل|خط الأعداد|المستقيم/;
+  const want = p.mgraphs == null ? 3 : +p.mgraphs; const G_RE = /بياني|التمثيل|الأعمدة|القطاعات|الدائرية|بالنقاط|بالخطوط|البيانات|الوسيط|المنوال|المتوسط الحسابي|الإحصاء|تمثيل (العلاقات|المعادلات|الدوال|موقف)|الخط الرأسي|المستوى الإحداثي|النظام الإحداثي|الإحداثي|المقطع|الميل|خط الأعداد|المستقيم/;
   const cand = shuffle(M.filter((it) => G_RE.test(it.obj + ' ' + it.lesson))); const usedC = new Set();
   for (const pass of [0, 1]) for (const it of cand) { if (M.filter((x) => x.graph).length >= want) break; if (it.graph || (pass === 0 && usedC.has(it.ch))) continue; it.graph = true; usedC.add(it.ch); }
   return {
@@ -2988,7 +2988,7 @@ async function mathExportDOCX() {
 // ===================== الرسوم البيانية للرياضيات =====================
 // الذكاء الاصطناعي يصف الرسم بالأرقام (مستقيمات، قطع مكافئ، قيمة مطلقة، أشعة، نقاط، خط أعداد)،
 // والأداة ترسمه بدقة، وتحسب الإجابة بنفسها حيث يمكن (التقاطع، الميل، اختبار الخط الرأسي، عدد الحلول).
-const gWide = (g) => g && (g.type === 'bar' || g.type === 'linechart' || g.type === 'dotplot');
+const gWide = (g) => g && (g.type === 'bar' || g.type === 'linechart' || g.type === 'dotplot' || g.type === 'pie');
 const gW = (g) => (gWide(g) ? 270 : g.type === 'numberline' ? 300 : 150);
 const gWo = (g) => (g.type === 'numberline' ? 160 : gWide(g) ? 150 : 140);
 const gL = (v) => (v < 0 ? '\u2066-' + ARD(-v) + '\u2069' : ARD(v)); // السالب يسار العدد
@@ -3002,6 +3002,11 @@ function gClean(g) {
     const cats = (Array.isArray(g.cats) ? g.cats : []).slice(0, 8).map(lab); const vals = (Array.isArray(g.vals) ? g.vals : []).slice(0, cats.length).map((v) => gNum(v, 0, 100000));
     if (cats.length < 2 || vals.length !== cats.length) return null;
     return { type: g.type, title: lab(g.title, 40), xlabel: lab(g.xlabel), ylabel: lab(g.ylabel), cats, vals };
+  }
+  if (g.type === 'pie') { // التمثيل بالقطاعات الدائرية
+    const cats = (Array.isArray(g.cats) ? g.cats : []).slice(0, 6).map((x) => lab(x, 16)); const vals = (Array.isArray(g.vals) ? g.vals : []).slice(0, cats.length).map((v) => gNum(v, 0, 100000));
+    if (cats.length < 2 || vals.length !== cats.length || vals.some((v) => v <= 0)) return null;
+    return { type: 'pie', title: lab(g.title, 40), cats, vals, show: ['frac', 'pct', 'val'].includes(g.show) ? g.show : '' };
   }
   if (g.type === 'dotplot') { // التمثيل بالنقاط
     let data = (Array.isArray(g.data) ? g.data : []).slice(0, 40).map((v) => Math.round(gNum(v, -100, 1000)));
@@ -3144,6 +3149,7 @@ function gSVG(g, opt = {}) {
   if (g.type === 'numberline') return gNumberLineSVG(g, opt);
   if (g.type === 'bar' || g.type === 'linechart') return gChartSVG(g, opt);
   if (g.type === 'dotplot') return gDotSVG(g, opt);
+  if (g.type === 'pie') return gPieSVG(g, opt);
   const [x0, x1, y0, y1] = g.range; const W = opt.w || 170; const u = W / (x1 - x0 + 1); const H = u * (y1 - y0 + 1);
   const X = (x) => (x - x0 + 0.5) * u; const Y = (y) => (y1 - y + 0.5) * u;
   const inb = (x, y) => x >= x0 - 0.5 - 1e-9 && x <= x1 + 0.5 + 1e-9 && y >= y0 - 0.5 - 1e-9 && y <= y1 + 0.5 + 1e-9;
@@ -3218,6 +3224,34 @@ function gDotSVG(g, opt = {}) {
   for (let x = a; x <= b; x++) s += `<line x1="${X(x)}" y1="${base - 4}" x2="${X(x)}" y2="${base + 4}" stroke="#000"/>${gT(X(x), base + 17, x < 0 ? '−' + ARD(-x) : ARD(x), { fs: 9.5 })}`;
   Object.entries(cnt).forEach(([v, c]) => { for (let k = 0; k < c; k++) s += gT(X(+v), base - 6 - k * 12, '×', { fs: 13, b: 1 }); });
   return `<svg class="mg" xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="direction:ltr">${s}</svg>`;
+}
+// التمثيل بالقطاعات الدائرية: قطاعات ملونة يبدأ أولها من الأعلى مع اتجاه عقارب الساعة، واسم كل فئة داخل قطاعه أو بجانبه
+const PIECOL = ['#7fb3e6', '#f2a96b', '#8fd19e', '#e88b8b', '#c7a8e8', '#f3d77a'];
+function gFrac(v, t) { // كسر بسيط إن أمكن (½ ، ¼ ، ⅓ …)
+  const g = (a, b) => (b ? g(b, a % b) : a); if (!Number.isInteger(v) || !Number.isInteger(t)) return '';
+  const d = g(v, t); return t / d <= 12 ? `${ARD(v / d)}/${ARD(t / d)}` : '';
+}
+function gPieSVG(g, opt = {}) {
+  const W = opt.w || 260; const T = g.title ? 22 : 6; const R = Math.min(W / 2 - 46, 92); const cx = W / 2; const cy = T + R + 8; const H = cy + R + 10;
+  const tot = g.vals.reduce((a, b) => a + b, 0); let a0 = -Math.PI / 2;
+  let s = `<rect x="0" y="0" width="${W}" height="${H}" fill="#fff"/>`; if (g.title) s += gT(W / 2, 14, g.title, { fs: 11, b: 1 });
+  const labs = [];
+  g.vals.forEach((v, i) => {
+    const a1 = a0 + (2 * Math.PI * v) / tot; const big = a1 - a0 > Math.PI ? 1 : 0; const P = (a, r) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+    const [x0, y0] = P(a0, R); const [x1, y1] = P(a1, R);
+    s += g.vals.length === 1 ? `<circle cx="${cx}" cy="${cy}" r="${R}" fill="${PIECOL[0]}" stroke="#333"/>` : `<path d="M${cx} ${cy} L${x0} ${y0} A${R} ${R} 0 ${big} 1 ${x1} ${y1} Z" fill="${PIECOL[i % 6]}" stroke="#333" stroke-width="1.1"/>`;
+    const am = (a0 + a1) / 2; const small = a1 - a0 < 0.55; const [lx, ly0] = P(am, small ? R + 14 : R * 0.56); const ly = ly0 - (g.show === 'frac' && !small ? 6 : 0);
+    const extra = g.show === 'pct' ? ARD(Math.round((100 * v) / tot)) + '٪' : g.show === 'frac' ? gFrac(v, tot) : g.show === 'val' ? ARD(v) : '';
+    const an = small ? (Math.cos(am) >= 0 ? 'start' : 'end') : 'middle';
+    let ex = '';
+    if (extra && extra.includes('/')) { // كسر عمودي: البسط فوق المقام
+      const [nu, de] = extra.split('/'); const fx = an === 'middle' ? lx : an === 'start' ? lx + 6 : lx - 6;
+      ex = gT(fx, ly + 10, nu, { fs: 9.5 }) + `<line x1="${fx - 6}" y1="${ly + 13}" x2="${fx + 6}" y2="${ly + 13}" stroke="#000" stroke-width="1"/>` + gT(fx, ly + 23, de, { fs: 9.5 });
+    } else if (extra) ex = gT(lx, ly + 11, extra, { fs: 9.5, a: an });
+    labs.push(gT(lx, ly + (extra ? -1 : 3.5), g.cats[i], { fs: 9.5, b: 1, a: an }) + ex);
+    a0 = a1;
+  });
+  return `<svg class="mg" xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H.toFixed(1)}" viewBox="0 0 ${W} ${H.toFixed(1)}" style="direction:ltr">${s}${labs.join('')}</svg>`;
 }
 // إحصاءات من الرسم للتحقق الآلي
 function gStats(g) {
