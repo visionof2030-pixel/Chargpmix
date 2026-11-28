@@ -1,4 +1,4 @@
-// exam-generate: يولّد أسئلة اختبار نهائي (إنجليزي — المرحلة المتوسطة) وفق توزيع الوزارة.
+// exam-generate: يولّد أسئلة اختبار نهائي وفق توزيع الوزارة: الإنجليزي (المرحلة المتوسطة) والرياضيات (وفق جدول المواصفات).
 // للمالك فقط حالياً. الصفحة exam.html تبني «مخطط الشمول» (كل فقرة مرتبطة بوحدة وقاعدة/كلمة)
 // وترسل قسماً واحداً في كل طلب، والنموذج يكتب الفقرات المطلوبة بالضبط — فلا يختار هو ما يُغطّى.
 // المدخلات: { section, grade, term, difficulty, items:[{kind, unit, unitTitle, target, words?}], ctx? }
@@ -219,6 +219,81 @@ JSON: {"data":{"mode":"guided","title":"...","instructions":"...","questions":["
   return null;
 }
 
+
+// ===================== الرياضيات (وفق جدول المواصفات) =====================
+// كل فقرة مرتبطة بفصل ودرس وهدف ومستوى (معرفة/تطبيق/استدلال) تحدده الصفحة من جدول المواصفات.
+type MSpec = { kind: string; ch: number; chTitle: string; lesson: string; obj: string; lv: string; mk: number };
+function readMSpecs(v: unknown): MSpec[] {
+  if (!Array.isArray(v)) return [];
+  return v.slice(0, 30).map((s) => {
+    const o = (s && typeof s === "object" ? s : {}) as Record<string, unknown>;
+    return { kind: txt(o.kind, 10), ch: Number(o.ch) || 0, chTitle: txt(o.chTitle, 120), lesson: txt(o.lesson, 160), obj: txt(o.obj, 300), lv: txt(o.lv, 12), mk: Number(o.mk) || 1 };
+  });
+}
+const MLEVEL: Record<string, string> = {
+  veasy: "سهل جدًا (١ من ٦): أعداد صغيرة وخطوة واحدة مباشرة، ومشتتات بعيدة عن الإجابة.",
+  easy: "سهل (٢ من ٦): أعداد صغيرة وخطوة أو خطوتان، ومشتتات واضحة الخطأ.",
+  medium: "متوسط (٣ من ٦): مستوى اختبار نهاية الفصل المعتاد، خطوتان أو ثلاث، ومشتتات من الأخطاء الشائعة.",
+  mhard: "متوسط الصعوبة (٤ من ٦): خطوات أكثر وأعداد سالبة أو كسور حيث يناسب الدرس، ومشتتات قريبة من الأخطاء الشائعة.",
+  hard: "صعب (٥ من ٦): مسائل متعددة الخطوات ومواقف حياتية تحتاج ترجمة إلى معادلة، ومشتتات قريبة جدًا.",
+  vhard: "صعب جدًا (٦ من ٦): أصعب ما يسمح به الدرس نفسه: تفكير متعدد الخطوات وتفسير وتبرير، لكن دون الخروج عن أهداف الدرس.",
+};
+const LVTXT: Record<string, string> = {
+  "م": "معرفة: تذكّر مفهوم أو تعريف أو خاصية أو تمييز مصطلح من الدرس (بلا حساب طويل).",
+  "ت": "تطبيق: تنفيذ إجراء أو حل روتيني مباشر من الدرس (حل معادلة، إيجاد قيمة، كتابة معادلة…).",
+  "س": "استدلال: مسألة من واقع الحياة أو تحليل أو تفسير أو اختيار أفضل طريقة أو مسألة متعددة الخطوات، مبنية على هدف الدرس.",
+};
+function mathHeader(grade: string, term: string, difficulty: string) {
+  return `أنت معلم رياضيات خبير تكتب أسئلة اختبار نهائي وفق منهج الرياضيات المعتمد من وزارة التعليم في المملكة العربية السعودية.
+الصف: ${grade}، الفصل الدراسي: ${term}.
+مستوى الصعوبة: ${MLEVEL[lvl(difficulty)] || MLEVEL.medium}
+قواعد صارمة:
+- كل فقرة تقيس هدفها المحدد فقط من الدرس المحدد، وبمستواه المعرفي المحدد. لا تستعمل أي مفهوم أو مهارة من فصول أو صفوف لاحقة، ولا تخترع مصطلحات أو قوانين غير موجودة في الكتاب.
+- اللغة عربية فصيحة واضحة ومختصرة، وسياقات سعودية مناسبة (أسماء عربية، ريال، مدن المملكة).
+- الأرقام هندية عربية (٠١٢٣٤٥٦٧٨٩)، والفاصلة العشرية «٫». المتغيرات حروف عربية كما في الكتاب: س، ص، ع، ن، م، ل، ك، ر، هـ. الدالة: د(س). المجموعة الخالية: Ø.
+- الرموز: + − × ÷ = ≠ < > ≤ ≥ √ و | | للقيمة المطلقة و π. الأسس: س^٢ . الكسور: \\frac{البسط}{المقام} فقط. العدد السالب: علامة "-" ملاصقة للعدد بلا مسافة (-٥ ، -٢س). الطرح بين حدين: " - " بمسافتين.
+- لا تكتب أي سؤال يحتاج رسمًا أو شكلًا أو تمثيلًا بيانيًا أو جدولًا ليُفهم؛ صف الأبعاد والبيانات بالكلمات والأعداد.
+- قبل الكتابة: حلّ كل فقرة بنفسك خطوة خطوة وتحقق من الإجابة مرتين. يجب أن تكون الإجابة صحيحة رياضيًا تمامًا.
+- أعد JSON فقط بلا أي نص آخر.`;
+}
+function mathLines(specs: MSpec[]) {
+  return specs.map((s, i) => `${i + 1}. [${s.kind}${s.kind === "essay" ? `، ${s.mk} درجات` : ""}] الفصل ${s.ch} «${s.chTitle}» — الدرس: ${s.lesson} — الهدف: ${s.obj} — المستوى: ${LVTXT[s.lv] || s.lv}`).join("\n");
+}
+function buildMathPrompt(section: string, h0: string, specs: MSpec[], ctx: Record<string, unknown>): string | null {
+  const avoid = Array.isArray(ctx.avoid) ? (ctx.avoid as unknown[]).slice(0, 40).map((x) => txt(x, 200)).filter(Boolean) : [];
+  const recent = Array.isArray(ctx.recent) ? (ctx.recent as unknown[]).slice(0, 40).map((x) => txt(x, 200)).filter(Boolean) : [];
+  const names = Array.isArray(ctx.names) ? (ctx.names as unknown[]).slice(0, 8).map((x) => txt(x, 30)).filter(Boolean) : [];
+  const no = [...avoid, ...recent];
+  const h = `${h0}${names.length ? "\nعند الحاجة لأسماء أشخاص استعمل: " + names.join("، ") + "." : ""}
+نوّع الأعداد والصيغ والسياقات بين الفقرات، ولا تبدأ الفقرات بالصيغة نفسها.${no.length ? "\nهذه فقرات وردت سابقًا — لا تكررها ولا تكتب صيغًا قريبة منها (أعداد وسياقات جديدة):\n" + no.map((a) => "- " + a).join("\n") : ""}`;
+  const lines = mathLines(specs);
+  if (section === "math") {
+    return `${h}
+اكتب فقرة واحدة لكل سطر من الأسطر الآتية بالترتيب نفسه، بنوعها المحدد:
+- mcq: سؤال اختيار من متعدد له ٤ خيارات مختلفة، واحد فقط صحيح، والمشتتات من أخطاء الطلاب الشائعة في هذا الدرس. "answer" نص الخيار الصحيح حرفيًا.
+- tf: عبارة واحدة قصيرة لـ«صح أم خطأ». اجعل نحو نصف عبارات الطلب خاطئة. العبارة الخاطئة خطؤها حقيقي وواضح لمن يعرف الدرس (مفهوم شائع خاطئ أو قيمة خاطئة)، واكتب في "fix" تصويبها المختصر.
+- essay: مسألة مقالية تُحل في خطوات بالدرجة المحددة، "ex" سطر أو سطران رياضيان فقط (المعادلة أو النظام أو المتباينة…) إن وجدا، و"steps" خطوات الحل لنموذج الإجابة مع درجة كل خطوة ومجموعها يساوي درجة الفقرة بالضبط (أنصاف الدرجات مسموحة). اجعل "numberline" = true فقط إذا كان الحل يُطلب تمثيله على خط الأعداد.
+${lines}
+أعد JSON بالشكل: {"items":[ ...كائن لكل سطر بالترتيب... ]}
+mcq: {"kind":"mcq","q":"...","options":["","","",""],"answer":"..."}
+tf: {"kind":"tf","s":"...","answer":true,"fix":""}
+essay: {"kind":"essay","q":"...","ex":[""],"steps":[{"t":"...","mk":1}],"answer":"الناتج النهائي","numberline":false}`;
+  }
+  if (section === "math_review") {
+    const its = Array.isArray(ctx.review) ? (ctx.review as unknown[]).slice(0, 30).map((x) => txt(x, 600)) : [];
+    return `أنت مدقق رياضيات صارم لاختبار نهائي سعودي (الصف ${txt(ctx.grade, 40)}).
+لكل فقرة مرقمة أدناه (معها هدفها ومستواها والإجابة المعلَّمة): حلّها أنت بنفسك من البداية خطوة خطوة، ثم قرر "ok": true فقط إذا تحقق كل ما يلي:
+١) الإجابة المعلَّمة صحيحة رياضيًا تمامًا؛
+٢) في الاختيار من متعدد: خيار واحد فقط صحيح والخيارات مختلفة؛ في صح وخطأ: الحكم (صح/خطأ) صحيح بلا لبس؛
+٣) الفقرة واضحة ومكتملة البيانات ولا تحتاج رسمًا؛
+٤) تقيس هدفها من الدرس ولا تحتاج مفهومًا من خارج الدرس.
+إن كانت الإجابة المعلَّمة خاطئة لكن السؤال سليم فاكتب الإجابة الصحيحة في "fix" (نص الخيار الصحيح حرفيًا، أو true/false).
+${its.map((x, i) => `${i + 1}. ${x}`).join("\n")}
+أعد JSON: {"items":[{"ok":true,"why":"","fix":""}, ...واحد لكل فقرة بالترتيب]} — "why" سبب مختصر عند ok=false.`;
+  }
+  return null;
+}
+
 // قراءة متسامحة لرد النموذج: أسوار الكود، مصفوفة في الأعلى، فواصل زائدة، علامات اقتباس ذكية، وفاصل «|» بين الكائنات
 function parseLoose(raw: string): any {
   let c = raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
@@ -288,14 +363,21 @@ const handleRequest = async (req: Request): Promise<Response> => {
   let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return jsonResponse({ detail: "Bad request", code: "bad_request" }, 400); }
   const section = txt(body.section, 24);
-  const specs = readSpecs(body.items);
   const ctx = (body.ctx && typeof body.ctx === "object" ? body.ctx : {}) as Record<string, unknown>;
-  const h = header(txt(body.grade, 40) || "Intermediate", txt(body.term, 10) || "1", txt(body.difficulty, 10));
-  const prompt = specs.length ? buildPrompt(section, h, specs, ctx) : null;
+  let prompt: string | null = null;
+  if (section === "math" || section === "math_review") {
+    const ms = readMSpecs(body.items);
+    const mh = mathHeader(txt(body.grade, 40) || "المتوسط", txt(body.term, 10) || "الأول", txt(body.difficulty, 10));
+    prompt = ms.length ? buildMathPrompt(section, mh, ms, ctx) : null;
+  } else {
+    const specs = readSpecs(body.items);
+    const h = header(txt(body.grade, 40) || "Intermediate", txt(body.term, 10) || "1", txt(body.difficulty, 10));
+    prompt = specs.length ? buildPrompt(section, h, specs, ctx) : null;
+  }
   if (!prompt) return jsonResponse({ detail: "Bad request", code: "bad_request" }, 400);
   if (!GEMINI_KEYS.length) return jsonResponse({ failed: true, reason: "not_configured" });
 
-  const raw = await callGemini(prompt, 95000, section === "grammar_review" ? 0.1 : 0.95);
+  const raw = await callGemini(prompt, 95000, section === "grammar_review" || section === "math_review" ? 0.1 : section === "math" ? 0.7 : 0.95);
   if (!raw) return jsonResponse({ failed: true, reason: "no_answer" });
   const v = parseLoose(raw);
   if (!v) {

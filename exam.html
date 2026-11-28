@@ -271,6 +271,12 @@ input:focus,textarea:focus,select:focus{outline:0;border-color:var(--acc);box-sh
 .subj{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .subj .on{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--acc);background:var(--accs);color:var(--ink);border-radius:10px;padding:8px 14px;font-weight:600}
 .subj .on::before{content:"\2713";color:var(--acc);font-weight:700}
+.subj button{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}
+.subj button.on{border-color:var(--acc);background:var(--accs)}
+#mchs{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}#mchs label{flex-wrap:wrap;row-gap:2px}#mchs bdi{flex:1;min-width:120px;white-space:normal}#mchs small{width:100%;padding-right:26px}
+.mpv{font-size:13.5px;color:var(--mut);min-height:4px;margin-top:2px;direction:rtl}
+.seg.tfseg{flex-shrink:0}
+table.cov{width:100%;border-collapse:collapse;font-size:12.5px}table.cov td,table.cov th{border:1px solid var(--line);padding:3px 4px;text-align:center}
 .subj .soon{display:inline-flex;align-items:center;gap:6px;border:1px dashed var(--line2);color:var(--mut);border-radius:10px;padding:8px 12px;font-size:13px}
 .subj .soon em{font-style:normal;font-size:11px;background:var(--chip);border-radius:999px;padding:0 8px}
 /* الوحدات: شبكة مرتبة تسلسلياً، رقم عربي وعنوان إنجليزي معزول الاتجاه */
@@ -678,16 +684,24 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
       <div class="card">
         <div class="ch"><span class="n">٢</span><div><b>المادة والصف والوحدات</b><small>الوحدات تُحدَّد تلقائياً حسب الفصل الدراسي، ويمكنك تعديلها.</small></div></div>
         <div class="lbl2">المادة</div>
-        <div class="subj" style="margin-bottom:14px"><span class="on">اللغة الإنجليزية — المرحلة المتوسطة</span><span class="soon">مواد أخرى <em>قريباً</em></span></div>
+        <div class="subj" id="subj" style="margin-bottom:14px"><button type="button" data-v="en" class="on">اللغة الإنجليزية — المرحلة المتوسطة</button><button type="button" data-v="math">الرياضيات — وفق جدول المواصفات</button><span class="soon">مواد أخرى <em>قريباً</em></span></div>
         <div class="grid">
-          <label class="f">الصف
+          <label class="f" id="mgradeF" hidden>الصف
+            <select id="mgrade"><option value="g4">الرابع الابتدائي</option><option value="g5">الخامس الابتدائي</option><option value="g6">السادس الابتدائي</option><option value="m1">الأول المتوسط</option><option value="m2">الثاني المتوسط</option><option value="m3" selected>الثالث المتوسط</option></select>
+          </label>
+          <label class="f" id="gradeF">الصف
             <select id="grade"><option value="sg1">أول متوسط — Super Goal 1</option><option value="sg2">ثاني متوسط — Super Goal 2</option><option value="sg3">ثالث متوسط — Super Goal 3</option></select>
           </label>
           <label class="f">الفصل الدراسي
             <select id="term"><option value="1">الأول</option><option value="2">الثاني</option></select>
           </label>
         </div>
-        <div style="margin-top:16px">
+        <div id="mchsWrap" hidden style="margin-top:16px">
+          <div class="lbl2"><span>فصول المقرر المشمولة <span id="mCount" class="muted"></span></span><button type="button" class="linkbtn" id="mAll">تحديد الكل</button></div>
+          <div class="units" id="mchs"></div>
+          <div class="hint">تُوزَّع الدرجات الأربعون على الفصول المحددة بنسبة حصصها، ثم على مستويات المعرفة والتطبيق والاستدلال بنسبة أهدافها — كما في جدول المواصفات.</div>
+        </div>
+        <div style="margin-top:16px" id="unitsWrap">
           <div class="lbl2"><span>الوحدات المشمولة <span id="uCount" class="muted"></span></span><button type="button" class="linkbtn" id="uAll">تحديد الكل</button></div>
           <div class="units" id="units"></div>
         </div>
@@ -695,12 +709,13 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
 
       <div class="card">
         <div class="ch"><span class="n">٣</span><div><b>شكل الاختبار</b><small>القالب ومستوى الصعوبة ونوع سؤال التعبير.</small></div></div>
-        <div class="lbl2">قالب الأسئلة</div>
+        <div class="hint" id="mathHint" hidden style="margin-top:0">قالب الرياضيات: السؤال الأول اختيار من متعدد (٢٠ درجة) · الثاني صح وخطأ (١٠ درجات) · الثالث أسئلة مقالية (١٠ درجات: ٣ + ٣ + ٢ + ٢). كل فقرة مرتبطة بدرس وهدف ومستوى من جدول المواصفات، وكل إجابة تُراجَع مرة ثانية، ونموذج الإجابة يتضمن المرجعية.</div>
+        <div id="tmplWrap"><div class="lbl2">قالب الأسئلة</div>
         <div class="seg big" id="tmpl">
           <button data-v="ministry" class="on"><b>قالب الوزارة</b><small>اختيار من متعدد، افعل كما هو مطلوب، مطابقة وصور</small></button>
           <button data-v="auto"><b>قالب التصحيح الآلي</b><small>جداول A/B/C وصح وخطأ تُصحَّح آلياً</small></button>
         </div>
-        <div class="hint" id="tmplHint"></div>
+        <div class="hint" id="tmplHint"></div></div>
         <div style="margin-top:16px">
           <div class="lbl2"><span>مستوى الصعوبة</span><span class="muted" id="diffHint"></span></div>
           <div class="lvls" id="diff"></div>
@@ -860,7 +875,7 @@ function histAll() { const h = lsGet(HIST_KEY); return Array.isArray(h) ? h : []
 function histFor(grade) { return histAll().filter((h) => h.grade === grade); }
 // يُحفظ ملخص كل اختبار مولَّد (في هذا الجهاز فقط) حتى تكون الاختبارات التالية مختلفة عنه
 function histPush(f) {
-  if (!f) return;
+  if (!f || isMathF(f)) return;
   const m = f.meta;
   const e = {
     grade: m.grade, t: Date.now(),
@@ -961,6 +976,7 @@ const SEC_META = {
   spelling: ['الإملاء', 'Spelling · 5 درجات', 'fa-keyboard'],
 };
 const FORM_NAME = ['الاختبار الأساسي', 'الاختبار البديل'];
+const SM = (k) => SEC_META[k] || MSEC_META[k];
 const GV_TIPS = [
   'تُوزَّع الأسئلة على كل الوحدات المختارة حتى يشمل الاختبار المنهج كاملاً.',
   'بعد الانتهاء يمكنك تعديل أي سؤال بالكتابة عليه مباشرة، أو إعادة توليده وحده.',
@@ -974,12 +990,12 @@ function genSub(p, units) {
   const us = units.map((u) => u.u);
   return `${C[p.grade].name} · الفصل ${p.term === '2' ? 'الثاني' : 'الأول'} · ${units.length} وحدات (${us[0]}–${us[us.length - 1]}) · ${p.tmpl === 'auto' ? 'قالب التصحيح الآلي' : 'قالب الوزارة'}`;
 }
-function gvOpen(labels, sub) {
-  GV.groups = labels; GV.st = labels.map(() => null); GV.t0 = labels.map(() => 0); GV.start = Date.now(); GV.tick = 0;
+function gvOpen(labels, sub, secs) {
+  GV.secs = secs || SECS; GV.groups = labels; GV.st = labels.map(() => null); GV.t0 = labels.map(() => 0); GV.start = Date.now(); GV.tick = 0;
   $('gvRun').hidden = false; $('gvDone').hidden = true;
   $('gvTitle').textContent = labels.length > 1 ? 'نُعدّ الاختبارين' : 'نُعدّ ' + (labels[0] ? labels[0] : 'اختبارك');
   $('gvSub').textContent = sub || '';
-  $('gvSteps').innerHTML = labels.map((lb, gi) => `<div class="gv-grp">${lb ? `<div class="gv-gt">${lb}</div>` : ''}<div class="gv-list">${SECS.map((k, n) => `<div class="gv-r wait" id="gvr-${gi}-${k}"><span class="si">${'١٢٣٤٥'[n]}</span><span class="nm"><b>${SEC_META[k][0]}</b><small>${SEC_META[k][1]}</small></span><span class="stt"><svg viewBox="0 0 28 24"><path d="M4 13 C 7 15, 9 17, 11 21 C 15 13, 20 7, 25 3"/></svg></span></div>`).join('')}</div></div>`).join('');
+  $('gvSteps').innerHTML = labels.map((lb, gi) => `<div class="gv-grp">${lb ? `<div class="gv-gt">${lb}</div>` : ''}<div class="gv-list">${GV.secs.map((k, n) => `<div class="gv-r wait" id="gvr-${gi}-${k}"><span class="si">${'١٢٣٤٥'[n]}</span><span class="nm"><b>${SM(k)[0]}</b><small>${SM(k)[1]}</small></span><span class="stt"><svg viewBox="0 0 28 24"><path d="M4 13 C 7 15, 9 17, 11 21 C 15 13, 20 7, 25 3"/></svg></span></div>`).join('')}</div></div>`).join('');
   GV.tipI = Math.floor(Math.random() * GV_TIPS.length); gvTip();
   $('gv').hidden = false; document.body.style.overflow = 'hidden';
   clearInterval(GV.timer); GV.timer = setInterval(gvTick, 250); gvTick();
@@ -987,14 +1003,14 @@ function gvOpen(labels, sub) {
 function gvProg(gi, st) {
   if (!GV.st[gi]) GV.t0[gi] = Date.now();
   GV.st[gi] = { ...st };
-  for (const k of SECS) {
+  for (const k of GV.secs) {
     const r = $(`gvr-${gi}-${k}`); if (!r) continue;
     const s = st[k]; const cls = s === 'ok' ? 'ok' : s === 'err' ? 'err' : 'run';
     if (!r.classList.contains(cls)) {
       r.className = 'gv-r ' + cls;
       if (cls === 'err') r.querySelector('small').textContent = 'تعذّر — أعد توليده من التحرير';
     }
-    if (s === 'rev') r.querySelector('small').textContent = 'مراجعة ثانية: مطابقة القواعد للمنهج…';
+    if (s === 'rev') r.querySelector('small').textContent = k === 'review' ? 'يحلّ كل فقرة من جديد ويتحقق من إجابتها…' : 'مراجعة ثانية: مطابقة القواعد للمنهج…';
   }
   gvTick();
 }
@@ -1002,7 +1018,7 @@ function gvFrac() {
   let s = 0; let n = 0;
   GV.groups.forEach((_, gi) => {
     const st = GV.st[gi];
-    for (const k of SECS) {
+    for (const k of GV.secs) {
       n++; if (!st) continue;
       if (st[k] === 'ok' || st[k] === 'err') s += 1; else if (st[k] === 'rev') s += 0.9; else s += 0.9 * (1 - Math.exp(-(Date.now() - GV.t0[gi]) / 13000));
     }
@@ -1019,19 +1035,20 @@ function gvTick() {
   gvSetPct(gvFrac());
   const sec = Math.floor((Date.now() - GV.start) / 1000);
   $('gvTime').textContent = sec < 60 ? `${sec} ث` : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')} د`;
-  let done = 0; let tot = 0; GV.st.forEach((st) => { for (const k of SECS) { tot++; if (st && (st[k] === 'ok' || st[k] === 'err')) done++; } });
-  if (!GV.st.some(Boolean)) tot = GV.groups.length * SECS.length;
+  let done = 0; let tot = 0; GV.st.forEach((st) => { for (const k of GV.secs) { tot++; if (st && (st[k] === 'ok' || st[k] === 'err')) done++; } });
+  if (!GV.st.some(Boolean)) tot = GV.groups.length * GV.secs.length;
   $('gvState').textContent = `اكتمل ${done} من ${tot} أقسام`;
   if (++GV.tick % 22 === 0) gvTip();
 }
 function examItems(f) {
+  if (isMathF(f)) return f.mcq.length + f.tf.length + f.essay.length;
   return (f.grammar || []).length + (f.vocab || []).length + (f.spelling || []).length + (f.reading ? f.reading.mcq.length + f.reading.tf.length : 0) + (f.composition ? 1 : 0);
 }
 function gvFinish() {
-  const fails = []; GV.st.forEach((st, gi) => { for (const k of SECS) if (st && st[k] === 'err') fails.push(SEC_META[k][0] + (GV.groups.length > 1 ? ` (${GV.groups[gi]})` : '')); });
+  const fails = []; GV.st.forEach((st, gi) => { for (const k of GV.secs) if (st && st[k] === 'err') fails.push(SM(k)[0] + (GV.groups.length > 1 ? ` (${GV.groups[gi]})` : '')); });
   clearInterval(GV.timer); gvSetPct(1);
   $('gvState').textContent = 'اكتمل';
-  const empty = (f) => !f || (!f.grammar.length && !f.vocab.length && !f.spelling.length && !f.reading && !f.composition);
+  const empty = (f) => !f || (isMathF(f) ? !f.mcq.length && !f.tf.length && !f.essay.length : !f.grammar.length && !f.vocab.length && !f.spelling.length && !f.reading && !f.composition);
   const groupsForms = GV.groups.length > 1 ? FORMS : [GV.groups[0] === FORM_NAME[1] ? FORMS[1] : FORMS[0]];
   const bad = groupsForms.every(empty);
   setTimeout(() => {
@@ -1045,13 +1062,15 @@ function gvFinish() {
     } else {
       $('gvEdit').innerHTML = '<i class="fas fa-pen-to-square"></i> مراجعة وتحرير';
       $('gvDoneT').textContent = groupsForms.length > 1 ? 'الاختباران جاهزان' : GV.groups[0] ? GV.groups[0] + ' جاهز' : 'اختبارك جاهز';
-      const units = C[m.grade].units.filter((u) => m.units.includes(u.u));
-      $('gvDoneSub').textContent = (groupsForms.length > 1 ? 'الاختبار الأساسي + الاختبار البديل · ' : '') + genSub(m, units);
-      const f0 = groupsForms[0];
-      $('gvStats').innerHTML = [[40, 'درجة'], [examItems(f0), 'فقرة'], [units.length, 'وحدات'], ['✓', 'نموذج الإجابة']]
+      const f0 = groupsForms[0]; const mth = isMathF(f0);
+      const units = mth ? MATH_SPECS[mspecKey(m)].chapters.filter((c) => m.chs.includes(c.n)) : C[m.grade].units.filter((u) => m.units.includes(u.u));
+      $('gvDoneSub').textContent = (groupsForms.length > 1 ? 'الاختبار الأساسي + الاختبار البديل · ' : '') + (mth ? mathSub(m, units) : genSub(m, units));
+      const nWarn = mth ? groupsForms.reduce((a, f) => a + [...f.mcq, ...f.tf, ...f.essay].filter((x) => x.warn).length, 0) : 0;
+      if (nWarn) fails.push(`${nWarn} فقرة لم تجتز المراجعة الثانية (معلّمة في التحرير)`);
+      $('gvStats').innerHTML = [[40, 'درجة'], [examItems(f0), 'فقرة'], [units.length, mth ? 'فصول' : 'وحدات'], ['✓', mth ? 'الإجابة والمرجعية' : 'نموذج الإجابة']]
         .map(([b, s]) => `<div><b>${b}</b><span>${s}</span></div>`).join('');
       $('gvWarn').hidden = !fails.length;
-      if (fails.length) $('gvWarn').innerHTML = `<i class="fas fa-triangle-exclamation"></i> لم يُولَّد: ${fails.map(esc).join('، ')}. أعد إعداده من زر «↻ القسم» في صفحة التحرير.`;
+      if (fails.length) $('gvWarn').innerHTML = `<i class="fas fa-triangle-exclamation"></i> ${mth && !GV.st.some((st) => st && GV.secs.some((k) => st[k] === 'err')) ? '' : 'لم يُولَّد: '}${fails.map(esc).join('، ')}. ${mth ? 'راجعها أو أعد توليدها من زر «↻» في صفحة التحرير.' : 'أعد إعداده من زر «↻ القسم» في صفحة التحرير.'}`;
     }
     $('gvKey').checked = $('withKey').checked;
   }, 450);
@@ -1088,6 +1107,7 @@ function prefs() {
     diff: document.querySelector('#diff .on')?.dataset.v || 'medium', cmode: document.querySelector('#cmode .on')?.dataset.v || 'guided',
     tmpl: document.querySelector('#tmpl .on')?.dataset.v || 'ministry', gcount: +(document.querySelector('#gcount .on')?.dataset.v || 9),
     twoForms: !!$('twoForms')?.checked,
+    subject: document.querySelector('#subj .on')?.dataset.v || 'en', mgrade: $('mgrade') ? $('mgrade').value : 'm3',
   };
 }
 function termUnits(g, t) { const b = C[g]; const [a, z] = b.terms[t]; return b.units.filter((u) => u.u >= a && u.u <= z); }
@@ -1111,7 +1131,14 @@ function selectedUnits() {
 }
 function initUI() {
   const sp = lsGet(PREF_KEY) || {};
-  for (const k of ['grade', 'term', 'directorate', 'school', 'teacher', 'year', 'time']) if (sp[k]) $(k).value = sp[k];
+  for (const k of ['grade', 'term', 'directorate', 'school', 'teacher', 'year', 'time', 'mgrade']) if (sp[k]) $(k).value = sp[k];
+  if (sp.subject) document.querySelectorAll('#subj button').forEach((b) => b.classList.toggle('on', b.dataset.v === sp.subject));
+  ENG_NAV = $('secNav').innerHTML;
+  $('subj').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#subj button').forEach((x) => x.classList.toggle('on', x === b)); savePrefs(); subjUI(); });
+  $('mgrade').onchange = () => { renderChapters(); savePrefs(); };
+  $('mchs').addEventListener('change', mchsUI);
+  $('mAll').onclick = () => { const all = [...document.querySelectorAll('#mchs input')]; const v = !all.every((x) => x.checked); all.forEach((x) => { x.checked = v; }); mchsUI(); };
+  { const st = document.createElement('style'); st.textContent = MATH_SHEET_CSS; document.head.appendChild(st); }
   $('twoForms').checked = !!sp.twoForms; $('twoForms').onchange = savePrefs;
   $('diff').innerHTML = LEVELS.map(([v, n], i) => `<button data-v="${v}"${v === 'medium' ? ' class="on"' : ''}><span class="bars">${[0, 1, 2, 3, 4, 5].map((j) => `<i class="${j <= i ? 'f' : ''}" style="height:${4 + j * 2}px"></i>`).join('')}</span>${n}</button>`).join('');
   for (const id of ['diff', 'cmode', 'tmpl', 'gcount']) {
@@ -1121,7 +1148,9 @@ function initUI() {
   }
   tmplUI(); diffUI();
   renderUnits();
-  $('grade').onchange = $('term').onchange = () => { renderUnits(); savePrefs(); };
+  $('grade').onchange = () => { renderUnits(); savePrefs(); };
+  $('term').onchange = () => { renderUnits(); renderChapters(); savePrefs(); };
+  subjUI();
   for (const k of ['directorate', 'school', 'teacher', 'year', 'time']) $(k).addEventListener('input', () => { savePrefs(); if (EXAM) { FORMS.forEach((f) => { f.meta[k] = $(k).value.trim(); }); saveDraft(); } });
   $('genBtn').onclick = generate;
   $('units').addEventListener('change', unitsUI);
@@ -1139,7 +1168,7 @@ function initUI() {
   $('pvKey').onchange = () => { $('withKey').checked = $('pvKey').checked; renderPreview(); };
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('pv').classList.contains('open')) closePreview(); });
   if (loadDraft(lsGet(DRAFT_KEY))) { renderEditor(); formsUI(); showStep(2); toast('تم استرجاع آخر اختبار عملت عليه.'); }
-  $('altBtn').onclick = () => generateAlt(false);
+  $('altBtn').onclick = () => (isMath() ? mathGenerateAlt(false) : generateAlt(false));
   $('formTabs').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setForm(+b.dataset.i); });
 }
 function savePrefs() { lsSet(PREF_KEY, prefs()); diffUI(); }
@@ -1148,6 +1177,7 @@ function diffUI() { const d = document.querySelector('#diff .on')?.dataset.v || 
 function tmplUI() {
   const auto = prefs().tmpl === 'auto';
   $('gcountBox').hidden = !auto; $('cmodeBox').hidden = auto;
+  if (prefs().subject === 'math') { $('gcountBox').hidden = true; $('cmodeBox').hidden = true; }
   $('tmplHint').textContent = auto
     ? 'وفق نموذجك: قواعد 9 (a/b/c) · إملاء 5 (الحرف الناقص) · مفردات 9 (صور وكلمات) · قراءة 9 (صح وخطأ) · كتابة 8 (فقرة بثماني كلمات). كل الأسئلة تُصحَّح آلياً عدا الكتابة.'
     : 'نموذج الوزارة المعتاد: تعبير 8 · قراءة 9 · قواعد 9 (اختيار + افعل كما هو مطلوب) · مفردات 9 · إملاء 5.';
@@ -1390,6 +1420,7 @@ function fixOpts(f) {
   [...(f.grammar || []), ...(f.vocab || []), ...((f.reading && f.reading.mcq) || [])].forEach(fx);
 }
 async function generate() {
+  if (prefs().subject === 'math') return mathGenerate();
   const units = selectedUnits();
   if (!units.length) { toast('اختر وحدة واحدة على الأقل'); return; }
   const p = prefs(); savePrefs();
@@ -1432,6 +1463,7 @@ async function generateAlt(auto) {
 }
 
 async function regen(section, idx) {
+  if (isMathF(EXAM)) return mathRegen(section, idx);
   const p = EXAM.meta; const units = C[p.grade].units.filter((u) => p.units.includes(u.u));
   const host = idx != null ? document.querySelector(`.it[data-sec="${section}"][data-i="${idx}"], .pc[data-i="${idx}"]`) : $('sec-' + section);
   host?.classList.add('busy');
@@ -1482,8 +1514,11 @@ function secCard(id, title, mark, inner) {
 }
 const UP_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.8"/><path d="M21 15l-5-5L5 21"/></svg>';
 
+let ENG_NAV = '';
 function renderEditor() {
   if (!EXAM) return;
+  if (isMathF(EXAM)) { $('secNav').innerHTML = '<button data-go="mcq">الاختيار من متعدد</button><button data-go="tf">صح وخطأ</button><button data-go="essay">المقالي</button><button data-go="coverage">جدول المواصفات</button>'; mathEditor(); return; }
+  if (ENG_NAV && $('secNav').innerHTML !== ENG_NAV) $('secNav').innerHTML = ENG_NAV;
   let h = '';
   // التعبير
   const c = EXAM.composition; let ci = '';
@@ -1560,6 +1595,7 @@ function renderEditor() {
 
 // ===================== تقرير الشمول =====================
 function renderCoverage() {
+  if (isMathF(EXAM)) return mathCoverage();
   const m = EXAM.meta; const units = C[m.grade].units.filter((u) => m.units.includes(u.u));
   const rows = units.map((u) => {
     const g = EXAM.grammar.filter((x) => x.unit === u.u).length;
@@ -1652,6 +1688,7 @@ function shrinkImage(file, max) {
 
 // ===================== الورقة (للمعاينة والتصدير) =====================
 function ensureOrders() {
+  if (isMathF(EXAM)) return;
   const c = EXAM.composition;
   if (c && c.mode === 'wordbox' && (!c.boxOrder || c.boxOrder.length !== c.answers.length)) c.boxOrder = shuffle(c.answers.map((_, i) => i));
   const mt = EXAM.vocab.filter((x) => x.kind === 'match');
@@ -1680,7 +1717,7 @@ const endSig = (m) => `<div class="endsig">Best wishes${m.teacher ? '<br>' + esc
 function formLine(m) { return EXAM_FORMS().length > 1 ? `<br><b>Form ${esc(m.form || 'A')}</b>` : ''; }
 
 function withForm(f, fn) { const prev = EXAM; EXAM = f; try { ensureOrders(); return fn(); } finally { EXAM = prev; } }
-const bodyOf = (ka) => (isAuto() ? autoBody(ka) : ministryBody(ka));
+const bodyOf = (ka) => (isMathF(EXAM) ? mathBody(ka) : isAuto() ? autoBody(ka) : ministryBody(ka));
 // النموذج المعروض (المعاينة والنسخ)
 function paperHTML(withKey) {
   ensureOrders();
@@ -2183,6 +2220,7 @@ function autoSigDocx(D, m) {
 
 async function exportDOCX() {
   if (!EXAM) return;
+  if (isMathF(EXAM)) return mathExportDOCX();
   busyBtns(true);
   try {
     if (!window.docx) await loadScript('https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js');
@@ -2204,7 +2242,7 @@ async function exportDOCX() {
 // وتُصغَّر كصورة لتناسب الشاشة — فما يظهر هنا هو ما سيخرج في الملف صفحةً صفحة.
 const A4W = 210 * 96 / 25.4; const A4H = 297 * 96 / 25.4;
 function pvGeom() {
-  const m = isAuto() ? [6, 7, 6, 7] : [8, 8, 8, 8]; const mm = 96 / 25.4;
+  const m = isMath() ? [10, 11, 10, 11] : isAuto() ? [6, 7, 6, 7] : [8, 8, 8, 8]; const mm = 96 / 25.4;
   const iw = Math.floor((210 - m[1] - m[3]) * mm); const ratio = (297 - m[0] - m[2]) / (210 - m[1] - m[3]);
   return { m, iw, pageH: Math.floor(2 * iw * ratio) / 2 };
 }
@@ -2216,7 +2254,7 @@ let PV_SEQ = 0;
 async function renderPreview() {
   const seq = ++PV_SEQ; const body = $('pvBody'); const g = pvGeom();
   body.innerHTML = '<div class="pvn" style="margin-top:30px">جارٍ ترتيب الصفحات…</div>'; $('pvCount').textContent = '';
-  const html = `<div class="sheet exp${isAuto() ? ' auto' : ''}" dir="ltr">${arabicToImages(paperHTML($('pvKey').checked)).replace(/class="pbreak keypage"/g, 'class="keypage" style="break-before:auto;page-break-before:auto"')}</div>`;
+  const html = isMath() ? `<div class="msheet">${paperHTML($('pvKey').checked).replace(/class="pbreak keypage"/g, 'class="keypage"')}</div>` : `<div class="sheet exp${isAuto() ? ' auto' : ''}" dir="ltr">${arabicToImages(paperHTML($('pvKey').checked)).replace(/class="pbreak keypage"/g, 'class="keypage" style="break-before:auto;page-break-before:auto"')}</div>`;
   const meas = document.createElement('div'); meas.className = 'pvmeasure'; meas.style.width = g.iw + 'px'; meas.innerHTML = html; document.body.appendChild(meas);
   await Promise.all([...meas.querySelectorAll('img')].map((im) => (im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; }))));
   if (seq !== PV_SEQ) { meas.remove(); return; }
@@ -2250,7 +2288,7 @@ async function copyExam() {
   const withKey = $('pv').classList.contains('open') ? $('pvKey').checked : $('withKey').checked;
   const holder = document.createElement('div');
   holder.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:#fff';
-  holder.innerHTML = `<div class="sheet${isAuto() ? ' auto' : ''}" dir="ltr">${paperHTML(withKey)}</div>`;
+  holder.innerHTML = isMath() ? `<div class="msheet">${paperHTML(withKey)}</div>` : `<div class="sheet${isAuto() ? ' auto' : ''}" dir="ltr">${paperHTML(withKey)}</div>`;
   document.body.appendChild(holder);
   const css = [...document.querySelectorAll('style')].map((x) => x.textContent).join('\n');
   const html = `<html><head><meta charset="utf-8"><style>${css}</style></head><body>${holder.innerHTML}</body></html>`;
@@ -2288,7 +2326,7 @@ function arabicToImages(html) {
 // تقسيم الصفحات: يمر على وحدات الورقة بالترتيب؛ أي وحدة (سؤال مع خياراته، كتلة توصيل/صور، عنوان مع أول فقرة)
 // تعبر حدّ الصفحة تُنقل كاملة للصفحة التالية، وصفحة نموذج الإجابة تبدأ دائماً بصفحة جديدة.
 function paginate(root, pageH) {
-  const sel = '.keypage, .keep, .pi, table.at, table.xq, table.xr, .match, .passage, .box, .qhead, .ash, table.ak, .kmodel, .endsig';
+  const sel = '.keypage, .keep, .pi, table.at, table.xq, table.xr, .mqh, table.mq, table.mtf, .mes, .mend, .match, .passage, .box, .qhead, .ash, table.ak, .kmodel, .endsig';
   const base = () => root.getBoundingClientRect().top;
   root.querySelectorAll(sel).forEach((el) => {
     const r = el.getBoundingClientRect(); const b0 = base();
@@ -2304,6 +2342,7 @@ function paginate(root, pageH) {
 }
 async function exportPDF() {
   if (!EXAM) return;
+  if (isMathF(EXAM)) return mathPrint();
   busyBtns(true); toast('جارٍ تجهيز ملف PDF…', 8000);
   try {
     if (!window.html2pdf) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
@@ -2336,6 +2375,619 @@ async function exportPDF() {
   finally { busyBtns(false); }
 }
 
+
+// ===================== الرياضيات: اختبار وفق جدول المواصفات =====================
+// جدول المواصفات لكل صف وفصل (من ملفات المواصفات الرسمية): الفصول وحصصها، ودروسها وأهدافها بمستويات
+// المعرفة والتطبيق والاستدلال. توزَّع الدرجات الأربعون على الفصول بنسبة الحصص، ثم على المستويات بنسبة الأهداف،
+// وكل فقرة مرتبطة بدرس وهدف محددين — فالذكاء الاصطناعي لا يختار ما يُغطّى.
+const MATH_SPECS = {"g4-1":{"items":36,"chapters":[{"n":1,"title":"القيمة المنزلية","periods":17.0,"cnt":[7,7,3],"lessons":[{"name":"القيمة المنزلية ضمن مئات الألوف","k":["تحديد القيمة المنزلية لرقم في عدد معطى ضمن مئات الألوف","كتابة الأعداد ضمن مئات الألوف بالصيغة :القياسية ، اللفظية ، التحليلية"],"a":["كتابة القيمة المنزلية لرقم في عدد معطى ضمن مئات الألوف في مسألة من واقع الحياة","كتابة الأعداد ضمن مئات الألوف بالصيغة :القياسية ، اللفظية ، التحليلية في مسألة من واقع الحياة"],"r":[]},{"name":"القيمة المنزلية ضمن الملايين","k":["تحديد القيمة المنزلية لرقم في عدد معطى ضمن الملايين","كتابة الأعداد ضمن الملايين بالصيغة :القياسية ، اللفظية ، التحليلية"],"a":["كتابة القيمة المنزلية لرقم في عدد معطى ضمن الملايين في مسألة من واقع الحياة","كتابة الأعداد ضمن الملايين بالصيغة :القياسية ، اللفظية ، التحليلية في مسألة من واقع الحياة"],"r":[]},{"name":"مهارة حل المسألة","k":[],"a":[],"r":["حل مسالة من واقع الحياة باستعمال الخطوات الأربع للحل"]},{"name":"المقارنة بين الأعداد","k":["المقارنة بين عددين ضمن الملايين"],"a":["المقارنة بين عددين ضمن الملايين في مسالة من واقع الحياة"],"r":[]},{"name":"ترتيب الأعداد","k":["ترتيب الأعداد ضمن الملايين من الأكبر للأصغر أو العكس"],"a":["ترتيب الأعداد ضمن الملايين من الأكبر للأصغر أو العكس في مسالة من واقع الحياة"],"r":[]},{"name":"تقريب الأعداد","k":["تقريب الأعداد ضمن الملايين إلى أقرب قيمة منزلية معطاه"],"a":["تقريب الأعداد ضمن الملايين إلى أقرب قيمة منزلية معطاه في مسالة من واقع الحياة"],"r":[]},{"name":"استقصاء حل المسألة","k":[],"a":[],"r":["حل مسالة من واقع الحياة باختيار الخطة المناسبة للحل"]}]},{"n":2,"title":"الجمع والطرح","periods":16.0,"cnt":[9,7,1],"lessons":[{"name":"الجبر : خصائص الجمع وقواعد الطرح","k":["استعمال خصائص الجمع لجمع الأعداد","استعمال قواعد الطرح لطرح الأعداد","تحديد الخاصية المستعملة في جمع الأعداد","تحديد الخاصية المستعملة في طرح الأعداد"],"a":["استعمال خصائص الجمع لجمع الأعداد في مسألة من واقع الحياة","استعمال قواعد الطرح لطرح الأعداد في مسألة من واقع الحياة"],"r":[]},{"name":"تقدير المجموع والفرق","k":["تقدير ناتج مجموع عددين بتقريب الأعداد إلى أقرب منزلة معطاة","تقدير ناتج الفرق بين عددين بتقريب الأعداد إلى أقرب منزلة معطاة"],"a":["تقدير ناتج مجموع عددين لمسالة من واقع الحياة","تقدير ناتج الفرق بين عددين لمسالة من واقع الحياة"],"r":[]},{"name":"مهارة حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال التقدير أو الإجابة الدقيقة"]},{"name":"الجمع","k":["إيجاد ناتج جمع عددين مكونة من عدة أرقام"],"a":["إيجاد ناتج جمع عددين مكونة من عدة أرقام في مسألة من واقع الحياة"],"r":[]},{"name":"الطرح","k":["إيجاد ناتج طرح عددين مكونة من عدة أرقام"],"a":["إيجاد ناتج طرح عددين مكونة من عدة أرقام في مسألة من واقع الحياة"],"r":[]},{"name":"الطرح مع وجود أصفار","k":["إيجاد ناتج طرح عددين مكونة من عدة أرقام بعضها أصفار"],"a":["إيجاد طرح عددين مكونة من عدة أرقام بعضها أصفار في مسألة من واقع الحياة"],"r":[]}]},{"n":3,"title":"تنظيم البيانات وعرضها وتفسيرها","periods":16.0,"cnt":[7,4,4],"lessons":[{"name":"جمع البيانت وتنظيمها","k":["معرفة مفهوم المسح","معرفة مفهوم لوحة الإشارات","معرفة مفهوم الجدول التكراري"],"a":["تنظيم البيانات المعطاة في جداول تكرارية","تنظيم البيانات المعطاة في لوحة الإشارات"],"r":[]},{"name":"خطة حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة إنشاء جدول"]},{"name":"التمثيل بالأعمدة","k":["معرفة مفهوم التمثيل بالأعمدة"],"a":[],"r":["تفسير البيانات الممثلة بالأعمدة"]},{"name":"التمثيل بالخطوط","k":["معرفة مفهوم التمثيل بالخطوط"],"a":[],"r":["تفسير البيانات الممثلة بالخطوط"]},{"name":"التمثيل بالقطاعات الدائرية","k":["معرفة مفهوم التمثيل بالقطاعات الدائرية"],"a":[],"r":["تفسير البيانات الممثلة بالقطاعات الدائرية"]},{"name":"الاحتمال","k":["معرفة مفهوم الاحتمال"],"a":["وصف احتمال النواتج باستعمال الكلمات : مؤكد،أكثر احتمالاً، متساوي الإمكانية،أقل احتمالاً،مستحيل","وصف احتمال النواتج باستعمال الأعداد"],"r":[]}]},{"n":4,"title":"الأنماط والجبر","periods":17.0,"cnt":[8,12,5],"lessons":[{"name":"العبارات والجمل العددية","k":["معرفة مفهوم العباوة","معرفة مفهوم العبارة العددية","كتابة جملة عددية"],"a":["كتابة جملة عددية في مسألة من واقع الحياة"],"r":[]},{"name":"تمثيل الجمل العددية وكتابتها","k":["معرفة مفهوم الجملة العددية","تمثيل جمل الجمع العددية","تمثيل جمل الطرح العددية"],"a":["تمثيل جمل الجمع العددية في مسألة من واقع الحياة","تمثيل جمل الطرح العددية في مسألة من واقع الحياة"],"r":[]},{"name":"خطة حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة الاستدلال المنطقي"]},{"name":"اكتشاف قاعدة من جدول","k":["معرفة مفهوم : النمط،القاعدة،المدخلة،المخرجة"],"a":["تطبيق القاعدة في جدول معطى"],"r":["اكتششاف القاعدة في جدول معطى"]},{"name":"جداول الدوال: جداول الجمع والطرح","k":["معرفة مفهوم الدالة"],"a":["إنشاء جدول دالة باستعمال عنمليات الجمع","إنشاء جدول دالة باستعمال عنمليات الطرح","إكمال جدول دالة باستعمال عنمليات الجمع","إكمال جدول دالة باستعمال عنمليات الطرح"],"r":[]},{"name":"استقصاء حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باختيار الخطة المناسبة"]},{"name":"جداول الدوال: جداول الضرب والقسمة","k":[],"a":["إكمال جدول الدالة باستعمال عمليات الضرب","إكمال جدول الدالة باستعمال عمليات القسمة","إنشاء جدول الدالة باستعمال عمليات الضرب","إنشاء جدول الدالة باستعمال عمليات القسمة"],"r":["تحديد القاعدة باستعمال جدول دالة (×)","وصف القاعدة باستعمال جدول دالة (÷)"]}]},{"n":5,"title":"الضرب في عدد من رقم واحد","periods":17.0,"cnt":[10,7,2],"lessons":[{"name":"القواسم والمضاعفات","k":["معرفة مفهوم القواسم","معرفة مفهوم مضاعف العدد","إيجاد القواسم عدد","إيجاد مضاعفات عدد"],"a":[],"r":[]},{"name":"الضرب في مضاعفات ١٠ ، ١٠٠ ، ١٠٠٠","k":["الضرب في مضاعفات 10، 100، 1000 باستعمال الحقائق الأساسية والأنماط"],"a":["الضرب في مضاعفات 10، 100، 1000 باستعمال الحقائق الأساسية والأنماط في سياق واقعي","إيجاد مضاعفات عدد في سياق واقعي"],"r":[]},{"name":"مهارة حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال مهارة تحديد معقولية الإجابة"]},{"name":"تقدير نواتج الضرب","k":["تقدير نواتج الضرب باستعمال التقريب"],"a":["تقدير نواتج الضرب باستعمال التقريب في مسألة من واقع الحياة"],"r":[]},{"name":"ضرب عدد من رقمين في عدد من رقم واحد دون إعادة التجميع","k":["إيجاد ناتج ضرب عدد من رقمين في عدد من رقم واحد دون إعادة التجميع"],"a":["إيجاد ناتج ضرب عدد من رقمين في عدد من رقم واحد دون إعادة التجميع في سياق واقعي"],"r":[]},{"name":"ضرب عدد من رقمين في عدد من رقم واحد مع إعادة التجميع","k":["إيجاد ناتج ضرب عدد من رقمين في عدد من رقم واحد مع إعادة التجميع"],"a":["إيجاد ناتج ضرب عدد من رقمين في عدد من رقم واحد مع إعادة التجميع في سياق واقعي"],"r":[]},{"name":"استقصاء حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باختيار الخطة المناسبة للحل"]},{"name":"ضرب عدد من ثلاثة أرقام في عدد في رقم واحد","k":["إيجاد ناتج ضرب عدد من ثلاثة أرقام في عدد من رقم واحد","إيجاد ناتج ضرب عدد من ثلاثة أرقام بعضها أصفار في عدد من رقم واحد"],"a":["الضرب في أعداد بعض أرقامها أصفار في مسائل من واقع الحياة","إيجاد ناتج ضرب عدد من ثلاثة أرقام في عدد من رقم واحد في سياق واقعي"],"r":[]}]},{"n":6,"title":"الضرب في عدد من رقمين","periods":13.0,"cnt":[3,4,2],"lessons":[{"name":"الضرب في مضاعفات العشرة","k":["الضرب في مضاعفات العشرة"],"a":["الضرب في مضاعفات العشرة في سياق واقعي"],"r":[]},{"name":"تقدير نواتج الضرب","k":[],"a":["تقدير نواتج الضرب"],"r":["تقدير نواتج الضرب لمسألة من واقع الحياة"]},{"name":"خطة حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة التمثيل"]},{"name":"ضرب عدد من رقمين في عدد من رقمين","k":["ضرب عدد من رقمين في عدد من رقمين"],"a":["ضرب عدد من رقمين في عدد من رقمين في سياق واقعي"],"r":[]},{"name":"ضرب عدد من ثلاثة أرقام في عدد من رقمين","k":["ضرب عدد من ثلاثة أرقام في عدد من رقمين"],"a":["ضرب عدد من ثلاثة ارقام في عدد من رقمين في سياق واقعي"],"r":[]}]}],"grade":"الرابع الابتدائي","term":"1"},"g4-2":{"items":34,"chapters":[{"n":7,"title":"القسمة على عدد من رقم واحد","periods":20.0,"cnt":[12,7,2],"lessons":[{"name":"القسمة مع باقٍ","k":["معرفة مفهوم المقسوم","معرفة مفهوم المقسوم عليه","معرفة مفهوم ناتج القسمة","معرفة مفهوم الباقي","إجراء القسمة بدون باقي","إجراء القسمة مع الباقي"],"a":["إيجاد ناتج القسمة بدون باقي لمسألة من واقع الحياة","إيجاد ناتج القسمة مع باقي لمسألة من واقع الحياة"],"r":[]},{"name":"قسمة مضاعفات ١٠ ، ١٠٠ ، ١٠٠٠","k":["إيجاد ناتج قسمة مضاعفات 10، 100، 1000 باستعمال حقائق القسمة الأساسية","إيجاد ناتج قسمة مضاعفات 10، 100، 1000 باستعمال الأنماط"],"a":["إيجاد ناتج قسمة مضاعفات 10، 100، 1000 باستعمال حقائق القسمة الأساسية في سياق واقعي","إيجاد ناتج قسمة مضاعفات 10، 100، 1000 باستعمال الأنماط في سياق واقعي"],"r":[]},{"name":"خطة حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة التخمين والتحقق"]},{"name":"تقدير ناتج القسمة","k":["تقدير ناتج القسمة"],"a":["تقدير ناتج القسمة لمسألة من واقع الحياة"],"r":[]},{"name":"القسمة (الناتج من رقمين)","k":["إجراء القسمة يكون الناتج فيها من رقمين"],"a":["إجراء القسمة يكون الناتج فيها من رقمين لمسألة من واقع الحياة"],"r":[]},{"name":"استقصاء حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باختيار الخطة المناسبة للحل"]},{"name":"القسمة (الناتج من ثلاثة أرقام)","k":["إجراء القسمة يكون الناتج فيها من ثلاثة أرقام","إجراء القسمة يحتوي الناتج فيها أصفاراً"],"a":["إجراء القسمة يكون الناتج فيها من ثلاثة أرقام لمسألة من واقع الحياة"],"r":[]}]},{"n":8,"title":"الأشكال الهندسية والاستدلال المكاني","periods":15.0,"cnt":[15,8,2],"lessons":[{"name":"الأشكال الثلاثية الأبعاد","k":["تسمية شكل ثلاثي الأبعاد","تحديد عدد الأوجه والأحرف والرؤوس لشكل ثلاثي الأبع"],"a":["تحديد المنظر الأمامي والجانبي والعلوي لشكل ثلاثي الأبعاد"],"r":[]},{"name":"الأشكال الثنائية الأبعاد","k":["تسمية المضلع ثنائي الأبعاد","تمييز المضلعات ثنائية الأبعا"],"a":[],"r":[]},{"name":"خطة حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة البحث عن نمط"]},{"name":"المستقيمات","k":["تمييز المستقيمات المتعامدة، المتوازية، المتقاطعة"],"a":["رسم المستقيمات المتوازية، المتعامدة، المتقاطعة"],"r":["وصف العلاقة بين المستقيمات في مسألة من واقع الحياة"]},{"name":"الزوايا","k":["معرفة مفهوم الزاوية","كتابة قياس الزوايا بالدرجات، بالدورات","تصنيف الزاويا"],"a":["رسم الزاوايا","تحديد نوع الزوايا لمسألة من واقع الحياة"],"r":[]},{"name":"المثلث","k":["معرفة مفهوم المثلث","تصنيف المثلث بالنسبة للزوايا","تصنيف المثلث بالنسبة للأضلاع"],"a":["إيجاد طول ضلع في مثلث بالاستفادة من تصنيف المثلث من حيث الأضلاع"],"r":[]},{"name":"التماثل الدوراني","k":["معرفة مفهوم زاوية الدوران","معرفة مفهوم الثماثل الدوراني"],"a":["وصف مقدار زاوية الدوران","تحديد الشكل الذي له تماثل دوراني"],"r":[]},{"name":"تمثيل النقاط على خط الأعداد","k":["تمثيل النقاط على خط الأعداد","تسمية وتحديد النقاط التي تمثل عدداً على خط الأعداد"],"a":["تمثيل النقاط على خط الأعداد في مسألة من واقع الحياة"],"r":[]}]},{"n":9,"title":"القياس","periods":20.0,"cnt":[10,6,1],"lessons":[{"name":"وحدات الطول المترية","k":["تقدير الأطوال بوحدات الطول المترية"],"a":["قياس الأطوال بوحدات الطول المترية"],"r":[]},{"name":"قياس المحيط","k":["تقدير محيط شكل مغلق","إيجاد محيط شكل مغلق"],"a":["إيجاد محيط شكل مغلق لمسألة من واقع الحياة"],"r":[]},{"name":"قياس المساحة","k":["تقدير مساحة شكل ما","إيجاد مساحة المستطيل","إيجاد مساحة المربع"],"a":["إيجاد مساحة المستطيل لمسألة من واقع الحياة","إيجاد مساحة المربع لمسألة من واقع الحياة"],"r":[]},{"name":"وحدات السعة في النظام المتري","k":["تقدير السعة"],"a":[],"r":[]},{"name":"وحدات الكتله في النظام المتري","k":["تقدير الكتلة"],"a":[],"r":[]},{"name":"خطة حل المسأله التبرير المنطقي","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال التبرير المنطقي"]},{"name":"تقدير الحجم وقياسه","k":["تقدير الحجم بالوحدات المكعبة","قياس الحجم بالوحدات المكعبة"],"a":["قياس الحجم بالوحدات المكعبة لمسألة من واقع الحياة"],"r":[]},{"name":"الزمن المنقضي","k":[],"a":["حل مسائل من واقع الحياة حول الزمن المنقضي"],"r":[]}]},{"n":10,"title":"الكسور الاعتيادية","periods":15.0,"cnt":[6,12,2],"lessons":[{"name":"الكسور الاعتيادية","k":["كتابة الكسر الاعتيادي"],"a":["تمثيل الكسور الاعتيادية"],"r":[]},{"name":"خطة حل المسألة استعمل خطة رسم صورة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة رسم صورة"]},{"name":"تمثيل الكسور على خط الاعداد","k":[],"a":["تمثيل الكسور على خط الاعداد","تسمية الكسور التي على خط الأعداد"],"r":[]},{"name":"الكسور المتكافئة","k":["إيجاد الكسور المتكافئة"],"a":["تمثيل الكسور المتكافئة بالنماذج","إيجاد الكسور المتكافئة على خط الأعداد"],"r":[]},{"name":"مقارنه الكسور وترتيبها","k":[],"a":["المقارنة بين كسرين","ترتيب مجموعة من الكسور من الأصغر إلى الأكبر"],"r":[]},{"name":"جمع الكسور المتشابهة","k":["جمع كسرين متشابهين"],"a":["حل مسألة من واقع الحياة عن جمع كسرين متشابهين"],"r":[]},{"name":"طرح الكسور المتشابهة","k":["طرح كسرين متشابهين"],"a":["حل مسألة من واقع الحياة عن طرح كسرين متشابهين"],"r":[]},{"name":"الاعداد الكسرية","k":["كتابة العدد الكسري","كتابة الكسرغير فعلي"],"a":["التحويل من كسر غير فعلي إلى عدد كسري","التحويل من عدد كسري إلى كسر غير فعلي","حل مسألة من واقع الحياة تتضمن التحويل من كسر غير فعلي إلى عدد كسري والعكس"],"r":[]},{"name":"استقصاء حل المسألة اختار خطة الحل المناسبه لأجل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باختيار الخطة المناسبة للحل"]}]},{"n":11,"title":"الكسور العشرية","periods":16.0,"cnt":[3,15,1],"lessons":[{"name":"الأعشار","k":["كتابة الأعشار من خلال النماذج و جدول المنازل"],"a":["كتابه الكسر الاعتيادي على صورة كسر عشري","كتابة الكسر العشري على صورة كسر الاعتيادي"],"r":[]},{"name":"الاجزاء من مئة","k":["كتابة الجزء من مئة من خلال النماذج وجدول المنازل"],"a":["كتابه الكسر الاعتيادي على صورة كسر عشري","كتابه الكسر العشري على صورة كسر اعتيادي","حل مسألة من واقع الحياة تتضمن كتابة الكسر الاعتيادي على صورة كسر عشري والعكس"],"r":[]},{"name":"الاعداد الكسرية والكسور العشرية","k":["كتابة الأعداد الكسرية على صورة كسور عشرية"],"a":["حل مسألة من واقع الحياة تتضمن كتابة الأعداد الكسرية على صورة كسور عشرية"],"r":[]},{"name":"خطة حل المسألة انشاء نموذج","k":[],"a":["حل مسألة من واقع الحياة باستخدام إنشاء نموذج"],"r":[]},{"name":"تمثيل الكسور العشرية على خط الاعداد","k":[],"a":["تمثيل الكسور العشرية على خط الاعداد","تحديد العدد الكسري الممثل بنقطة على خط الأعداد"],"r":[]},{"name":"مقارنه الكسور العشرية و ترتيبها","k":[],"a":["مقارنة الكسور العشرية","ترتيب الكسور العشرية"],"r":["حل مسألة من واقع الحياة تتضمن ترتيب ومقارنة الكسور لعشرية"]},{"name":"تكافؤ الكسورالاعتيادية والكسور العشرية","k":[],"a":["إيجاد الكسر العشري الذي يكافئ الكسر الاعتيادي","إيجاد الكسر الاعتيادي الذي يكافئ الكسر العشري"],"r":[]},{"name":"الكسورالعشرية والكسور الاعتيادية والاعداد الكسرية","k":[],"a":["مقارنة الكسور العشرية و الاعتيادية و الاعداد الكسرية","ترتيب الكسور العشرية و الاعتيادية و الاعداد الكسرية من الأصغر إلى الأكبر أو العكس"],"r":[]}]},{"n":12,"title":"جمع الكسور العشرية و طرحها","periods":15.0,"cnt":[5,5,1],"lessons":[{"name":"تقريب الكسور العشرية","k":["تقريب الكسور العشرية إلى أقرب عدد صحيح"],"a":["تقريب الكسور العشرية إلى أقرب عشر","حل مسائل من واقع الحياة عن تقريب الكسور العشرية"],"r":[]},{"name":"تقدير نواتج جمع الكسور العشرية وطرحها","k":["تقديرناتج جمع كسرين عشرين","تقدير ناتج طرح كسرين عشرين"],"a":["حل مسألة من واقع الحياة عن تقديرناتج جمع الكسور العشرية أو طرحها"],"r":[]},{"name":"خطة حل المسأله استخدام الاحد العكسي","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستخدام الحل العكسي"]},{"name":"جمع الكسور العشرية","k":["جمع الكسور العشرية"],"a":["حل مسألة من واقع الحياة عن جمع الكسور العشرية"],"r":[]},{"name":"طرح الكسور العشرية","k":["طرح الكسور العشرية"],"a":["حل مسألة من واقع الحياة عن طرح الكسور العشرية"],"r":[]}]}],"grade":"الرابع الابتدائي","term":"2"},"g5-1":{"items":36,"chapters":[{"n":1,"title":"القيمة المنزلية","periods":16.0,"cnt":[10,5,2],"lessons":[{"name":"القيمة المنزلية ضمن البلايين","k":["تسمية القيمة المنزلية لرقم في عدد ضمن البلايين","كتابة القيمة المنزلية لرقم في عدد ضمن البلايين","كتابة الأعداد ضمن البلايين بالصيغة (القياسية، اللفظية، التحليلية)"],"a":[],"r":[]},{"name":"المقارنة بين الأعداد","k":["المقارنة بين عددين باستعمال خط الأعداد"],"a":["المقارنة بين عديين في سياق واقعي"],"r":[]},{"name":"تمثيل الكسور العشرية","k":["كتابة الكسور الاعتيادية التي مقاماتها 10، 100، 1000 على صورة كسور عشرية"],"a":["تمثيل الكسور الاعتيادية التي مقاماتها 10، 100، 1000","كتابة الكسور الاعتيادية على صورة كسور عشرية في سياق واقعي"],"r":[]},{"name":"القمية المنزلية ضمن أجزاء الألف","k":["تسمية القيمة المنزلية لرقم في عدد ضمن أجزاء الألف","كتابة القيمة المنزلية لرقم في عدد ضمن أجزاء الألف","كتابة الأعداد ضمن أجزاء الألف بالصيغة (القياسية، اللفظية، التحليلية)"],"a":[],"r":[]},{"name":"مقارنة الكسور العشرية","k":["المقارنة بين كسرين عشريين باستعمال خط الأعداد","المقارنة بين كسرين عشريين باستعمال القيمة المنزلية"],"a":["المقارنة بين كسرين عشريين في سياق واقعي"],"r":[]},{"name":"ترتيب الأعداد والكسور العشرية","k":[],"a":["ترتيب مجموعة من الأعداد والكسور العشرية من للأصغر للأكبر أو العكس"],"r":["ترتيب مجموعة من الأعداد والكسور العشرية من للأصغر للأكبر أو العكس لمسألة من واقع الحياة"]},{"name":"خطة حل المسألة التخمين والتحقق","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة التخمين والتحقق"]}]},{"n":2,"title":"الجمع والطرح","periods":17.0,"cnt":[9,6,2],"lessons":[{"name":"تقريب الأعداد والكسور العشرية","k":["تقريب عدد كلي إلى منزلة معطاة","تقريب كسر عشري إلى منزلة معطاة"],"a":["تقريب عدد أو كسر عشري إلى منزل معطاة في سياق واقعي"],"r":[]},{"name":"تقدير نواتج الجمع والطرح","k":[],"a":["تقدير ناتج جمع، طرح عددين باستعمال التقريب","تقدير ناتج جمع، طرح عددين باستعمال الأعداد المتناغمة"],"r":["تقدير ناتج جمع، طرح عددين لمسألة من واقع الحياة"]},{"name":"خطة حل المسألة الحل عكسياً","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة الحل عكسياً"]},{"name":"جمع الكسور العشرية وطرحها","k":["جمع كسرين عشريين ضمن أجزاء الألف","طرح كسرين عشريين ضمن أجزاء الألف"],"a":["جمع، طرح كسرين عشريين ضمن أجزاء الألف في سياق واقعي"],"r":[]},{"name":"خصائص الجمع","k":["تحديد الخاصية المستعملة في جمع الأعداد","استعمال خصائص الجمع لجمع الأعداد","استعمال خصائص الجمع لجمع الكسور العشرية"],"a":["استعمال خصائص الجمع لجمع الأعداد والكسور العشرية في سياق واقعي"],"r":[]},{"name":"الجمع والطرح ذهنياً","k":["جمع عددين كسرين عشريين باستعمال الموازنة","طرح عددين كسرين عشريين باستعمال الموازنة"],"a":["جمع أو طرح عددين، كسرين عشريين باستعمال الموازنة لمسألة من واقع الحياة"],"r":[]}]},{"n":3,"title":"الضرب","periods":17.0,"cnt":[7,7,3],"lessons":[{"name":"أنماط الضرب","k":["إيجاد ناتج ضرب عدد في عدد من مضاعفات 10 ،100، 1000 باستعمال الأنماط","إيجاد ناتج ضرب عددين بعد الأصفار"],"a":["إيجاد ناتج ضرب عددين في سياق واقعي"],"r":[]},{"name":"خاصية التوزيع","k":["إيجاد ناتج ضرب عددين باستعمال خاصية التوزيع"],"a":["إيجاد ناتج ضرب عددين باستعمال خاصية التوزيع في سياق واقعي"],"r":[]},{"name":"تقدير نواتج الضرب","k":[],"a":["تقدير ناتج ضرب عددين باستعمال التقريب","تقدير ناتج ضرب عددين باستعمال الأعداد المتناغمة"],"r":["تقدير ناتج ضرب عددين في مسألة من واقع الحياة"]},{"name":"الضرب في عدد من رقم واحد","k":["يوجد ناتج ضرب عدد من ثلاثة أرقام بعدد من رقم واحد"],"a":["يوجد ناتج ضرب عدد من ثلاثة أرقام بعدد من رقم واحد في سياق واقعي"],"r":[]},{"name":"خطة حل المسألة رسم صورة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة رسم صورة"]},{"name":"الضرب في عدد من رقمين","k":["إيجاد ناتج ضرب عدد من ثلاثة أرقام بعدد من رقمين"],"a":["إيجاد ناتج ضرب عدد من ثلاثة أرقام بعدد من رقمين في سياق واقعي"],"r":[]},{"name":"خصائص الضرب","k":["تحديد الخاصية المستعملة في ضرب الأعداد","استعمال خصائص الضرب لإيجاد ناتج ضرب الأعداد"],"a":["استعمال خصائص الضرب لإيجاد ناتج ضرب الأعداد في سياق واقعي"],"r":[]},{"name":"استقصاء حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باختيار خطة الحل المناسبة"]}]},{"n":4,"title":"القسمة","periods":16.0,"cnt":[4,5,3],"lessons":[{"name":"أنماط القسمة","k":["إيجاد ناتج قسمة عدد من مضاعفات 10، 100، 1000 على عدد آخر باستعمال الحقائق الأساسية","إيجاد ناتج قسمة عدد من مضاعفات 10، 100، 1000 على عدد آخر باستعمال الأنماط"],"a":["إيجاد ناتج قسمة عدد من مضاعفات 10، 100، 1000 على عدد آخر في سياق واقعي"],"r":[]},{"name":"تقديرنواتج القسمة","k":[],"a":["تقدير ناتج قسمة عددين باستعمال التقريب","تقدير ناتج قسمة عددين باستعمال الأعداد المتناغمة"],"r":["تقدير ناتج قسمة عددين في مسألة من واقع الحياة"]},{"name":"القسمة على عدد من رقم واحد","k":["إيجاد ناتج قسمة عدد من أربعة أرقام على الأكثر على عدد من رقم واحد"],"a":["إيجاد ناتج قسمة عدد من أربعة أرقام على الأكثر على عدد من رقم واحد في سياق واقعي"],"r":[]},{"name":"القسمة على عدد من رقمين","k":["إيجاد ناتج قسمة عدد من ثلاثة أرقام على عدد من رقمين"],"a":["إيجاد ناتج قسمة عدد من ثلاثة أرقام على عدد من رقمين في سياق واقعي"],"r":[]},{"name":"خطة حل المسألة تمثيل المعطيات","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة تمثيل المعطيات"]},{"name":"تفسير باقي القسمة","k":[],"a":[],"r":["تفسير باقي القسمة في مسألة من واقع الحياة"]}]},{"n":5,"title":"العبارات الجبرية والمعادلات","periods":17.0,"cnt":[12,8,2],"lessons":[{"name":"عبارات الجمع والطرح الجبرية","k":["إيجاد قيمة عبارة جبرية","معرفة مفهوم ( المتغير ، العبارة الجبرية)","كتابة عبارات الجمع والطرح الجبرية"],"a":["كتابة عبارات الجمع والطرح الجبرية في مسألة من واقع الحياة"],"r":[]},{"name":"خطة حل المسألة حل مسألة أبسط","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة حل مسألة أبسط"]},{"name":"عبارات الضرب والقسمة الجبرية","k":["إيجاد قيمة عبارة جبرية","كتابة عبارات الضرب والقسمة الجبرية"],"a":["كتابة عبارات الضرب والقسمة الجبرية في مسألة من واقع الحياة"],"r":[]},{"name":"استقصاء حل المسألة","k":[],"a":[],"r":["حل مسألة رياضية باختيار الخطة المناسبة للحل"]},{"name":"جداول الدوال","k":["معرفة مفهوم ( الدالة ، جدول الدالة ، المدخلة ، المخرجة)"],"a":["إنشاء أو إكمال جدول دالة معطاة","إيجاد قاعدة دالة لمسألة معطاة"],"r":[]},{"name":"ترتيب العمليات","k":["إيجاد قيمة عبارة عددية باستعمال ترتيب العمليات","كتابة عبارة عددية باستعمال ترتيب العمليات"],"a":["حل مسألة من واقع الحياة تتضمن استعمال ترتيب العمليات","استعمال جدول الدالة في ترتيب العمليات"],"r":[]},{"name":"معادلات الجمع والطرح","k":["حل معادلات الجمع","حل معادلات الطرح"],"a":["كتابة معادلات الجمع أو الطرح"],"r":[]},{"name":"معادلات الضرب","k":["حل معادلات الضرب","كتابة معادلات الضرب"],"a":["حل معادلات الضرب في مسألة من واقع الحياة"],"r":[]}]},{"n":6,"title":"الكسور الاعتيادية","periods":16.0,"cnt":[5,6,3],"lessons":[{"name":"القسمة والكسور الاعتيادية","k":["معرفة مفهوم ( الكسر الاعتيادي،البسط،المقام )"],"a":["تمثيل مواقف القسسمة بالكسور الاعتيادية"],"r":["تفسير باقي القسمة في مسألة من واقع الحياة"]},{"name":"الكسور غير الفعلية","k":["كتابة كسر غير فعلي على صورة عدد كسري مكافئ له"],"a":["كتابة كسر غير فعلي على صورة عدد كسري مكافئ له في سياق واقعي"],"r":[]},{"name":"خطة حل المسألة التمثيل بأشكال فن","k":[],"a":[],"r":["حل مسألة رياضية باستعمال خطة التمثيل بأشكتال فن"]},{"name":"الأعداد الكسرية","k":["كتابة عدد كسري على صورة كسر غير فعلي مكافئ له"],"a":["كتابة عدد كسري على صورة كسر غير فعلي مكافئ له في سياق واقعي"],"r":[]},{"name":"مقارنة الكسور الاعتيادية والأعداد الكسرية","k":["المقارنة بين الكسور الاعتيادية والأعداد الكسرية"],"a":["كتابة الكسور الاعتيادية والأعداد الكسرية باستعمال خط الأعداد","المقارنة بين الكسور الاعتيادية والأعداد الكسرية في سياق واقعي"],"r":[]},{"name":"تقريب الكسور","k":["تقريب الكسر الاعتيادي إلى الصفر، النصف ، الواحد"],"a":["تقريب الكسر الاعتيادي إلى الصفر، النصف ، الواحد في سياق واقعي"],"r":[]},{"name":"استقصاء حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باختيار خطة الحل المناسبة"]}]}],"grade":"الخامس الابتدائي","term":"1"},"g5-2":{"items":34,"chapters":[{"n":1,"title":"الإحصاء والاحتمال","periods":16.0,"cnt":[4,11,3],"lessons":[{"name":"المتوسط الحسابي والوسيط والمنوال","k":["معرفة مفهوم ( المتوسط الحسابي ، الوسيط ، المنوال)"],"a":["إيجاد المتوسط الحسابي لمجموعة من البيانات","إيجاد الوسيط لمجموعة من البيانات","إيجاد المنوال لمجموعة من البيانات"],"r":[]},{"name":"استقصاء حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باختيار الخطة المناسبة للحل"]},{"name":"التمثيل بالأعمدة","k":["معرفة مفهوم ( التمثيل بالأعمدة، التمثيل بالأعمدة المزدوجة)"],"a":["تمثيل البيانات المعطاة بالأعمدة","تمثيل البيانات المعطاة بالأعمدة المزدوجة"],"r":["تفسير البيانات المعطاة بالأعمدة، الأعمدة المزدوجة"]},{"name":"الاحتمال","k":["معرفة مفهوم ( الاحتمال ، التجربة الاحتمالية ، نتيجة التجربة )"],"a":["كتابة النواتج الممكنة لتجربة احتمالية","وصف الاحتمال في تجربة معطاة"],"r":[]},{"name":"الاحتمال والكسور","k":["إيجاد قيمة الاحتمال باستعمال الكسور"],"a":["إيجاد قيمة الاحتمال باستعمال الكسور في مسألة من واقع الحياة."],"r":[]},{"name":"خطة حل المسألة إنشاء قائمة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة إنشاء قائمة"]},{"name":"تحديد النواتج الممكنة","k":[],"a":["تحديد النواتج الممكنة لتجربة باستعمال الجدول","تحديد النواتج الممكنة لتجربة باستعمال الرسم الشجري","إيجاد قيمة الاحتمال في تجربة باستعمال الجدول، الرسم الشجري"],"r":[]}]},{"n":2,"title":"القواسم والمضاعفات","periods":17.0,"cnt":[13,7,2],"lessons":[{"name":"القواسم المشتركة","k":["معرفة مفهوم القاسم المشترك ، القاسم المشترك الأكبر ( ق. م. أ)","إيجاد القواسم المشتركة لمجموعة من الأعداد","إيجاد القاسم المشترك الأكبر لمجموعة من الأعداد"],"a":["إيجاد القاسم المشترك الأكبر لمجموعة من الأعداد في سياق واقعي"],"r":[]},{"name":"الأعداد الأولية والأعداد غير الأولية","k":["معرفة مفهوم تحليل العدد إلى العوامل الأولية","تحديد الأعداد الأولية وغير الأولية","تحليل عدد إلى عوامله الأولية"],"a":["تحليل عدد إلى عوامله الأولية في سياق واقعي"],"r":[]},{"name":"الكسور المتكافئة","k":["معرفة مفهوم الكسور المتكافئة","إيجاد كسور مكافئة لكسر معطى"],"a":["إيجاد كسور مكافئة لكسر معطى في سياق واقعي","إيجاد عدد مجهول باستعمال الكسور المتكافئة"],"r":["إيجاد عدد مجهول باستعمال الكسور المتكافئة في مسألة من واقع الحياة"]},{"name":"تبسيط الكسور","k":["كتابة الكسر في أبسط صورة"],"a":["كتابة الكسر في أبسط صورة في سياق واقعي"],"r":[]},{"name":"خطة حل المسألة البحث عن نمط","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة البحث عن نمط"]},{"name":"المضاعفات المشتركة","k":["معرفة مفهوم المضاعف المشترك ، المضاعف المشترك الأصغر ( م. م. أ)","إيجاد المضاعفات المشتركة لمجموعة من الأعداد","إيجاد المضاعف المشترك الأصغر لمجموعة من الأعداد"],"a":["إيجاد المضاعف المشترك الأصغر لمجموعة من الأعداد في سياق واقعي"],"r":[]},{"name":"مقارنة الكسور الاعتيادية","k":["معرفة مفهوم المقام المشترك ، المقام المشترك الأصغر","المقارنة بين كسريين اعتياديين"],"a":["المقارنة بين كسريين اعتياديين في سياق واقعي"],"r":[]}]},{"n":3,"title":"جمع الكسور وطرحها","periods":16.0,"cnt":[4,4,1],"lessons":[{"name":"جمع الكسور المتشابهة","k":["جمع كسرين متشابهين"],"a":["جمع كسرين متشابهين في سياق واقعي"],"r":[]},{"name":"طرح الكسور المتشابهة","k":["طرح كسرين متشابهين"],"a":["طرح كسرين متشابهين في سياق واقعي"],"r":[]},{"name":"جمع الكسور غير المتشابهة","k":["جمع كسرين غير متشابهين"],"a":["جمع كسرين غير متشابهين في سياق واقعي"],"r":[]},{"name":"طرح الكسور غير المتشابهة","k":["طرح كسرين غير متشابهين"],"a":["طرح كسرين غير متشابهين في سياق واقعي"],"r":[]},{"name":"خطة حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال مهارة تحديد معقولية الإجابة"]}]},{"n":4,"title":"وحدات القياس","periods":16.0,"cnt":[5,9,4],"lessons":[{"name":"وحدات الطول","k":["اختيار الوحدة المترية المناسبة لقياس الطول","التحويل بين وحدات الطول المترية من وحدات كبيرة لوحدات أصغر منها أو العكس"],"a":["التحويل بين وحدات الطول المترية في سياق واقعي"],"r":[]},{"name":"خطة حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال مهارة تحديد معقولية الإجابة"]},{"name":"وحدات الكتلة","k":["التحويل بين وحدات الكتلة في النظام المتري من وحدات كبيرة إلى وحدات أصغر منها أو العكس"],"a":["التحويل بين وحدات الكتلة في النظام المتري في سياق واقعي","المقارنة بين وحدات الكتلة في النظام المتري"],"r":[]},{"name":"وحدات السعة","k":["التحويل بين وحدات السعة في النظام المتري من وحدات كبيرة إلى وحدات أصغر منها أو العكس"],"a":["التحويل بين وحدات السعة في النظام المتري في سياق واقعي","المقارنة بين وحدات السعة في النظام المتري"],"r":[]},{"name":"وحدات الزمن","k":["التحويل بين وحدات الزمن من وحدات كبيرة إلى وحدات أصغر منها"],"a":["التحويل بين وحدات الزمن من وحدة زمنية لوحدة أكبر منها باستعمال وحدات مختلفة","التحويل بين وحدات الزمن باستعمال الكسور"],"r":["التحويل بين وحدات الزمن لمسألة من واقع الحياة"]},{"name":"استقصاء حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باختيار الخطة المناسبة للحل"]},{"name":"حساب الزمن المنقضي","k":[],"a":["إيجاد الزمن المنقضي بين حدثين","إيجاد الزمن المنقضي بين حدثين باستعمال التحويل بين وحدات الزمن"],"r":["إيجاد الزمن المنقضي بين حدثين أحدهما مساءً والآخر صباحاً"]}]},{"n":5,"title":"الأشكال الهندسية","periods":18.0,"cnt":[13,8,4],"lessons":[{"name":"مفردات هندسية","k":["تسمية شكل هندسي معطى","التعبير بالرموز عن شكل هندسي معطى","تحديد القطع المستقيمة المتطابقة","معرفة المفاهيم الهندسية ( نصف المستقيم، القطعة المستقيمة،المستوى، القطع المستقيمة المتطابقة)"],"a":["قياس طول القطعة المستقيمة"],"r":[]},{"name":"خطة حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة الاستدلال المنطقي"]},{"name":"الأشكال الرباعية","k":["معرفة خصائص الأشكال الرباعية ( الشكل الرباعي، المستطيل، المربع،متوازي الأضلاع، شبه المنحرف، المعين)","وصف الإضلاع والزوايا في شكل رباعي معطى","تسمية الشكل الرباعي بمعرفة خصائصه"],"a":["وصف الإضلاع والزوايا في شكل رباعي في سياق واقعي"],"r":[]},{"name":"الهندسة : الأزواج المرتبة","k":["معرفة المفاهيم الهندسية المرتبطة بالمستوى الإحداثي","تسمية الزوح المرتب لنقطة في المستوى الإحداثي","تسمية النقطة التي يمثلها زوج مرتب معطى"],"a":["تسمية النقاط التي يمثلها الزوج المرتب في سياق واقعي"],"r":[]},{"name":"الجبر والهندسة : تمثيل الدوال","k":[],"a":["تمثيل الأزواج المرتبة في المستوى الإحداثي","تمثيل الدوال في المستوى الإحداثي"],"r":[]},{"name":"الانسحاب في المستوى الإحداثي","k":["معرفة مفهوم الانسحاب في المستوى الإحداثي"],"a":["رسم صورة شكل بالانسحاب على المستوى الإحداثي"],"r":["وصف التحويل الهندسي ( الانسحاب) في مسألة من واقع الحياة"]},{"name":"الانعكاس في المستوى الإحداثي","k":["معرفة مفهوم الانعكاس في المستوى الإحداثي"],"a":["رسم صورة شكل بالانعكاس على المستوى الإحداثي"],"r":["وصف التحويل الهندسي (الانعكاس) في مسألة من واقع الحياة"]},{"name":"الدوران في المستوى الإحداثي","k":["معرفة مفهوم الدوران في المستوى الإحداثي"],"a":["رسم صورة شكل بالدوران على المستوى الإحداثي"],"r":["وصف التحويل الهندسي (الدوران) في مسألة من واقع الحياة"]}]},{"n":6,"title":"المحيط والمساحة والحجم","periods":16.0,"cnt":[7,6,2],"lessons":[{"name":"محيط مضلع","k":["إيجاد محيط مضلع معطى"],"a":["إيجاد محيط مضلع في سياق واقعي"],"r":[]},{"name":"المساحة","k":[],"a":["تقدير مساحة شكل معطى"],"r":[]},{"name":"مساحة المستطيل والمربع","k":["إيجاد مساحة المستطيل","إيجاد مساحة المربع"],"a":["إيجاد مساحة المستطيل في سياق واقعي","إيجاد مساحة المربع في سياق واقعي"],"r":["استعمال مساحة ( المستطيل، المربع) في حل مسألة من واقع الحياة"]},{"name":"الأشكال الثلاثية الأبعاد","k":["معرفة صفات الاشكال ثلاثية الأبعاد ( المنشور الرباعي، المنشور الثلاثي،الأسطوانة، المخروط، الهرم)","وصف أجزاء شكل ثلاثي الأبعاد","تسمية شكل ثلاثي الأبعاد بمعرفة خصائصه"],"a":["وصف أجزاء الأشكال ثلاثية الأبعاد في سياق واقعي"],"r":[]},{"name":"خطة حل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة إنشاء نموذج"]},{"name":"حجم المنشور","k":["إيجاد حجم منشور رباعي"],"a":["إيجاد حجم منشور رباعي لمسألة من واقع الحياة"],"r":[]}]}],"grade":"الخامس الابتدائي","term":"2"},"g6-1":{"items":36,"chapters":[{"n":1,"title":"الجبر: الأنماط العددية والدوال","periods":21.0,"cnt":[5,9,5],"lessons":[{"name":"الخطوات الأربع لحل المسألة","k":[],"a":["حل مسألة باستخدام الخطوات الاربع"],"r":[]},{"name":"العوامل الأولية","k":["تصنيف عدد إلى أولي أو غير أولى أو غير ذلك"],"a":["تحليل عدد إلى عوامله الأولية."],"r":["تمييز الأعداد الأولية من ضمن مجموعة الأعداد الفردية أو الزوجية"]},{"name":"القوى و الأسس","k":["كتابة عبارة باستعمال القوى والأسس."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على القوى والأسس.","تحليل عدد إلى عوامله الأولية باستعمال الأسس."],"r":[]},{"name":"ترتيب العمليات","k":["ايجاد قيمة عبارة عددية باستعمال ترتيب العمليات."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على ترتيب العمليات."],"r":[]},{"name":"الجبر: المتغيرات والعبارات","k":["إيجاد قيمة عبارة جبرية."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على العبارات الجبرية."],"r":["تمييز العبارة المختلفة من بين مجموعة عبارات رياضية."]},{"name":"الجبر: الدوال","k":["إكمال جدول دالة."],"a":["إيجاد قاعدة دالة من خلال جدول."],"r":["حل مسألة رياضية تتضمن تطبيقات حياتية على الدوال."]},{"name":"خطة حل المسألة (التخمين والتحقق)","k":[],"a":[],"r":["حل مسألة رياضية باستعمال خطة (التخمين والتحقق)"]},{"name":"الجبر: المعادلات","k":[],"a":["حل المعادلة باستعمال الحساب الذهني وخطة التخمين والتحقق","حل مسألة رياضية تتضمن تطبيقات حياتية على المعادلات."],"r":["تمييز المعادلة عن العبارة الجبرية."]}]},{"n":2,"title":"الإحصاء والتمثيلات البيانية","periods":16.0,"cnt":[2,8,5],"lessons":[{"name":"خطة حل المسألة (إنشاء جدول)","k":[],"a":[],"r":["حل مسألة باستعمال خطة( إنشاء جدول)."]},{"name":"التمثيل بالأعمدة وبالخطوط","k":[],"a":["تمثيل البيانات بالأعمدة.","تمثيل البيانات بالخطوط.","تحليل البيانات الممثلة بالأعمدة أو الخطوط."],"r":["حل مسألة رياضية تتضمن تطبيقات حياتية على التمثيل بالأعمدة أوالخطوط"]},{"name":"التمثيل بالنقاط","k":[],"a":["تمثيل البيانات بالنقاط.","تحليل البيانات الممثلة بالنقاط."],"r":["مقارنة التمثيلات المختلفة للبيانات وتحديد التمثيل الأنسب للبيانات المعطاة"]},{"name":"المتوسط الحسابي","k":["إيجاد المتوسط الحسابي لمجموعة بيانات."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على المتوسط الحسابي."],"r":["تفسير أثر القيمة المتطرفة في المتوسط الحسابي."]},{"name":"الوسيط والمنوال والمدى","k":["إيجاد (الوسيط -المنوال-المدى) لمجموعة بيانات."],"a":["تحديد (الوسيط-المنوال -المدى) للبيانات الممثلة بالأعمدة أو بالنقاط.","حل مسألة رياضية تتضمن تطبيقات حياتية على (الوسيط-المنوال -المدى)"],"r":["تفسير صحة جملة رياضية تتضمن مقايس النزعة المركزية."]}]},{"n":3,"title":"العمليات على الكسور العشرية","periods":29.0,"cnt":[10,8,4],"lessons":[{"name":"تمثيل الكسور العشرية","k":["كتابة كسر عشري بصيغ مختلفة ( اللفظية-القياسية-التحليلية)"],"a":[],"r":[]},{"name":"مقارنة الكسور العشرية وترتيبها","k":["مقارنة الكسور العشرية باستعمال الإشارات (> ،< ،=)"],"a":["ترتيب الكسور العشرية تنازليًا أو تصاعديًا."],"r":["حل مسألة رياضية تتضمن تطبيقات حياتية على مقارنة أو ترتيب الكسور العشرية."]},{"name":"تقريب الكسور العشرية","k":["تقريب كسر عشري إلى المنزلة إلى أقرب عدد كلي أو إلى أقرب منزلة معطاة."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على تقريب الكسور العشرية."],"r":["تفسير تقريب الأعداد إلى أقرب جزء من عشرة"]},{"name":"تقدير ناتج جمع الكسور العشرية وطرحها","k":["تقدير ناتج جمع أو طرح الكسور العشرية باستخدام التقريب أو التقدير للحد الأدنى."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على تقدير ناتج جمع أو طرح الكسور العشرية."],"r":[]},{"name":"جمع الكسور العشرية وطرحها","k":["إيجاد ناتج جمع الكسور العشرية.","إيجاد ناتج طرح الكسور العشرية."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على جمع أو طرح الكسور العشرية."],"r":[]},{"name":"ضرب الكسور العشرية في أعداد كلية","k":["إيجاد ناتج ضرب كسر عشري في عدد كلي."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على ضرب الكسور العشرية."],"r":[]},{"name":"ضرب الكسور العشرية","k":["إيجاد ناتج ضرب كسرًا عشريًا في كسر عشري آخر."],"a":["إيجاد قيمة عبارة باستخدام ضرب الكسور العشرية."],"r":["تبرير صحة عبارة رياضية تتضمن عمليات على الكسور العشرية"]},{"name":"قسمة الكسور العشرية على أعداد كلية","k":["إيجاد ناتج قسمة كسر عشري على عدد كلي من ( منزلة واحدة- منزلتين)."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على قسمة كسر عشري على عدد كلي."],"r":[]},{"name":"القسمة على كسر عشري","k":["إيجاد ناتج قسمة كسرًا عشريًا على كسر عشري."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على قسمة كسرًا عشريًا على كسر عشري."],"r":[]},{"name":"خطة حل المسألة ( التحقق من معقولية الإجابة)","k":[],"a":[],"r":["حل مسألة رياضية باستعمال (التحقق من معقولية الإجابة)"]}]},{"n":4,"title":"الكسور الاعتيادية والكسور العشرية","periods":22.0,"cnt":[9,8,4],"lessons":[{"name":"القاسم المشترك الأكبر","k":["إيجاد القواسم المشتركة لمجموعة أعداد","ايجادالقاسم المشترك الأكبر للعددين أو أكثر"],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على القاسم المشترك الأكبر."],"r":[]},{"name":"تبسيط الكسور الاعتيادية","k":["كتابة الكسور الاعتيادية في ابسط صورة لها."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على تبسيط الكسور الاعتيادية."],"r":[]},{"name":"الأعداد الكسرية والكسور غير الفعلية","k":["كتابة العدد الكسري في صورة كسر غير فعلي والعكس."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية علىالأعداد الكسرية والكسور غير الفعلية."],"r":[]},{"name":"خطة حل المسألة (انشاء قائمة منظمة)","k":[],"a":[],"r":["حل مسألة رياضية باستعمال خطة (إنشاء قائمة منظمة)."]},{"name":"المضاعف المشترك الأصغر","k":["ايجادالمضاعف المشترك الأصغر للعددين أو أكثر"],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على المضاعف المشترك الأصغر."],"r":["تفسير حل مسألة حياتية باستخدام القاسم المشترك الأكبر أو المضاعف المشترك الأصغر."]},{"name":"مقارنة الكسور الاعتيادية وترتيبها","k":["مقارنة الكسور الاعتيادية والأعداد الكسرية"],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية تتضمن مقارنة الكسور الاعتيادية والأعداد الكسرية.","ترتيب الكسور الاعتيادية تنازليًا أو تصاعديًا."],"r":["مقارنة كسور اعتيادية في سياقات مختلفة بدون استخدام المضاعف المشترك الأصغر"]},{"name":"كتابة الكسور العشرية في صورة كسور اعتيادية","k":["كتابة الكسر العشري في صور كسر اعتيادي في أبسط صورة.","كتابة الكسور العشرية في صورة أعداد كسرية."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على كتابة الكسور العشرية في صورة كسر اعتيادي في أبسط صورة ."],"r":[]},{"name":"كتابة الكسور الاعتيادية في صورة كسور عشرية","k":["كتابة الكسر الاعتيادي في صورة كسر عشري"],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على كتابة الكسور الاعتيادية في صورة كسور عشرية."],"r":["تفسير صحة عبارة رياضية تتضمن كسور (عشرية-اعتيادية- أعداد كسرية)"]}]},{"n":5,"title":"القياس: الطول والكتلة والسعة","periods":14.0,"cnt":[5,3,2],"lessons":[{"name":"الطول في النظام المتري","k":["تحديد وحدة القياس الأنسب من وحدات القياس للطول","تقدير وحدة الطول الأنسب باستعمال الوحدات المترية."],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على وحدات قياس الطول المترية."],"r":[]},{"name":"الكتلة والسعة في النظام المتري","k":["قياس الكتلة باستعمال وحدات النظام المتري","قياس السعة باستعمال وحدات النظام المتري"],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية على وحدات النظام المتري لقياس الكتلة والسعة."],"r":["مقارنة وحدات النظام المتري في سياق واقعي."]},{"name":"مهارة حل المسألة باستعمال مقياس مرجعي","k":[],"a":[],"r":["حل مسألة رياضية باستعمال مقياس مرجعي"]},{"name":"التحويل بين الوحدات في النظام المتري","k":["تحويل الوحدات ضمن النظام المتري"],"a":["حل مسألة رياضية تتضمن تطبيقات حياتية التحويل بين النظام المتري."],"r":[]}]}],"grade":"السادس الابتدائي","term":"1"},"g6-2":{"items":35,"chapters":[{"n":6,"title":"العمليات على الكسور الاعتيادية","periods":30.0,"cnt":[12,15,3],"lessons":[{"name":"تقريب الكسور والأعداد الكسرية","k":["تقريب الكسور الاعتيادية أو الأعداد الكسرية إلى أقرب نصف."],"a":["حل مسألة من واقع الحياة تتضمن تطبيقات على تقريب الكسور الاعتيادية أوالأعداد الكسرية."],"r":[]},{"name":"خطة حل المسألة: تمثيل المسألة","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة تمثيل المسألة."]},{"name":"جمع الكسور المتشابهة وطرحها","k":["إيجاد ناتج جمع كسور متشابهة في أبسط صورة.","إيجاد ناتج طرح كسور متشابهة في أبسط صورة."],"a":["إيجاد ناتج جمع كسور متشابهة في مسألة من واقع الحياة.","إيجاد ناتج طرح كسور متشابهة في مسألة من واقع الحياة."],"r":[]},{"name":"جمع الكسور غير المتشابهة وطرحها","k":["إيجاد ناتج جمع كسور غير متشابهة.","إيجاد ناتج طرح كسور غير متشابهة."],"a":["إيجاد ناتج جمع كسور غير متشابهة في مسألة من واقع الحياة.","إيجاد ناتج طرح كسور غير متشابهة في مسألة من واقع الحياة.","إيجاد قيمة عبارة جبرية باستعمال جمع أو طرح الكسور غير المتشابهة."],"r":[]},{"name":"جمع الأعداد الكسرية وطرحها","k":["إيجاد ناتج جمع الأعداد الكسرية في أبسط صورة.","إيجاد ناتج طرح الأعداد الكسرية في أبسط صورة."],"a":["إيجاد ناتج جمع أعداد كسرية في مسألة من واقع الحياة.","إيجاد ناتج طرح أعداد كسرية في مسألة من واقع الحياة."],"r":[]},{"name":"تقدير نواتج ضرب الكسور","k":[],"a":["تقدير ناتج ضرب الكسور باستعمال (الأعداد المتناغمة- التقريب)."],"r":["حل مسألة من واقع الحياة تتضمن تطبيقات على تقدير ناتج ضرب الأعداد الكسرية."]},{"name":"ضرب الكسور","k":["إيجاد ناتج ضرب الكسور في أبسط صورة."],"a":["إيجاد قيمة عبارة جبرية تتضمن كسورًا باستعمال ترتيب العمليات."],"r":["حل مسألة من واقع الحياة تتضمن تطبيقات من خطوتين أو أكثر على ضرب الكسور."]},{"name":"ضرب الأعداد الكسرية","k":["إيجاد ناتج ضرب أعداد كسرية في أبسط صورة."],"a":["حساب قيمة عبارة جبرية تتضمن ضرب أعداد كسرية.","إيجاد ناتج ضرب أعداد كسرية في مسألة من واقع الحياة."],"r":[]},{"name":"قسمة الكسور","k":["إيجاد مقلوب الكسر.","إيجاد ناتج قسمة كسر على كسر آخر في أبسط صورة."],"a":["إيجاد ناتج قسمة كسر على كسر آخر في مسألة من واقع الحياة."],"r":[]},{"name":"قسمة الأعداد الكسرية","k":["إيجاد ناتج قسمة عددين كسريين في أبسط صورة."],"a":["حساب قيمة عبارة جبرية تتضمن قسمة أعداد كسرية.","إيجاد ناتج قسمة عددين كسريين في مسألة من واقع الحياة."],"r":[]}]},{"n":7,"title":"النسبة والتناسب","periods":16.0,"cnt":[4,5,5],"lessons":[{"name":"النسبة والمعدل","k":["كتابة النسبة بأبسط صورة.","كتابة معدل الوحدة."],"a":["إيجاد معدل الوحدة في مسألة من واقع الحياة."],"r":["استعمال النسب لمقارنة الأجزاء بالكل."]},{"name":"جداول النسب","k":[],"a":["إيجاد نسب مكافئة بكميات أكبر .","إيجاد نسب مكافئة بكميات أصغر ."],"r":["إيجاد نسب مكافئة باستعمال الضرب والقسمة معاً."]},{"name":"التناسب","k":["كتابة العلاقة التناسبية في صورة تناسب."],"a":["تحديد ما إذا كانت الكميتان متناسبتين أم لا."],"r":["تمييز الكميات التي تمثل نسبة معطاة."]},{"name":"الجبر: حل التناسب","k":["حل تناسب معطى."],"a":["حل التناسب في مسألة من واقع الحياة."],"r":["حل مسألة من واقع الحياة باستعمال التنبؤ في مواقف التناسب."]},{"name":"خطة حل المسألة: البحث عن نمط","k":[],"a":[],"r":["حل المسألة باستعمال خطة البحث عن نمط."]}]},{"n":8,"title":"النسبة المئوية والاحتمالات","periods":16.0,"cnt":[3,8,2],"lessons":[{"name":"النسب المئوية والكسور الاعتيادية","k":["كتابة النسبة المئوية في صورة كسر اعتيادي.","كتابة الكسر الاعتيادي في صورة نسبة مئوية."],"a":["كتابة النسبة المئوية التي تمثل الجزء المظلل في نموذج معطى."],"r":[]},{"name":"النسب المئوية والكسور العشرية","k":[],"a":["كتابة النسبة المئوية في صورة كسر عشري","كتابة الكسر العشري في صورة نسبة مئوية"],"r":["المقارنة بين نسبتين في صور مختلفة"]},{"name":"الاحتمال","k":["إيجاد احتمال حادثة."],"a":["إيجاد احتمال متممة حادثة.","إيجاد احتمال حادثة باستعمال جدول بيانات."],"r":[]},{"name":"فضاء العينة","k":[],"a":["إيجاد فضاء العينة باستعمال قائمة.","إيجاد فضاء العينة بالرسم الشجري.","إيجاد فضاء العينة باستعمال مبدأ العد الأساسي."],"r":[]},{"name":"خطة حل المسألة: حل مسألة أبسط","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة حل مسألة أبسط."]}]},{"n":9,"title":"الهندسة: الزوايا والمضلعات","periods":16.0,"cnt":[6,4,1],"lessons":[{"name":"قياس وتقدير الزوايا ورسمها","k":["إيجاد قياس الزاوية.","تقدير قياس الزاوية."],"a":["رسم الزاوية."],"r":[]},{"name":"العلاقات بين الزوايا","k":["تصنيف العلاقات بين الزوايا."],"a":["إيجاد قياس زاوية مجهولة."],"r":[]},{"name":"المثلثات","k":["تصنيف المثلثات بحسب زواياها.","تصنيف المثلثات وفق أضلاعها."],"a":["إيجاد قياس زاوية مجهولة في مثلث."],"r":[]},{"name":"الأشكال الرباعية","k":["تصنيف الأشكال الرباعية."],"a":["إيجاد قياس زاوية مجهولة في شكل رباعي."],"r":[]},{"name":"خطة حل المسألة: الرسم","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة الرسم."]}]},{"n":10,"title":"القياس: المحيط والمساحة والحجم","periods":20.0,"cnt":[2,6,7],"lessons":[{"name":"محيط الدائرة","k":["إيجاد قطر دائرة.","إيجاد نصف قطر دائرة."],"a":["إيجاد محيط الدائرة.","تقدير محيط الدائرة."],"r":["حل مسألة من واقع الحياة تتضمن تطبيقات من خطوتين أو أكثر على محيط الدائرة.","إيجاد طول قطر أو نصف قطر دائرة بمعلومية محيطها."]},{"name":"مساحة متوازي الأضلاع","k":[],"a":["إيجاد مساحة متوازي أضلاع."],"r":["إيجاد طول ارتفاع مجهول في متوازي أضلاع بمعلومية مساحته","حل مسألة تتضمن تطبيقات من خطوتين أو أكثر على مساحة متوازي الأضلاع"]},{"name":"مساحة المثلث","k":[],"a":["إيجاد مساحة المثلث"],"r":["إيجاد طول ارتفاع مجهول في مثلث بمعلومية مساحته"]},{"name":"خطة حل المسألة: إنشاء نموذج","k":[],"a":[],"r":["حل مسألة من واقع الحياة باستعمال خطة إنشاء نموذج"]},{"name":"حجم المنشور الرباعي","k":[],"a":["إيجاد حجم المنشور الرباعي"],"r":["إيجاد طول بُعد مجهول في منشور رباعي بمعلومية حجمه و بُعدين فيه."]},{"name":"مساحة سطح المنشور الرباعي","k":[],"a":["إيجاد مساحة سطح منشور باعي"],"r":[]}]}],"grade":"السادس الابتدائي","term":"2"},"m1-1":{"items":40,"chapters":[{"n":1,"title":"الجبر والدوال","periods":21.0,"cnt":[19,19,7],"lessons":[{"name":"الخطوات الأربع لحل المسألة","k":[],"a":["استعمال الخطوات الأربع لحل المسألة","استعمال خطة لحل المسألة"],"r":["تنفيذ خطة لحل المسألة"]},{"name":"القوى والأسس","k":["معرفة العوامل","معرفة الأس","معرفة الأساس","معرفة القوى","معرفة الصيغة القياسية","معرفة الصيغة الأسية","كتابة القوى على صورة ضرب العامل في نفسه"],"a":["كتابة القوى بالصيغة القياسية","كتابة الأعداد بالصيغة الأسية","استعمال القوى والأسس في حل المسائل الرياضية"],"r":[]},{"name":"ترتيب العمليات","k":["معرفة قواعد ترتيب العمليات"],"a":["استعمال ترتيب العمليات في إيجاد قيمة عبارة عددية","استعمال ترتيب العمليات في حل مسألة رياضية من واقع الحياة"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بترتيب العمليات"]},{"name":"استراتيجية حل المسألة (التخمين والتحقق)","k":[],"a":["استعمال استراتيجية التخمين والتحقق في حل المسائل الرياضية"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالاستراتيجية المناسبة"]},{"name":"الجبر: المتغيرات والعبارات الجبرية","k":["معرفة المتغير","معرفة الجبر","معرفة العبارة الجبرية","معرفة المعامل"],"a":["حساب قيمة عبارة جبرية لقيم معطاة لمتغيراتها من عملية واحدة","حساب قيمة عبارة جبرية لقيم معطاة لمتغيراتها بها أكثر من عملية","إيجاد قيم العبارات الجبرية في المسائل الرياضيةو تطبيقات من واقع الحياة"],"r":[]},{"name":"الجبر: المعادلات","k":["معرفة المعادلة","معرفة حل المعادلة"],"a":["حل المعادلة ذهنيا"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالمعادلات"]},{"name":"الجبر: الخصائص","k":["معرفة العبارات المتكافئة","معرفة خاصية توزيع الضرب على الجمع"],"a":["استعمال خاصية التوزيع لاعادة كتابة عبارة","استعمال خصائص العمليات لحساب قيمة عبارة"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بخاصية التوزيع"]},{"name":"الجبر: المعادلات والدوال","k":["معرفة الدالة","معرفة قاعدة الدالة","معرفة جدول الدالة"],"a":["إنشاء جدول للدالة","إيجاد مجال الدالة","إيجاد مدى الدالة","إيجاد قاعدة الدالة","استخدام قاعدة الدالة لإيجاد عنصر بالمدى من المجال في جدول الدالة"],"r":["تفسير مسائل من واقع الحياة بجدول الدالة وحلها"]}]},{"n":2,"title":"الأعداد الصحيحة","periods":23.0,"cnt":[13,17,7],"lessons":[{"name":"الأعداد الصحيحة والقيمة المطلقة","k":["معرفة الأعداد الصحيحة","معرفة القيمة المطلقة للعدد الصحيح"],"a":["تمثيل الأعداد الصحيحة بيانياً على خط الأعداد","إيجاد قيمة عبارة تحوي القيمة المطلقة"],"r":["تفسيرقيمة متغير في معادلة تحوي قيمة مطلقة بالأعداد الصحيحة"]},{"name":"مقارنة الأعداد الصحيحة وترتيبها","k":["المقارنة بين عددين صحيحين"],"a":["ترتيب الأعداد الصحيحة"],"r":[]},{"name":"المستوى الاحداثي","k":["معرفة المستوى الاحداثي","معرفة الزوج المرتب","تسمية النقاط في المستوى الاحداثي باستعمال الأزواج المرتبة","تحديد الربع أو المحور الذي تقع به النقاط في المستوى الإحداثي"],"a":["التمثيل البياني للزوج المرتب"],"r":["تفسير موقع على الخارطة باستعمال الأزواج المرتبة"]},{"name":"جمع الأعداد الصحيحة","k":["استرجاع قواعد جمع الأعداد الصحيحة","معرفة خاصية النظير الجمعي","معرفة المعكوس لعدد صحيح"],"a":["جمع عددين صحيحين لهما الإشارة نفسها (موجب+موجب),(سالب+سالب)","جمع عددين صحيحين مختلفين في الإشارة","جمع عدد صحيح مع نظيره الجمعي"],"r":["يفسر العبارات اللفظية بجمل جمع الأعداد الصحيحة"]},{"name":"طرح الأعداد الصحيحة","k":["استرجاع قواعد طرح الأعداد الصحيحة"],"a":["طرح أعداد صحيحة موجبة","طرح أعداد صحيحة سالبة","إيجاد قيمة عبارة جبرية"],"r":["يفسر بعض الظواهر الطبيعية باجمل طرح الأعداد الصحيحة"]},{"name":"ضرب الأعداد الصحيحة","k":["استرجاع قواعد ضرب الأعداد الصحيحة"],"a":["ضرب عددين صحيحين مختلفين في الإشارة","ضرب عددين صحيحين لهما الإشارة نفسها","إيجاد قيم العبارات الجبرية"],"r":["تفسير مسائل رياضية ياستخدام ضرب الأعداد الصحيحة وحلها"]},{"name":"استراتيجية حل المسألة (البحث عن نمط)","k":[],"a":["استعمال استراتيجية البحث عن نمط في حل بعض المسائل"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالاستراتيجية المناسبة"]},{"name":"قسمة الأعداد الصحيحة","k":["استرجاع قواعد قسمة الأعداد الصحيحة"],"a":["قسمة عددين صحيحين مختلفين في الإشارة","قسمة عددين صحيحين لهما الإشارة نفسها","إيجاد قيم العبارات الجبرية"],"r":["تفسير وحل مسائل رياضية ياستخدام قسمة الأعداد الصحيحة وحلها"]}]},{"n":3,"title":"المعادلات الخطية والدوال","periods":22.0,"cnt":[10,14,6],"lessons":[{"name":"كتابة العبارات الجبرية والمعادلات","k":["كتابة عبارة جبرية","كتابة معادلة"],"a":["حل المعادلات الجبرية"],"r":["تفسير المسائل الرياضية ومسائل من واقع الحياة بمعادلات جبرية وحلها"]},{"name":"معادلات الجمع والطرح","k":["معرفة خصائص المساواة (خاصية الطرح)","معرفة خصائص المساواة (خاصية الجمع)"],"a":["حل معادلات الجمع","حل معادلات الطرح","استعمال معادلات الجمع والطرح في حل المسائل الرياضية"],"r":["نمذجة المسائل الرياضية وتطبيقات من واقع الحياة وحلها بمعادلات الجمع والطرح وحلها"]},{"name":"معادلات الضرب","k":["معرفة خصائص المساواة (خاصية القسمة)","معرفة الصيغة الرياضية"],"a":["حل معادلات الضرب","حساب ( المسافة ، السرعة ، الزمن ) بمعادلات الضرب"],"r":["نمذجةالمسائل الرياضية وتطبيقات من واقع الحياة وحلها بمعادلات الضرب وحلها"]},{"name":"استراتيجية حل المسألة (الحل عكسياً)","k":[],"a":["استخدام استراتيجية الحل عكسياً في حل المسائل الرياضية"],"r":["تفسير المسائل الرياضية وحلها باستعمال الاستراتيجية المناسبة"]},{"name":"المعادلات ذات الخطوتين","k":["معرفة المعادلات ذات الخطوتين"],"a":["حل المعادلات ذات الخطوتين"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالمعادلات ذات الخطوتين"]},{"name":"القياس: المحيط والمساحة","k":["معرفة محيط المستطيل","معرفة مساحة المستطيل"],"a":["إيجاد محيط المستطيل","استعمال المحيط لإيجاد المجهول","إيجاد مساحة المستطيل","استعمال المساحة لإيجاد المجهول"],"r":[]},{"name":"التمثيل البياني للدوال","k":["معرفة المعادلة الخطية"],"a":["تمثيل حلول المعادلات الخطية بيانيا\"","تمثيل الدالة بيانيًا"],"r":["تفسير المسائل الرياضية ومسائل من واقع الحياة بمعادلات خطية وتمثيلها"]}]},{"n":4,"title":"النسبة والتناسب","periods":27.0,"cnt":[16,15,6],"lessons":[{"name":"النسبة","k":["معرفة النسبة","معرفة النسب المتكافئة"],"a":["كتابة النسبة في أبسط صورة","تحديد النسب المتكافئة"],"r":[]},{"name":"المعدَل","k":["معرفة المعدل","معرفة معدل الوحدة"],"a":["إيجاد معدل الوحدة","استعمال معدل الوحدة"],"r":["المقارنة باستعمال معدلات الوحدة"]},{"name":"لقياس:التحويل بين الوحدات الإنجليزية","k":["معرفة النظام الإنجليزي","معرفة الوحدات الإنجليزية"],"a":["التحويل من وحدة إلى وحدة أصغر منها","التحويل من وحدة إلى وحدة أكبر منها"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالتحويل بين الوحدات الإنجليزية","المقارنة بين الوحدات الإنجليزية"]},{"name":"القياس:التحويل بين الوحدات المترية","k":["معرفة النظام المتري.","معرفة الوحدات المترية","معرفة العلاقات بين الوحدات الإنجليزية والوحدات المترية"],"a":["التحويل بين الوحدات في النظام المتري","التحويل بين أنظمة القياس"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالتحويل بين الوحدات المترية"]},{"name":"الجبر:حل التناسبات","k":["معرفة التناسب","معرفة الضرب التبادلي","معرفة الكميتين المتناسبتين"],"a":["تحديد العلاقات المتناسبة","حل التناسب"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالتناسب"]},{"name":"استراتيجية حل المسألة (الرسم)","k":[],"a":["استعمال استراتيجية الرسم في حل المسائل"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة بالاستراتيجية المناسبة"]},{"name":"مقياس الرسم","k":["معرفة مقاييس الرسم ومقاييس النماذج","معرفة عامل المقياس"],"a":["استعمال مقياس رسم الخريطة","استعمال مقياس المخطط","استعمال مقياس النموذج","إيجاد عامل المقياس"],"r":[]},{"name":"الكسور والنسب المئوية","k":["كتابة النسب المئوية على صورة كسور اعتيادية","كتابة الكسور الاعتيادية على صورة نسب مئوية"],"a":[],"r":[]}]}],"grade":"الأول المتوسط","term":"1"},"m1-2":{"items":40,"chapters":[{"n":5,"title":"تطبيقات النسبة المئوية","periods":19.0,"cnt":[3,11,4],"lessons":[{"name":"النسبة المئوية من عدد","k":[],"a":["إيجاد النسبة المئوية من عدد","استعمال نسبة مئوية أكبر 100%"],"r":["تحليل المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالنسبة المئوية"]},{"name":"تقدير النسبة المئوية","k":[],"a":["تقدير النسبة المئوية من عدد باستعمال الكسر الاعتيادي في مواقف حياتية","تقدير النسبة المئوية الأكبر من 100 أو أقل من 1"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة بالنسبة المئوية وتقديرها"]},{"name":"استراتيجية حل المسألة (تحديد معقولية الإجابة)","k":[],"a":["استعمال استراتيجية ( تحديد معقولية الإجابة ) في حل المسائل الرياضية"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالاستراتيجية المناسبة"]},{"name":"التناسب المئوي","k":["معرفة التناسب المئوي"],"a":["إيجاد النسبة المئوية","إيجاد الجزء","إيجاد الكل"],"r":["تفسير مسائل تطبيقية من واقع الحياة وحلها بالتناسب المئوي"]},{"name":"تطبيقات على النسبة المئوية","k":["معرفة الزيادة","معرفة الخصم"],"a":["إيجاد السعر الكلي بعد الزيادة","إيجاد السعر الكلي بعد التخفيض","حساب الزكاة"],"r":[]}]},{"n":6,"title":"الإحصاء","periods":9.0,"cnt":[15,11,5],"lessons":[{"name":"التمثيل بالنقاط","k":["معرفة الإحصاء","معرفة البيانات","معرفة استعمال التمثيل بالنقاط","معرفة القيمة المتطرفة","معرفة العنقود أو التجمع","معرفة المدى"],"a":["استعمال التمثيل بالنقاط لعرض البيانات","استعمال التمثيل بالنقاط لتحليل البيانات"],"r":["تحليل البيانات الممثلة بالنقاط"]},{"name":"مقاييس النزعة المركزية والمدى","k":["معرفة مقياس النزعة المركزية","معرفة المتوسط الحسابي","معرفة الوسيط","معرفة المنوال"],"a":["حساب المتوسط الحسابي","حساب الوسيط","إيجاد المنوال","إيجاد المدى"],"r":["اختيار المقاس الأفضل في المسائل الرياضية وتطبيقات من واقع الحياة"]},{"name":"التمثيل بالأعمدة والمدرجات التكرارية","k":["معرفة التمثل بالأعمدة التكرارية","معرفة التمثيل بالمدرج التكراري"],"a":["استعمال التمثيل بالأعمدة لعرض البيانات","تمثيل البيانات باستعمال المدرج التكراري"],"r":["تفسير المدرجات التكرارية"]},{"name":"استعمال التمثيلات البيانية للتنبؤ","k":["معرفة التمثيل بالخطوط","معرفة شكل الانتشار","معرفة أنماط العلاقات"],"a":["استعمال التمثيل بالخطوط للتنبؤ","استعمال شكل الانتشار للتنبؤ"],"r":["يفسر شكل الانتشار"]},{"name":"استراتيجية حل المسألة (استعمال التمثيل البياني)","k":[],"a":["حل المسائل باستعمال استراتيجية ( استعمال التمثيل البياني )"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالاستراتيجية المناسبة"]}]},{"n":7,"title":"الاحتمال","periods":9.0,"cnt":[6,6,3],"lessons":[{"name":"الحوادث والاحتمالات","k":["معرفة الواتج","معرفة الحادثة","معرفة الاحتمال","معرفة الحادثتان المتتامتان"],"a":["إيجاد الاحتمال","إيجاد احتمال الحوادث المتممة"],"r":[]},{"name":"استراتيجية حل المسألة (إنشاء قائمة منظمة)","k":[],"a":["استعمال استراتيجية إنشاء قائمة منظمة لحل المسائل الرياضية"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالاستراتيجية المناسبة"]},{"name":"عدّ النواتج","k":["معرفة فضاء العينة"],"a":["استعمال الرسم الشجري لإيجاد فضاء العينة","استعمال الرسم الشجري لإيجاد الاحتمال"],"r":["استعمال الطريقة المناسبة لايجاد لعد النواتج"]},{"name":"مبدأ العدّ الأساسي","k":["معرفة مبدأ العدّ الأساسي"],"a":["إيجاد عدد النواتج الممكنة لحادثتين أو أكثر"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بمبدأ العد الأساسي"]}]},{"n":8,"title":"الهندسة: المضلعات","periods":27.0,"cnt":[17,20,7],"lessons":[{"name":"العلاقات بين الزوايا","k":["تسمية الزوايا","معرفة أنواع الزوايا","معرفة الزاويتان المتقابلتان بالرأس","معرفة الزوايتان المتجاورتين"],"a":["تحديد نوع الزاوية","تحديد العلاقة بين الزوايا","تصنيف الزوايا"],"r":[]},{"name":"الزوايا المتتامة والمتكاملة","k":["معرفة الزوايا المتتامة","معرفة الزوايا المتكاملة"],"a":["تحديد الزوايا المتتامة","تحديد الزوايا المتكاملة","إيجاد قياس الزاوية المجهولة باستخدام العلاقة بين الزوايا"],"r":["حل مسائل جبرية بالعلاقات بين الزوايا"]},{"name":"إحصاء: التمثيل بالقطاعات الدائرية","k":["معرفة القطاعات الدائرية"],"a":["تمثيل البيانات بالقطاعات الدائرية","قراءة البيانات في القطاعات الدائرية"],"r":["تحليل القطاعات الدائرية"]},{"name":"المثلثات","k":["معرفة مجموع زوايا مثلث","تصنيف المثلثات حسب الزوايا","تصنيف المثلثات حسب الأضلاع"],"a":["إيجاد قياس زاوية مجهولة في مثلث","رسم مثلث وفقا للتصنيف المعطى","ً"],"r":[]},{"name":"استراتيجية حل المسألة (التبرير المنطقي)","k":[],"a":["استعمال استراتيجية التبرير المنطقي في حل المسائل الرياضية"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة وحلها بالاستراتيجية المناسبة"]},{"name":"الأشكال الرباعية","k":["تسمية الاشكال الرباعية","معرفة مجموع قياسات زوايا الشكل الرباعي"],"a":["رسم الاشكال الرباعية","تصنيف الاشكال الاشكال الرباعية","إيجاد قياس الزاوية المجهولة في الشكل الرباعي"],"r":["تبرير العلاقة بين الاشكال الرباعية"]},{"name":"الأشكال المتشابهة","k":["معرفة الاشكال المتشابهة","معرفة الاضلاع المتناظرة و الزوايا المتناظرة"],"a":["تحديد الاشكال المتشابهة","إيجاد قياسات الاضلاع في المثلثات المتشابهة","استعمال القياس غير المباشر في إيجاد قياسات الاشكال التي يصعب قياساها مباشرة"],"r":["استنتاج علاقة النسبة بين ضلعين متناظرين ونسبة محيطي مضلعين متشابهين","استنتاج علاقة النسبة بين ضلعين متناظرين ومربع نسبة مساحتي مضلعين متشابهين"]},{"name":"التبليط والمضلعات","k":["معرفة المضلع","تصنيف المضلع حسب عدد أضلاعة","معرفة المضلع المنتظم"],"a":["إيجاد مجموع قياس الزوايا الداخلية للمضلع","إيجاد قياس الزاوية الداخلية في مضلع منتظم"],"r":["تحديد إمكانية التبليط بأشكال منتظمة"]}]},{"n":9,"title":"الأشكال الثنائية الأبعاد والثلاثية الأبعاد","periods":30.0,"cnt":[15,20,9],"lessons":[{"name":"مساحة المثلث وشبة المنحرف","k":["معرفة مساحة المثلث","معرفة مساحة شبة المنحرف"],"a":["إيجاد مساحة المثلث","إيجاد مساحة شبة المنحرف"],"r":["تفسير وحل المسائل الرياضية وتطبيقات من واقع الحياة بمساحة المثلث.","تفسير وحل المسائل الرياضية وتطبيقات من واقع الحياة بمساحة شبه المنحرف."]},{"name":"محيط الدائرة","k":["معرفة عناصر الدائرة","معرفة محيط الدائرة"],"a":["حساب محيط الدائرة","حساب محيط دائرة في الحياة اليومية"],"r":["تفسير وحل المسائل الرياضية وتطبيقات من واقع الحياة بمحيط الدائرة"]},{"name":"مساحة الدائرة","k":["معرفة مساحة الدائرة","معرفة القطاع"],"a":["إيجاد مساحة الدائرة","حساب مساحة دائرة في الحياة اليومية","حساب مساحة القطاع"],"r":["مقارنة مساحة الدائرة بمساحة أشكال أخرى"]},{"name":"استراتيجية حل المسألة ( حل مسألة أبسط )","k":[],"a":["حل مسائل باستعمال استراتيجية ( حل مسألة أبسط )"],"r":["حل المسائل الرياضية وتطبيقات من واقع الحياة بالاستراتيجية المناسبة"]},{"name":"مساحة أشكال مركبة","k":["معرفة الشكل المركب"],"a":["حساب مساحة الشكل المركب","إيجاد مساحة أشكال مركبة في الحياة اليومية"],"r":["حل المسائل الرياضية وتطبيقات من واقع الحياة المرتبطة بمساحة الأشكال الرباعية"]},{"name":"الأشكال ثلاثية الأبعاد","k":["تحديد عناصر الشكل ثلاثي الأبعاد","تسمية الاشكال الثلاثية الأبعاد","تمييز خواص الاشكال الثلاثية الأبعاد"],"a":["تصنيف الاشكال ثلاثية الأبعاد"],"r":["تفسير تطبيقات من واقع الحياة باستخدام تصنيف الأشكال ثلاثية الأبعاد"]},{"name":"رسم الأشكال ثلاثية الأبعاد","k":[],"a":["أنشئ شكلا ثلاثي الأبعاد إذا أعطيت منظر علوياً وجانبياً له","رسم المناظر","رسم الأشكال ثلاثية الأبعاد","رسم أشكال ثلاثية الأبعاد من واقع الحياة"],"r":[]},{"name":"حجم المنشور","k":["معرفة الحجم","معرفة متوازي المستطيلات","معرفة حجم متوازي المستطيلات","معرفة حجم المنشور الثلاثي"],"a":["حساب حجم المنشور المتوازي المستطيلات","حساب حجم المنشور الثلاثي"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة بحجم المنشور"]},{"name":"حجم الاسطوانة","k":["معرفة حجم الأسطوانة"],"a":["إيجاد حجم الاسطوانة","إيجاد حجم الاسطوانة في تطبيقات من واقع الحياة"],"r":["تفسير المسائل الرياضية وتطبيقات من واقع الحياة بحجم الأسطوانة"]}]}],"grade":"الأول المتوسط","term":"2"},"m2-1":{"items":40,"chapters":[{"n":1,"title":"الأعداد النسبية","periods":23.0,"cnt":[10,26,9],"lessons":[{"name":"الاعداد النسبية","k":["معرفة العدد النسبي","تمييز الكسر العشري المنتهي والكسر العشري غير المنتهي"],"a":["كتابة الكسر الاعتيادي على صورة كسر عشري","كتابة الكسر الدوري","كتابة الكسر العشري على صورة كسر اعتيادي"],"r":["تفسير مسائل من واقع الحياة على صورة نسبية وكتابتها"]},{"name":"مقارنة الاعداد النسبية وترتيبها","k":[],"a":["المقارنة بين الأعداد النسبية الموجبة","المقارنة باستعمال الكسور العشرية","ترتيب الأعداد النسبية","مقارنة الأعداد النسبية السالبة"],"r":["تفسير مسائل من واقع الحياة باعداد نسبية ومقارنتها وترتيبها"]},{"name":"ضرب الاعداد النسبية","k":["معرفة تحليل وحدات القياس"],"a":["ضرب الأعداد النسبية","ضرب الأعداد الكسرية","استعمال تحليل وحدات القياس"],"r":["تفسير مسائل من واقع الحياة باستعمال ضرب الاعداد النسبية وحلها"]},{"name":"قسمة الاعداد النسبية","k":["معرفة النظير الضربي","معرفة المقلوب"],"a":["إيجاد النظير الضربي","قسمة الأعداد النسبية"],"r":["تفسير مسألة من واقع الحياة قسمة الأعداد النسبية"]},{"name":"جمع الاعداد النسبية ذات المقام المتشابهة وطرحها","k":[],"a":["جمع الأعداد النسبية ذات المقامات المتشابهة","طرح الأعداد النسبية ذات المقامات المتشابهة","جمع الأعداد الكسرية"],"r":["تفسير مسألة من واقع الحياة - جمع الأعداد النسبية وطرحها"]},{"name":"جمع الاعداد النسبية ذات المقام المختلفة وطرحها","k":[],"a":["جمع الأعداد النسبية وطرحها ذات المقامات المختلفة","جمع الأعداد الكسرية وطرحها ذات المقامات المختلفة","حل مسألة من الحياة - جمع الأعداد النسبية والكسرية"],"r":["حل مسألة من واقع الحياة - طرح الأعداد النسبية والكسرية"]},{"name":"استراتيجية حل المسالة","k":[],"a":["حل مسألة باستعمال استراتيجية - البحث عن نمط","حل مسألة باستعمال استراتيجية - الحل العكسي"],"r":["تفسير مسألة من الحياة باستعمال استراتيجية - البحث عن نمط"]},{"name":"القوى والأسس","k":["معرفة القوى","معرفة الاس","معرفة الأساس"],"a":["كتابة العبارات باستعمال الأسس","إيجاد الأسس السالبة والأسس الصفرية","إيجاد القوى"],"r":["تفسير مسألة من واقع الحياة - القوى والأسس"]},{"name":"الصيغة العلمية","k":["معرفة الصيغة العلمية","معرفة الصيغة القياسية"],"a":["التحويل بين الصيغة العلمية و الصيغة القياسية","كتابة الأعداد بالصيغة القياسية","كتابة الأعداد بالصيغة العلمية"],"r":["تفسير مسألة من واقع الحياة - الصيغة العلمية و الصيغة القياسية"]}]},{"n":2,"title":"الأعداد الحقيقية ونظرية فيثاغورس","periods":20.0,"cnt":[8,18,7],"lessons":[{"name":"الجذور التربيعية","k":["معرفة المربع الكامل","معرفة الجذر التربيعي","معرفة إشارة الجذر"],"a":["إيجاد الجذور التربيعية","استعمال الجذور لحل المعادلات"],"r":["تفسير مسألة من وقع الحياة - الجذور التربيعية وايجادها"]},{"name":"تقدير الجذور التربيعية","k":[],"a":["تقدير الجذور التربيعية"],"r":["تفسير مسألة من واقع الحياة - تقدير الجذور التربيعية"]},{"name":"أستراتيجية حل المسائلة","k":[],"a":["حل مسألة باستعمال استراتيجية - أشكال فن","حل مسألة باستعمال استراتيجية - البحث عن نمط","حل مسألة باستعمال استراتيجية - التخمين والتحقق"],"r":["تفسير مسألة من واقع الحياة باستعمال استراتيجية - أشكال فن"]},{"name":"الأعداد الحقيقية","k":["معرفة العدد الحقيقي - العدد غير النسبي"],"a":["تصنيف الأعداد","خصائص الأعداد الحقيقية","تمثيل الأعداد الحقيقية","مقارنة الأعداد الحقيقية"],"r":["تطبيق مسألة من واقع الحياة - الأعداد الحقيقية"]},{"name":"نظرية فيثاغورس","k":["معرفة نظرية فيتاغورس","معرفة عكس نظرية فيثاغورس"],"a":["إيجاد الطول المجهول في المثلث القائم","تحديد المثلث القائم الزاوية"],"r":["تفسير المسائل الرياضية وحلها باستخدام نظرية فيثاغورس"]},{"name":"تطبيقات على نظرية فيثاغورس","k":[],"a":["حل مسائل باستعمال نظرية فيتاغورس"],"r":["تفسير مسألة من واقع الحياة - نظرية فيتاغورس"]},{"name":"الأبعاد في المستوى الاحداثي","k":["معرفة المستوى الإحداثي","معرفة الزوج المرتب"],"a":["تمثيل الأعداد النسبية في المستوى","تسمية الزوج المرتب","تمثيل الأزواج المرتبة","ايجاد نقطة المنتصف","إيجاد المسافة في المستوى الإحداثي"],"r":["تفسير مسألة من واقع الحياة - هندسة الأبعاد في المستوى"]}]},{"n":3,"title":"التناسب والتشابه","periods":23.0,"cnt":[17,23,8],"lessons":[{"name":"العلاقات المتناسبة وغير المتناسبة","k":["معرفة العلاقات المتناسبة والعلاقات غير المتناسبة"],"a":["تحديد العلاقات المتناسبة","تحديد العلاقات غير المتناسبة"],"r":["تفسير مسألة من واقع الحياة - العلاقات المتناسبة وغير المتناسبة وحلها"]},{"name":"معدل التغير","k":["معرفة معدل التغير"],"a":["إيجاد معدل التغير الموجب","إيجاد معدل التغير السالب","مقارنة معدلات التغير"],"r":["تفسير مسألة من واقع الحياة - معدل التغير"]},{"name":"المعدل الثابت للتغير","k":["معرفة العلاقة الخطية","معرفة المعدل الثابت للتغير"],"a":["تحديد العلاقات الخطية","إيجاد المعدل الثابت للتغير","تحديد العلاقات الخطية المتناسبة"],"r":["تفسير مسألة من واقع الحياة - المعدل الثابت للتغير"]},{"name":"حل التناسب","k":["معرفة النسب المتكافئة","معرفة الضرب التبادلي","معرفة التناسب","معرفة ثابت التناسب"],"a":["كتابة التناسب وحله","حل مسألة من واقع الحياة بالتنبؤ","كتابة معادلة وحلها"],"r":["تفسير مسائل التناسب وطرق حلها"]},{"name":"استراتيجية حل المسالة الرسم","k":[],"a":["حل مسألة باستعمال استراتيجية - الرسم - رسم شكل","حل مسألة باستعمال استراتيجية - البحث عن نمط","حل مسألة باستعمال استراتيجية - الحل العكسي","حل مسألة باستعمال استراتيجية - أشكال فن"],"r":["تطبيق وتفسير مسائل من واقع الحياة باستعمال استراتيجية - الرسم"]},{"name":"تشابه المضلعات","k":["معرفة المضلع","تمييز الأجزاء المتناظرة و المتطابقة","معرفة المضلعات المتشابهة","معرفة عامل المقياس"],"a":["تحديد المضلعات المتشابهة","إيجاد القياسات الناقصة","إيجاد النسب بين الأشكال المتشابهة"],"r":["تفسير مسائل من واقع الحياة وحلها بالتشابه"]},{"name":"التكبير والتصغير","k":["معرفة التمدد","معرفة مركز التمدد","معرفة التكبير","معرفة التصغير"],"a":["رسم التمدد","تمثيل التمدد بيانيا في المستوى الإحداثي","إيجاد عامل المقياس وتصنيفه"],"r":["تفسير مسائل من واقع الحياة وحلها بالتكبيرأو التصغير"]},{"name":"القياس غير المباشر","k":["معرفة القياس غير المباشر"],"a":["استعمال تقدير الظل","استعمال القياس غير المباشر"],"r":["تفسيرمسأئل من واقع الحياة - القياس غير المباشر وحلها"]}]},{"n":4,"title":"النسبة المئوية","periods":13.0,"cnt":[6,10,3],"lessons":[{"name":"إيجاد النسبة المئوية ذهنيا","k":["معرفة النسبة المئوية"],"a":["حساب النسبة المئوية باستعمال الكسور الاعتيادية","حساب النسبة المئوية باستعمال الكسور العشرية"],"r":["حل مسألة من واقع الحياة باستخدام النسبة المئوية"]},{"name":"النسبة المئوية والتقدير","k":["تقدير النسبة المئوية لعدد باستعمال الأعداد المتناغمة"],"a":["تقدير النسب المئوية من عدد ما","تقدير النسب المئوية لجزء من كل"],"r":["حل مسألة من واقع الحياة باستخدام التقدير"]},{"name":"استراتيجية حل المسألة","k":[],"a":["حل المسألة باستعمال التحقق من معقولية الإجابة"],"r":[]},{"name":"الجبر : المعادلة المئوية","k":["معرفة المعادلة المئوية"],"a":["حل معادلة مئوية لايجاد الجزء","حل معادلة مئوية لإيجاد النسبة المئوية","حل معادلة مئوية لإيجاد الكل"],"r":["حل مسألة من واقع الحياة باستخدام المعادلة المئوية"]},{"name":"التغير المئوي","k":["تمييز التغيرالمئوي","معرفة الزيادة المئوية","معرفة النقصان المئوي"],"a":["إيجاد التغير المئوي","إيجاد الزيادة المئوية"],"r":[]}]},{"n":5,"title":"الهندسة والاستدلال المكاني","periods":17.0,"cnt":[10,14,7],"lessons":[{"name":"علاقات الزوايا والمستقيمات","k":["تصنيف أزواج الزوايا الخاصة","تصنيف أزواج الزوايا الناتجة عن قاطع لمستقيمين"],"a":["إيجاد قياس الزوايا المجهولة","تحديد العلاقات بين الزوايا الناتجة عن قطع مستقيم لمستقيمين متوازيين"],"r":["حل مسألة من واقع الحياة باستحدام العلاقات بين الزوايا"]},{"name":"استراتيجية حل المسألة","k":[],"a":["حل مسألة باستعمال استراتيجية التبرير المنطقي"],"r":[]},{"name":"المضلعات والزوايا","k":["معرفة المضلع المنتظم"],"a":["إيجاد مجموع قياسات الزوايا الداخلية لمضلع","إيجاد قياس الزاوية الداخلية لمضلع منتظم","استنتاج عدد الأضلاع لمضلع منتظم بمعلومية زاويته الداخلية"],"r":["حل مسألة من واقع الحياة بدلالة المضلعات"]},{"name":"تطابق المضلعات","k":["كتابة الأجزاء المتطابقة - عبارة التطابق"],"a":["إيجاد القياسات الناقصة في شكلين متطابقين","تحديد المضلعات المتطابقة"],"r":["حل مسألة من واقع الحياة بدلالة المضلعات المتطابقة"]},{"name":"التماثل","k":["تحديد التماثل الدوراني حول محور - نقطة"],"a":["تحديد محاور التماثل"],"r":["حل مسألة تتضمن شكل باستعمال الدوران حول نقطة"]},{"name":"الانعكاس","k":["معرفة التحويل الهندسي","معرفة الانعكاس","رسم انعكاس شكل حول محور"],"a":["رسم انعكاس شكل حول محور في المستوى الاحداثي","كتابة إحداثيات رؤوس صورة الشكل بعد الانعكاس","إكمال رسم بواسطة الانعكاس"],"r":["حل المسائل الحياتية باستعمال الانعكاس"]},{"name":"الانسحاب","k":["معرفة الانسحاب"],"a":["رسم انسحاب شكل في المستوى الاحداثي"],"r":["حل المسائل الحياتية باستعمال الانسحاب"]},{"name":"الدوران","k":["معرفة الدوران"],"a":["رسم دوران شكل حول نقطة الأصل في المستوى الاحداثي"],"r":["حل المسائل الحياتية باستعمال الدوران حول نقطة الأصل"]}]}],"grade":"الثاني المتوسط","term":"1"},"m2-2":{"items":40,"chapters":[{"n":1,"title":"الإحصاء","periods":22.0,"cnt":[6,14,6],"lessons":[{"name":"استراتيجية حل المسألة","k":[],"a":["حل المسألة بإستعمال استراتيجية إنشاء جدول"],"r":[]},{"name":"المدرجات التكرارية","k":["معرفة المدرج التكراري"],"a":["تكوين المدرج التكراري للبيانات"],"r":["تحليل بيانات المدرج التكراري وتفسيرها"]},{"name":"القطاعات الدائرية","k":["معرفة القطاعات الدائرية"],"a":["تمثيل النسب المئوية بالقطاعات الدائرية","تمثيل البيانات بالقطاعات الدائرية"],"r":["تحليل بيانات القطاعات الدائرية وتفسيرها"]},{"name":"مقاييس النزعة المركزية والمدى","k":["إيجاد مقاييس النزعة المركزية لمجموعة من البيانات"],"a":["اختيار المقياس الأنسب من بين مقاييس النزعة المركزية أو المدى لوصف البيانات","كتابة مجموعة من البيانات الممكنة بناء على مقاييس النزعة المركزية المعطاة"],"r":["وصف التغير في إحدى مقاييس النزعة المركزية بعد إجراء تغير ما في المسألة اللفظية"]},{"name":"مقاييس التشتت","k":["إيجاد مقاييس التشتت لمجموعة من البيانات"],"a":["استعمال مقاييس التشتت في وصف البيانات","إيجاد القيم المتطرفة لمجموعة من البيانات"],"r":["كتابة مجموعة من البيانات الممكنة بناء على مقاييس التشتت المعطاة"]},{"name":"التمثيل بالصندوق وطرفيه","k":["معرفة القيم اللازمة لرسم الصندوق وطرفية"],"a":["تمثيل البيانات بالصندوق وطرفيه","تفسير البيانات الممثلة بالصندوق وطرفيه"],"r":["مقارنة البيانات بالاعتماد على تمثيل الصندوق وطرفيه المزدوج"]},{"name":"التمثيل بالساق والورقة","k":["تمثيل البيانات بالساقة والورقة"],"a":["تفسير البيانات الممثلة بالساق والورقة تمثيلا مزدوجا","تفسير البيانات الممثلة بالساق والورقة"],"r":["مقارنة البيانات بالاعتماد على تمثيل الصندوق وطرفيه المزدوج"]},{"name":"اختيار طريقة التمثيل المناسبة","k":[],"a":["اختيار طريقة التمثيل المناسبة","إنشاء التمثيل البياني المناسب"],"r":[]}]},{"n":2,"title":"الاحتمالات","periods":14.0,"cnt":[6,10,3],"lessons":[{"name":"عد النواتج","k":["إيجاد فضاء العينة باستعمال الرسم الشجري"],"a":["حساب عدد النواتج باستعمال الرسم الشجري","حساب عدد النواتج باستعمال مبدأ العد","حساب احتمال حادثة بسيطة"],"r":["حل مسألة من واقع الحياة لايجاد عد النواتج"]},{"name":"احتمال الحوادث المركبة","k":["معرفة الحوادث المركبة","معرفة الحوادث المستقلة - غير المستقلة"],"a":["إيجاد احتمال حوادث مستقلة","إيجاد احتمال الحوادث غير المستقلة"],"r":["حل مسائل من واقع الحياة بحساب احتمال حوادث مستقلة - غير مستقلة"]},{"name":"الاحتمال النظري والاحتمال التجريبي","k":["إيجاد الاحتمال النظري","إيجاد الاحتمال التجريبي"],"a":["استعمال الاحتمال التجريبي في التنبؤ","حل مسائل من واقع الحياة بإيجاد الاحتمال النظري"],"r":["حل مسائل من واقع الحياة بإيجاد الاحتمال التجريبي"]},{"name":"استراتيجية حل المسألة","k":[],"a":["حل المسألة باستعمال استراتيجية تمثيل المسألة"],"r":[]},{"name":"استعمال المعاينة في التنبؤ","k":["معرفة العينة - التنبؤ"],"a":["تحديد دقة الاستنتاجات حسب نوع العينة","أتنبأ بسلوك مجتمع مستعملا العينة"],"r":[]}]},{"n":3,"title":"القياس: المساحة و الحجم","periods":24.0,"cnt":[11,13,8],"lessons":[{"name":"مساحة الأشكال المركبة","k":["معرفة الشكل المركب","تحديد مما يتكون الشكل المركب"],"a":["أيجاد مساحة الشكل المركب","إيجاد مساحة المنطقة المظللة"],"r":["ايجاد مساحة أشكال مركبة في مسائلة من واقع الحياة"]},{"name":"استراتيجية حل المسألة: حل مسألة أبسط","k":[],"a":[],"r":["حل المسألة الحسابية بأستخدام استراتيجية حل مسألة أبسط"]},{"name":"الأشكال الثلاثية الأبعاد","k":["تحديد مستويين متوازيين في مجسم ثلاثي الأبعاد","تحديد المستقيمان المتخالفان في مجسم ثلاثي الأبعاد","تحديد القطر في مجسم ثلاثي الأبعاد","تحديد عناصر المنشور و الهرم"],"a":[],"r":["تحليل الرسومات للأشكال ثلاثية الأبعاد"]},{"name":"حجم المنشور والأسطوانة","k":["معرفة المجسم المركب","معرفة الأسطوانة"],"a":["إيجاد حجم المنشور.","ايجاد حجم الأسطوانة","إيجاد حجم المجسم المركب"],"r":["ايجاد حجم المنشور بأمثلة من واقع الحياة","ايجاد حجم الأسطوانة بأمثلة من واقع الحياة"]},{"name":"حجم الهرم و المخروط","k":["معرفة (المخروط - الهرم )"],"a":["إيجاد حجم الهرم","ايجاد حجم المخروط"],"r":["حل مسألة من واقع الحياة - حجم الهرم - المخروط"]},{"name":"مساحة سطح المنشور و الأسطوانة","k":["معرفة (الوجه الجانبي -المساحة الجانبية - المساحة الكلية )"],"a":["إيجاد المساحة الجانبية لسطح المنشور","ايجاد المساحة الكلية للمنشور","إيجاد المساحة الجانبية لسطح أسطوانة","ايجاد المساحة الكلية لسطح الأسطوانة"],"r":["حل مسألة من واقع الحياة - ( الأسطوانة - المنشور)"]},{"name":"مساحة سطح الهرم","k":["معرفة الهرم المنتظم"],"a":["إيجاد المساحة الجانبية لسطح الهرم","إيجاد المساحة الكلية لسطح الهرم"],"r":["حل مسألة من واقع الحياة - (لسطح الهرم)"]}]},{"n":4,"title":"الجبر: المعادلات و المتباينات","periods":21.0,"cnt":[5,14,3],"lessons":[{"name":"تبسيط العبارات الجبرية","k":["معرفة العبارات المتكافئة","تحديد اجزاء عبارة جبرية"],"a":["تبسيط عبارة جبرية","كتابة عبارة تتضمن عملية جمع","كتابة عبارة تتضمن عملية طرح"],"r":["تبسيط عبارة جبرية في مثال من واقع الحياة"]},{"name":"حل معادلات ذات خطوتين","k":[],"a":["حل معادلات ذات خطوتين بمعاملات موجبة","حل معادلات ذات خطوتين بمعاملات سالبة","حل معادلات ذات خطوتين بتجميع الحدود المتشابة أولا"],"r":["مسألة من واقع الحياة لحل معادلات ذات خطوتين"]},{"name":"كتابة معادلات ذات خطوتين","k":["تحويل الجمل اللفظية الى معادلات"],"a":["كتابة معادلات ذات خطوتين لحل مسائل من واقع الحياة"],"r":[]},{"name":"حل معادلات تتضمن متغيرات في طرفيها","k":[],"a":["حل معادلات تتضمن متغيرات في طرفيها"],"r":["حل معادلات تتضمن متغيرات في طرفيها من واقع الحياة"]},{"name":"استراتيجية حل المسألة التخمين و التحقق","k":[],"a":["حل المسائل باستعمال استراتيجية التخمين والتحقق"],"r":[]},{"name":"المتباينات","k":["كتابة متباينات باستعمال > أو <","كتابة متباينات باستعمال ≤ أو ≥"],"a":["تمثيل المتباينات بيانيا","التحقق من صحة متباينة"],"r":[]},{"name":"حل المتباينات","k":[],"a":["حل متباينات باستعمال خصائص الجمع و الطرح","حل متباينات باستعمال خصائص الضرب و القسمة","حل متباينات باستعمال خصائص الضرب و القسمة على أعداد سالبة"],"r":[]}]},{"n":5,"title":"الجبر: الدوال الخطية","periods":21.0,"cnt":[6,10,4],"lessons":[{"name":"المتتابعات","k":["تحديد المتتابعة الحسابية"],"a":["تحديد المتتابعة الحسابية باستعمال الحد النوني","ايجاد الحد النوني للمتابعة الحسابية"],"r":["ايجاد الحد النوني للمتتابعة الحسابية من واقع الحياة"]},{"name":"الدوال","k":["ايجاد (المجال - المدى ) للدالة","ايجاد قيمة الدالة"],"a":["إكمال جدول الدالة"],"r":["حل مسألة من واقع الحياة باستخدام مفهوم الدالة"]},{"name":"تمثيل الدوال الخطية","k":["معرفة الدالة الخطية"],"a":["تمثيل الدوال الخطية بيانيا"],"r":["حل مسألة من واقع الحياة باستخدام تمثيل الدوال الخطية بيانيا"]},{"name":"ميل المستقيم","k":["معرفة الميل"],"a":["ايجاد ميل المستقيم من واقع حياة الطالب","ايجاد ميل المستقيم باستعمال الرسم","ايجاد ميل المستقيم باستعمال الجدول","ايجاد ميل المستقيم باستعمال الاحداثيات"],"r":[]},{"name":"التغير الطردي","k":["تحديد التغير الطردي"],"a":["حل مسائل التغير الطردي في مسائل من واقع الحياة","إيجاد النسبة الثابتة في مسائل من واقع الحياة"],"r":[]},{"name":"استراتيجية حل المسألة إنشاء نموذج","k":[],"a":[],"r":["حل مسائل باستعمال استراتيجية إنشاء نموذج"]}]}],"grade":"الثاني المتوسط","term":"2"},"m3-1":{"items":40,"chapters":[{"n":1,"title":"المعادلات الخطية","periods":17.0,"cnt":[6,16,5],"lessons":[{"name":"المعادلات","k":["معرفة المعادلة، الجملة المفتوحة","معرفة مجموعة الحل، مجموعة التعويض"],"a":["حل معادلات باستعمال مجموعة التعويض","إيجاد حلول المعادلات ذات (( الحل الوحيد ) ، ( لا يوجد حل ) ،(عدد لانهائي من الحلول))","حل معادلات تحتوي متغيرين"],"r":["تفسير تطبيقات من واقع و الحياة وحلها بالمعادلات"],"p":12},{"name":"حل المعادلات ذات الخطوة الواحدة","k":[],"a":["حل المعادلات ذات الخطوة الواحدة بالجمع","حل المعادلات ذات الخطوة الواحدة بالطرح","حل المعادلات ذات الخطوة الواحدة بالضرب","حل المعادلات ذات الخطوة الواحدة بالقسمة"],"r":["تفسير مسألة من واقع الحياة وحلها باستخدام المعادلات ذات الخطوة الواحدة"],"p":20},{"name":"حل المعادلات المتعددة الخطوات","k":["معرفة المعادلات المتعددة الخطوات","معرفة الأعداد الصحيحة المتتالية"],"a":["حل المعادلات المتعددة الخطوات","كتابة معادلة متعددة الخطوات وحلها","حل مسائل تتضمن أعدادا صحيحة متتالية"],"r":["تفسير المسألة من واقع الحياة وحلها باستخدام المعادلات ذات الخطوات المتعددة"],"p":27},{"name":"حل المعادلات التي تحتوي متغيراً في طرفيها","k":["معرفة المعادلات التي تحتوي متغيراً في طرفيها","معرفة خطوات حل المعادلة"],"a":["حل المعادلة التي تحتوي متغيرا في طرفيها","حل المعادلة التي تحتوي أقواساً"],"r":["تفسير مسألة من واقع الياة وحلها باستخدام المعادلات التي تحتوي متغيراً في طرفيها"],"p":33},{"name":"حل المعادلات التي تتضمن القيمة المطلقة","k":[],"a":["حل المعادلات التي تتضمن القيمة المطلقة","استعمال خط الأعداد لحل المعادلات التي تتضمن القيمة المطلقة","كتابة معادلة تتضمن قيمة مطلقة","إيجاد قيمة العبارات الجبرية التي تتضمن القيمة المطلقة عند متغير معلوم"],"r":["تفسير مسألة من واقع الحياة باستخدام معادلة تحتوي قيمة مطلقة"],"p":38}]},{"n":2,"title":"العلاقات والدوال الخطية","periods":18.0,"cnt":[14,25,6],"lessons":[{"name":"العلاقات","k":["معرفة (النظام الإحداثي–المستوى الإحداثي –المحور س– المحور ص)","معرفة (نقطة الأصل – الزوج المرتب – العلاقة )","معرفة (الإحداثي السيني - الإحداثي الصادي – المخطط السهمي)","معرفة (المجال -المدى -المتغير المستقل- المتغير التابع )"],"a":["تمثيل العلاقات","تمثيل موقف من الحياة بيانياً","تحديد المتغير المستقل و المتغير التابع"],"r":["تحليل التمثيلات البيانية"],"p":50},{"name":"الدوال","k":["معرفة ( الدالة – الدالة المنفصلة – الدالة المتصلة )","معرفة ( اختبار الخط الرأسي – الدالة غير الخطية)"],"a":["تحديد العلاقات التي تمثل دالة","تحديد المجال والمدى","كتابة البيانات وتمثيلها بيانياً","اختبار الخط الرأسي","إيجاد قيم الدالة( الخطية - غير الخطية )"],"r":["تفسير مسألة من واقع الحياة وحلها باستخدام الدوال"],"p":56},{"name":"تمثيل المعادلات الخطية بيانياً","k":["معرفة (المعادلة الخطية – الصورة القياسية – الحد الثابت)","معرفة (المقطع السيني – المقطع الصادي)"],"a":["تمييز المعادلات الخطية","إيجاد المقطع السيني والمقطع الصادي","تمثيل المعادلة بيانيا باستعمال المقطعين السيني و الصادي","التمثيل البياني بتكوين جدول"],"r":["حل مسألة من واقع الحياة باستخدام التمثيل"],"p":63},{"name":"حل المعادلات الخطية بيانيًّا","k":["معرفة (الدالة الخطية – الدالة المولدة (الأم) - الجذر - الأصفار)"],"a":["حل المعادلة التي لها جذر واحد جبريا","حل المعادلة التي لها جذر واحد بيانياً","حل معادلات ليس لها حل جبريا","حل معادلات ليس لها حل بيانياً","تقدير الحل باستعمال التمثيل البياني"],"r":["تفسير مسألة من واقع الحياة وحلها باستخدام المعادلات الخطية بيانيًا"],"p":71},{"name":"معدل التغير والميل","k":["معرفة (معدل التغير – الميل - ميل المستقيم – المعدل )","معرفة الميل الموجب أو السالب أو الصفر","معرفة الميل غير المعرف."],"a":["إيجاد معدل التغير","تحديد معدل التغير غير الثابت","تحديد ما إذا كانت الدالة خطية أم لا","إيجاد ميل المستقيم المار بنقطتين","إيجاد الإحداثي إذا علم الميل"],"r":["تفسير مسألة من واقع الحياة وحلها باستخدام معدل التغير والميل"],"p":76},{"name":"المتتابعات الحسابية كدوال خطية","k":["معرفة (المتتابعة - المتتابعة الحسابية – الحد - الأساس)","معرفة الحد النوني في متتابعة حسابية"],"a":["تمييز المتتابعة الحسابية","إيجاد الحد التالي","إيجاد الحد النوني"],"r":["تفسير مسألة من واقع الحياة كدالة وحلها باستخدام الممتابعة الحسابية"],"p":83}]},{"n":3,"title":"الدوال الخطية","periods":16.0,"cnt":[4,13,4],"lessons":[{"name":"تمثيل المعادلات المكتوبة بصيغة الميل والمقطع بيانيًّا","k":["معرفة صيغة الميل والمقطع"],"a":["كتابة معادلة بصيغة الميل والمقطع وتمثيلها بيانياً","تمثيل معادلة خطية بيانياً","كتابة معادلة مستقيم ممثل بيانياً"],"r":["حل مسألة من واقع الحياة باستخدام تمثيل المعادلات المكتوبة بصيغة الميل والمقطع"],"p":94},{"name":"كتابة المعادلات بصيغة الميل والمقطع","k":["معرفة التنبؤ الخطي"],"a":["كتابة معادلة مستقيم علم ميله ونقطة يمر بها بصيغة الميل والمقطع","كتابة معادلة مستقيم علمت نقطتان يمر بهما","كتابة معادلة باستعمال صيغة الميل والمقطع الصادي"],"r":["التنبؤ الخطي باستعمال صيغة الميل والمقطع"],"p":100},{"name":"كتابة المعادلات بصيغة الميل ونقطة.","k":["معرفة صيغة الميل ونقطة"],"a":["كتابة معادلة مستقيم بصيغة الميل ونقطة وتمثيلها بيانيا","كتابة معادلة مستقيم بالصورة القياسية","كتابة معادلة المستقيم بصيغة الميل ونقطة بالصورة القياسية"],"r":["حل مسألة من واقع الحياة باستخدام المعادلات بصيغة الميل ونقطة"],"p":108},{"name":"المستقيمات المتوازية والمستقيمات المتعامدة","k":["معرفة ( المستقيمان المتوازيان - المستقيمان المتعامدان)"],"a":["كتابة معادلة مستقيم مار بنقطة معطاة ويوازي مستقيماً معلوماً","إيجاد ميلا المستقيمين المتعامدين","كتابة معادلة مستقيم مار بنقطة معطاة ويعامد مستقيم معلوم معادلته","تحديد المستقيمات المتوازية والمستقيمات المتعامدة"],"r":["تفسير مسألة من واقع الحياة وحلها باستخدام مفهوم الميل للمستقيمات المتوازية والمتعامدة"],"p":113}]},{"n":4,"title":"المتباينات الخطية","periods":15.0,"cnt":[8,16,5],"lessons":[{"name":"حل المتباينات بالجمع أو بالطرح","k":["معرفة الصيغة المميزة للمجموعة","معرفة خاصية الجمع للمتباينات.","معرفة خاصية الطرح للمتباينات"],"a":["حل متباينة باستخدام الجمع","حل متباينة باستخدام الطرح","حل متباينة تحوي متغير في طرفيها باستخدام الجمع أو الطرح"],"r":["تفسير المسألة من واقع الحياة بالمتباينات وحلها"],"p":124},{"name":"حل المتباينات بالضرب أو بالقسمة","k":["معرفة خاصية الضرب للمتباينات","معرفة خاصية القسمة للمتباينات"],"a":["حل متباينة باستخدام الضرب","حل متباينة باستخدام القسمة","كتابة المتباينات وحلها"],"r":["تفسير المسائل من واقع الحياة بالمتباينات وحلها بالضرب أو القسمة"],"p":130},{"name":"حل المتباينات المتعددة الخطوات","k":[],"a":["حل المتباينة المتعددة الخطوات","حل متباينة تتضمن معاملا سالبا","كتابة المتباينات وحلها","تمييز المتباينات بحلولها المجموعة الخالية ، ومجموعة الاعداد الحقيقية)","حل متباينات تتضمن خاصية التوزيع"],"r":["يفسر مسائل من واقع الحياة بالمتباينات المتعددة الخطوات وحلها"],"p":135},{"name":"حل المتباينات المركبة","k":["معرفة (المتباينات المركبة – الاتحاد – التقاطع )"],"a":["حل المتباينة المركبة وتمثيل التقاطع","كتابة متباينة مركبة وتمثيلها بيانيا","حل المتباينة وتمثيل الاتحاد"],"r":["تفسير مسألة من واقع الحياة بالمتباينات المركبة وحلها وتمثيلها"],"p":143},{"name":"حل المتباينات التي تتضمن القيمة المطلقة","k":["معرفة متباينات القيمة المطلقة <","معرفة متباينات القيمة المططلقة>"],"a":["حل متباينات القيمة المطلقة <","حل متباينات القيمة المطلقة >"],"r":["تفسير مسائل من واقع الحياة بمتباينات القيمة المطلقة وحلها وتمثيلها"],"p":148}]},{"n":5,"title":"أنظمة المعادلات الخطية","periods":22.0,"cnt":[5,12,6],"lessons":[{"name":"حل نظام من معادلتين خطيتين بيانيًا","k":["تحديد عدد الحلول الممكنة لنظام مكون من معادلتين خطيتين من التمثيل البياني","تحديد ما إذا كان النظام متسق أو غير متسق و مستقل أو غير مستقل من التمثيل البياني له","تحديد ما إذا كان النظام متسق أو غير متسق و مستقل أو غير مستقل من معادلتي النظام"],"a":["حل نظام مكون من معادلتين خطيتين بيانيا","تحديد عدد الحلول الممكنة لنظام مكون من معادلتين بدلالة عدد النقاط التي تمثل حل له"],"r":["حل مسائل من واقع الحياة تتضمن نظاما من معادلتين بيانيا"],"p":158},{"name":"حل نظام من معادلتين خطيتين بالتعويض","k":[],"a":["حل نظام مكون من معادلتين خطيتين بالتعويض","حل مسائل لفظية تتضمن نظاما من معادلتين خطيتين بالتعويض"],"r":["حل مسائل من واقع الحياة تتضمن نظاما من معادلتين بإستعمال التعويض مع تفسير الحل"],"p":166},{"name":"حل نظام معادلتين خطيتين بالحذف باستعمال الجمع أو الطرح","k":[],"a":["كتابة نظام مكون من معادلتين وحلة باستعمال طريقة الحل بالحذف بالطرح","كتابة نظام مكون من معادلتين وحلة باستعمال طريقة الحل بالحذف بالجمع","حل نظام مكون من معادلتين خطيتين بإستعمال طريقة الحذف بالجمع","حل نظام مكون من معادلتين خطيتين بإستعمال طريقة الحذف بالطرح"],"r":["حل مسائل من واقع الحياة تتضمن نظاما من معادلتين خطيتين بإستعمال الحذف بالجمع مع تفسير الحل","حل مسائل من واقع الحياة تتضمن نظاما من معادلتين خطيتين بإستعمال الحذف بالطرح مع تفسير الحل"],"p":171},{"name":"حل نظام من معادلتين خطيتين بالحذف باستعمال الضرب","k":[],"a":["حل مسائل لفظية تتضمن نظاما من معادلتين خطيتين بالحذف بإستعمال الضرب","حل نظام من معادلتين خطيتين بالحذف باستعمال الضرب"],"r":["حل مسائل من واقع الحياة تتضمن أنظمة من معادلتين خطيتين بالحذف بإستعمال الضرب مع تفسير الحل"],"p":179},{"name":"تطبيقات على النظام المكون من معادلتين خطيتين","k":["تحديد الطريقة الأفضل لحل نظام من معادلتين","تمييز نظم المعادلات الخطية"],"a":["حل نظام معادلتين خطيتين بالطريقة الأفضل","تفسير حل نظام معادلتين خطيتين في سياق الموقف الذي تعرضه المسألة"],"r":["حل مسائل تطبيقية على أنظمة المعادلات الخطية"],"p":185}]}],"grade":"الثالث المتوسط","term":"1","book":"كتاب الرياضيات للصف الثالث المتوسط – الجزء الأول (طبعة ١٤٤٨هـ)"},"m3-2":{"items":40,"chapters":[{"n":6,"title":"كثيرات الحدود","periods":25.0,"cnt":[7,14,7],"lessons":[{"name":"ضرب وحيدات الحد","k":["تمييز وحيدات الحد."],"a":["تبسيط عبارات تتضمن ضرب وحيدات حد."],"r":["استعمال تبسيط وحيدات الحد في إيجاد مساحة أو حجم شكل معطى."]},{"name":"قسمة وحيدات الحد","k":[],"a":["تبسيط عبارات تتضمن قسمة وحيدات حد.","تبسيط عبارة تحتوي أس سالب.","تبسيط عبارة تحوي أس صفري."],"r":["قسمة وحيدات الحد في مسألة من واقع الحياة.","حل مسألة من واقع الحياة باستعمال رتبة المقدار."]},{"name":"كثيرات الحدود","k":["تميز كثيرات الحدود.","إيجاد درجة كثيرة الحدود.","تحديد المعامل الرئيس في كثيرة الحدود.","كتابة كثيرة حدود بالصورة القياسية."],"a":["استعمال كثيرات الحدود في حل مسألة من واقع الحياة ."],"r":[]},{"name":"جمع كثيرات الحدود وطرحها","k":["إيجاد ناتج جمع كثيرات الحدود.","إيجاد ناتج طرح كثيرات الحدود."],"a":["جمع كثيرات الحدود لحل مسألة من واقع الحياة.","طرح كثيرات الحدود لحل مسألة من واقع الحياة."],"r":[]},{"name":"ضرب وحيدة حد في كثيرة حدود","k":[],"a":["تبسيط عبارة باستعمال ضرب وحيدة حد في كثيرة حدود.","حل معادلات تتضمن ضرب وحيدة حد في كثيرة حدود في أبسط صورة."],"r":["حل مسألة من واقع الحياة باستعمال ضرب وحيدة حد في كثيرة حدود."]},{"name":"ضرب كثيرات الحدود","k":[],"a":["إيجاد ناتج ضرب كثيرات الحدود باستعمال خاصية التوزيع.","إيجاد ناتج ضرب ثنائيتي حد باستعمال طريقة التوزيع بالترتيب."],"r":["حل مسألة من واقع الحياة باستعمال ضرب كثيرات الحدود."]},{"name":"حالات خاصة من ضرب كثيرات الحدود","k":[],"a":["إيجاد مربع مجموع حدين.","إيجاد مربع الفرق بين حدين.","إيجاد ناتج ضرب مجموع حدين في الفرق بينهما."],"r":["استعمال الحالات الخاصة من ضرب كثيرات الحدود في حل مسألة من واقع الحياة.","استعمال الحالات الخاصة من ضرب كثيرات الحدود في إيجاد مساحة شكل."]}]},{"n":7,"title":"التحليل والمعادلات التربيعية","periods":17.0,"cnt":[3,13,6],"lessons":[{"name":"تحليل وحيدات الحد","k":["تحليل وحيدة الحد تحليلًا تامًّا.","إيجاد القاسم المشترك الأكبر لمجموعة أعداد في مسألة من واقع الحياة."],"a":["إيجاد القاسم المشترك الأكبر لمجموعة من وحيدات الحد."],"r":[]},{"name":"استعمال خاصية التوزيع","k":[],"a":["تحليل كثيرة حدود باستعمال خاصية التوزيع.","تحليل كثيرة حدود بتجميع الحدود.","حل المعادلة باستعمال خاصية الضرب الصفري."],"r":["حل مسألة من واقع الحياة تتضمن تطبيقات على تحليل كثيرات الحدود."]},{"name":"المعادلات التربيعية: س٢ + ب س + جـ =٠","k":[],"a":["تحليل ثلاثية حدود على الصورة: س٢ + ب س + جـ","حل معادلات على الصورة: س٢ + ب س + جـ = ٠"],"r":["تحليل معادلة على الصورة: س٢ + ب س + جـ=٠ لحل مسآلة من واقع الحياة.","استعمال تحليل كثيرات الحدود لحل مسألة تتضمن تطبيقات على مساحة الأشكال."]},{"name":"المعادلات التربيعية: أ س٢ + ب س + جـ = ٠","k":[],"a":["تحليل ثلاثية حدود على الصورة: أ س٢+ ب س + جـ","حل معادلات على الصورة: أ س٢ + ب س + جـ = ٠ بالتحليل إلى العوامل.","تمييز كثيرة الحدود الأولية."],"r":["تحليل معادلة على الصورة: أس٢ + ب س + جـ=٠ لحل مسآلة من واقع الحياة."]},{"name":"المعادلات التربيعية: الفرق بين مربعين","k":[],"a":["تحليل ثنائية حد على صورة فرق بين مربعين تحليلًا تامًا.","حل معادلات باستعمال الفرق بين مربعين."],"r":["تحليل ثنائية حد على صورة فرق بين مربعين في حل مسألة من واقع الحياة."]},{"name":"المعادلات التربيعية: المربعات الكاملة","k":["تمييز ثلاثية الحدود التي تشكل مربعًا كاملًا."],"a":["تحليل ثلاثية الحدود التي على صورة مربع كامل.","حل معادلات تتضمن مربعات كاملة."],"r":["حل المعادلات التربيعية في مسألة من واقع الحياة."]}]},{"n":8,"title":"الدوال التربيعية","periods":15.0,"cnt":[5,9,4],"lessons":[{"name":"تمثيل الدوال التربيعية بيانيًّا","k":["تحديد مجال الدالة التربيعية.","تحديد مدى الدالة التربيعية."],"a":["تحديد خصائص القطع المكافئ من التمثيل البياني.","تحديد خصائص القطع المكافئ من قاعدة الدالة.","تمثيل الدوال التربيعية بيانيًّا.","إيجاد القيمة العظمى والصغرى للدالة التربيعية."],"r":["حل مسألة من واقع الحياة تتضمن تطبيقات على تمثيل الدوال التربيعية."]},{"name":"حل المعادلات التربيعية بيانيًّا","k":["إيجاد عدد حلول المعادلات التربيعية من التمثيل البياني."],"a":["حل المعادلات التربيعية بيانيًّا.","تقدير حلول المعادلات التربيعية من تمثيلها البياني."],"r":["حل مسألة من واقع الحياة باستعمال تقدير الجذور."]},{"name":"حل المعادلات التربيعية بإكمال المربع","k":["إيجاد قيمة جـ التي تجعل ثلاثية الحدود: س٢ + ب س+ جـ مربعًا كاملًا."],"a":["حل المعادلات التربيعية بإكمال المربع."],"r":["حل مسألة من واقع الحياة باستعمال إكمال المربع."]},{"name":"حل المعادلات التربيعية باستعمال القانون العام","k":["إيجاد قيمة المميز لمعادلة تربيعية"],"a":["حل المعادلات التربيعية باستعمال القانون العام.","إيجاد عدد الحلول الحقيقية للمعادلة التربيعية."],"r":["حل مسألة من واقع الحياة باستعمال القانون العام."]}]},{"n":9,"title":"المعادلات الجذرية والمثلثات","periods":26.0,"cnt":[7,15,6],"lessons":[{"name":"تبسيط العبارات الجذرية","k":["تحديد المرافق لثنائية حد تتضمن جذورًا."],"a":["تبسيط العبارات الجذرية باستعمال استعمال خاصية ضرب الجذور التربيعية.","تبسيط العبارات الجذرية باستعمال استعمال خاصية قسمة الجذور التربيعية.","إنطاق المقام باستعمال المرافق."],"r":["استعمال تبسيط الجذور التربيعية في مسألة من واقع الحياة."]},{"name":"العمليات على العبارات الجذرية","k":["جمع عبارات ماتحت جذورها متشابه.","طرح عبارات ماتحت جذورها متشابه."],"a":["جمع عبارات ماتحت جذورها غير متشابه.","طرح عبارات ماتحت جذورها غير متشابه.","ضرب العبارات الجذرية."],"r":["استعمال العمليات على العبارات الجبرية لحل مسألة تتضمن تطبيقات على مساحة الأشكال."]},{"name":"المعادلات الجذرية","k":[],"a":["حل المعادلة الجذرية.","حل معادلة جذرية تتضمن حلولًا دخيلة."],"r":["حل المعادلة الجذرية في مسألة من واقع الحياة."]},{"name":"نظرية فيثاغورس","k":["إيجاد طول ضلع في مثلث قائم الزاوية.","تحديد ما إذا كان المثلث قائم الزاوية أم لا."],"a":["حل مسألة من واقع الحياة باستعمال نظرية فيثاغورس."],"r":[]},{"name":"المسافة بين نقطتين","k":[],"a":["إيجاد المسافة بين نقطتين.","إيجاد الإحداثي المجهول بمعلومية المسافة بين نقطتين."],"r":["استعمال قانون المسافة بين نقطتين في حل مسألة من واقع الحياة."]},{"name":"المثلثات المتشابهة","k":[],"a":["تحديد ما إذا كان مثلثان متشابهين أم لا .","إيجاد قياسات العناصر المجهولة في مثلثين متشابهين."],"r":["استعمال المثلثات المتشابهة في حل مسألة من واقع الحياة."]},{"name":"النسب المثلثية","k":["إيجاد قيم النسب المثلثية للزوايا.","إيجاد قيم النسب المثلثية للزوايا باستعمال الحاسبة."],"a":["حل المثلثات باستعمال النسب المثلثية.","إيجاد قياس الزاوية المجهولة في مثلث قائم الزاوية."],"r":["إيجاد طول ضلع مجهول في حل مسألة من واقع الحياة."]}]},{"n":10,"title":"الإحصاء والاحتمال","periods":15.0,"cnt":[8,9,3],"lessons":[{"name":"تصميم دراسة مسحية","k":["تحديد العينة والمجتمع للبيانات.","تحديد تحيز العينة."],"a":["تصنيف أسلوب جمع البيانات.","تصنيف العينات العشوائية."],"r":[]},{"name":"تحليل نتائج الدراسة المسحية","k":["إيجاد مقاييس النزعة المركزية."],"a":[],"r":["تقويم نتائج دراسة مسحية.","تحديد مقاييس النزعة المركزية الأنسب لتمثيل البيانات."]},{"name":"احصائيات العينة ومعالم المجتمع","k":["تعيين إحصائيات العينة ومعالم المجتمع."],"a":["إيجاد الانحراف المتوسط لمجموعة من البيانات.","إيجاد التباين لمجموعة من البيانات.","إيجاد الانحراف المعياري لمجموعة من البيانات."],"r":[]},{"name":"التباديل والتوافيق","k":["إيجاد قيمة التباديل المعطاة.","إيجاد قيمة التوافيق المعطاة."],"a":["استعمال قانون التباديل لحل مسألة من واقع الحياة.","استعمال قانون التوافيق لحل مسألة من واقع الحياة."],"r":["إيجاد الاحتمال لمسألة من واقع الحياة باستعمال التباديل."]},{"name":"احتمالات الحوادث المركبة","k":["تحديد ما إذا كانت حادثتين ( مستقلتين- غير مستقلتين)","تحديد ما إذا كانت حادثتين ( متنافيتين- غير متنافيتين)"],"a":["إيجاد احتمال حادثتين (مستقلتين أو غير مستقلتين).","إيجاد احتمال حادثتين (متنافيتين أوغير متنافيتين)."],"r":[]}]}],"grade":"الثالث المتوسط","term":"2"}};
+const MGRADES = [['g4', 'الرابع الابتدائي'], ['g5', 'الخامس الابتدائي'], ['g6', 'السادس الابتدائي'], ['m1', 'الأول المتوسط'], ['m2', 'الثاني المتوسط'], ['m3', 'الثالث المتوسط']];
+const MLV = ['م', 'ت', 'س']; const MLVN = { 'م': 'معرفة', 'ت': 'تطبيق', 'س': 'استدلال' };
+const MLET = ['أ', 'ب', 'جـ', 'د'];
+const ARD = (n) => String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
+const isMathF = (f) => !!f && f.subj === 'math';
+const isMath = () => (EXAM ? isMathF(EXAM) : prefs().subject === 'math');
+const mspecKey = (p) => `${p.mgrade}-${p.term}`;
+const mspecOf = (p) => MATH_SPECS[mspecKey(p)] || null;
+const MSECS = ['mcq', 'tf', 'essay', 'review'];
+const MSEC_META = {
+  mcq: ['اختيار من متعدد', 'السؤال الأول', 'fa-list-check'],
+  tf: ['صح وخطأ', 'السؤال الثاني', 'fa-check-double'],
+  essay: ['الأسئلة المقالية', 'السؤال الثالث', 'fa-pen-to-square'],
+  review: ['مراجعة الإجابات', 'حلّ كل فقرة مرة ثانية والتحقق منها', 'fa-magnifying-glass'],
+};
+
+// ----- الإعداد -----
+function subjUI() {
+  const m = prefs().subject === 'math';
+  $('gradeF').hidden = m; $('mgradeF').hidden = !m;
+  $('unitsWrap').hidden = m; $('mchsWrap').hidden = !m;
+  $('tmplWrap').hidden = m; $('gcountBox').hidden = m || prefs().tmpl !== 'auto'; $('cmodeBox').hidden = m || prefs().tmpl === 'auto';
+  $('mathHint').hidden = !m;
+  if (m) renderChapters(); else tmplUI();
+  document.querySelectorAll('#directorate,#school,#teacher,#time').forEach((x) => { x.dir = 'auto'; x.classList.toggle('en', !m); });
+  $('directorate').placeholder = m ? 'الإدارة العامة للتعليم بـ …' : 'Education Directorate in ...';
+  $('school').placeholder = m ? 'مدرسة …' : '... Intermediate School';
+  $('teacher').placeholder = m ? 'اسم المعلم' : "Teacher's name";
+}
+function renderChapters() {
+  const p = prefs(); const s = mspecOf(p); const box = $('mchs');
+  if (!s) { box.innerHTML = '<div class="muted">لا يتوفر جدول مواصفات لهذا الصف والفصل بعد.</div>'; $('mCount').textContent = ''; return; }
+  box.innerHTML = s.chapters.map((c) => `<label title="${esc(c.title)}"><input type="checkbox" checked value="${c.n}"><span class="un">الفصل ${ARD(c.n)}</span><bdi>${esc(c.title)}</bdi><small class="muted">${ARD(c.periods)} حصة · ${ARD(c.lessons.length)} دروس</small></label>`).join('');
+  mchsUI();
+}
+function mchsUI() {
+  const all = [...document.querySelectorAll('#mchs input')]; const on = all.filter((x) => x.checked).length;
+  $('mCount').textContent = all.length ? `(${ARD(on)} من ${ARD(all.length)})` : '';
+  $('mAll').textContent = on === all.length ? 'إلغاء الكل' : 'تحديد الكل';
+}
+function selectedChapters() {
+  const s = mspecOf(prefs()); if (!s) return [];
+  const ids = [...document.querySelectorAll('#mchs input:checked')].map((i) => +i.value);
+  return s.chapters.filter((c) => ids.includes(c.n));
+}
+
+// ----- المخطط: توزيع الدرجات على الفصول والمستويات ثم على الدروس والأهداف -----
+function mathCells(chs, total = 40) {
+  const per = chs.reduce((a, c) => a + c.periods, 0) || 1; const cells = [];
+  // أكبر باقٍ على مرحلتين: درجات كل فصل أولاً (المجموع ٤٠)، ثم مستوياته داخله (المجموع درجة الفصل)
+  const lr = (arr, tot) => { arr.forEach((x) => { x.v = Math.floor(x.q + 1e-9); }); const rest = tot - arr.reduce((a, x) => a + x.v, 0); [...arr].sort((a, b) => b.q - b.v - (a.q - a.v)).slice(0, Math.max(0, rest)).forEach((x) => { x.v++; }); };
+  const chT = chs.map((c) => ({ q: (total * c.periods) / per })); lr(chT, total);
+  chs.forEach((c, ci) => {
+    const s = c.cnt[0] + c.cnt[1] + c.cnt[2] || 1;
+    const row = MLV.map((lv, j) => ({ ci, lv, req: (chT[ci].q * c.cnt[j]) / s, q: (chT[ci].v * c.cnt[j]) / s }));
+    lr(row, chT[ci].v); cells.push(...row);
+  });
+  cells.forEach((x) => { x.act = x.v; });
+  return cells;
+}
+function mathBlueprint(chs, p) {
+  const cells = mathCells(chs);
+  // الأسئلة المقالية (١٠ درجات: ٣ + ٣ + ٢ + ٢) من خلايا التطبيق ثم الاستدلال، كل فقرة من فصل مختلف ما أمكن
+  const ess = []; const usedCh = new Set();
+  for (const m0 of [3, 3, 2, 2]) {
+    let m = m0;
+    const pick = (lvs, uniq) => cells.filter((x) => lvs.includes(x.lv) && x.v >= m && (!uniq || !usedCh.has(x.ci))).sort((a, b) => b.v - a.v)[0];
+    let c = pick(['ت'], true) || pick(['س'], true) || pick(['ت', 'س'], false) || pick(MLV, false);
+    if (!c) { c = [...cells].sort((a, b) => b.v - a.v)[0]; if (!c || !c.v) break; m = c.v; }
+    c.v -= m; usedCh.add(c.ci); ess.push({ ci: c.ci, lv: c.lv, mk: m });
+  }
+  const toks = []; cells.forEach((x) => { for (let i = 0; i < x.v; i++) toks.push({ ci: x.ci, lv: x.lv }); });
+  // صح وخطأ (١٠): المعرفة أولاً موزعة على الفصول، ثم التطبيق
+  const tf = [];
+  for (const lv of MLV) {
+    let added = true;
+    while (tf.length < 10 && added) {
+      added = false;
+      for (let ci = 0; ci < chs.length && tf.length < 10; ci++) { const t = toks.find((x) => !x.used && x.ci === ci && x.lv === lv); if (t) { t.used = true; tf.push(t); added = true; } }
+    }
+  }
+  const mcq = toks.filter((t) => !t.used);
+  // الأهداف: لكل فصل ومستوى قائمة بالتناوب على الدروس (شمول الدروس قبل التكرار)
+  const queues = {};
+  const queue = (ci, lv) => {
+    const k = ci + lv; if (queues[k] && queues[k].length) return queues[k];
+    const key = { 'م': 'k', 'ت': 'a', 'س': 'r' }[lv]; const ls = chs[ci].lessons.map((l, li) => shuffle(l[key].map((o) => ({ li, obj: o }))));
+    const out = []; let more = true; while (more) { more = false; for (const L of shuffle(ls)) { const x = L.shift(); if (x) { out.push(x); more = true; } } }
+    queues[k] = out; return out;
+  };
+  const objFor = (ci, lv) => {
+    for (const l2 of [lv, 'ت', 'م', 'س']) { const q = queue(ci, l2); if (q.length) return { ...q.shift(), lv2: l2 }; }
+    return { li: 0, obj: chs[ci].title, lv2: lv };
+  };
+  const mk = (kind) => (t) => {
+    const c = chs[t.ci]; const o = objFor(t.ci, t.lv); const L = c.lessons[o.li] || {};
+    return { kind, ci: t.ci, ch: c.n, chTitle: c.title, lesson: L.name || '', li: o.li, page: L.p || 0, lv: t.lv, obj: o.obj, mk: t.mk || 1 };
+  };
+  const byPos = (a, b) => a.ch - b.ch || a.li - b.li;
+  return {
+    cells: cells.map((x) => ({ ch: chs[x.ci].n, lv: x.lv, req: x.req, act: x.act })),
+    mcq: mcq.map(mk('mcq')).sort(byPos), tf: tf.map(mk('tf')).sort(byPos), essay: ess.map(mk('essay')).sort(byPos),
+  };
+}
+
+// ----- النصوص الرياضية -----
+// تطبيع: أرقام هندية، فاصلة عشرية «٫»، ×، ومسافات
+function mfix(s) {
+  return String(s ?? '').replace(/[۰-۹]/g, (d) => '٠١٢٣٤٥٦٧٨٩'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)]).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d])
+    .replace(/([٠-٩])\.([٠-٩])/g, '$1٫$2').replace(/\*/g, '×').replace(/\\times/g, '×').replace(/\\div/g, '÷').replace(/\\le(q)?/g, '≤').replace(/\\ge(q)?/g, '≥').replace(/\\neq/g, '≠').replace(/\\sqrt/g, '√').replace(/\\pi/g, 'π')
+    .replace(/\\\(|\\\)|\$/g, '').replace(/\s+/g, ' ').trim();
+}
+// إلى HTML: الكسر \frac{a}{b} عمودي، الأس ^، والسالب يُكتب يسار العدد كما في الكتاب، والطرح «−»
+function mHTML(s) {
+  let h = esc(mfix(s));
+  for (let i = 0; i < 3; i++) h = h.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, '<span class="fr"><span>$1</span><span>$2</span></span>');
+  h = h.replace(/\^\{([^{}]*)\}/g, '<sup>$1</sup>').replace(/\^([٠-٩a-zA-Zس-ي]+)/g, '<sup>$1</sup>');
+  h = h.replace(/(^|[\s(=<>≤≥،{[|×÷+;:]|&lt;|&gt;)-(<span class="fr">.*?<\/span><\/span>)/g, '$1<span class="ng">-$2</span>');
+  h = h.replace(/(^|[\s(=،{[|×÷+;:]|&lt;|&gt;|≤|≥)-([٠-٩٫]+)/g, '$1<span class="ng">-$2</span>');
+  return h.replace(/ - /g, ' − ');
+}
+const mText = (s) => mfix(s).replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2').replace(/\^\{?([^{}\s]+)\}?/g, '^$1');
+
+// ----- التوليد -----
+async function mathCall(section, items, ctx, p) {
+  const s = MATH_SPECS[mspecKey(p)];
+  const body = { section, grade: s ? s.grade : '', term: p.term === '2' ? 'الثاني' : 'الأول', difficulty: p.diff, items, ctx: { names: [...pick(['محمد', 'خالد', 'فهد', 'سعد', 'عبدالله', 'فيصل', 'تركي', 'ناصر', 'سلمان', 'يوسف'], 3), ...pick(['سارة', 'نورة', 'ريم', 'هند', 'لمى', 'جود', 'مها', 'أمل'], 3)], ...(ctx || {}) } };
+  const { data, error } = await sb.functions.invoke('exam-generate', { body });
+  if (error) {
+    let code = ''; try { const j = await error.context.json(); code = j.code || j.detail || ''; } catch {}
+    throw new Error(code === 'forbidden' ? 'غير مسموح' : code === 'auth' ? 'انتهت الجلسة — سجّل الدخول من جديد' : 'تعذّر الاتصال');
+  }
+  if (!data || data.failed) throw new Error('تعذّر التوليد، حاول مرة أخرى');
+  return data;
+}
+const mspecOut = (it) => ({ kind: it.kind, ch: it.ch, chTitle: it.chTitle, lesson: it.lesson, obj: it.obj, lv: it.lv, mk: it.mk });
+const mSame = (a, b) => mfix(a).replace(/\s+/g, '') === mfix(b).replace(/\s+/g, '');
+function mNorm(raw, spec) {
+  const base = { ...spec, warn: false, why: '' };
+  if (spec.kind === 'mcq') {
+    const options = (Array.isArray(raw?.options) ? raw.options : []).map(mfix).filter(Boolean).slice(0, 4);
+    const ans = options.findIndex((o) => mSame(o, raw?.answer));
+    const dup = new Set(options.map((o) => o.replace(/\s+/g, ''))).size !== options.length;
+    while (options.length < 4) options.push('');
+    return { ...base, q: mfix(raw?.q || raw?.stem), options, ans: Math.max(0, ans), warn: ans < 0 || dup || !raw?.q, why: ans < 0 ? 'لم تُحدَّد الإجابة الصحيحة' : dup ? 'خياران متطابقان' : '' };
+  }
+  if (spec.kind === 'tf') {
+    const a = raw?.answer === true || String(raw?.answer).toLowerCase() === 'true' || raw?.answer === 'صح';
+    return { ...base, s: mfix(raw?.s), ans: a, fix: mfix(raw?.fix), warn: !raw?.s };
+  }
+  const ex = (Array.isArray(raw?.ex) ? raw.ex : raw?.ex ? [raw.ex] : []).map(mfix).filter(Boolean).slice(0, 3);
+  let steps = (Array.isArray(raw?.steps) ? raw.steps : []).map((x) => ({ t: mfix(x?.t || x), mk: Math.max(0, +x?.mk || 0) })).filter((x) => x.t).slice(0, 6);
+  const sum = steps.reduce((a, x) => a + x.mk, 0);
+  if (steps.length && Math.abs(sum - spec.mk) > 0.01) { // نضبط الدرجات لتساوي درجة الفقرة
+    const each = Math.floor((spec.mk / steps.length) * 2) / 2; steps.forEach((x) => { x.mk = each; }); steps[steps.length - 1].mk = spec.mk - each * (steps.length - 1);
+  }
+  return { ...base, q: mfix(raw?.q), ex, steps, answer: mfix(raw?.answer), nl: !!raw?.numberline, warn: !raw?.q || !steps.length };
+}
+// موضع الإجابة الصحيحة متوازن بين أ ب جـ د
+function mBalance(list) {
+  const pos = shuffle(Array.from({ length: list.length }, (_, i) => i % 4));
+  list.forEach((q, i) => { if (q.warn || !q.options[q.ans]) return; const t = pos[i]; [q.options[q.ans], q.options[t]] = [q.options[t], q.options[q.ans]]; q.ans = t; });
+}
+const mReviewLine = (it) => (it.kind === 'mcq' ? `[اختيار من متعدد] ${mText(it.q)} | الخيارات: ${it.options.map((o, j) => `${MLET[j]}) ${mText(o)}`).join(' ، ')} | الإجابة المعلَّمة: ${mText(it.options[it.ans])}`
+  : it.kind === 'tf' ? `[صح أم خطأ] ${mText(it.s)} | الحكم المعلَّم: ${it.ans ? 'صح (true)' : 'خطأ (false)'}`
+    : `[مقالي] ${mText(it.q)} ${it.ex.map(mText).join(' ؛ ')} | الناتج المعلَّم: ${mText(it.answer)}`) + ` | الدرس: ${it.lesson} | الهدف: ${it.obj}`;
+// المراجعة الثانية: كل فقرة تُحل من جديد؛ الخاطئ يُصحَّح إن أمكن أو يُعاد توليده مرة ثم يُراجع، وما بقي يُعلَّم للمعلم
+async function mathReview(list, p) {
+  const ask = async (idx) => {
+    if (!idx.length) return [];
+    const out = [];
+    for (let i = 0; i < idx.length; i += 12) {
+      const part = idx.slice(i, i + 12);
+      try {
+        const r = await mathCall('math_review', part.map((k) => mspecOut(list[k])), { review: part.map((k) => mReviewLine(list[k])), grade: (mspecOf(p) || {}).grade }, p);
+        part.forEach((k, j) => out.push({ k, v: (r.items || [])[j] || { ok: true } }));
+      } catch { part.forEach((k) => out.push({ k, v: { ok: true, skip: true } })); }
+    }
+    return out;
+  };
+  const apply = (res) => {
+    const bad = [];
+    res.forEach(({ k, v }) => {
+      if (v.ok) return; const it = list[k];
+      const fix = mfix(v.fix);
+      if (fix && it.kind === 'mcq') { const j = it.options.findIndex((o) => mSame(o, fix)); if (j >= 0) { it.ans = j; it.fixed = true; return; } }
+      if (fix && it.kind === 'tf' && /^(true|false|صح|خطأ)$/i.test(fix)) { it.ans = /true|صح/i.test(fix); it.fixed = true; return; }
+      bad.push({ k, why: mfix(v.why) });
+    });
+    return bad;
+  };
+  let bad = apply(await ask(list.map((_, i) => i)));
+  if (bad.length) { // إعادة توليد الفقرات المرفوضة مرة واحدة ثم مراجعتها
+    const specs = bad.map(({ k }) => mspecOut(list[k]));
+    try {
+      const r = await mathCall('math', specs, { avoid: bad.map(({ k }) => mText(list[k].q || list[k].s)) }, p);
+      bad.forEach(({ k }, j) => { const old = list[k]; list[k] = { ...mNorm((r.items || [])[j], { ...old, warn: false }), ci: old.ci, li: old.li, page: old.page }; });
+      bad = apply(await ask(bad.map((b) => b.k))).map((b) => b);
+    } catch { /* نُبقي الأصل */ }
+    bad.forEach(({ k, why }) => { list[k].warn = true; list[k].why = 'راجِع هذه الفقرة: ' + (why || 'لم تجتز المراجعة الثانية'); });
+  }
+  return list;
+}
+async function mathRun(ex, bp, avoid, onProg) {
+  const p = ex.meta; const st = { mcq: '', tf: '', essay: '', review: '' }; onProg && onProg(st);
+  const av = (k) => ({ avoid: [...((avoid && avoid[k]) || []), ...mRecent(p)].slice(0, 40) });
+  const gen = async (kind, specs) => {
+    const out = []; const chunks = []; for (let i = 0; i < specs.length; i += 10) chunks.push(specs.slice(i, i + 10));
+    const rs = await Promise.all(chunks.map(async (c) => { for (let a = 0; a < 2; a++) { try { return await mathCall('math', c.map(mspecOut), av(kind), p); } catch (e) { if (a) throw e; } } }));
+    rs.forEach((r, ci) => chunks[ci].forEach((s, j) => out.push(mNorm((r.items || [])[j], s))));
+    return out;
+  };
+  const errors = [];
+  await Promise.all(['mcq', 'tf', 'essay'].map(async (k) => {
+    try { ex[k] = await gen(k, bp[k]); st[k] = 'ok'; } catch (e) { st[k] = 'err'; errors.push(e.message); ex[k] = []; }
+    onProg && onProg(st);
+  }));
+  st.review = 'rev'; onProg && onProg(st);
+  const all = [...ex.mcq, ...ex.tf, ...ex.essay];
+  if (all.length) {
+    await mathReview(all, p);
+    ex.mcq = all.filter((x) => x.kind === 'mcq'); ex.tf = all.filter((x) => x.kind === 'tf'); ex.essay = all.filter((x) => x.kind === 'essay');
+  }
+  mBalance(ex.mcq);
+  st.review = 'ok'; onProg && onProg(st);
+  return errors;
+}
+function mathSub(p, chs) { const s = mspecOf(p); return `رياضيات · ${s ? s.grade : ''} · الفصل ${p.term === '2' ? 'الثاني' : 'الأول'} · ${ARD(chs.length)} فصول (${chs.map((c) => ARD(c.n)).join('، ')}) · وفق جدول المواصفات`; }
+async function mathGenerate() {
+  const p = prefs(); const chs = selectedChapters();
+  if (!mspecOf(p)) { toast('لا يتوفر جدول مواصفات لهذا الصف والفصل'); return; }
+  if (!chs.length) { toast('اختر فصلاً واحداً على الأقل'); return; }
+  savePrefs();
+  const bp = mathBlueprint(chs, p);
+  const ex = { v: 1, subj: 'math', meta: { ...p, tmpl: 'math', chs: chs.map((c) => c.n), form: 'A' }, mcq: [], tf: [], essay: [], bp };
+  $('genBtn').disabled = true;
+  gvOpen(p.twoForms ? FORM_NAME : [null], mathSub(p, chs), MSECS);
+  await mathRun(ex, bp, null, (st) => gvProg(0, st));
+  FORMS = [ex]; CUR = 0; EXAM = ex;
+  saveDraft(); renderEditor(); formsUI(); showStep(2);
+  if (p.twoForms) await mathGenerateAlt(true);
+  FORMS.forEach(mHistPush);
+  $('genBtn').disabled = false;
+  gvFinish();
+}
+async function mathGenerateAlt(auto) {
+  const A = FORMS[0]; if (!A) return;
+  if (!auto && FORMS[1] && !confirm('سيُستبدل الاختبار البديل الحالي بأسئلة جديدة. متابعة؟')) return;
+  const p = { ...A.meta, form: 'B' }; const s = MATH_SPECS[mspecKey(p)];
+  const chs = s.chapters.filter((c) => p.chs.includes(c.n));
+  const bp = mathBlueprint(chs, p);
+  const avoid = { mcq: A.mcq.map((x) => mText(x.q)), tf: A.tf.map((x) => mText(x.s)), essay: A.essay.map((x) => mText(x.q + ' ' + x.ex.join(' '))) };
+  const ex = { v: 1, subj: 'math', meta: p, mcq: [], tf: [], essay: [], bp };
+  const btn = $('altBtn'); btn.disabled = true;
+  if (!auto) gvOpen([FORM_NAME[1]], mathSub(p, chs), MSECS);
+  await mathRun(ex, bp, avoid, (st) => gvProg(auto ? 1 : 0, st));
+  btn.disabled = false;
+  FORMS[1] = ex; FORMS.forEach((f, i) => { f.meta.form = 'AB'[i]; });
+  setForm(auto ? 0 : 1);
+  if (!auto) { mHistPush(ex); gvFinish(); }
+}
+// تنويع: فقرات آخر الاختبارات لنفس الصف والفصل لا تتكرر
+const MHIST_KEY = 'enjaz_math_hist_v1';
+function mHistPush(f) {
+  if (!isMathF(f)) return; const k = mspecKey(f.meta); const h = lsGet(MHIST_KEY) || {};
+  h[k] = [...f.mcq.map((x) => mText(x.q)), ...f.tf.map((x) => mText(x.s)), ...f.essay.map((x) => mText(x.q))].concat(h[k] || []).slice(0, 60);
+  lsSet(MHIST_KEY, h);
+}
+const mRecent = (p) => ((lsGet(MHIST_KEY) || {})[mspecKey(p)] || []).slice(0, 40);
+async function mathRegen(section, idx) {
+  const p = EXAM.meta; const host = idx != null ? document.querySelector(`.it[data-sec="${section}"][data-i="${idx}"]`) : $('sec-' + section);
+  host?.classList.add('busy');
+  try {
+    const list = EXAM[section]; const ids = idx != null ? [idx] : list.map((_, i) => i);
+    const specs = ids.map((i) => mspecOut(list[i]));
+    const r = await mathCall('math', specs, { avoid: [...ids.map((i) => mText(list[i].q || list[i].s)), ...mRecent(p)] }, p);
+    const fresh = ids.map((i, j) => ({ ...mNorm((r.items || [])[j], { ...list[i] }), ci: list[i].ci, li: list[i].li, page: list[i].page }));
+    await mathReview(fresh, p);
+    ids.forEach((i, j) => { list[i] = fresh[j]; });
+    if (section === 'mcq' && idx == null) mBalance(list);
+    saveDraft(); renderEditor();
+  } catch (e) { toast(e.message); host?.classList.remove('busy'); }
+}
+
+// ----- التحرير -----
+function mathEditor() {
+  const tg = (it) => `<span class="tag" title="${esc(it.obj)}"><b>ف${ARD(it.ch)}</b> · ${esc(it.lesson)} · ${MLVN[it.lv]}${it.mk > 1 ? ` · ${ARD(it.mk)} درجات` : ''}${it.why ? `<em class="why">${esc(it.why)}</em>` : ''}</span>`;
+  const ar = (path, val, ph = '') => `<input type="text" dir="rtl" data-p="${path}" value="${esc(val)}" placeholder="${esc(ph)}">`;
+  const pvw = (s) => `<div class="mpv">${mHTML(s)}</div>`;
+  let h = `<div class="hint" style="margin-bottom:10px">اكتب الكسر هكذا: <bdi dir="ltr">\\frac{١}{٢}</bdi> ، والأس: <bdi dir="ltr">س^٢</bdi> ، والعدد السالب: <bdi dir="ltr">-٥</bdi> — وتظهر المعاينة تحت كل حقل.</div>`;
+  let s1 = '';
+  EXAM.mcq.forEach((it, i) => {
+    s1 += `<div class="it${it.warn ? ' warn' : ''}" data-sec="mcq" data-i="${i}"><div class="it-h">${tg(it)}${rbtn('mcq', i)}</div><div class="row" style="gap:6px;align-items:flex-start"><b>${ARD(i + 1)}/</b><div style="flex:1">${ar(`mcq.${i}.q`, it.q)}${pvw(it.q)}</div></div>
+      <div class="opts">${it.options.map((o, j) => `<label class="opt${it.ans === j ? ' ok' : ''}"><input type="radio" name="mq${i}" data-ans="mcq.${i}" value="${j}"${it.ans === j ? ' checked' : ''} title="الإجابة الصحيحة"><span class="muted">${MLET[j]})</span><input type="text" dir="rtl" data-p="mcq.${i}.options.${j}" value="${esc(o)}"></label>`).join('')}</div></div>`;
+  });
+  h += secCard('mcq', 'السؤال الأول — اختر الإجابة الصحيحة', ARD(EXAM.mcq.length), s1 || '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>');
+  let s2 = '';
+  EXAM.tf.forEach((it, i) => {
+    s2 += `<div class="it${it.warn ? ' warn' : ''}" data-sec="tf" data-i="${i}"><div class="it-h">${tg(it)}${rbtn('tf', i)}</div><div class="row" style="gap:6px;align-items:flex-start"><b>${ARD(i + 1)}-</b><div style="flex:1">${ar(`tf.${i}.s`, it.s)}${pvw(it.s)}</div>
+      <div class="seg tfseg" data-mtf="${i}"><button data-v="1"${it.ans ? ' class="on"' : ''}>✓ صح</button><button data-v="0"${!it.ans ? ' class="on"' : ''}>✗ خطأ</button></div></div>
+      ${it.ans ? '' : `<label class="f" style="margin-top:6px">التصويب (يظهر في نموذج الإجابة)${ar(`tf.${i}.fix`, it.fix)}</label>`}</div>`;
+  });
+  h += secCard('tf', 'السؤال الثاني — صح أم خطأ', ARD(EXAM.tf.length), s2 || '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>');
+  let s3 = '';
+  EXAM.essay.forEach((it, i) => {
+    s3 += `<div class="it${it.warn ? ' warn' : ''}" data-sec="essay" data-i="${i}"><div class="it-h">${tg(it)}${rbtn('essay', i)}</div>
+      <label class="f">( ${MLET[i] || ARD(i + 1)} ) نص السؤال${ar(`essay.${i}.q`, it.q)}</label>
+      ${it.ex.map((x, j) => `<label class="f" style="margin-top:6px">السطر الرياضي ${ARD(j + 1)}${ar(`essay.${i}.ex.${j}`, x)}${pvw(x)}</label>`).join('')}
+      <div class="sub" style="margin-top:8px">خطوات الحل (نموذج الإجابة)</div>
+      ${it.steps.map((x, j) => `<div class="row" style="gap:6px;margin-top:4px"><div style="flex:1">${ar(`essay.${i}.steps.${j}.t`, x.t)}</div><input type="number" step="0.5" min="0" style="width:74px" data-num="essay.${i}.steps.${j}.mk" value="${x.mk}"></div>`).join('')}
+      <label class="switch" style="margin-top:8px"><input type="checkbox" data-nl="${i}"${it.nl ? ' checked' : ''}><span class="tg"></span><span>إضافة خط أعداد للتمثيل</span></label></div>`;
+  });
+  h += secCard('essay', 'السؤال الثالث — أسئلة مقالية', ARD(EXAM.essay.reduce((a, x) => a + x.mk, 0)), s3 || '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>');
+  $('edBody').innerHTML = h;
+  mathCoverage();
+}
+function mathCoverage() {
+  const f = EXAM; const s = MATH_SPECS[mspecKey(f.meta)]; const chs = s ? s.chapters.filter((c) => f.meta.chs.includes(c.n)) : [];
+  const all = [...f.mcq, ...f.tf, ...f.essay]; const act = {};
+  all.forEach((it) => { const k = it.ch + it.lv; act[k] = (act[k] || 0) + it.mk; });
+  const req = {}; (f.bp && f.bp.cells || []).forEach((x) => { req[x.ch + x.lv] = x.req; });
+  const warn = all.filter((x) => x.warn).length;
+  let h = `<h2>جدول المواصفات <span class="muted" style="font-size:12px">المطلوب ← المحقق</span></h2><table class="cov"><tr><th>الفصل</th>${MLV.map((l) => `<th>${MLVN[l]}</th>`).join('')}<th>المجموع</th></tr>`;
+  chs.forEach((c) => {
+    const tr = MLV.reduce((a, l) => a + (req[c.n + l] || 0), 0); const ta = MLV.reduce((a, l) => a + (act[c.n + l] || 0), 0);
+    h += `<tr><td title="${esc(c.title)}">ف${ARD(c.n)}</td>${MLV.map((l) => `<td>${ARD((req[c.n + l] || 0).toFixed(1)).replace('.', '٫')} ← <b>${ARD(act[c.n + l] || 0)}</b></td>`).join('')}<td>${ARD(tr.toFixed(1)).replace('.', '٫')} ← <b>${ARD(ta)}</b></td></tr>`;
+  });
+  h += `</table><div class="muted" style="margin-top:8px">المجموع: <b>${ARD(all.reduce((a, x) => a + x.mk, 0))}</b> درجة · ${ARD(all.length)} فقرة${warn ? ` · <span style="color:var(--pen)">${ARD(warn)} للمراجعة</span>` : ''}</div>`;
+  $('coverage').innerHTML = h;
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-mtf] button'); if (!b || !EXAM || !isMathF(EXAM)) return;
+  const i = +b.parentElement.dataset.mtf; EXAM.tf[i].ans = b.dataset.v === '1'; EXAM.tf[i].warn = false; saveDraft(); renderEditor();
+});
+document.addEventListener('change', (e) => {
+  const el = e.target; if (!EXAM || !isMathF(EXAM)) return;
+  if (el.dataset.num) { setPath(el.dataset.num, Math.max(0, +el.value || 0)); saveDraft(); }
+  if (el.dataset.nl != null) { EXAM.essay[+el.dataset.nl].nl = el.checked; saveDraft(); }
+});
+document.addEventListener('input', (e) => { // معاينة فورية للنص الرياضي تحت الحقل
+  const el = e.target; if (!EXAM || !isMathF(EXAM) || !el.dataset.p) return;
+  const pv = el.nextElementSibling; if (pv && pv.classList.contains('mpv')) pv.innerHTML = mHTML(el.value);
+});
+
+// ----- الورقة -----
+const hasAr = (s) => /[؀-ۿ]/.test(s || '');
+function mathHeaderHTML(m, ka) {
+  const s = MATH_SPECS[mspecKey(m)] || {}; const yr = ARD(String(m.year || '').trim());
+  const tm = hasAr(m.time) ? m.time : 'ساعتان ونصف';
+  return `${ka ? '<div class="mkey">نموذج الإجابة</div>' : ''}<table class="mh"><tr>
+  <td style="width:36%">المملكة العربية السعودية<br>وزارة التعليم<br>${hasAr(m.directorate) ? esc(m.directorate) : 'الإدارة العامة للتعليم بـ ..................'}<br>${hasAr(m.school) ? esc(m.school) : 'مدرسة ..................'}</td>
+  <td class="c" style="width:28%"><img src="${LOGO}" alt="" style="height:58px"></td>
+  <td style="width:36%">الصف : ${esc(s.grade || '')}<br>المادة : رياضيات<br>الزمن : ${esc(tm)}<br>التاريخ : &nbsp;&nbsp; / &nbsp;&nbsp; / ${yr}هـ</td></tr>
+  <tr><td colspan="3" class="c">اختبار نهائي الفصل الدراسي ${m.term === '2' ? 'الثاني' : 'الأول'} ( الدور الأول ) للعام الدراسي ${yr}هـ${FORMS.length > 1 && m.form === 'B' ? ' — الاختبار البديل' : ''}</td></tr></table>
+  <table class="mh mg"><tr><td class="c">الدرجة رقمًا</td><td class="c">٤٠</td><td class="c">الدرجة كتابة</td><td></td><td class="c">المصحح</td><td></td><td class="c">المراجع</td><td></td></tr>
+  <tr><td colspan="4"></td><td class="c">التوقيع</td><td></td><td class="c">التوقيع</td><td></td></tr></table>
+  <table class="mh mn"><tr><td style="width:12%">الاسم :</td><td style="width:50%"></td><td style="width:14%">رقم الجلوس :</td><td></td></tr></table>`;
+}
+const mQH = (t, mk) => `<div class="mqh"><span>${t}</span><span class="mmk"><span></span><span>${mk}</span></span></div>`;
+const mDeg = (n) => `${ARD(n)} ${n === 1 ? 'درجة' : n === 2 ? 'درجتان' : n <= 10 ? 'درجات' : 'درجة'}`;
+function numberLineSVG(sol) {
+  const a = -6; const b = 6; const u = 36; const W = (b - a) * u + 40; const X = (x) => 20 + (x - a) * u;
+  let g = `<line x1="4" y1="22" x2="${W - 4}" y2="22" stroke="#000" stroke-width="1.3"/><path d="M4 22 l8 -4 v8z M${W - 4} 22 l-8 -4 v8z"/>`;
+  for (let x = a; x <= b; x++) g += `<line x1="${X(x)}" y1="16" x2="${X(x)}" y2="28" stroke="#000"/><text x="${X(x)}" y="44" font-size="12" text-anchor="middle" font-family="Arial">${x < 0 ? '−' + ARD(-x) : ARD(x)}</text>`;
+  return `<svg width="${W}" height="50" viewBox="0 0 ${W} 50" style="direction:ltr;max-width:100%">${g}</svg>`;
+}
+function mathBody(ka) {
+  const m = EXAM.meta; let h = mathHeaderHTML(m, ka);
+  const sumMk = (l) => l.reduce((a, x) => a + x.mk, 0);
+  h += mQH('السؤال الأول / اختر الإجابة الصحيحة لما يلي :', mDeg(sumMk(EXAM.mcq)));
+  EXAM.mcq.forEach((q, i) => {
+    const long = q.options.some((o) => mText(o).length > 22);
+    h += `<table class="mq"><tr><td class="st" colspan="${long ? 2 : 4}">${ARD(i + 1)}/ ${mHTML(q.q)}</td></tr>`;
+    const cell = (j) => `<td class="o${ka && q.ans === j ? ' ok' : ''}"><b>${MLET[j]})</b> ${mHTML(q.options[j])}</td>`;
+    h += long ? `<tr>${cell(0)}${cell(1)}</tr><tr>${cell(2)}${cell(3)}</tr>` : `<tr>${[0, 1, 2, 3].map(cell).join('')}</tr>`;
+    h += '</table>';
+  });
+  h += mQH('السؤال الثاني / ضع علامة ( ✓ ) أمام العبارة الصحيحة وعلامة ( ✗ ) أمام العبارة الخاطئة :', mDeg(sumMk(EXAM.tf)));
+  h += `<table class="mtf">${EXAM.tf.map((t, i) => `<tr><td class="n">${ARD(i + 1)}-</td><td>${mHTML(t.s)}${ka && !t.ans && t.fix ? ` <span class="mka">( الصواب: ${mHTML(t.fix)} )</span>` : ''}</td><td class="a${ka ? ' mka' : ''}">${ka ? (t.ans ? '✓' : '✗') : ''}</td></tr>`).join('')}</table>`;
+  h += mQH('السؤال الثالث / أجب عمّا يلي :', mDeg(sumMk(EXAM.essay)));
+  EXAM.essay.forEach((e, i) => {
+    h += `<div class="mes"><div class="t">( ${MLET[i] || ARD(i + 1)} ) ${mHTML(e.q)} <small>( ${mDeg(e.mk)} )</small></div>${e.ex.length ? `<div class="ex">${e.ex.map(mHTML).join('<br>')}</div>` : ''}`;
+    if (ka) h += `<div class="mka st">${e.steps.map((s) => `${mHTML(s.t)} ← ${ARD(s.mk).replace('.', '٫').replace('٫٥', '½').replace(/^٠½$/, '½')} ${s.mk === 1 ? 'درجة' : ''}`).join('<br>')}</div>`;
+    else h += `<div class="sp${e.nl ? ' s' : ''}"></div>`;
+    if (e.nl) h += `<div class="c">${numberLineSVG()}</div>`;
+    h += '</div>';
+  });
+  h += '<div class="mend">انتهت الأسئلة &nbsp;&nbsp; مع تمنياتي لكم بالتوفيق والنجاح' + (m.teacher && hasAr(m.teacher) ? `<br>المعلم: ${esc(m.teacher)}` : '') + '</div>';
+  if (ka) h += mathReference();
+  return h;
+}
+// المرجعية: جدول المواصفات (المطلوب والمحقق) ومصدر كل فقرة (الدرس والصفحة والهدف والمستوى)
+function mathReference() {
+  const f = EXAM; const s = MATH_SPECS[mspecKey(f.meta)]; const chs = s.chapters.filter((c) => f.meta.chs.includes(c.n));
+  const all = [...f.mcq.map((x, i) => ({ ...x, no: `س١ - ${ARD(i + 1)}`, a: `${MLET[x.ans]}) ${mHTML(x.options[x.ans])}` })), ...f.tf.map((x, i) => ({ ...x, no: `س٢ - ${ARD(i + 1)}`, a: x.ans ? '✓' : '✗' })), ...f.essay.map((x, i) => ({ ...x, no: `س٣ - ${MLET[i] || ARD(i + 1)}`, a: mHTML(x.answer || '—') }))];
+  const act = {}; all.forEach((it) => { act[it.ch + it.lv] = (act[it.ch + it.lv] || 0) + it.mk; });
+  const req = {}; (f.bp && f.bp.cells || []).forEach((x) => { req[x.ch + x.lv] = x.req; });
+  const fx = (x) => ARD((x || 0).toFixed(2)).replace('.', '٫');
+  const per = chs.reduce((a, c) => a + c.periods, 0);
+  let h = `<div class="mref keypage"><h3>المرجعية : جدول المواصفات ومصدر كل فقرة</h3>
+  <p>المرجع: ${s.book ? esc(s.book) + '، و' : ''}جدول مواصفات رياضيات ${esc(s.grade)} للفصل الدراسي ${f.meta.term === '2' ? 'الثاني' : 'الأول'} (${ARD(per)} حصة). وُزّعت الدرجات الأربعون على الفصول بنسبة حصصها، ثم على مستويات الأهداف بنسبة عددها في كل فصل، مع التقريب إلى أقرب درجة بحيث يبقى المجموع ٤٠.</p>
+  <table><tr><th rowspan="2">الفصل</th><th rowspan="2">الحصص</th>${MLV.map((l) => `<th colspan="2">${MLVN[l]}</th>`).join('')}<th colspan="2">المجموع</th></tr><tr>${'<th>المطلوب</th><th>المحقق</th>'.repeat(4)}</tr>`;
+  const tot = [0, 0, 0, 0, 0, 0, 0, 0];
+  chs.forEach((c) => {
+    const r = MLV.map((l) => req[c.n + l] || 0); const a = MLV.map((l) => act[c.n + l] || 0);
+    r.forEach((v, j) => { tot[j * 2] += v; tot[j * 2 + 1] += a[j]; }); tot[6] += r[0] + r[1] + r[2]; tot[7] += a[0] + a[1] + a[2];
+    h += `<tr><td class="r">الفصل ${ARD(c.n)}: ${esc(c.title)}</td><td>${ARD(c.periods)}</td>${r.map((v, j) => `<td>${fx(v)}</td><td><b>${ARD(a[j])}</b></td>`).join('')}<td>${fx(r[0] + r[1] + r[2])}</td><td><b>${ARD(a[0] + a[1] + a[2])}</b></td></tr>`;
+  });
+  h += `<tr><th>المجموع</th><th>${ARD(per)}</th>${[0, 1, 2, 3].map((j) => `<th>${fx(tot[j * 2])}</th><th>${ARD(tot[j * 2 + 1])}</th>`).join('')}</tr></table>
+  <h3>مصدر كل فقرة</h3><table><tr><th>الفقرة</th><th>الإجابة</th><th>الدرجة</th><th>المستوى</th><th>الفصل والدرس</th>${s.book ? '<th>الصفحة</th>' : ''}<th>الهدف (من جدول المواصفات)</th></tr>`;
+  all.forEach((it) => { h += `<tr><td style="white-space:nowrap">${it.no}</td><td>${it.a}</td><td>${ARD(it.mk)}</td><td>${MLVN[it.lv]}</td><td class="r">${ARD(it.ch)}-${ARD(it.li + 1)} ${esc(it.lesson)}</td>${s.book ? `<td>${it.page ? ARD(it.page) : ''}</td>` : ''}<td class="r">${esc(it.obj)}</td></tr>`; });
+  return h + '</table></div>';
+}
+
+// ----- PDF: عبر نافذة الطباعة (تحفظ الخط العربي وترتيبه كما هو) -----
+function mathPrint() {
+  const parts = exportParts(); const css = MATH_SHEET_CSS;
+  const body = parts.map((pt, i) => `<div class="msheet"${i ? ' style="break-before:page"' : ''}>${withForm(pt.f, () => mathBody(pt.ka))}</div>`).join('');
+  const fr = document.createElement('iframe'); fr.style.cssText = 'position:fixed;width:0;height:0;border:0;left:-9999px';
+  document.body.appendChild(fr);
+  const d = fr.contentDocument; d.open();
+  d.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>${esc(mathTitle())}</title><style>@page{size:A4;margin:10mm 11mm}body{margin:0;background:#fff}${css}</style></head><body>${body}</body></html>`);
+  d.close();
+  const go = () => { try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch { toast('تعذّر فتح نافذة الطباعة.'); } setTimeout(() => fr.remove(), 60000); };
+  const imgs = [...d.images]; Promise.all(imgs.map((im) => (im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; })))).then(() => setTimeout(go, 150));
+  toast('اختر «حفظ بتنسيق PDF» في نافذة الطباعة لتنزيل الملف.', 6000);
+}
+function mathFileBase() { // اسم الملف بحروف لاتينية (بعض المتصفحات تتجاهل الاسم العربي للتنزيل)
+  const m = EXAM.meta; const fs = FORMS.length > 1 ? exportForms().map((f) => (f.meta.form === 'B' ? 'Alternative' : 'Main')).join('_') : '';
+  const g = { g4: 4, g5: 5, g6: 6, m1: 7, m2: 8, m3: 9 }[m.mgrade] || '';
+  return `Math_Grade${g}_T${m.term}${fs ? '_' + fs : ''}${$('withKey').checked ? '_withKey' : ''}`;
+}
+const mathTitle = () => { const m = EXAM.meta; return `اختبار رياضيات ${(MATH_SPECS[mspecKey(m)] || {}).grade || ''} الفصل ${m.term === '2' ? 'الثاني' : 'الأول'}${$('withKey').checked ? ' مع نموذج الإجابة' : ''}`; };
+
+// ----- Word -----
+// الكسر وخط الأعداد صورٌ صغيرة (تظهر صحيحة في أي برنامج)، وبقية النص قابل للتعديل
+const MIMG = new Map();
+function mCanvasPNG(w, h, draw) {
+  const s = 4; const cv = document.createElement('canvas'); cv.width = w * s; cv.height = h * s; const cx = cv.getContext('2d'); cx.scale(s, s); draw(cx);
+  return { data: b64u8(cv.toDataURL('image/png')), w, h };
+}
+function mFracImg(a, b, red) {
+  const k = a + '|' + b + (red ? '|r' : ''); if (MIMG.has(k)) return MIMG.get(k);
+  const font = 'bold 15px Arial, Tahoma, sans-serif'; const c0 = document.createElement('canvas').getContext('2d'); c0.font = font;
+  const w = Math.ceil(Math.max(c0.measureText(a).width, c0.measureText(b).width)) + 8; const h = 36;
+  const r = mCanvasPNG(w, h, (cx) => { cx.font = font; cx.fillStyle = cx.strokeStyle = red ? '#c00000' : '#000'; cx.textAlign = 'center'; cx.direction = 'rtl'; cx.textBaseline = 'middle'; cx.fillText(a, w / 2, 9); cx.fillText(b, w / 2, 28); cx.lineWidth = 1.3; cx.beginPath(); cx.moveTo(2, 18); cx.lineTo(w - 2, 18); cx.stroke(); });
+  MIMG.set(k, r); return r;
+}
+function mNumberLineImg() {
+  if (MIMG.has('nl')) return MIMG.get('nl');
+  const a = -6; const b = 6; const u = 36; const W = (b - a) * u + 40; const X = (x) => 20 + (x - a) * u;
+  const r = mCanvasPNG(W, 50, (cx) => {
+    cx.strokeStyle = cx.fillStyle = '#000'; cx.lineWidth = 1.3; cx.beginPath(); cx.moveTo(4, 22); cx.lineTo(W - 4, 22); cx.stroke();
+    cx.beginPath(); cx.moveTo(4, 22); cx.lineTo(12, 18); cx.lineTo(12, 26); cx.fill(); cx.beginPath(); cx.moveTo(W - 4, 22); cx.lineTo(W - 12, 18); cx.lineTo(W - 12, 26); cx.fill();
+    cx.font = '12px Arial'; cx.textAlign = 'center'; cx.lineWidth = 1;
+    for (let x = a; x <= b; x++) { cx.beginPath(); cx.moveTo(X(x), 16); cx.lineTo(X(x), 28); cx.stroke(); cx.fillText(x < 0 ? '−' + ARD(-x) : ARD(x), X(x), 44); }
+  });
+  MIMG.set('nl', r); return r;
+}
+function mathDocx(D, ka) {
+  const RED = 'C00000'; const W = 10700; const SZ = 24;
+  const T = (t, o = {}) => new D.TextRun({ text: t, font: 'Arial', size: o.size || SZ, sizeComplexScript: o.size || SZ, bold: o.b, boldComplexScript: o.b, color: o.red ? RED : undefined, rightToLeft: true, superScript: o.sup });
+  // نص رياضي ← أجزاء: الكسر صورة، الأس مرتفع، والسالب يسار العدد (LRE…PDF)
+  const runs = (s, o = {}) => {
+    const out = []; const src = mfix(s); const re = /(-?)\\frac\{([^{}]*)\}\{([^{}]*)\}|\^\{([^{}]*)\}|\^([٠-٩a-zA-Zس-ي]+)/g; let last = 0; let mm;
+    const txt = (x) => x.replace(/(^|[\s(=،{[|×÷+;:<>≤≥])-([٠-٩٫]+)/g, '$1‪-$2‬').replace(/ - /g, ' − ');
+    while ((mm = re.exec(src))) {
+      const pre = src.slice(last, mm.index); if (pre) out.push(T(txt(pre), o));
+      if (mm[2] != null || mm[3] != null) {
+        if (mm[1]) out.push(T('‪-', o));
+        const im = mFracImg(mm[2], mm[3], o.red); out.push(new D.ImageRun({ data: im.data, transformation: { width: Math.round(im.w * 0.85), height: Math.round(im.h * 0.85) } }));
+        if (mm[1]) out.push(T('‬', o));
+      } else out.push(T(mm[4] || mm[5], { ...o, sup: true }));
+      last = re.lastIndex;
+    }
+    const rest = src.slice(last); if (rest) out.push(T(txt(rest), o));
+    return out;
+  };
+  const P = (ch, o = {}) => new D.Paragraph({ bidirectional: true, alignment: o.align || D.AlignmentType.RIGHT, spacing: { before: o.before || 0, after: o.after ?? 40 }, keepNext: o.keep, keepLines: true, children: Array.isArray(ch) ? ch : [T(ch, o)], border: o.border, indent: o.indent });
+  const sb = { style: D.BorderStyle.SINGLE, size: 8, color: '000000' }; const nb = { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' };
+  const ALL = { top: sb, bottom: sb, left: sb, right: sb }; const NONE = { top: nb, bottom: nb, left: nb, right: nb };
+  const Cc = (ch, o = {}) => new D.TableCell({ children: Array.isArray(ch) ? ch : [ch], columnSpan: o.span, rowSpan: o.rows, width: o.w ? { size: o.w, type: D.WidthType.DXA } : undefined, verticalAlign: D.VerticalAlign.CENTER, borders: o.borders || ALL, shading: o.fill ? { type: D.ShadingType.CLEAR, fill: o.fill, color: 'auto' } : undefined, margins: { top: 50, bottom: 50, left: 90, right: 90 } });
+  const Tb = (cols, rows) => new D.Table({ visuallyRightToLeft: true, layout: D.TableLayoutType.FIXED, width: { size: cols.reduce((a, b) => a + b, 0), type: D.WidthType.DXA }, columnWidths: cols, rows });
+  const R = (cells, o = {}) => new D.TableRow({ children: cells, cantSplit: true, height: o.h ? { value: o.h, rule: D.HeightRule.ATLEAST } : undefined });
+  const gap = (h = 120) => new D.Paragraph({ spacing: { before: 0, after: 0, line: h, lineRule: D.LineRuleType.EXACT }, children: [new D.TextRun({ text: '', size: 2 })] });
+  const CEN = D.AlignmentType.CENTER; const m = EXAM.meta; const s = MATH_SPECS[mspecKey(m)] || {}; const yr = ARD(String(m.year || '').trim());
+  const k = [];
+  if (ka) k.push(P([T('نموذج الإجابة', { b: true, red: true, size: 30 })], { align: CEN, after: 80 }));
+  const lines = (arr) => arr.map((l) => P([T(l, { b: true })], { after: 30 }));
+  k.push(Tb([3850, 3000, 3850], [
+    R([Cc(lines(['المملكة العربية السعودية', 'وزارة التعليم', hasAr(m.directorate) ? m.directorate : 'الإدارة العامة للتعليم بـ ..................', hasAr(m.school) ? m.school : 'مدرسة ..................'])),
+      Cc([new D.Paragraph({ alignment: CEN, children: [docxImgRun(D, LOGO, 116, 62)] })]),
+      Cc(lines([`الصف : ${s.grade || ''}`, 'المادة : رياضيات', `الزمن : ${hasAr(m.time) ? m.time : 'ساعتان ونصف'}`, `التاريخ :      /      / ${yr}هـ`]))]),
+    R([Cc(P([T(`اختبار نهائي الفصل الدراسي ${m.term === '2' ? 'الثاني' : 'الأول'} ( الدور الأول ) للعام الدراسي ${yr}هـ${FORMS.length > 1 && m.form === 'B' ? ' — الاختبار البديل' : ''}`, { b: true })], { align: CEN, after: 0 }), { span: 3 })]),
+  ]));
+  const B = (t) => Cc(P([T(t, { b: true })], { align: CEN, after: 0 })); const E = (o = {}) => Cc(P('', { after: 0 }), o);
+  k.push(Tb([1300, 850, 1300, 1700, 1100, 1700, 1050, 1700], [R([B('الدرجة رقمًا'), B('٤٠'), B('الدرجة كتابة'), E(), B('المصحح'), E(), B('المراجع'), E()], { h: 420 }), R([E({ span: 4 }), B('التوقيع'), E(), B('التوقيع'), E()], { h: 420 })]));
+  k.push(gap(160)); k.push(Tb([1300, 5300, 1700, 2400], [R([B('الاسم :'), E(), B('رقم الجلوس :'), E()], { h: 420 })]));
+  const qhead = (t, mk) => { k.push(gap(220)); k.push(Tb([8500, 1100, 1100], [R([Cc(P([T(t, { b: true })], { after: 0, keep: true }), { borders: NONE }), Cc(P('', { after: 0 })), Cc(P([T(mk, { b: true })], { align: CEN, after: 0 }))])])); k.push(gap(80)); };
+  const sum = (l) => l.reduce((a, x) => a + x.mk, 0);
+  qhead('السؤال الأول / اختر الإجابة الصحيحة لما يلي :', mDeg(sum(EXAM.mcq)));
+  const ow = Math.floor(W / 4);
+  EXAM.mcq.forEach((q, i) => {
+    const long = q.options.some((o) => mText(o).length > 22); const w = long ? ow * 2 : ow;
+    const opt = (j) => { const ok = ka && q.ans === j; return Cc(P([T(`${MLET[j]})  `, { b: true, red: ok }), ...runs(q.options[j], { red: ok, b: ok })], { after: 0 }), { w, fill: ok ? 'FDE2E2' : undefined }); };
+    const stem = P([T(`${ARD(i + 1)}/ `, { b: true }), ...runs(q.q, { b: true })], { after: 0, keep: true });
+    k.push(long ? Tb([w, w], [R([Cc(stem, { span: 2 })], { h: 480 }), R([opt(0), opt(1)], { h: 440 }), R([opt(2), opt(3)], { h: 440 })]) : Tb([ow, ow, ow, ow], [R([Cc(stem, { span: 4 })], { h: 480 }), R([0, 1, 2, 3].map(opt), { h: 480 })]));
+  });
+  qhead('السؤال الثاني / ضع علامة ( ✓ ) أمام العبارة الصحيحة وعلامة ( ✗ ) أمام العبارة الخاطئة :', mDeg(sum(EXAM.tf)));
+  k.push(Tb([700, 8800, 1200], EXAM.tf.map((t, i) => R([
+    Cc(P([T(`${ARD(i + 1)}-`, { b: true })], { align: CEN, after: 0 })),
+    Cc(P([...runs(t.s), ...(ka && !t.ans && t.fix ? [T('  ( الصواب: ', { red: true, size: 20 }), ...runs(t.fix, { red: true, size: 20 }), T(' )', { red: true, size: 20 })] : [])], { after: 0 })),
+    Cc(P([T(ka ? (t.ans ? '✓' : '✗') : '', { b: true, red: true, size: 28 })], { align: CEN, after: 0 })),
+  ], { h: 540 }))));
+  qhead('السؤال الثالث / أجب عمّا يلي :', mDeg(sum(EXAM.essay)));
+  const line = { bottom: { style: D.BorderStyle.SINGLE, size: 6, color: '000000', space: 1 } };
+  EXAM.essay.forEach((e, n) => {
+    k.push(P([T(`( ${MLET[n] || ARD(n + 1)} ) `, { b: true }), ...runs(e.q, { b: true }), T(`  ( ${mDeg(e.mk)} )`, { size: 20 })], { before: 160, after: 80, keep: true }));
+    e.ex.forEach((x) => k.push(P(runs(x, { size: 28 }), { indent: { right: 600 }, after: 60, keep: true })));
+    if (ka) e.steps.forEach((st) => k.push(P([...runs(st.t, { red: true, b: true }), T(`  ← ${ARD(st.mk).replace('.', '٫')}`, { red: true, b: true })], { indent: { right: 400 }, after: 40 })));
+    else for (let i = 0; i < (e.nl ? 2 : 5); i++) k.push(P('', { after: 160 }));
+    if (e.nl) { const im = mNumberLineImg(); k.push(new D.Paragraph({ alignment: CEN, spacing: { before: 80, after: 80 }, children: [new D.ImageRun({ data: im.data, transformation: { width: 470, height: 52 } })] })); }
+    if (n < EXAM.essay.length - 1) k.push(P('', { after: 60, border: line }));
+  });
+  k.push(P([T('انتهت الأسئلة      مع تمنياتي لكم بالتوفيق والنجاح', { b: true })], { align: CEN, before: 300 }));
+  if (ka) k.push(...mathRefDocx(D, T, runs, P, Cc, Tb, R));
+  return k;
+}
+function docxImgRun(D, dataUrl, w, h) { return new D.ImageRun({ data: b64u8(dataUrl), transformation: { width: w, height: h } }); }
+function mathRefDocx(D, T, runs, P, Cc, Tb, R) {
+  const f = EXAM; const s = MATH_SPECS[mspecKey(f.meta)]; const chs = s.chapters.filter((c) => f.meta.chs.includes(c.n)); const CEN = D.AlignmentType.CENTER;
+  const all = [...f.mcq.map((x, i) => ({ ...x, no: `س١ - ${ARD(i + 1)}`, a: [T(`${MLET[x.ans]}) `, { size: 18 }), ...runs(x.options[x.ans], { size: 18 })] })), ...f.tf.map((x, i) => ({ ...x, no: `س٢ - ${ARD(i + 1)}`, a: [T(x.ans ? '✓' : '✗', { size: 18 })] })), ...f.essay.map((x, i) => ({ ...x, no: `س٣ - ${MLET[i] || ARD(i + 1)}`, a: runs(x.answer || '—', { size: 18 }) }))];
+  const act = {}; all.forEach((it) => { act[it.ch + it.lv] = (act[it.ch + it.lv] || 0) + it.mk; });
+  const req = {}; (f.bp && f.bp.cells || []).forEach((x) => { req[x.ch + x.lv] = x.req; });
+  const fx = (x) => ARD((x || 0).toFixed(2)).replace('.', '٫'); const per = chs.reduce((a, c) => a + c.periods, 0);
+  const S = (t, o = {}) => Cc(P([T(String(t), { size: 18, b: o.b })], { align: o.al || CEN, after: 0 }), { fill: o.fill, span: o.span, rows: o.rows });
+  const H = (t, o = {}) => S(t, { ...o, b: true, fill: 'E9EEF6' });
+  const k = [new D.Paragraph({ children: [new D.PageBreak()] }), P([T('المرجعية : جدول المواصفات ومصدر كل فقرة', { b: true, size: 30 })], { align: CEN, after: 120 }),
+    P([T(`المرجع: ${s.book ? s.book + '، و' : ''}جدول مواصفات رياضيات ${s.grade} للفصل الدراسي ${f.meta.term === '2' ? 'الثاني' : 'الأول'} (${ARD(per)} حصة). وُزّعت الدرجات الأربعون على الفصول بنسبة حصصها، ثم على مستويات الأهداف بنسبة عددها في كل فصل، مع التقريب إلى أقرب درجة بحيث يبقى المجموع ٤٠.`, { size: 20 })], { after: 120 })];
+  const rows = [R([H('الفصل', { rows: 2 }), H('الحصص', { rows: 2 }), H('معرفة', { span: 2 }), H('تطبيق', { span: 2 }), H('استدلال', { span: 2 }), H('المجموع', { span: 2 })]), R(Array(4).fill(['المطلوب', 'المحقق']).flat().map((x) => H(x)))];
+  const tot = [0, 0, 0, 0, 0, 0, 0, 0];
+  chs.forEach((c) => {
+    const r = MLV.map((l) => req[c.n + l] || 0); const a = MLV.map((l) => act[c.n + l] || 0);
+    r.forEach((v, j) => { tot[j * 2] += v; tot[j * 2 + 1] += a[j]; }); tot[6] += r[0] + r[1] + r[2]; tot[7] += a[0] + a[1] + a[2];
+    rows.push(R([S(`الفصل ${ARD(c.n)}: ${c.title}`, { al: D.AlignmentType.RIGHT }), S(ARD(c.periods)), ...r.flatMap((v, j) => [S(fx(v)), S(ARD(a[j]), { b: true })]), S(fx(r[0] + r[1] + r[2])), S(ARD(a[0] + a[1] + a[2]), { b: true })]));
+  });
+  rows.push(R([H('المجموع'), H(ARD(per)), ...[0, 1, 2, 3].flatMap((j) => [H(fx(tot[j * 2])), H(ARD(tot[j * 2 + 1]))])]));
+  k.push(Tb([2900, 700, 890, 890, 890, 890, 890, 890, 880, 880], rows));
+  k.push(P([T('مصدر كل فقرة', { b: true, size: 28 })], { align: CEN, before: 240, after: 100 }));
+  const hasP = !!s.book; const cw = hasP ? [950, 1900, 650, 950, 2700, 650, 2900] : [950, 2100, 650, 950, 2950, 3100];
+  const r2 = [R(['الفقرة', 'الإجابة', 'الدرجة', 'المستوى', 'الفصل والدرس', ...(hasP ? ['الصفحة'] : []), 'الهدف (من جدول المواصفات)'].map((x) => H(x)))];
+  all.forEach((it) => r2.push(R([S(it.no), Cc(P(it.a, { align: CEN, after: 0 })), S(ARD(it.mk)), S(MLVN[it.lv]), S(`${ARD(it.ch)}-${ARD(it.li + 1)} ${it.lesson}`, { al: D.AlignmentType.RIGHT }), ...(hasP ? [S(it.page ? ARD(it.page) : '')] : []), S(it.obj, { al: D.AlignmentType.RIGHT })])));
+  k.push(Tb(cw, r2));
+  return k;
+}
+async function mathExportDOCX() {
+  busyBtns(true);
+  try {
+    if (!window.docx) await loadScript('https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js');
+    const D = window.docx; let kids = [];
+    exportParts().forEach((pt, i) => { if (i) kids.push(new D.Paragraph({ children: [new D.PageBreak()] })); kids = kids.concat(withForm(pt.f, () => mathDocx(D, pt.ka))); });
+    const bd = { style: D.BorderStyle.SINGLE, size: 12, color: '000000', space: 18 };
+    const doc = new D.Document({ styles: { default: { document: { run: { font: 'Arial', rightToLeft: true } } } }, sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 560, bottom: 560, left: 600, right: 600 }, borders: { pageBorders: { display: 'allPages', offsetFrom: 'page' }, pageBorderTop: bd, pageBorderBottom: bd, pageBorderLeft: bd, pageBorderRight: bd } } }, children: kids }] });
+    const blob = await D.Packer.toBlob(doc);
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = mathFileBase() + '.docx'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast('تم تنزيل ملف Word.');
+  } catch (e) { console.error(e); toast('تعذّر إنشاء ملف Word.'); }
+  finally { busyBtns(false); }
+}
+
+// ورقة الرياضيات: نفس القالب في المعاينة والطباعة
+const MATH_SHEET_CSS = `
+.msheet{direction:rtl;text-align:right;color:#000;background:#fff;font-family:'Traditional Arabic','Simplified Arabic',Arial,Tahoma,sans-serif;font-size:12.5pt;line-height:1.55;border:1.6px solid #000;padding:8px 10px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.msheet *{box-sizing:border-box}
+.msheet table{border-collapse:collapse;width:100%}
+.msheet td,.msheet th{border:1.2px solid #000;padding:3px 6px;vertical-align:middle}
+.msheet .c{text-align:center}
+.msheet table.mh td{font-weight:700;font-size:11.5pt;line-height:1.7}
+.msheet table.mg{margin-top:-1.2px}.msheet table.mg td{width:12.5%;height:30px}
+.msheet table.mn{margin-top:8px}.msheet table.mn td{height:30px}
+.msheet .mkey{text-align:center;font-weight:700;font-size:15pt;color:#c00000;border:2px solid #c00000;border-radius:8px;padding:2px;margin-bottom:6px}
+.msheet .mqh{display:flex;justify-content:space-between;align-items:center;margin:12px 0 6px;font-weight:700;break-after:avoid;page-break-after:avoid}
+.msheet .mmk{border:1.3px solid #000;display:flex;font-weight:700;flex-shrink:0}.msheet .mmk span{padding:2px 10px}.msheet .mmk span:first-child{border-left:1.3px solid #000;min-width:56px}
+.msheet table.mq{margin-bottom:-1.2px;break-inside:avoid;page-break-inside:avoid}
+.msheet table.mq td.st{font-weight:700;padding:5px 8px}
+.msheet table.mq td.o{width:25%;padding:4px 8px}.msheet table.mq td.o b{margin-left:5px}
+.msheet table.mq td.ok{background:#fde2e2;color:#c00000;font-weight:700}
+.msheet table.mtf tr{break-inside:avoid;page-break-inside:avoid}.msheet table.mtf td{height:34px}
+.msheet table.mtf td.n{width:38px;text-align:center;font-weight:700}.msheet table.mtf td.a{width:60px;text-align:center;font-size:15pt;font-weight:700}
+.msheet .mes{border-top:1.2px solid #000;padding:8px 4px 6px;break-inside:avoid;page-break-inside:avoid}
+.msheet .mes:first-of-type{border-top:0}
+.msheet .mes .t{font-weight:700}.msheet .mes .t small{font-weight:400;font-size:10pt}
+.msheet .mes .ex{font-size:14pt;margin:8px 30px;line-height:1.8}
+.msheet .mes .sp{height:118px}.msheet .mes .sp.s{height:64px}
+.msheet .mka{color:#c00000;font-weight:700}.msheet .mes .st{margin:4px 18px;line-height:1.9}
+.msheet .mend{text-align:center;font-weight:700;margin:16px 0 4px}
+.msheet .ng{unicode-bidi:isolate;direction:ltr;display:inline-block}
+.msheet .fr,.mpv .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.05;font-size:.92em;margin:0 2px}
+.msheet .fr span:first-child,.mpv .fr span:first-child{border-bottom:1.3px solid currentColor;padding:0 3px}
+.mpv .ng{unicode-bidi:isolate;direction:ltr;display:inline-block}
+.msheet sup{font-size:.7em}
+.msheet .mref{break-before:page;page-break-before:always;padding-top:4px}
+.msheet .mref h3{text-align:center;font-size:14pt;margin:4px 0 8px}
+.msheet .mref p{font-size:10pt;margin:0 0 8px}
+.msheet .mref td,.msheet .mref th{font-size:9.5pt;padding:2px 4px;text-align:center}
+.msheet .mref th{background:#e9eef6}.msheet .mref td.r{text-align:right}
+`;
 
 gate();
 </script>
