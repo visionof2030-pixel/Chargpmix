@@ -222,12 +222,12 @@ JSON: {"data":{"mode":"guided","title":"...","instructions":"...","questions":["
 
 // ===================== الرياضيات (وفق جدول المواصفات) =====================
 // كل فقرة مرتبطة بفصل ودرس وهدف ومستوى (معرفة/تطبيق/استدلال) تحدده الصفحة من جدول المواصفات.
-type MSpec = { kind: string; ch: number; chTitle: string; lesson: string; obj: string; lv: string; mk: number; graph: boolean };
+type MSpec = { kind: string; ch: number; chTitle: string; lesson: string; obj: string; lv: string; mk: number; graph: boolean; ref: string };
 function readMSpecs(v: unknown): MSpec[] {
   if (!Array.isArray(v)) return [];
   return v.slice(0, 30).map((s) => {
     const o = (s && typeof s === "object" ? s : {}) as Record<string, unknown>;
-    return { kind: txt(o.kind, 10), ch: Number(o.ch) || 0, chTitle: txt(o.chTitle, 120), lesson: txt(o.lesson, 160), obj: txt(o.obj, 300), lv: txt(o.lv, 12), mk: Number(o.mk) || 1, graph: o.graph === true };
+    return { kind: txt(o.kind, 10), ch: Number(o.ch) || 0, chTitle: txt(o.chTitle, 120), lesson: txt(o.lesson, 160), obj: txt(o.obj, 300), lv: txt(o.lv, 12), mk: Number(o.mk) || 1, graph: o.graph === true, ref: txt(o.ref, 700) };
   });
 }
 const MLEVEL: Record<string, string> = {
@@ -253,6 +253,7 @@ function mathHeader(grade: string, term: string, difficulty: string) {
 - الأرقام هندية عربية (٠١٢٣٤٥٦٧٨٩)، والفاصلة العشرية «٫». المتغيرات حروف عربية كما في الكتاب: س، ص، ع، ن، م، ل، ك، ر، هـ. الدالة: د(س). المجموعة الخالية: Ø.
 - الرموز: + − × ÷ = ≠ < > ≤ ≥ √ و | | للقيمة المطلقة و π. الأسس: س^٢ . الكسور: \\frac{البسط}{المقام} فقط. العدد السالب: علامة "-" ملاصقة للعدد بلا مسافة (-٥ ، -٢س). الطرح بين حدين: " - " بمسافتين.
 - لا تكتب أي سؤال يحتاج رسمًا أو شكلًا أو جدولًا ليُفهم (إلا الفقرات المعلَّمة «بياني» فلها طريقة خاصة أدناه)؛ صف الأبعاد والبيانات بالكلمات والأعداد.
+- إذا ورد «من الكتاب» مع الفقرة فهو ملخص الدرس من كتاب الطالب: التزم بمفاهيمه ورموزه وصيغه وطريقته في الحل، وابنِ الفقرة على مثل أمثلته (بأعداد وسياقات جديدة)، ولا تخرج عنه.
 - قبل الكتابة: حلّ كل فقرة بنفسك خطوة خطوة وتحقق من الإجابة مرتين. يجب أن تكون الإجابة صحيحة رياضيًا تمامًا.
 - أعد JSON فقط بلا أي نص آخر.`;
 }
@@ -270,7 +271,7 @@ const GRAPH_HELP = `الفقرات المعلَّمة «بياني» (اختيا
 أضف "verify" إن انطبق: "intersection" (حل نظام من مستقيمين بيانيًا؛ الخيارات أزواج مرتبة) أو "slope" (ميل المستقيم الأول؛ الخيارات أعداد) أو "notfunction" / "function" (أي الرسوم الأربعة ليست / هي دالة) أو "count" (عدد حلول نظام من مستقيمين). الأداة تتحقق من الإجابة بنفسها.
 إن كان الهدف يحتاج تمثيلًا غير ممكن بهذه العناصر (أعمدة بيانية، صور…) فاكتب فقرة عادية بلا رسم.`;
 function mathLines(specs: MSpec[]) {
-  return specs.map((s, i) => `${i + 1}. [${s.kind}${s.kind === "essay" ? `، ${s.mk} درجات` : ""}${s.graph ? "، بياني" : ""}] الفصل ${s.ch} «${s.chTitle}» — الدرس: ${s.lesson} — الهدف: ${s.obj} — المستوى: ${LVTXT[s.lv] || s.lv}`).join("\n");
+  return specs.map((s, i) => `${i + 1}. [${s.kind}${s.kind === "essay" ? `، ${s.mk} درجات` : ""}${s.graph ? "، بياني" : ""}] الفصل ${s.ch} «${s.chTitle}» — الدرس: ${s.lesson} — الهدف: ${s.obj} — المستوى: ${LVTXT[s.lv] || s.lv}${s.ref ? " — من الكتاب: " + s.ref : ""}`).join("\n");
 }
 function buildMathPrompt(section: string, h0: string, specs: MSpec[], ctx: Record<string, unknown>): string | null {
   const avoid = Array.isArray(ctx.avoid) ? (ctx.avoid as unknown[]).slice(0, 40).map((x) => txt(x, 200)).filter(Boolean) : [];
