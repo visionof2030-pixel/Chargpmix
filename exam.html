@@ -709,7 +709,8 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
 
       <div class="card">
         <div class="ch"><span class="n">٣</span><div><b>شكل الاختبار</b><small>القالب ومستوى الصعوبة ونوع سؤال التعبير.</small></div></div>
-        <div class="hint" id="mathHint" hidden style="margin-top:0">قالب الرياضيات: السؤال الأول اختيار من متعدد (٢٠ درجة) · الثاني صح وخطأ (١٠ درجات) · الثالث أسئلة مقالية (١٠ درجات: ٣ + ٣ + ٢ + ٢). كل فقرة مرتبطة بدرس وهدف ومستوى من جدول المواصفات، وكل إجابة تُراجَع مرة ثانية، ونموذج الإجابة يتضمن المرجعية.</div>
+        <div class="hint" id="mathHint" hidden style="margin-top:0">قالب الرياضيات: السؤال الأول اختيار من متعدد (٢٠ درجة) · الثاني صح وخطأ (١٠ درجات) · الثالث أسئلة مقالية (١٠ درجات: ٣ + ٣ + ٢ + ٢). كل فقرة مرتبطة بدرس وهدف ومستوى من جدول المواصفات، وكل إجابة تُراجَع مرة ثانية، ونموذج الإجابة يتضمن المرجعية.
+          <div style="margin-top:10px"><div class="lbl2">الأسئلة البيانية (رسم في السؤال أو في الخيارات)</div><div class="seg" id="mgraphs"><button data-v="0">بدون</button><button data-v="2">٢</button><button data-v="3" class="on">٣</button><button data-v="4">٤</button></div><div class="muted" style="margin-top:4px;font-size:12px">تُختار من دروس أهدافها تمثيل بياني، والأداة ترسمها وتحسب إجابتها بنفسها.</div></div></div>
         <div id="tmplWrap"><div class="lbl2">قالب الأسئلة</div>
         <div class="seg big" id="tmpl">
           <button data-v="ministry" class="on"><b>قالب الوزارة</b><small>اختيار من متعدد، افعل كما هو مطلوب، مطابقة وصور</small></button>
@@ -1107,7 +1108,7 @@ function prefs() {
     diff: document.querySelector('#diff .on')?.dataset.v || 'medium', cmode: document.querySelector('#cmode .on')?.dataset.v || 'guided',
     tmpl: document.querySelector('#tmpl .on')?.dataset.v || 'ministry', gcount: +(document.querySelector('#gcount .on')?.dataset.v || 9),
     twoForms: !!$('twoForms')?.checked,
-    subject: document.querySelector('#subj .on')?.dataset.v || 'en', mgrade: $('mgrade') ? $('mgrade').value : 'm3',
+    subject: document.querySelector('#subj .on')?.dataset.v || 'en', mgraphs: +(document.querySelector('#mgraphs .on')?.dataset.v ?? 3), mgrade: $('mgrade') ? $('mgrade').value : 'm3',
   };
 }
 function termUnits(g, t) { const b = C[g]; const [a, z] = b.terms[t]; return b.units.filter((u) => u.u >= a && u.u <= z); }
@@ -1141,7 +1142,7 @@ function initUI() {
   { const st = document.createElement('style'); st.textContent = MATH_SHEET_CSS; document.head.appendChild(st); }
   $('twoForms').checked = !!sp.twoForms; $('twoForms').onchange = savePrefs;
   $('diff').innerHTML = LEVELS.map(([v, n], i) => `<button data-v="${v}"${v === 'medium' ? ' class="on"' : ''}><span class="bars">${[0, 1, 2, 3, 4, 5].map((j) => `<i class="${j <= i ? 'f' : ''}" style="height:${4 + j * 2}px"></i>`).join('')}</span>${n}</button>`).join('');
-  for (const id of ['diff', 'cmode', 'tmpl', 'gcount']) {
+  for (const id of ['diff', 'cmode', 'tmpl', 'gcount', 'mgraphs']) {
     const v = sp[id] != null ? String(sp[id]) : '';
     if (v) document.querySelectorAll('#' + id + ' button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
     $(id).addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $(id).querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); savePrefs(); tmplUI(); });
@@ -2480,9 +2481,14 @@ function mathBlueprint(chs, p) {
     return { kind, ci: t.ci, ch: c.n, chTitle: c.title, lesson: L.name || '', li: o.li, page: L.p || 0, lv: t.lv, obj: o.obj, mk: t.mk || 1 };
   };
   const byPos = (a, b) => a.ch - b.ch || a.li - b.li;
+  const M = mcq.map(mk('mcq')).sort(byPos);
+  // الأسئلة البيانية: من فقرات أهدافها تمثيل بياني أو مستوى إحداثي أو ميل أو خط أعداد، موزعة على الفصول
+  const want = p.mgraphs == null ? 3 : +p.mgraphs; const G_RE = /بياني|التمثيل|تمثيل (العلاقات|المعادلات|الدوال|موقف)|الخط الرأسي|المستوى الإحداثي|النظام الإحداثي|الإحداثي|المقطع|الميل|خط الأعداد|المستقيم/;
+  const cand = shuffle(M.filter((it) => G_RE.test(it.obj + ' ' + it.lesson))); const usedC = new Set();
+  for (const pass of [0, 1]) for (const it of cand) { if (M.filter((x) => x.graph).length >= want) break; if (it.graph || (pass === 0 && usedC.has(it.ch))) continue; it.graph = true; usedC.add(it.ch); }
   return {
     cells: cells.map((x) => ({ ch: chs[x.ci].n, lv: x.lv, req: x.req, act: x.act })),
-    mcq: mcq.map(mk('mcq')).sort(byPos), tf: tf.map(mk('tf')).sort(byPos), essay: ess.map(mk('essay')).sort(byPos),
+    mcq: M, tf: tf.map(mk('tf')).sort(byPos), essay: ess.map(mk('essay')).sort(byPos),
   };
 }
 
@@ -2516,16 +2522,26 @@ async function mathCall(section, items, ctx, p) {
   if (!data || data.failed) throw new Error('تعذّر التوليد، حاول مرة أخرى');
   return data;
 }
-const mspecOut = (it) => ({ kind: it.kind, ch: it.ch, chTitle: it.chTitle, lesson: it.lesson, obj: it.obj, lv: it.lv, mk: it.mk });
+const mspecOut = (it) => ({ kind: it.kind, ch: it.ch, chTitle: it.chTitle, lesson: it.lesson, obj: it.obj, lv: it.lv, mk: it.mk, graph: !!it.graph });
 const mSame = (a, b) => mfix(a).replace(/\s+/g, '') === mfix(b).replace(/\s+/g, '');
 function mNorm(raw, spec) {
-  const base = { ...spec, warn: false, why: '' };
+  const base = { ...spec, warn: false, why: '', gok: false, fixed: false };
   if (spec.kind === 'mcq') {
+    const g = gClean(raw?.graph); const og0 = Array.isArray(raw?.optionGraphs) ? raw.optionGraphs.slice(0, 4).map(gClean) : null;
+    const og = og0 && og0.length === 4 && og0.every(Boolean) ? og0 : null;
+    if (og) { // رسم في كل خيار: نص الخيار اختياري، والإجابة رقم الخيار
+      const options = (Array.isArray(raw?.options) ? raw.options : []).slice(0, 4).map(mfix); while (options.length < 4) options.push('');
+      let ans = Number.isInteger(+raw?.answer_index) ? +raw.answer_index : -1; if (ans < 0 || ans > 3) ans = options.findIndex((o) => o && mSame(o, raw?.answer));
+      const it = { ...base, q: mfix(raw?.q || raw?.stem), options, og, g: null, verify: raw?.verify || '', ans: Math.max(0, ans), warn: ans < 0 || !raw?.q, why: ans < 0 ? 'لم تُحدَّد الإجابة الصحيحة' : '' };
+      gApplyVerify(it); return it;
+    }
     const options = (Array.isArray(raw?.options) ? raw.options : []).map(mfix).filter(Boolean).slice(0, 4);
     const ans = options.findIndex((o) => mSame(o, raw?.answer));
     const dup = new Set(options.map((o) => o.replace(/\s+/g, ''))).size !== options.length;
     while (options.length < 4) options.push('');
-    return { ...base, q: mfix(raw?.q || raw?.stem), options, ans: Math.max(0, ans), warn: ans < 0 || dup || !raw?.q, why: ans < 0 ? 'لم تُحدَّد الإجابة الصحيحة' : dup ? 'خياران متطابقان' : '' };
+    const it = { ...base, q: mfix(raw?.q || raw?.stem), options, g, og: null, verify: raw?.verify || '', ans: Math.max(0, ans), warn: ans < 0 || dup || !raw?.q, why: ans < 0 ? 'لم تُحدَّد الإجابة الصحيحة' : dup ? 'خياران متطابقان' : '' };
+    if (spec.graph && !g) { it.warn = true; it.why = 'لم يُرسل وصف الرسم — أعد توليد الفقرة'; }
+    gApplyVerify(it); return it;
   }
   if (spec.kind === 'tf') {
     const a = raw?.answer === true || String(raw?.answer).toLowerCase() === 'true' || raw?.answer === 'صح';
@@ -2542,9 +2558,10 @@ function mNorm(raw, spec) {
 // موضع الإجابة الصحيحة متوازن بين أ ب جـ د
 function mBalance(list) {
   const pos = shuffle(Array.from({ length: list.length }, (_, i) => i % 4));
-  list.forEach((q, i) => { if (q.warn || !q.options[q.ans]) return; const t = pos[i]; [q.options[q.ans], q.options[t]] = [q.options[t], q.options[q.ans]]; q.ans = t; });
+  list.forEach((q, i) => { if (q.warn || (!q.options[q.ans] && !q.og)) return; const t = pos[i]; [q.options[q.ans], q.options[t]] = [q.options[t], q.options[q.ans]]; if (q.og) [q.og[q.ans], q.og[t]] = [q.og[t], q.og[q.ans]]; q.ans = t; });
 }
-const mReviewLine = (it) => (it.kind === 'mcq' ? `[اختيار من متعدد] ${mText(it.q)} | الخيارات: ${it.options.map((o, j) => `${MLET[j]}) ${mText(o)}`).join(' ، ')} | الإجابة المعلَّمة: ${mText(it.options[it.ans])}`
+const gDesc = (g) => (g ? JSON.stringify(g) : '');
+const mReviewLine = (it) => (it.kind === 'mcq' ? `[اختيار من متعدد] ${mText(it.q)}${it.g ? ' | الرسم في السؤال: ' + gDesc(it.g) : ''} | الخيارات: ${it.options.map((o, j) => `${MLET[j]}) ${mText(o)}${it.og ? ' [رسم: ' + gDesc(it.og[j]) + ']' : ''}`).join(' ، ')} | الإجابة المعلَّمة: ${MLET[it.ans]}) ${mText(it.options[it.ans])}`
   : it.kind === 'tf' ? `[صح أم خطأ] ${mText(it.s)} | الحكم المعلَّم: ${it.ans ? 'صح (true)' : 'خطأ (false)'}`
     : `[مقالي] ${mText(it.q)} ${it.ex.map(mText).join(' ؛ ')} | الناتج المعلَّم: ${mText(it.answer)}`) + ` | الدرس: ${it.lesson} | الهدف: ${it.obj}`;
 // المراجعة الثانية: كل فقرة تُحل من جديد؛ الخاطئ يُصحَّح إن أمكن أو يُعاد توليده مرة ثم يُراجع، وما بقي يُعلَّم للمعلم
@@ -2565,8 +2582,9 @@ async function mathReview(list, p) {
     const bad = [];
     res.forEach(({ k, v }) => {
       if (v.ok) return; const it = list[k];
+      if (it.gok) return; // الإجابة محسوبة من الرسم نفسه
       const fix = mfix(v.fix);
-      if (fix && it.kind === 'mcq') { const j = it.options.findIndex((o) => mSame(o, fix)); if (j >= 0) { it.ans = j; it.fixed = true; return; } }
+      if (fix && it.kind === 'mcq') { const j = it.og ? MLET.indexOf(fix.replace(/[)\s]/g, '')) : it.options.findIndex((o) => mSame(o, fix)); if (j >= 0) { it.ans = j; it.fixed = true; return; } }
       if (fix && it.kind === 'tf' && /^(true|false|صح|خطأ)$/i.test(fix)) { it.ans = /true|صح/i.test(fix); it.fixed = true; return; }
       bad.push({ k, why: mfix(v.why) });
     });
@@ -2673,7 +2691,9 @@ function mathEditor() {
   let h = `<div class="hint" style="margin-bottom:10px">اكتب الكسر هكذا: <bdi dir="ltr">\\frac{١}{٢}</bdi> ، والأس: <bdi dir="ltr">س^٢</bdi> ، والعدد السالب: <bdi dir="ltr">-٥</bdi> — وتظهر المعاينة تحت كل حقل.</div>`;
   let s1 = '';
   EXAM.mcq.forEach((it, i) => {
-    s1 += `<div class="it${it.warn ? ' warn' : ''}" data-sec="mcq" data-i="${i}"><div class="it-h">${tg(it)}${rbtn('mcq', i)}</div><div class="row" style="gap:6px;align-items:flex-start"><b>${ARD(i + 1)}/</b><div style="flex:1">${ar(`mcq.${i}.q`, it.q)}${pvw(it.q)}</div></div>
+    const gj = (path, g, lab) => `<div><div class="gpv">${gSVG(g, { w: 150 })}</div>${lab ? `<b>${lab}</b>` : ''}<details><summary class="muted">تعديل الرسم</summary><textarea dir="ltr" rows="4" data-gjson="${path}" style="width:220px;font:11px monospace">${esc(JSON.stringify(g))}</textarea></details></div>`;
+    s1 += `<div class="it${it.warn ? ' warn' : ''}" data-sec="mcq" data-i="${i}"><div class="it-h">${tg(it)}${it.gok ? '<span class="tag" style="color:var(--acc)">✓ الإجابة محسوبة من الرسم</span>' : ''}${rbtn('mcq', i)}</div><div class="row" style="gap:6px;align-items:flex-start"><b>${ARD(i + 1)}/</b><div style="flex:1">${ar(`mcq.${i}.q`, it.q)}${pvw(it.q)}</div></div>
+      ${it.g ? `<div class="mgp">${gj(`mcq.${i}.g`, it.g)}</div>` : ''}${it.og ? `<div class="mgp">${it.og.map((g, j) => gj(`mcq.${i}.og.${j}`, g, MLET[j] + ')')).join('')}</div>` : ''}
       <div class="opts">${it.options.map((o, j) => `<label class="opt${it.ans === j ? ' ok' : ''}"><input type="radio" name="mq${i}" data-ans="mcq.${i}" value="${j}"${it.ans === j ? ' checked' : ''} title="الإجابة الصحيحة"><span class="muted">${MLET[j]})</span><input type="text" dir="rtl" data-p="mcq.${i}.options.${j}" value="${esc(o)}"></label>`).join('')}</div></div>`;
   });
   h += secCard('mcq', 'السؤال الأول — اختر الإجابة الصحيحة', ARD(EXAM.mcq.length), s1 || '<div class="muted">لم يُولَّد — اضغط «↻ القسم».</div>');
@@ -2720,6 +2740,14 @@ document.addEventListener('change', (e) => {
   if (el.dataset.num) { setPath(el.dataset.num, Math.max(0, +el.value || 0)); saveDraft(); }
   if (el.dataset.nl != null) { EXAM.essay[+el.dataset.nl].nl = el.checked; saveDraft(); }
 });
+document.addEventListener('input', (e) => { // تعديل وصف الرسم يدوياً: يُرسم فوراً ويُعاد التحقق من الإجابة
+  const el = e.target; if (!EXAM || !isMathF(EXAM) || !el.dataset.gjson) return;
+  let g = null; try { g = gClean(JSON.parse(el.value)); } catch {}
+  el.style.borderColor = g ? '' : '#d1342b'; if (!g) return;
+  setPath(el.dataset.gjson, g); const box = el.closest('details').parentElement.querySelector('.gpv'); if (box) box.innerHTML = gSVG(g, { w: 150 });
+  const it = EXAM.mcq[+el.dataset.gjson.split('.')[1]]; if (it) { gApplyVerify(it); }
+  clearTimeout(document._sv); document._sv = setTimeout(() => { saveDraft(); mathCoverage(); }, 500);
+});
 document.addEventListener('input', (e) => { // معاينة فورية للنص الرياضي تحت الحقل
   const el = e.target; if (!EXAM || !isMathF(EXAM) || !el.dataset.p) return;
   const pv = el.nextElementSibling; if (pv && pv.classList.contains('mpv')) pv.innerHTML = mHTML(el.value);
@@ -2752,9 +2780,9 @@ function mathBody(ka) {
   const sumMk = (l) => l.reduce((a, x) => a + x.mk, 0);
   h += mQH('السؤال الأول / اختر الإجابة الصحيحة لما يلي :', mDeg(sumMk(EXAM.mcq)));
   EXAM.mcq.forEach((q, i) => {
-    const long = q.options.some((o) => mText(o).length > 22);
-    h += `<table class="mq"><tr><td class="st" colspan="${long ? 2 : 4}">${ARD(i + 1)}/ ${mHTML(q.q)}</td></tr>`;
-    const cell = (j) => `<td class="o${ka && q.ans === j ? ' ok' : ''}"><b>${MLET[j]})</b> ${mHTML(q.options[j])}</td>`;
+    const long = !q.og && q.options.some((o) => mText(o).length > 22);
+    h += q.g ? `<table class="mq"><tr><td class="st" colspan="${long ? 1 : 3}">${ARD(i + 1)}/ ${mHTML(q.q)}</td><td class="gc"${long ? '' : ''}>${gSVG(q.g, { w: q.g.type === 'numberline' ? 300 : 150 })}</td></tr>` : `<table class="mq"><tr><td class="st" colspan="${long ? 2 : 4}">${ARD(i + 1)}/ ${mHTML(q.q)}</td></tr>`;
+    const cell = (j) => `<td class="o${ka && q.ans === j ? ' ok' : ''}"><b>${MLET[j]})</b> ${mHTML(q.options[j])}${q.og ? `<div class="og">${gSVG(q.og[j], { w: q.og[j].type === 'numberline' ? 160 : 140 })}</div>` : ''}</td>`;
     h += long ? `<tr>${cell(0)}${cell(1)}</tr><tr>${cell(2)}${cell(3)}</tr>` : `<tr>${[0, 1, 2, 3].map(cell).join('')}</tr>`;
     h += '</table>';
   });
@@ -2885,8 +2913,10 @@ function mathDocx(D, ka) {
   const ow = Math.floor(W / 4);
   EXAM.mcq.forEach((q, i) => {
     const long = q.options.some((o) => mText(o).length > 22); const w = long ? ow * 2 : ow;
-    const opt = (j) => { const ok = ka && q.ans === j; return Cc(P([T(`${MLET[j]})  `, { b: true, red: ok }), ...runs(q.options[j], { red: ok, b: ok })], { after: 0 }), { w, fill: ok ? 'FDE2E2' : undefined }); };
+ const gImg = (g, w0) => { const im = GPNG.get(gSVG(g, { w: w0 })); return im ? new D.ImageRun({ data: im.data, transformation: { width: Math.round(im.w * 0.9), height: Math.round(im.h * 0.9) } }) : T(''); };
+    const opt = (j) => { const ok = ka && q.ans === j; return Cc([P([T(`${MLET[j]})  `, { b: true, red: ok }), ...runs(q.options[j], { red: ok, b: ok })], { after: 0 }), ...(q.og ? [new D.Paragraph({ alignment: CEN, children: [gImg(q.og[j], q.og[j].type === 'numberline' ? 160 : 140)] })] : [])], { w, fill: ok ? 'FDE2E2' : undefined }); };
     const stem = P([T(`${ARD(i + 1)}/ `, { b: true }), ...runs(q.q, { b: true })], { after: 0, keep: true });
+    if (q.g) { k.push(Tb([ow, ow, ow, ow], [R([Cc(stem, { span: 3 }), Cc(new D.Paragraph({ alignment: CEN, children: [gImg(q.g, q.g.type === 'numberline' ? 300 : 150)] }))]), R([0, 1, 2, 3].map(opt), { h: 480 })])); return; }
     k.push(long ? Tb([w, w], [R([Cc(stem, { span: 2 })], { h: 480 }), R([opt(0), opt(1)], { h: 440 }), R([opt(2), opt(3)], { h: 440 })]) : Tb([ow, ow, ow, ow], [R([Cc(stem, { span: 4 })], { h: 480 }), R([0, 1, 2, 3].map(opt), { h: 480 })]));
   });
   qhead('السؤال الثاني / ضع علامة ( ✓ ) أمام العبارة الصحيحة وعلامة ( ✗ ) أمام العبارة الخاطئة :', mDeg(sum(EXAM.tf)));
@@ -2941,6 +2971,9 @@ async function mathExportDOCX() {
   try {
     if (!window.docx) await loadScript('https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js');
     const D = window.docx; let kids = [];
+    // الرسوم صورٌ في Word: نجهزها أولاً (بنفس مقاسات الورقة)
+    const svgs = []; exportForms().forEach((f) => f.mcq.forEach((q) => { if (q.g) svgs.push(gSVG(q.g, { w: q.g.type === 'numberline' ? 300 : 150 })); (q.og || []).forEach((g) => svgs.push(gSVG(g, { w: g.type === 'numberline' ? 160 : 140 }))); }));
+    await Promise.all(svgs.map(gPNG));
     exportParts().forEach((pt, i) => { if (i) kids.push(new D.Paragraph({ children: [new D.PageBreak()] })); kids = kids.concat(withForm(pt.f, () => mathDocx(D, pt.ka))); });
     const bd = { style: D.BorderStyle.SINGLE, size: 12, color: '000000', space: 18 };
     const doc = new D.Document({ styles: { default: { document: { run: { font: 'Arial', rightToLeft: true } } } }, sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 560, bottom: 560, left: 600, right: 600 }, borders: { pageBorders: { display: 'allPages', offsetFrom: 'page' }, pageBorderTop: bd, pageBorderBottom: bd, pageBorderLeft: bd, pageBorderRight: bd } } }, children: kids }] });
@@ -2949,6 +2982,195 @@ async function mathExportDOCX() {
     toast('تم تنزيل ملف Word.');
   } catch (e) { console.error(e); toast('تعذّر إنشاء ملف Word.'); }
   finally { busyBtns(false); }
+}
+
+// ===================== الرسوم البيانية للرياضيات =====================
+// الذكاء الاصطناعي يصف الرسم بالأرقام (مستقيمات، قطع مكافئ، قيمة مطلقة، أشعة، نقاط، خط أعداد)،
+// والأداة ترسمه بدقة، وتحسب الإجابة بنفسها حيث يمكن (التقاطع، الميل، اختبار الخط الرأسي، عدد الحلول).
+const gL = (v) => (v < 0 ? '\u2066-' + ARD(-v) + '\u2069' : ARD(v)); // السالب يسار العدد
+const GCOL = ['#1f6fd1', '#d1342b', '#1d8a4e', '#8a4fd1'];
+const gNum = (v, lo = -50, hi = 50) => { const n = Number(v); return Number.isFinite(n) ? Math.max(lo, Math.min(hi, n)) : 0; };
+// تنظيف وصف الرسم القادم من النموذج
+function gClean(g) {
+  if (!g || typeof g !== 'object') return null;
+  if (g.type === 'numberline') {
+    const r = Array.isArray(g.range) ? g.range : [-6, 6]; let a = Math.round(gNum(r[0], -20, 20)); let b = Math.round(gNum(r[1], -20, 20)); if (b - a < 4) { a = -6; b = 6; }
+    const sol = (Array.isArray(g.sol) ? g.sol : []).slice(0, 3).map((s) => ({ a: s.a == null ? null : gNum(s.a, a, b), b: s.b == null ? null : gNum(s.b, a, b), ca: !!s.ca, cb: !!s.cb }));
+    const pts = (Array.isArray(g.pts) ? g.pts : []).slice(0, 6).map((p) => ({ x: gNum(p.x ?? p, a, b), c: p.c !== false }));
+    return { type: 'numberline', range: [a, b], sol, pts };
+  }
+  const r = Array.isArray(g.range) ? g.range.map((x) => Math.round(gNum(x, -15, 15))) : [];
+  let [x0, x1, y0, y1] = r.length === 4 ? r : [-5, 5, -5, 5];
+  if (x1 - x0 < 4) { x0 = -5; x1 = 5; } if (y1 - y0 < 4) { y0 = -5; y1 = 5; }
+  if (x0 > 0) x0 = 0; if (y0 > 0) y0 = 0; if (x1 < 0) x1 = 0; if (y1 < 0) y1 = 0; // المحوران ظاهران دائماً
+  const K = ['line', 'vline', 'parab', 'abs', 'ray', 'seg', 'pts', 'circle'];
+  const items = (Array.isArray(g.items) ? g.items : []).filter((it) => it && K.includes(it.k)).slice(0, 5).map((it) => {
+    const P = (p) => (Array.isArray(p) ? [gNum(p[0]), gNum(p[1])] : [0, 0]);
+    switch (it.k) {
+      case 'line': return { k: 'line', m: gNum(it.m), b: gNum(it.b) };
+      case 'vline': return { k: 'vline', x: gNum(it.x) };
+      case 'parab': return { k: 'parab', a: gNum(it.a, -10, 10) || 1, b: gNum(it.b), c: gNum(it.c) };
+      case 'abs': return { k: 'abs', a: gNum(it.a, -10, 10) || 1, h: gNum(it.h), v: gNum(it.v) };
+      case 'ray': { const v = Array.isArray(it.v) ? [gNum(it.v[0], -10, 10), gNum(it.v[1], -10, 10)] : [1, 0]; return { k: 'ray', p: P(it.p), v: v[0] || v[1] ? v : [1, 0], open: !!it.open }; }
+      case 'seg': return { k: 'seg', p: P(it.p), q: P(it.q), op: !!it.op, oq: !!it.oq };
+      case 'pts': return { k: 'pts', p: (Array.isArray(it.p) ? it.p : []).slice(0, 12).map(P), lab: !!it.lab };
+      default: return { k: 'circle', c: P(it.c), r: Math.max(0.5, gNum(it.r, 0, 10)) };
+    }
+  });
+  if (!items.length) return null;
+  return { type: 'plane', range: [x0, x1, y0, y1], items };
+}
+// قيم ص لكل عنصر عند س (لاختبار الخط الرأسي): مصفوفة قيم، أو Infinity لخط رأسي
+function gYs(it, x) {
+  const e = 1e-9;
+  switch (it.k) {
+    case 'line': return [it.m * x + it.b];
+    case 'vline': return Math.abs(x - it.x) < e ? [Infinity] : [];
+    case 'parab': return [it.a * x * x + it.b * x + it.c];
+    case 'abs': return [it.a * Math.abs(x - it.h) + it.v];
+    case 'ray': {
+      const [px, py] = it.p; const [vx, vy] = it.v;
+      if (Math.abs(vx) < e) return Math.abs(x - px) < e ? [Infinity] : [];
+      const t = (x - px) / vx; if (t < -e || (it.open && Math.abs(t) < e)) return [];
+      return [py + t * vy];
+    }
+    case 'seg': {
+      const [ax, ay] = it.p; const [bx, by] = it.q;
+      if (Math.abs(ax - bx) < e) return Math.abs(x - ax) < e && Math.abs(ay - by) > e ? [Infinity] : Math.abs(x - ax) < e ? [ay] : [];
+      const t = (x - ax) / (bx - ax); if (t < -e || t > 1 + e) return [];
+      if ((it.op && Math.abs(t) < e) || (it.oq && Math.abs(t - 1) < e)) return [];
+      return [ay + t * (by - ay)];
+    }
+    case 'pts': return it.p.filter((p) => Math.abs(p[0] - x) < e).map((p) => p[1]);
+    case 'circle': { const d = it.r * it.r - (x - it.c[0]) ** 2; if (d < -e) return []; const s = Math.sqrt(Math.max(0, d)); return s < 1e-6 ? [it.c[1]] : [it.c[1] - s, it.c[1] + s]; }
+    default: return [];
+  }
+}
+// هل الرسم دالة؟ (اختبار الخط الرأسي على نقاط كثيفة ونقاط بداية الأشعة والقطع)
+function gIsFunction(g) {
+  if (!g || g.type !== 'plane') return null;
+  const [x0, x1] = g.range; const xs = new Set();
+  for (let x = x0; x <= x1 + 1e-9; x += 0.125) xs.add(+x.toFixed(4));
+  g.items.forEach((it) => { if (it.p && !Array.isArray(it.p[0])) xs.add(it.p[0]); if (it.q) xs.add(it.q[0]); if (it.k === 'vline') xs.add(it.x); if (it.k === 'pts') it.p.forEach((p) => xs.add(p[0])); if (it.k === 'circle') xs.add(it.c[0]); });
+  for (const x of xs) {
+    const ys = []; g.items.forEach((it) => ys.push(...gYs(it, x)));
+    if (ys.includes(Infinity)) return false;
+    const u = []; ys.forEach((y) => { if (!u.some((z) => Math.abs(z - y) < 1e-6)) u.push(y); });
+    if (u.length > 1) return false;
+  }
+  return true;
+}
+const gLines = (g) => (g && g.type === 'plane' ? g.items.filter((x) => x.k === 'line' || x.k === 'vline') : []);
+function gIntersect(a, b) {
+  if (a.k === 'vline' && b.k === 'vline') return null;
+  if (a.k === 'vline') return [a.x, b.m * a.x + b.b]; if (b.k === 'vline') return [b.x, a.m * b.x + a.b];
+  if (Math.abs(a.m - b.m) < 1e-9) return null; const x = (b.b - a.b) / (a.m - b.m); return [x, a.m * x + a.b];
+}
+// أعداد نص الخيار (أرقام عربية، سالب، كسور \frac)
+function gNums(s) {
+  const t = mfix(s).replace(/[٠-٩]/g, (d) => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)]).replace(/٫/g, '.').replace(/−/g, '-');
+  const out = []; const re = /(-?)\s*\\frac\{(-?\d+(?:\.\d+)?)\}\{(-?\d+(?:\.\d+)?)\}|(-?\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)|(-?\d+(?:\.\d+)?)/g; let m;
+  while ((m = re.exec(t))) { if (m[2] != null) out.push((m[1] ? -1 : 1) * (+m[2] / +m[3])); else if (m[4] != null) out.push(+m[4] / +m[5]); else out.push(+m[6]); }
+  return out;
+}
+const near = (a, b) => Math.abs(a - b) < 1e-6;
+// التحقق الآلي: يعيد رقم الخيار الصحيح محسوباً، أو null إن لم ينطبق، أو -1 إن لم يوجد خيار صحيح
+function gVerify(it) {
+  if (it.kind !== 'mcq' || !it.verify) return null;
+  const opts = it.options;
+  if (it.verify === 'function' || it.verify === 'notfunction') {
+    if (!it.og || it.og.length !== 4 || it.og.some((g) => !g)) return null;
+    const f = it.og.map(gIsFunction); const want = it.verify === 'function';
+    const hits = f.map((v, j) => (v === want ? j : -1)).filter((j) => j >= 0);
+    return hits.length === 1 ? hits[0] : -1;
+  }
+  const L = gLines(it.g);
+  if (it.verify === 'intersection' && L.length >= 2) {
+    const p = gIntersect(L[0], L[1]); if (!p) return -1;
+    const hits = opts.map((o, j) => { const n = gNums(o); return n.length >= 2 && near(n[0], p[0]) && near(n[1], p[1]) ? j : -1; }).filter((j) => j >= 0);
+    return hits.length === 1 ? hits[0] : -1;
+  }
+  if (it.verify === 'slope' && L.length >= 1) {
+    if (L[0].k === 'vline') { const j = opts.findIndex((o) => /غير معر/.test(o)); return j; }
+    const hits = opts.map((o, j) => { const n = gNums(o); return n.length === 1 && near(n[0], L[0].m) ? j : -1; }).filter((j) => j >= 0);
+    return hits.length === 1 ? hits[0] : -1;
+  }
+  if (it.verify === 'count' && L.length >= 2) {
+    const a = L[0]; const b = L[1]; const p = gIntersect(a, b);
+    const same = (a.k === 'line' && b.k === 'line' && near(a.m, b.m) && near(a.b, b.b)) || (a.k === 'vline' && b.k === 'vline' && near(a.x, b.x));
+    const key = same ? /لا ?نهائي/ : p ? /واحد/ : /لا يوجد|ليس له|Ø/;
+    const hits = opts.map((o, j) => (key.test(o) ? j : -1)).filter((j) => j >= 0);
+    return hits.length === 1 ? hits[0] : -1;
+  }
+  return null;
+}
+function gApplyVerify(it) {
+  const v = gVerify(it); if (v == null) return;
+  if (v < 0) { it.warn = true; it.why = 'راجِع هذه الفقرة: لا يطابق أي خيار ما يُظهره الرسم'; return; }
+  if (it.ans !== v) { it.ans = v; it.fixed = true; }
+  it.gok = true; if (/الرسم/.test(it.why || '')) { it.warn = false; it.why = ''; }
+}
+
+// ----- الرسم (SVG) -----
+function gSVG(g, opt = {}) {
+  if (!g) return '';
+  if (g.type === 'numberline') return gNumberLineSVG(g, opt);
+  const [x0, x1, y0, y1] = g.range; const W = opt.w || 170; const u = W / (x1 - x0 + 1); const H = u * (y1 - y0 + 1);
+  const X = (x) => (x - x0 + 0.5) * u; const Y = (y) => (y1 - y + 0.5) * u;
+  const inb = (x, y) => x >= x0 - 0.5 - 1e-9 && x <= x1 + 0.5 + 1e-9 && y >= y0 - 0.5 - 1e-9 && y <= y1 + 0.5 + 1e-9;
+  let s = `<rect x="0" y="0" width="${W}" height="${H}" fill="#fff"/>`;
+  for (let x = x0; x <= x1; x++) s += `<line x1="${X(x)}" y1="0" x2="${X(x)}" y2="${H}" stroke="#c9ccd1" stroke-width=".7"/>`;
+  for (let y = y0; y <= y1; y++) s += `<line x1="0" y1="${Y(y)}" x2="${W}" y2="${Y(y)}" stroke="#c9ccd1" stroke-width=".7"/>`;
+  const ah = (xa, ya, xb, yb, col, sz = 7) => { const a = Math.atan2(yb - ya, xb - xa); const p1 = [xb - sz * Math.cos(a - 0.45), yb - sz * Math.sin(a - 0.45)]; const p2 = [xb - sz * Math.cos(a + 0.45), yb - sz * Math.sin(a + 0.45)]; return `<path d="M${xb} ${yb} L${p1[0]} ${p1[1]} L${p2[0]} ${p2[1]}Z" fill="${col}"/>`; };
+  s += `<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" stroke="#222" stroke-width="1.3"/>${ah(W - 8, Y(0), W, Y(0), '#222', 6)}${ah(8, Y(0), 0, Y(0), '#222', 6)}`;
+  s += `<line x1="${X(0)}" y1="${H}" x2="${X(0)}" y2="0" stroke="#222" stroke-width="1.3"/>${ah(X(0), 8, X(0), 0, '#222', 6)}${ah(X(0), H - 8, X(0), H, '#222', 6)}`;
+  s += `<text x="${W - 4}" y="${Y(0) + 13}" font-size="11" text-anchor="end" font-family="Arial">س</text><text x="${X(0) - 4}" y="11" font-size="11" text-anchor="end" font-family="Arial">ص</text><text x="${X(0) - 3}" y="${Y(0) + 12}" font-size="10" text-anchor="end" font-family="Arial">م</text>`;
+  // منحنى من دالة: نقاط داخل الإطار، يُقطع عند الخروج، وسهم في كل طرف يخرج من الإطار
+  const curve = (f, col) => {
+    let out = ''; let seg = []; const N = 240; const flush = () => { if (seg.length > 1) { out += `<polyline points="${seg.map((p) => p.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="2.2"/>`; const a = seg[0]; const b = seg[1]; const c = seg[seg.length - 2]; const d = seg[seg.length - 1]; out += ah(b[0], b[1], a[0], a[1], col) + ah(c[0], c[1], d[0], d[1], col); } seg = []; };
+    for (let i = 0; i <= N; i++) { const x = x0 - 0.5 + ((x1 - x0 + 1) * i) / N; const y = f(x); if (inb(x, y)) seg.push([X(x), Y(y)]); else flush(); }
+    flush(); return out;
+  };
+  const dot = (x, y, col, open) => `<circle cx="${X(x)}" cy="${Y(y)}" r="3.6" fill="${open ? '#fff' : col}" stroke="${col}" stroke-width="1.8"/>`;
+  g.items.forEach((it, i) => {
+    const col = GCOL[i % GCOL.length];
+    if (it.k === 'line') s += curve((x) => it.m * x + it.b, col);
+    else if (it.k === 'parab') s += curve((x) => it.a * x * x + it.b * x + it.c, col);
+    else if (it.k === 'abs') s += curve((x) => it.a * Math.abs(x - it.h) + it.v, col);
+    else if (it.k === 'vline') s += `<line x1="${X(it.x)}" y1="4" x2="${X(it.x)}" y2="${H - 4}" stroke="${col}" stroke-width="2.2"/>${ah(X(it.x), 12, X(it.x), 2, col)}${ah(X(it.x), H - 12, X(it.x), H - 2, col)}`;
+    else if (it.k === 'ray') {
+      const [px, py] = it.p; const [vx, vy] = it.v; let t = 0; while (t < 60 && inb(px + (t + 0.05) * vx, py + (t + 0.05) * vy)) t += 0.05;
+      const ex = px + t * vx; const ey = py + t * vy;
+      s += `<line x1="${X(px)}" y1="${Y(py)}" x2="${X(ex)}" y2="${Y(ey)}" stroke="${col}" stroke-width="2.2"/>${ah(X(px), Y(py), X(ex), Y(ey), col)}${dot(px, py, col, it.open)}`;
+    } else if (it.k === 'seg') s += `<line x1="${X(it.p[0])}" y1="${Y(it.p[1])}" x2="${X(it.q[0])}" y2="${Y(it.q[1])}" stroke="${col}" stroke-width="2.2"/>${dot(it.p[0], it.p[1], col, it.op)}${dot(it.q[0], it.q[1], col, it.oq)}`;
+    else if (it.k === 'pts') it.p.forEach((p) => { s += dot(p[0], p[1], col, false); if (it.lab) s += `<text x="${X(p[0]) + 5}" y="${Y(p[1]) - 5}" font-size="9.5" font-family="Arial" direction="rtl">(${gL(p[0])} ، ${gL(p[1])})</text>`; });
+    else if (it.k === 'circle') s += `<circle cx="${X(it.c[0])}" cy="${Y(it.c[1])}" r="${it.r * u}" fill="none" stroke="${col}" stroke-width="2.2"/>`;
+  });
+  return `<svg class="mg" xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H.toFixed(1)}" viewBox="0 0 ${W} ${H.toFixed(1)}" style="direction:ltr">${s}</svg>`;
+}
+function gNumberLineSVG(g, opt = {}) {
+  const [a, b] = g.range; const W = opt.w || 420; const u = (W - 40) / (b - a); const X = (x) => 20 + (x - a) * u; const col = '#d1342b';
+  let s = `<rect x="0" y="0" width="${W}" height="50" fill="#fff"/><line x1="4" y1="22" x2="${W - 4}" y2="22" stroke="#000" stroke-width="1.3"/><path d="M4 22 l8 -4 v8z M${W - 4} 22 l-8 -4 v8z"/>`;
+  for (let x = a; x <= b; x++) s += `<line x1="${X(x)}" y1="16" x2="${X(x)}" y2="28" stroke="#000"/><text x="${X(x)}" y="44" font-size="12" text-anchor="middle" font-family="Arial">${x < 0 ? '−' + ARD(-x) : ARD(x)}</text>`;
+  (g.sol || []).forEach((r) => {
+    const xa = r.a == null ? 6 : X(r.a); const xb = r.b == null ? W - 6 : X(r.b);
+    s += `<line x1="${xa}" y1="22" x2="${xb}" y2="22" stroke="${col}" stroke-width="5"/>`;
+    if (r.a == null) s += `<path d="M2 22 l11 -6 v12z" fill="${col}"/>`; else s += `<circle cx="${xa}" cy="22" r="5.5" fill="${r.ca ? col : '#fff'}" stroke="${col}" stroke-width="2.2"/>`;
+    if (r.b == null) s += `<path d="M${W - 2} 22 l-11 -6 v12z" fill="${col}"/>`; else s += `<circle cx="${xb}" cy="22" r="5.5" fill="${r.cb ? col : '#fff'}" stroke="${col}" stroke-width="2.2"/>`;
+  });
+  (g.pts || []).forEach((p) => { s += `<circle cx="${X(p.x)}" cy="22" r="5" fill="${p.c ? col : '#fff'}" stroke="${col}" stroke-width="2.2"/>`; });
+  return `<svg class="mg" xmlns="http://www.w3.org/2000/svg" width="${W}" height="50" viewBox="0 0 ${W} 50" style="direction:ltr;max-width:100%">${s}</svg>`;
+}
+// للـ Word: SVG ← PNG
+const GPNG = new Map();
+function gPNG(svg) {
+  if (GPNG.has(svg)) return Promise.resolve(GPNG.get(svg));
+  return new Promise((res) => {
+    const m = svg.match(/width="([\d.]+)" height="([\d.]+)"/); const w = +m[1]; const h = +m[2];
+    const im = new Image(); im.onload = () => { const s = 4; const cv = document.createElement('canvas'); cv.width = w * s; cv.height = h * s; const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(im, 0, 0, cv.width, cv.height); const r = { data: b64u8(cv.toDataURL('image/png')), w, h }; GPNG.set(svg, r); res(r); };
+    im.onerror = () => res(null);
+    im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  });
 }
 
 // ورقة الرياضيات: نفس القالب في المعاينة والطباعة
@@ -2968,6 +3190,10 @@ const MATH_SHEET_CSS = `
 .msheet table.mq td.st{font-weight:700;padding:5px 8px}
 .msheet table.mq td.o{width:25%;padding:4px 8px}.msheet table.mq td.o b{margin-left:5px}
 .msheet table.mq td.ok{background:#fde2e2;color:#c00000;font-weight:700}
+.msheet table.mq td.gc{width:25%;text-align:center;padding:4px}
+.msheet .og{text-align:center;margin-top:3px}
+.msheet svg.mg,.mgp svg.mg{max-width:100%;height:auto}
+.mgp{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;margin:6px 0}.mgp>div{background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px;text-align:center;font-size:12px}
 .msheet table.mtf tr{break-inside:avoid;page-break-inside:avoid}.msheet table.mtf td{height:34px}
 .msheet table.mtf td.n{width:38px;text-align:center;font-weight:700}.msheet table.mtf td.a{width:60px;text-align:center;font-size:15pt;font-weight:700}
 .msheet .mes{border-top:1.2px solid #000;padding:8px 4px 6px;break-inside:avoid;page-break-inside:avoid}
