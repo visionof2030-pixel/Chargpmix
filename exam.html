@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>مِحَكّ — منشئ الاختبارات</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -377,10 +378,9 @@ window.EXAM_CURRICULUM = {
 <style>
 /* ===== واجهة «مِحَكّ» — طابع دفتر المعلم: ورق دافئ، حبر أخضر، علامة تصحيح بالقلم الأحمر ===== */
 :root{--bg:#f5f1e8;--card:#fffdf8;--card2:#faf6ee;--ink:#22302a;--mut:#6f6a5e;--acc:#24624b;--acc-h:#1b4d3b;--accs:#e6eee6;--accs2:#d2e0d4;--gold:#a7782a;--gold-h:#86601f;--golds:#f6ecd6;--goldl:#e6d3a8;--pen:#b8322a;--pens:#f8e3df;--line:#e6dfcf;--line2:#d8cfbb;--warn:#9a5b0b;--warns:#fbf0da;--bad:#a8291f;--bads:#f8e1dd;--chip:#efe9dc;--ring:0 0 0 3px rgba(36,98,75,.15);--sh:0 1px 0 rgba(60,45,20,.05),0 2px 10px rgba(60,45,20,.04);--font:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;--head:'Noto Naskh Arabic','IBM Plex Sans Arabic',serif}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171612;--card:#1f1d18;--card2:#24221c;--ink:#ebe6da;--mut:#a59f90;--acc:#6fbf9b;--acc-h:#8fd3b3;--accs:#22322b;--accs2:#2b4236;--gold:#d7ad5c;--gold-h:#e8c27a;--golds:#2f2818;--goldl:#54452a;--pen:#e0685d;--pens:#3a201c;--line:#332f27;--line2:#3e392f;--warn:#e9ad57;--warns:#33270f;--bad:#ef7d72;--bads:#3a1c18;--chip:#2a2720;--sh:0 1px 0 rgba(0,0,0,.25)}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none !important}
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--bg)}
+html{color-scheme:light;-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 var(--font)}
 button,input,select,textarea{font-family:inherit}
 h1,h2,h3,.hd{font-family:var(--head)}
@@ -866,21 +866,8 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
       </div>
 
       <div class="card">
-        <div class="ch"><span class="n">١</span><div><b>بيانات رأس الورقة</b><small>تظهر أعلى ورقة الاختبار، وتُحفظ لاختباراتك القادمة.</small></div></div>
-        <div class="grid">
-          <label class="f">إدارة التعليم (اكتب المدينة أو المنطقة فقط)<input type="text" id="directorate" class="en" placeholder="Makkah / مكة" autocomplete="off"><small class="muted" id="dirPrev" style="font-size:12px;margin-top:3px"></small></label>
-          <label class="f">اسم المدرسة<input type="text" id="school" class="en" placeholder="... Intermediate School"></label>
-          <label class="f">اسم المعلم/ة<input type="text" id="teacher" class="en" placeholder="Teacher's name"></label>
-          <div class="f" style="grid-column:1/-1"><span>صيغة الورقة (تذكير أو تأنيث)</span><div class="seg" id="gender" style="margin-top:6px"><button type="button" data-v="m" class="on">معلم · طلاب</button><button type="button" data-v="f">معلمة · طالبات</button></div><div class="muted" id="genderHint" style="font-size:12px;margin-top:4px"></div></div>
-          <label class="f">العام<input type="text" id="year" value="1447"></label>
-          <label class="f">الزمن<input type="text" id="time" value="1.5 hours" class="en"></label>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="ch"><span class="n">٢</span><div><b>المادة والصف والوحدات</b><small>الوحدات تُحدَّد تلقائياً حسب الفصل الدراسي، ويمكنك تعديلها.</small></div></div>
-        <div class="lbl2">المادة</div>
-        <label class="f" style="margin-bottom:14px;max-width:420px">المادة<select id="subjSel">
+        <div class="ch"><span class="n">١</span><div><b>المادة</b><small>اختر المادة أولاً، فتتبعها لغة رأس الورقة وحقولها.</small></div></div>
+        <label class="f" style="max-width:460px">المادة<select id="subjSel">
           <option value="en">اللغة الإنجليزية — وفق جدول المواصفات</option>
           <option value="math">الرياضيات — وفق جدول المواصفات</option>
           <option disabled>لغتي (اللغة العربية) — قريباً</option>
@@ -893,6 +880,22 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
           <option disabled>التربية البدنية — قريباً</option>
         </select></label>
         <div class="subj" id="subj" hidden><button type="button" data-v="en" class="on">en</button><button type="button" data-v="math">math</button></div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><span class="n">٢</span><div><b>بيانات رأس الورقة</b><small>تظهر أعلى ورقة الاختبار، وتُحفظ لاختباراتك القادمة.</small></div></div>
+        <div class="grid">
+          <label class="f">إدارة التعليم (اكتب المدينة أو المنطقة فقط)<input type="text" id="directorate" class="en" placeholder="Makkah / مكة" autocomplete="off"><small class="muted" id="dirPrev" style="font-size:12px;margin-top:3px"></small></label>
+          <label class="f">اسم المدرسة<input type="text" id="school" class="en" placeholder="... Intermediate School"></label>
+          <label class="f">اسم المعلم/ة<input type="text" id="teacher" class="en" placeholder="Teacher's name"></label>
+          <div class="f" style="grid-column:1/-1"><span>صيغة الورقة (تذكير أو تأنيث)</span><div class="seg" id="gender" style="margin-top:6px"><button type="button" data-v="m" class="on">معلم · طلاب</button><button type="button" data-v="f">معلمة · طالبات</button></div><div class="muted" id="genderHint" style="font-size:12px;margin-top:4px"></div></div>
+          <label class="f">العام<input type="text" id="year" value="1447"></label>
+          <label class="f">الزمن<input type="text" id="time" value="1.5 hours" class="en"></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><span class="n">٣</span><div><b>الصف والوحدات</b><small>الوحدات تُحدَّد تلقائياً حسب الفصل الدراسي، ويمكنك تعديلها.</small></div></div>
         <div class="grid">
           <label class="f" id="mgradeF" hidden>الصف
             <select id="mgrade"><option value="p1">الأول الابتدائي</option><option value="p2">الثاني الابتدائي</option><option value="p3">الثالث الابتدائي</option><option value="g4">الرابع الابتدائي</option><option value="g5">الخامس الابتدائي</option><option value="g6">السادس الابتدائي</option><option value="m1">الأول المتوسط</option><option value="m2">الثاني المتوسط</option><option value="m3" selected>الثالث المتوسط</option></select>
@@ -916,7 +919,7 @@ table.ak td{border:1px solid #000;padding:1px 6px;text-align:center;min-width:24
       </div>
 
       <div class="card">
-        <div class="ch"><span class="n">٣</span><div><b>شكل الاختبار</b><small>القالب ومستوى الصعوبة ونوع سؤال التعبير.</small></div></div>
+        <div class="ch"><span class="n">٤</span><div><b>شكل الاختبار</b><small>القالب ومستوى الصعوبة ونوع سؤال التعبير.</small></div></div>
         <div class="hint" id="mathHint" hidden style="margin-top:0">قالب الرياضيات: السؤال الأول اختيار من متعدد (٢٠ درجة) · الثاني صح وخطأ (١٠ درجات) · الثالث أسئلة مقالية (١٠ درجات: ٣ + ٣ + ٢ + ٢). كل فقرة مرتبطة بدرس وهدف ومستوى من جدول المواصفات، وكل إجابة تُراجَع مرة ثانية، ونموذج الإجابة يتضمن المرجعية.
           <div style="margin-top:10px"><div class="lbl2">الأسئلة البيانية (رسم في السؤال أو في الخيارات)</div><div class="seg" id="mgraphs"><button data-v="0">بدون</button><button data-v="2">٢</button><button data-v="3" class="on">٣</button><button data-v="4">٤</button></div><div class="muted" style="margin-top:4px;font-size:12px">تُختار من دروس أهدافها تمثيل بياني، والأداة ترسمها وتحسب إجابتها بنفسها.</div></div></div>
         <div id="tmplWrap"><div class="lbl2">قالب الأسئلة</div>
@@ -2537,11 +2540,20 @@ function fitPreview() {
 }
 let PV_SEQ = 0;
 async function renderPreview() {
+  try { await renderPreview0(); } catch (e) {
+    console.error(e); document.querySelectorAll('.pvmeasure').forEach((x) => x.remove());
+    $('pvBody').innerHTML = '<div class="pvn" style="margin-top:30px">تعذّر عرض المعاينة. <button type="button" class="btn sec" id="pvRetry" style="margin-top:10px">إعادة المحاولة</button><br><small>ويمكنك التنزيل مباشرة بزر PDF أو Word.</small></div>';
+    $('pvRetry').onclick = renderPreview;
+  }
+}
+async function renderPreview0() {
   const seq = ++PV_SEQ; const body = $('pvBody'); const g = pvGeom();
   body.innerHTML = '<div class="pvn" style="margin-top:30px">جارٍ ترتيب الصفحات…</div>'; $('pvCount').textContent = '';
   const html = isMath() ? `<div class="msheet${isPrim() ? ' prim' : ''}">${paperHTML($('pvKey').checked).replace(/class="pbreak keypage"/g, 'class="keypage"')}</div>` : `<div class="sheet exp${isAuto() ? ' auto' : ''}" dir="ltr">${arabicToImages(paperHTML($('pvKey').checked)).replace(/class="pbreak keypage"/g, 'class="keypage" style="break-before:auto;page-break-before:auto"')}</div>`;
   const meas = document.createElement('div'); meas.className = 'pvmeasure'; meas.style.width = g.iw + 'px'; meas.innerHTML = html; document.body.appendChild(meas);
-  await Promise.all([...meas.querySelectorAll('img')].map((im) => (im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; }))));
+  // لا ننتظر الصور أكثر من ٣ ثوانٍ (بعض متصفحات الجوال لا تُبلغ عن تحميل صور العنصر المخفي فتعلق المعاينة)
+  const imgs = [...meas.querySelectorAll('img')].map((im) => (im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; })));
+  await Promise.race([Promise.all(imgs), new Promise((r) => setTimeout(r, 3000))]);
   if (seq !== PV_SEQ) { meas.remove(); return; }
   paginate(meas, g.pageH);
   const n = Math.max(1, Math.ceil((meas.scrollHeight - 8) / g.pageH)); const inner = meas.innerHTML; meas.remove();
@@ -2680,7 +2692,7 @@ const dirNorm = (v) => String(v || '').toLowerCase().replace(/[ًٌٍَُِّْ�
 function dirCity(v) {
   return String(v || '').trim()
     .replace(/^(the\s+)?(general\s+)?(administration|directorate)\s+(of\s+)?(education\s+)?(in|of|at)\s+/i, '').replace(/^education\s+(directorate|department|office)\s+(in|of|at)\s+/i, '')
-    .replace(/^(الإدارة العامة للتعليم|الادارة العامة للتعليم|إدارة التعليم|ادارة التعليم|إدارة تعليم|ادارة تعليم)\s*/, '').replace(/^(بمنطقة|بمحافظة|ب)\s*/, '').trim();
+    .replace(/^(الإدارة العامة للتعليم|الادارة العامة للتعليم|إدارة التعليم|ادارة التعليم|إدارة تعليم|ادارة تعليم)\s*/, '').replace(/^(في\s+)?(بمنطقة|بمحافظة|منطقة|محافظة|ب)\s*/, '').replace(/^في\s+/, '').trim();
 }
 function dirPlace(city) {
   const n = dirNorm(city); if (!n) return null;
@@ -2689,9 +2701,9 @@ function dirPlace(city) {
 function dirPhrase(city, subj) {
   city = String(city || '').trim(); if (!city) return '';
   const p = dirPlace(city);
-  if (subj === 'math') {
-    if (!p) return /[؀-ۿ]/.test(city) ? 'الإدارة العامة للتعليم ب' + (/^ال/.test(city) ? '' : 'منطقة ') + city : 'الإدارة العامة للتعليم بـ' + city;
-    return 'الإدارة العامة للتعليم ' + (p[2] === 'e' ? 'ب' + p[1] : p[2] === 'g' ? 'بمحافظة ' + p[1] : 'بمنطقة ' + p[1]);
+  if (subj === 'math') { // ورقة عربية: لا كلمة إنجليزية في الرأس
+    if (!p) return /[؀-ۿ]/.test(city) ? 'إدارة التعليم في ' + (/^(ال|منطقة|محافظة)/.test(city) ? '' : 'منطقة ') + city : '';
+    return 'إدارة التعليم في ' + (p[2] === 'e' ? p[1] : p[2] === 'g' ? 'محافظة ' + p[1] : 'منطقة ' + p[1]);
   }
   return 'Education Directorate in ' + (p ? p[0] : city);
 }
@@ -3337,6 +3349,7 @@ function subjUI() {
   $('directorate').placeholder = m ? 'مكة / Makkah' : 'Makkah / مكة';
   { const c = dirCity($('directorate').value); if (c && document.activeElement !== $('directorate')) $('directorate').value = dirPhrase(c, m ? 'math' : 'en'); dirUI(); }
   if ($('subjSel')) $('subjSel').value = m ? 'math' : 'en';
+  { const t = $('time'); if (m && /^1\.5 hours$/i.test(t.value.trim())) t.value = 'ساعتان ونصف'; else if (!m && t.value.trim() === 'ساعتان ونصف') t.value = '1.5 hours'; }
   $('school').placeholder = m ? 'مدرسة …' : (C[$('grade').value] && C[$('grade').value].primary ? '... Primary School' : '... Intermediate School');
   $('teacher').placeholder = m ? 'اسم المعلم' : "Teacher's name";
 }
@@ -3712,12 +3725,13 @@ document.addEventListener('input', (e) => { // معاينة فورية للنص 
 });
 
 // ----- الورقة -----
-const hasAr = (s) => /[؀-ۿ]/.test(s || '');
+const hasAr = (s) => /[؀-ۿ]/.test(s || '') && !/[A-Za-z]/.test(s || ''); // عربي خالص (لا كلمة إنجليزية في ورقة عربية)
+const mDir = (m) => dirPhrase(dirCity(m.directorate), 'math') || 'إدارة التعليم في ..................';
 function mathHeaderHTML(m, ka) {
   const s = MATH_SPECS[mspecKey(m)] || {}; const yr = ARD(String(m.year || '').trim());
   const tm = hasAr(m.time) ? m.time : 'ساعتان ونصف';
   return `${ka ? '<div class="mkey">نموذج الإجابة</div>' : ''}<table class="mh"><tr>
-  <td style="width:36%">المملكة العربية السعودية<br>وزارة التعليم<br>${hasAr(m.directorate) ? esc(m.directorate) : 'الإدارة العامة للتعليم بـ ..................'}<br>${hasAr(m.school) ? esc(m.school) : 'مدرسة ..................'}</td>
+  <td style="width:36%">المملكة العربية السعودية<br>وزارة التعليم<br>${esc(mDir(m))}<br>${hasAr(m.school) ? esc(m.school) : 'مدرسة ..................'}</td>
   <td class="c" style="width:28%"><img src="${LOGO}" alt="" style="height:58px"></td>
   <td style="width:36%">الصف : ${esc(s.grade || '')}<br>المادة : رياضيات<br>الزمن : ${esc(tm)}<br>التاريخ : &nbsp;&nbsp; / &nbsp;&nbsp; / ${yr}هـ</td></tr>
   <tr><td colspan="3" class="c">اختبار نهائي الفصل الدراسي ${m.term === '2' ? 'الثاني' : 'الأول'} ( الدور الأول ) للعام الدراسي ${yr}هـ${FORMS.length > 1 && m.form === 'B' ? ' — الاختبار البديل' : ''}</td></tr></table>
@@ -3858,7 +3872,7 @@ function mathDocx(D, ka) {
   if (ka) k.push(P([T('نموذج الإجابة', { b: true, red: true, size: 30 })], { align: CEN, after: 80 }));
   const lines = (arr) => arr.map((l) => P([T(l, { b: true })], { after: 30 }));
   k.push(Tb([3850, 3000, 3850], [
-    R([Cc(lines(['المملكة العربية السعودية', 'وزارة التعليم', hasAr(m.directorate) ? m.directorate : 'الإدارة العامة للتعليم بـ ..................', hasAr(m.school) ? m.school : 'مدرسة ..................'])),
+    R([Cc(lines(['المملكة العربية السعودية', 'وزارة التعليم', mDir(m), hasAr(m.school) ? m.school : 'مدرسة ..................'])),
       Cc([new D.Paragraph({ alignment: CEN, children: [docxImgRun(D, LOGO, 116, 62)] })]),
       Cc(lines([`الصف : ${s.grade || ''}`, 'المادة : رياضيات', `الزمن : ${hasAr(m.time) ? m.time : 'ساعتان ونصف'}`, `التاريخ :      /      / ${yr}هـ`]))]),
     R([Cc(P([T(`اختبار نهائي الفصل الدراسي ${m.term === '2' ? 'الثاني' : 'الأول'} ( الدور الأول ) للعام الدراسي ${yr}هـ${FORMS.length > 1 && m.form === 'B' ? ' — الاختبار البديل' : ''}`, { b: true })], { align: CEN, after: 0 }), { span: 3 })]),
